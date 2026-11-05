@@ -25,6 +25,11 @@
     'voice-sms': 'issue-2040-oneqr-phone-3d.png',
     'check-in': '../icons/pos-front-desk/check-in.svg',
     'turn-board': '../icons/pos-front-desk/turn-board.svg',
+    'merchant-atm': 'merchant-atm-icons8-3d.png',
+    'mobile-atm': 'mobile-atm-payment-10647002.png',
+    'payment-gateway': 'payment-gateway-secure-9506497.png',
+    'exchange-hub': 'industry/remit.png',
+    'program-hub': 'program-hub-icons8-3d.png',
     analytics: '../icons/3d-fluency/analytics.png',
     'spin-wheel': '../icons/iconscout/prize-wheel-10862879.webp',
     nail: 'salon-nail-polish-iconscout-10843584.png',
@@ -47,9 +52,15 @@
     }
   }
 
+  const retainedAppIcons = new Set(['one-qr', 'payments-payouts', 'reviews', 'analytics']);
   Object.entries(products).forEach(([product, name]) => {
     decorate(document.querySelector(`.ecosystem-item[href="products/${product}/index.html"] .product-icon`), name);
     decorate(document.querySelector(`.eco-nexora-item[data-product="${product}"] .eco-nexora-icon`), name);
+    if (!retainedAppIcons.has(product)) {
+      const appIcon = document.querySelector(`.apps-grid a[href="products/${product}/index.html"] > span[aria-hidden="true"]`);
+      if (appIcon) appIcon.classList.add('app-product-icon');
+      decorate(appIcon, name);
+    }
   });
   const journey = ['check-in', 'turn-board', 'hand-coins', 'heart'];
   document.querySelectorAll('.journey-icon').forEach((element, index) => decorate(element, journey[index]));
@@ -64,8 +75,8 @@
   });
   const nodes = {
     tokenization: 'badge-dollar-sign', wallet: 'wallet', 'crypto-card': 'credit-card',
-    merchant: 'store', charity: 'heart', gift: 'gift', 'merchant-atm': 'hand-coins',
-    'mobile-atm': 'phone', exchange: 'hand-coins', gateway: 'link', program: 'package'
+    merchant: 'store', charity: 'heart', gift: 'gift', 'merchant-atm': 'merchant-atm',
+    'mobile-atm': 'mobile-atm', exchange: 'exchange-hub', gateway: 'payment-gateway', program: 'program-hub'
   };
   Object.entries(nodes).forEach(([node, name]) => decorate(document.querySelector(`.eco-node[data-id="${node}"] .eco-node-icon`), name));
 
@@ -94,4 +105,16 @@
   }
   decorateIndustries();
   if (tabs) new MutationObserver(decorateIndustries).observe(tabs, { childList: true });
+
+  // Attribution required by the reused Icons8 3D Fluency asset collection.
+  const footer = document.querySelector('.footer-legal');
+  if (footer && !footer.querySelector('[data-icon-credit]')) {
+    const credit = document.createElement('a');
+    credit.href = 'https://icons8.com/';
+    credit.textContent = 'Icons8';
+    credit.dataset.iconCredit = '';
+    credit.target = '_blank';
+    credit.rel = 'noopener noreferrer';
+    footer.append(credit);
+  }
 })();

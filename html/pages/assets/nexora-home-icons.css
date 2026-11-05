@@ -2,7 +2,7 @@
 .nexora-icon-upgrade .review-icon { position: relative; flex-shrink: 0; isolation: isolate; }
 .nexora-icon-upgrade :is(.product-icon, .journey-icon, .start-path-icon, .eco-node-icon,
   .eco-nexora-icon, .about-pillar-icon, .contact-detail-icon,
-  .hero-poster-icon, .review-industry-icon).review-icon {
+  .hero-poster-icon, .review-industry-icon, .app-product-icon).review-icon {
   font-size: 0;
   line-height: 0;
   color: transparent;
@@ -30,4 +30,6 @@
   pointer-events: none;
 }
 .nexora-icon-upgrade .eco-nexora-icon { width: 30px; height: 30px; }
+.nexora-icon-upgrade .eco-node-icon.review-icon::before { border-radius: 7px; }
+.nexora-icon-upgrade .apps-grid .app-product-icon { width: 32px; height: 32px; }
 .nexora-icon-upgrade .review-industry-icon { display: inline-block; width: 26px; height: 26px; }

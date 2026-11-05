@@ -1,0 +1,173 @@
+/* Shared phone layout. Content, destinations and interaction handlers are retained. */
+@media (max-width: 700px) {
+  .nexora-icon-upgrade .header-inner {
+    min-height: 60px;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+  .nexora-icon-upgrade .brand { padding: 4px; border-radius: 9px; }
+  .nexora-icon-upgrade .brand-logo { width: 124px; }
+  .nexora-icon-upgrade .header-actions { gap: 4px; }
+  .nexora-icon-upgrade :is(.apps-trigger, .menu-toggle) { width: 40px; height: 40px; border-radius: 10px; }
+  .nexora-icon-upgrade .lang-switch {
+    min-height: 40px;
+    gap: 4px;
+    padding: 8px 44px 8px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center / 16px;
+  }
+  .nexora-icon-upgrade .lang-switch > svg { width: 14px; height: 14px; }
+  .nexora-icon-upgrade #language-code { font-size: 11px; }
+  .nexora-icon-upgrade .lang-switch .language { padding-inline-end: 44px; }
+  .nexora-icon-upgrade.nav-open::before { inset-block-start: 60px; }
+  .nexora-icon-upgrade .main-nav {
+    top: calc(100% + 6px);
+    width: min(400px, calc(100vw - 24px));
+    max-height: calc(100dvh - 78px);
+    padding: 10px;
+    border-radius: 18px;
+  }
+  .nexora-icon-upgrade .main-nav > .mobile-auth {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    margin: 0 0 12px;
+    padding: 4px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f1f5f9;
+  }
+  .nexora-icon-upgrade .main-nav .mobile-auth :is(a, button) {
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 6px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #263958;
+    box-shadow: none;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .nexora-icon-upgrade .main-nav .mobile-auth a[href$="/register"] {
+    background: #4648d4;
+    color: #fff;
+    box-shadow: 0 3px 9px rgb(70 72 212 / 18%);
+  }
+  .nexora-icon-upgrade .main-nav .mobile-auth a:hover { background: #fff; }
+  .nexora-icon-upgrade .main-nav .mobile-auth a[href$="/register"]:hover { background: #3a3bbf; }
+  .nexora-icon-upgrade .main-nav .nav-group { margin-bottom: 7px; border-radius: 12px; }
+  .nexora-icon-upgrade .main-nav .nav-trigger { min-height: 44px; padding: 10px 12px; font-size: 13px; }
+  .nexora-icon-upgrade .main-nav .nav-panel > a { min-height: 40px; padding-block: 8px; }
+  .nexora-icon-upgrade .apps-popover { position: fixed; top: 68px; inset-inline: 12px; width: auto; max-width: none; max-height: calc(100dvh - 82px); padding: 14px; overflow-y: auto; border-radius: 16px; }
+  .nexora-icon-upgrade .apps-grid { gap: 6px; }
+  .nexora-icon-upgrade .apps-grid a { min-height: 68px; gap: 4px; padding: 6px 4px; border-radius: 10px; box-shadow: none; line-height: 1.3; }
+
+  /* Keep the photo, but bring the headline and primary actions into the first view. */
+  .nexora-icon-upgrade .ad-banner { padding-block: 6px; }
+  .nexora-icon-upgrade .ad-banner-set { gap: 8px; padding-inline-end: 8px; }
+  .nexora-icon-upgrade .ad-sticker { width: 240px; min-height: 58px; gap: 9px; padding: 5px; border-radius: 11px; }
+  .nexora-icon-upgrade .ad-sticker img { width: 46px; height: 46px; border-radius: 7px; }
+  .nexora-icon-upgrade .ad-sticker-copy strong { font-size: 12px; }
+  .nexora-icon-upgrade #hero-showcase.hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    min-height: 0;
+    gap: 0;
+    padding: 160px 16px 24px;
+    background: #071633;
+  }
+  .nexora-icon-upgrade #hero-showcase .hero-stage { width: 100%; height: 190px; bottom: auto; }
+  .nexora-icon-upgrade #hero-showcase .hero-copy { width: 100%; max-width: none; margin: 0; padding: 0; }
+  .nexora-icon-upgrade #hero-showcase .hero-context { gap: 6px; margin: 0; }
+  .nexora-icon-upgrade #hero-showcase .hero-context > span {
+    min-height: 24px;
+    padding: 4px 8px;
+    font-size: 9px;
+    line-height: 1.3;
+  }
+  .nexora-icon-upgrade #hero-showcase .hero-copy h1 {
+    max-width: none;
+    margin: 12px 0 10px;
+    font-size: clamp(27px, 7.8vw, 34px);
+    line-height: 1.13;
+    letter-spacing: -.035em;
+  }
+  .nexora-icon-upgrade #hero-showcase .hero-copy p { min-height: 0; font-size: 14px; line-height: 1.5; }
+  .nexora-icon-upgrade #hero-showcase .hero-buttons { gap: 8px; margin-top: 16px; }
+  .nexora-icon-upgrade #hero-showcase .hero-buttons .button { flex: 1 1 140px; min-width: 0; min-height: 44px; padding: 10px 8px; border-radius: 10px; font-size: 12px; line-height: 1.35; }
+  .nexora-icon-upgrade #hero-showcase .hero-slide-controls { width: 100%; gap: 6px; margin-top: 14px; padding: 6px; flex-wrap: nowrap; border-radius: 12px; }
+  .nexora-icon-upgrade #hero-showcase .hero-slide-controls > button { flex: 0 0 32px; width: 32px; height: 32px; border-radius: 8px; }
+  .nexora-icon-upgrade #hero-showcase .hero-slide-dots { order: 0; flex: 1; width: auto; min-width: 0; gap: 2px; margin: 0; }
+  .nexora-icon-upgrade #hero-slide-dots button { position: relative; flex: 0 0 10px; width: 10px; height: 24px; min-width: 0; min-height: 0; padding: 0; border: 0; background: transparent; }
+  .nexora-icon-upgrade #hero-slide-dots button::after { content: ""; position: absolute; top: 50%; left: 50%; width: 5px; height: 5px; border-radius: 999px; background: #ffffff73; transform: translate(-50%, -50%); }
+  .nexora-icon-upgrade #hero-slide-dots button[aria-current="true"] { flex-basis: 18px; width: 18px; background: transparent; }
+  .nexora-icon-upgrade #hero-slide-dots button[aria-current="true"]::after { width: 14px; background: #aef5e7; }
+  .nexora-icon-upgrade #hero-showcase .hero-device,
+  .nexora-icon-upgrade #hero-showcase.is-one-qr .hero-device { position: relative; inset: auto; width: min(100%, 240px); margin: 16px auto 0; transform: none; }
+
+  /* Compact cards keep every original label, description and action. */
+  .nexora-icon-upgrade #ecosystem .ecosystem-inner,
+  .nexora-icon-upgrade #journey.section,
+  .nexora-icon-upgrade .video-tour-inner,
+  .nexora-icon-upgrade #vlinkpay-ecosystem .bridge-inner { padding: 30px 16px; }
+  .nexora-icon-upgrade #ecosystem .ecosystem-copy { margin-bottom: 20px; }
+  .nexora-icon-upgrade #ecosystem .product-group { margin-top: 22px; }
+  .nexora-icon-upgrade #ecosystem .product-group-head { gap: 10px; margin-bottom: 12px; padding-bottom: 12px; }
+  .nexora-icon-upgrade #ecosystem .product-group-number { width: 38px; height: 38px; border-radius: 11px; }
+  .nexora-icon-upgrade #ecosystem .product-group-head h3 { font-size: 19px; }
+  .nexora-icon-upgrade #ecosystem .ecosystem-list { grid-template-columns: 1fr; gap: 10px; }
+  .nexora-icon-upgrade #ecosystem .product-group .ecosystem-item { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-content: start; gap: 6px 12px; min-height: 0; padding: 12px; border-radius: 15px; }
+  .nexora-icon-upgrade #ecosystem .product-card-media { grid-column: 1; grid-row: 1 / span 4; align-self: stretch; height: 100%; min-height: 118px; border-radius: 10px; }
+  .nexora-icon-upgrade #ecosystem .product-card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .nexora-icon-upgrade #ecosystem .product-line { grid-column: 2; grid-row: 1; gap: 7px; margin: 0; }
+  .nexora-icon-upgrade #ecosystem .product-icon { width: 32px; height: 32px; }
+  .nexora-icon-upgrade #ecosystem .product-line strong { font-size: 15px; line-height: 1.25; }
+  .nexora-icon-upgrade #ecosystem .ecosystem-item .product-status { grid-column: 2; grid-row: 2; justify-self: start; margin: 0; }
+  .nexora-icon-upgrade #ecosystem .ecosystem-item > span[data-i18n^="suite"] { grid-column: 2; grid-row: 3; margin: 0; font-size: 12px; line-height: 1.5; }
+  .nexora-icon-upgrade #ecosystem .ecosystem-item em { grid-column: 2; grid-row: 4; margin: 0; padding-top: 8px; font-size: 11px; }
+  .nexora-icon-upgrade .product-card-number { inset-inline: 4px; font-size: 6px; text-align: center; }
+  .nexora-icon-upgrade #journey .journey { width: 100%; max-width: none; grid-template-columns: 1fr; gap: 10px; }
+  .nexora-icon-upgrade #journey .journey-card { position: relative; display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 4px 12px; min-height: 0; padding: 14px 16px; border-radius: 14px; }
+  .nexora-icon-upgrade #journey .journey-icon { grid-column: 1; grid-row: 1 / span 2; align-self: center; width: 38px; height: 38px; margin: 0; }
+  .nexora-icon-upgrade #journey .journey-card > small { position: absolute; top: 14px; inset-inline-end: 14px; font-size: 10px; }
+  .nexora-icon-upgrade #journey .journey-card h3 { grid-column: 2; grid-row: 1; margin: 0; padding-inline-end: 18px; font-size: 15px; line-height: 1.3; }
+  .nexora-icon-upgrade #journey .journey-card p { grid-column: 2; grid-row: 2; margin: 0; font-size: 12px; line-height: 1.5; }
+  .nexora-icon-upgrade :is(#connected-businesses, #about, #start) { width: calc(100% - 32px); margin: 22px auto; padding: 18px; border-radius: 16px; }
+  .nexora-icon-upgrade #start .start-paths { gap: 10px; margin-top: 18px; }
+  .nexora-icon-upgrade #start .start-path { grid-template-columns: 38px minmax(0, 1fr); gap: 12px; min-height: 0; padding: 16px; border-radius: 14px; }
+  .nexora-icon-upgrade #start .start-path-icon { width: 38px; height: 38px; }
+  .nexora-icon-upgrade #start .start-path-content strong { margin-block: 6px; font-size: 19px; line-height: 1.25; }
+  .nexora-icon-upgrade #start .start-path-content > span { font-size: 12px; line-height: 1.5; }
+  .nexora-icon-upgrade #start .start-path-content em { padding-top: 12px; font-size: 11px; }
+  .nexora-icon-upgrade #start .start-guide { gap: 12px; margin-top: 14px; padding: 14px; border-radius: 12px; }
+  .nexora-icon-upgrade .contact-section { padding: 24px 0; }
+  .nexora-icon-upgrade .contact-inner { gap: 12px; padding-inline: 16px; }
+  .nexora-icon-upgrade :is(.contact-info, .contact-form) { padding: 18px; border-radius: 16px; }
+  .nexora-icon-upgrade .contact-form { gap: 12px; }
+  .nexora-icon-upgrade .contact-fields { gap: 12px; }
+  .nexora-icon-upgrade .contact-form label:not(.contact-consent) { gap: 6px; font-size: 12px; }
+  .nexora-icon-upgrade .contact-form :is(input:not([type="checkbox"]), select, textarea) { min-height: 42px; padding-block: 9px; font-size: 16px; line-height: 1.4; }
+  .nexora-icon-upgrade .contact-form select { padding-right: 44px; }
+  .nexora-icon-upgrade .contact-form textarea { min-height: 100px; }
+  .nexora-icon-upgrade .contact-consent { font-size: 11px; line-height: 1.5; }
+  .nexora-icon-upgrade .contact-form-bottom button { min-height: 44px; padding: 10px 12px; }
+}
+@media (max-width: 380px) {
+  .nexora-icon-upgrade .brand-logo { width: 100px; }
+  .nexora-icon-upgrade .header-actions { gap: 3px; }
+  .nexora-icon-upgrade #hero-showcase.hero-inner { padding-top: 132px; }
+  .nexora-icon-upgrade #hero-showcase .hero-stage { height: 162px; }
+  .nexora-icon-upgrade #ecosystem .product-group .ecosystem-item { grid-template-columns: 72px minmax(0, 1fr); gap: 6px 10px; }
+}
+@media (max-width: 700px) and (max-height: 740px) {
+  .nexora-icon-upgrade #hero-showcase.hero-inner { padding-top: 112px; }
+  .nexora-icon-upgrade #hero-showcase .hero-stage { height: 142px; }
+  .nexora-icon-upgrade #hero-showcase .hero-copy h1 { font-size: clamp(26px, 7.5vw, 31px); }
+  .nexora-icon-upgrade #hero-showcase .hero-copy p { font-size: 13px; line-height: 1.45; }
+  .nexora-icon-upgrade #hero-showcase .hero-buttons { margin-top: 12px; }
+}
