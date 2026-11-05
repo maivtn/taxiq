@@ -21,9 +21,19 @@
     {id: 'staffs-clock', label: 'Staffs Clock', icon: 'staffs-clock', href: 'pos-front-desk.html?section=clock', section: 'clock', more: true},
     {id: 'customer-history', label: 'Customer History', icon: 'overview', href: 'pos-products-other-sales.html?section=history', more: true},
     {id: 'price-menu', label: 'Price Menu', image: '../assets/icon-oneqr/issue-2040-oneqr-list-3d.png', style: 'gift-card-center', href: 'pos-products-other-sales.html?section=pricemenu', more: true},
-    {id: 'ai-voice', label: 'AI Voice', image: '../assets/icon-oneqr/issue-2040-oneqr-phone-3d.png', style: 'checkout-customer', href: 'pos-ai-voice.html', more: true},
-    {id: 'waitlist', label: 'Live Waitlist', icon: 'tickets', style: 'waitlist', href: 'pos-front-desk.html?section=waitlist', section: 'waitlist', more: true}
+    {id: 'ai-voice', label: 'AI Voice', image: '../assets/icon-oneqr/issue-2040-oneqr-phone-3d.png', style: 'checkout-customer', href: 'pos-ai-voice.html', more: true}
   ];
+  // Extra screens and chooser copy follow the Oct 27 PO Front Desk handoff.
+  const screens = [
+    {id: 'oneqr', label: 'One QR', artwork: 'qr-code', module: 'oneqr'},
+    {id: 'payments', label: 'Payments', artwork: 'credit-card', module: 'payments'},
+    {id: 'reviews', label: 'Reviews', artwork: 'star', module: 'reviews'},
+    {id: 'analytics', label: 'Analytics', artwork: 'layout-list', module: 'analytics'},
+    {id: 'community', label: 'Community', artwork: 'message-circle', module: 'community'},
+    {id: 'aihub', label: 'AI Hub', artwork: 'sparkles', module: 'aihub'},
+    {id: 'marketing', label: 'AI Marketing', artwork: 'megaphone', module: 'aihub&section=marketing'}
+  ];
+  let selectedScreens = [];
   const nodes = new Map();
   const scrollKey = 'nexora:front-desk-tabs-scroll:v1';
   const primary = document.createElement('div');
@@ -38,7 +48,7 @@
   const panel = document.createElement('div');
   panel.id = 'front-desk-more-panel'; panel.className = 'front-desk-more-panel'; panel.hidden = true;
   panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-labelledby', 'front-desk-more-title');
-  panel.innerHTML = '<div class="front-desk-more-head"><h2 id="front-desk-more-title">More</h2><button type="button" class="front-desk-more-close" aria-label="Close">×</button></div>';
+  panel.innerHTML = '<div class="front-desk-more-head"><h2 id="front-desk-more-title">More tools</h2><button type="button" class="front-desk-more-close" aria-label="Close">×</button></div>';
   const secondary = document.createElement('div');
   secondary.className = 'front-desk-more-grid'; panel.appendChild(secondary);
   host.append(primary, more, panel);
@@ -65,6 +75,87 @@
       node.appendChild(count);
     }
     nodes.set(tab.id, node); (tab.more ? secondary : primary).appendChild(node);
+  });
+  const addScreen = document.createElement('button');
+  addScreen.type = 'button'; addScreen.className = 'front-desk-more-add';
+  addScreen.setAttribute('aria-haspopup', 'dialog');
+  addScreen.setAttribute('aria-expanded', 'false');
+  addScreen.setAttribute('aria-controls', 'front-desk-screen-dialog');
+  addScreen.innerHTML = '<span class="front-desk-more-add-icon" aria-hidden="true">＋</span><span>Add screen</span>';
+  secondary.appendChild(addScreen);
+  const screenDialog = document.createElement('dialog');
+  screenDialog.id = 'front-desk-screen-dialog'; screenDialog.className = 'front-desk-screen-dialog';
+  screenDialog.setAttribute('aria-labelledby', 'front-desk-screen-title');
+  screenDialog.innerHTML = '<div class="front-desk-screen-head"><div><h2 id="front-desk-screen-title">Choose screens to show</h2><p>Add or remove screen shortcuts. When the row is full, find the rest under More.</p></div><button type="button" class="front-desk-screen-close" aria-label="Close">×</button></div><div class="front-desk-screen-options"></div>';
+  host.appendChild(screenDialog);
+  const screenOptions = screenDialog.querySelector('.front-desk-screen-options');
+
+  function screenStorageKey() {
+    let salon = window.NEXORA_ACTIVE_SALON;
+    try { salon ||= window.NEXORA_SALON_DATA?.loadCatalog().salon; } catch (_) {}
+    return 'nexora:front-desk-extra-screens:v1:' + (salon?.id || salon?.name || 'Bitcoin Nail Bar');
+  }
+
+  function renderScreens() {
+    secondary.querySelectorAll('[data-front-desk-extra-screen]').forEach(node => node.remove());
+    screenOptions.replaceChildren();
+    screens.forEach(screen => {
+      const selected = selectedScreens.includes(screen.id);
+      const image = document.createElement('img');
+      image.src = '../assets/icon-oneqr/issue-2040-oneqr-' + screen.artwork + '-3d.png';
+      image.alt = ''; image.width = 32; image.height = 32; image.draggable = false;
+      image.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span');
+      label.className = 'workflow-label'; label.textContent = screen.label;
+      if (selected) {
+        const link = document.createElement('a');
+        link.href = 'dashboard.html?module=' + screen.module;
+        link.dataset.frontDeskExtraScreen = screen.id;
+        link.dataset.posWorkflow = 'appointments';
+        link.append(image.cloneNode(), label.cloneNode(true));
+        secondary.insertBefore(link, addScreen);
+      }
+      const option = document.createElement('button');
+      option.type = 'button'; option.dataset.screenId = screen.id;
+      option.setAttribute('aria-pressed', String(selected));
+      option.setAttribute('aria-label', (selected ? 'Remove ' : 'Add ') + screen.label);
+      const state = document.createElement('span');
+      state.className = 'front-desk-screen-state'; state.setAttribute('aria-hidden', 'true');
+      state.textContent = selected ? '✓' : '+';
+      option.append(image, label, state);
+      screenOptions.appendChild(option);
+    });
+    if (!panel.hidden) fitMorePanel();
+  }
+
+  function loadScreens() {
+    selectedScreens = [];
+    try {
+      const saved = JSON.parse(localStorage.getItem(screenStorageKey()) || '[]');
+      if (Array.isArray(saved)) selectedScreens = screens.filter(screen => saved.includes(screen.id)).map(screen => screen.id);
+    } catch (_) { /* Keep the chooser usable when storage is unavailable. */ }
+    renderScreens();
+  }
+
+  addScreen.addEventListener('click', () => {
+    setMoreOpen(false);
+    screenDialog.showModal();
+    addScreen.setAttribute('aria-expanded', 'true');
+    screenOptions.querySelector('button')?.focus();
+  });
+  screenDialog.querySelector('.front-desk-screen-close').addEventListener('click', () => screenDialog.close());
+  screenDialog.addEventListener('close', () => {
+    addScreen.setAttribute('aria-expanded', 'false');
+    more.focus();
+  });
+  screenOptions.addEventListener('click', event => {
+    const option = event.target.closest('[data-screen-id]');
+    if (!option) return;
+    const id = option.dataset.screenId;
+    selectedScreens = selectedScreens.includes(id) ? selectedScreens.filter(value => value !== id) : [...selectedScreens, id];
+    try { localStorage.setItem(screenStorageKey(), JSON.stringify(selectedScreens)); } catch (_) {}
+    renderScreens();
+    screenOptions.querySelector('[data-screen-id="' + id + '"]')?.focus();
   });
   host.dataset.initialized = 'true';
   try { primary.scrollLeft = Number(sessionStorage.getItem(scrollKey)) || 0; } catch (_) {}
@@ -155,6 +246,8 @@
 
   host.addEventListener('click', event => {
     if (event.target.closest('.front-desk-primary-tabs [data-front-desk-tab]')) setMoreOpen(false);
+    const extraLink = event.target.closest('a[data-front-desk-extra-screen]');
+    if (extraLink) setMoreOpen(false);
     const link = event.target.closest('a[data-front-desk-tab]');
     if (!link) return;
     setMoreOpen(false, panel.contains(link) && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey);
@@ -175,7 +268,9 @@
   window.addEventListener('pageshow', () => sync());
   window.addEventListener('resize', () => { if (!panel.hidden) fitMorePanel(); revealActive(); });
   ['focus', 'storage', 'nexora:front-desk-data-changed', 'nexora:tickets-changed', 'nexora:pos-account-changed', 'nexora:pos-settings-changed'].forEach(name => window.addEventListener(name, refreshCounts));
+  window.addEventListener('storage', event => { if (event.key === screenStorageKey() || event.key === null) loadScreens(); });
   function connect() {
+    loadScreens();
     window.NEXORA_APPOINTMENTS_STORE?.subscribe?.(refreshCounts);
     sync();
   }

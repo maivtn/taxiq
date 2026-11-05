@@ -12,6 +12,22 @@
 .front-desk-more-head h2{margin:0;font-size:14px;line-height:20px}
 .front-desk .front-desk-more-close{display:grid;place-items:center;width:28px;height:28px;padding:0;font-size:20px;line-height:1}
 .front-desk-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.front-desk .front-desk-more-add{display:flex;align-items:center;gap:9px;min-width:0;min-height:48px;padding:7px 9px;border:1px solid #8f7ce4;border-radius:10px;background:#f1edff;color:#3925a5;font-family:inherit;font-size:12px;font-weight:800;line-height:1.2;text-align:left;cursor:pointer}
+.front-desk .front-desk-more-add:hover,.front-desk .front-desk-more-add:focus-visible{border-color:#6552df;background:#eae4ff}
+.front-desk-more-add-icon{flex:none;display:grid;place-items:center;width:29px;height:29px;border-radius:8px;background:#5d4bd1;color:#fff;box-shadow:0 2px 6px #4f3bbb30;font-size:23px;font-weight:700;line-height:1}
+.front-desk .front-desk-screen-dialog{box-sizing:border-box;width:min(580px,calc(100vw - 32px));max-height:calc(100dvh - 32px);margin:auto;padding:20px;overflow:auto;border:1px solid #cfd9f2;border-radius:14px;background:linear-gradient(135deg,#f7f6ff,#f5faff);color:#17223d;white-space:normal;box-shadow:0 20px 50px #142b4933}
+.front-desk-screen-dialog::backdrop{background:#0c1b3b66}
+.front-desk-screen-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.front-desk-screen-head h2{margin:0;font-size:17px;line-height:1.25}
+.front-desk-screen-head p{margin:5px 0 0;color:#526583;font-size:12px;line-height:1.45}
+.front-desk .front-desk-screen-close{flex:none;display:grid;place-items:center;width:30px;height:30px;padding:0;font-size:23px;line-height:1}
+.front-desk-screen-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.front-desk .front-desk-screen-options>button{display:flex;align-items:center;gap:9px;min-width:0;min-height:48px;padding:8px 10px;border:1px solid #d8e1f0;border-radius:10px;background:#fff;color:#203255;font-family:inherit;font-size:12px;line-height:1.2;text-align:left}
+.front-desk .front-desk-screen-options>button[aria-pressed="true"]{border-color:#6551da;background:#f0edff}
+.front-desk .front-desk-screen-options>button:focus-visible,.front-desk .front-desk-more-add:focus-visible{outline:2px solid #6552df;outline-offset:2px}
+.front-desk-screen-options img{flex:none;object-fit:contain}
+.front-desk-screen-options .workflow-label{flex:1;min-width:0}
+.front-desk-screen-state{flex:none;color:#6151d4;font-size:16px;font-weight:900}
 .front-desk .workflow[data-front-desk-tabs] .front-desk-more-grid>[data-pos-workflow]{flex-direction:row;justify-content:flex-start;gap:8px;min-width:0;min-height:56px;text-align:left;white-space:normal}
 .front-desk .workflow[data-front-desk-tabs] .front-desk-more-grid>[data-pos-workflow]>img{width:40px;height:40px}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]>img{width:48px;height:48px;object-fit:contain;flex-shrink:0}
@@ -39,5 +55,9 @@
   .front-desk-more-icon{width:32px;height:32px;font-size:18px}
   .front-desk-more-panel{top:calc(100% - 8px);padding:10px}
   .front-desk-more-grid{gap:6px}
+  .front-desk .front-desk-more-add{gap:6px;padding:7px;font-size:11px}
+  .front-desk-more-add-icon{width:25px;height:25px}
+  .front-desk .front-desk-screen-dialog{padding:14px}
+  .front-desk .front-desk-screen-options>button{gap:6px;padding:7px;font-size:11px}
   .workflow[data-front-desk-tabs] .workflow-count{top:3px;right:3px;min-width:16px;height:16px;font-size:10px;line-height:16px}
 }
