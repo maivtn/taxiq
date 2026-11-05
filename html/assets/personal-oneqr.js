@@ -65,7 +65,8 @@
     }
     catch (_) { feedback('Could not save. Please try again.', true); return false; }
   }
-  function openDialog(title, content) {
+  function openDialog(title, content, variant = '') {
+    dialog.className = 'pqr-dialog' + (variant ? ' ' + variant : '');
     dialog.innerHTML = '<div class="pqr-dialog-head"><h2 id="pqr-dialog-title">' + esc(title) + '</h2><button type="button" class="pqr-icon-button" data-pqr-action="close" aria-label="Close">' + lucide('x') + '</button></div><div class="pqr-dialog-body">' + content + '</div>';
     if (!dialog.open) dialog.showModal(); icons(); drawQR(dialog);
   }
@@ -218,19 +219,93 @@
   api.navigate = navigate;
   function editProfile() {
     const profile = clone(state.profile);
-    openDialog('Contact card', '<form data-pqr-profile-form><div class="pqr-dialog-fields"><label class="pqr-field full">Display name<input name="name" value="' + esc(profile.name) + '" maxlength="100" required></label><label class="pqr-field full">About me<textarea name="bio" maxlength="500">' + esc(profile.bio) + '</textarea></label><div class="pqr-field"><label for="pqr-profile-phone">Phone number</label>' + phoneControl.markup('pqr-profile-phone') + '</div><label class="pqr-field">Email<input name="email" type="email" value="' + esc(profile.email) + '"></label><label class="pqr-field full">Profile photo<input name="avatar" type="file" accept="image/png,image/jpeg,image/webp"></label></div><fieldset class="pqr-terms"><legend>Public information</legend><label class="pqr-consent"><input name="showPhone" type="checkbox"' + (profile.showPhone ? ' checked' : '') + '>Phone number</label><label class="pqr-consent"><input name="showEmail" type="checkbox"' + (profile.showEmail ? ' checked' : '') + '>Email</label></fieldset><p class="pqr-feedback" data-pqr-profile-error role="alert"></p><div class="pqr-actions"><button class="pqr-button is-primary" type="submit">Save Settings</button>' + button('Cancel', 'close') + '</div></form>');
+    openDialog('Contact card', `<form class="pqr-contact-form" data-pqr-profile-form>
+      <div class="pqr-contact-layout">
+        <div class="pqr-contact-fields">
+          <div class="pqr-contact-photo">
+            <div class="pqr-avatar" data-pqr-profile-avatar></div>
+            <label class="pqr-contact-upload"><span>Profile photo</span><span class="pqr-button">${lucide('upload')}Upload</span><input name="avatar" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Profile photo"></label>
+          </div>
+          <div class="pqr-dialog-fields">
+            <label class="pqr-field full">Display name<input name="name" value="${esc(profile.name)}" maxlength="100" autocomplete="name" required></label>
+            <label class="pqr-field full">About me<textarea name="bio" maxlength="500" rows="3">${esc(profile.bio)}</textarea></label>
+            <div class="pqr-field"><label for="pqr-profile-phone">Phone number</label>${phoneControl.markup('pqr-profile-phone')}</div>
+            <label class="pqr-field">Email<input name="email" type="email" inputmode="email" autocomplete="email" value="${esc(profile.email)}"></label>
+          </div>
+          <fieldset class="pqr-contact-privacy"><legend>Public information</legend>
+            <label>${image('phone')}<span>Phone number</span><input class="pqr-toggle" name="showPhone" type="checkbox" role="switch"${profile.showPhone ? ' checked' : ''}></label>
+            <label>${image('mail')}<span>Email</span><input class="pqr-toggle" name="showEmail" type="checkbox" role="switch"${profile.showEmail ? ' checked' : ''}></label>
+          </fieldset>
+        </div>
+        <aside class="pqr-contact-preview-wrap" aria-labelledby="pqr-contact-preview-label">
+          <span class="pqr-contact-preview-label" id="pqr-contact-preview-label">Customer preview</span>
+          <article class="pqr-contact-preview">
+            <div class="pqr-contact-brand"><span class="pqr-avatar" data-pqr-profile-avatar></span><small>ONEQR CONTACT</small></div>
+            <h3 data-pqr-contact-name></h3><p class="pqr-contact-bio" data-pqr-contact-bio hidden></p>
+            <div class="pqr-contact-details">
+              <div data-pqr-contact-phone-row hidden>${lucide('phone')}<span data-pqr-contact-phone></span></div>
+              <div data-pqr-contact-email-row hidden>${lucide('mail')}<span data-pqr-contact-email></span></div>
+            </div>
+            <div class="pqr-contact-preview-actions">
+              <button type="button" data-pqr-contact-download>${lucide('download')}Save contact</button>
+              <button type="button" data-pqr-contact-phone-action hidden>${lucide('phone')}Call</button>
+              <button type="button" data-pqr-contact-phone-action hidden>${lucide('message-square')}Text</button>
+            </div>
+          </article>
+          <p class="pqr-feedback" data-pqr-contact-feedback role="status" aria-live="polite"></p>
+        </aside>
+      </div>
+      <footer class="pqr-contact-footer"><span class="pqr-contact-unsaved" data-pqr-profile-unsaved hidden>Unsaved changes</span><p class="pqr-feedback is-error" data-pqr-profile-error role="alert"></p><div class="pqr-actions">${button('Cancel', 'close')}<button class="pqr-button is-primary" type="submit">${lucide('save')}Save contact card</button></div></footer>
+    </form>`, 'pqr-contact-dialog');
     const form = dialog.querySelector('form');
     const profilePhone = phoneControl.mount(form, profile.phone);
+    const saveButton = form.querySelector('[type="submit"]');
     let avatar = profile.avatar;
+    let avatarReader = null;
+    function readDraft() {
+      const phone = form.elements.phone.value.trim();
+      return { name: form.elements.name.value.trim(), bio: form.elements.bio.value.trim(), phone: phone ? phoneControl.format(form.elements.phoneCode.value + ' ' + phone) : '', email: form.elements.email.value.trim(), showPhone: form.elements.showPhone.checked, showEmail: form.elements.showEmail.checked, avatar };
+    }
+    function refreshContactPreview() {
+      const draft = readDraft();
+      const showPhone = draft.showPhone && Boolean(draft.phone);
+      const showEmail = draft.showEmail && Boolean(draft.email);
+      form.querySelectorAll('[data-pqr-profile-avatar]').forEach(node => { node.innerHTML = avatar ? '<img src="' + esc(avatar) + '" alt="">' : image('user-round', 'pqr-default-avatar'); });
+      form.querySelector('[data-pqr-contact-name]').textContent = draft.name;
+      const bio = form.querySelector('[data-pqr-contact-bio]'); bio.textContent = draft.bio; bio.hidden = !draft.bio;
+      form.querySelector('[data-pqr-contact-phone]').textContent = draft.phone;
+      form.querySelector('[data-pqr-contact-email]').textContent = draft.email;
+      form.querySelector('[data-pqr-contact-phone-row]').hidden = !showPhone;
+      form.querySelector('[data-pqr-contact-email-row]').hidden = !showEmail;
+      form.querySelector('.pqr-contact-details').hidden = !showPhone && !showEmail;
+      form.querySelectorAll('[data-pqr-contact-phone-action]').forEach(node => { node.hidden = !showPhone; });
+      form.querySelector('[data-pqr-profile-unsaved]').hidden = !Object.keys(draft).some(key => !same(draft[key], key === 'phone' ? phoneControl.format(profile.phone) : profile[key]));
+    }
+    form.addEventListener('input', refreshContactPreview);
+    form.addEventListener('change', refreshContactPreview);
     form.elements.avatar.addEventListener('change', () => {
       const file = form.elements.avatar.files[0]; if (!file || !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) return;
-      const reader = new FileReader(); reader.onload = () => { avatar = reader.result; }; reader.readAsDataURL(file);
+      if (avatarReader) avatarReader.abort();
+      const reader = new FileReader(); avatarReader = reader; saveButton.disabled = true;
+      reader.onload = () => { if (dialog.open && dialog.contains(form)) { avatar = reader.result; refreshContactPreview(); } };
+      reader.onloadend = () => { if (avatarReader === reader) { avatarReader = null; saveButton.disabled = false; } };
+      reader.readAsDataURL(file);
     });
+    dialog.addEventListener('close', () => { if (avatarReader) avatarReader.abort(); }, { once: true });
+    form.querySelector('[data-pqr-contact-download]').addEventListener('click', () => {
+      if (!form.reportValidity()) return;
+      const blob = new Blob([api.vcard({ ...state, profile: readDraft() })], { type: 'text/vcard;charset=utf-8' });
+      const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'oneqr-personal.vcf'; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+      form.querySelector('[data-pqr-contact-feedback]').textContent = 'vCard downloaded.';
+    });
+    form.querySelectorAll('[data-pqr-contact-phone-action]').forEach(control => control.addEventListener('click', () => { form.querySelector('[data-pqr-contact-feedback]').textContent = 'This prototype uses demo data and preview responses.'; }));
+    refreshContactPreview();
     form.addEventListener('submit', event => {
       event.preventDefault();
+      if (avatarReader) return;
       if (!form.elements.name.value.trim()) { dialog.querySelector('[data-pqr-profile-error]').textContent = 'Enter a display name.'; return; }
       const prior = state.profile;
-      const values = { name: form.elements.name.value.trim(), bio: form.elements.bio.value.trim(), phone: profilePhone.read(), email: form.elements.email.value.trim(), showPhone: form.elements.showPhone.checked, showEmail: form.elements.showEmail.checked, avatar };
+      const values = { ...readDraft(), phone: profilePhone.read() };
       state.profile = { ...api.read().profile };
       Object.keys(values).forEach(key => {
         const original = key === 'phone' ? phoneControl.format(profile.phone) : profile[key];

@@ -518,10 +518,10 @@
 
   var PERSONAL_QR_ITEMS = [
     { label: 'One QR', tab: 'one-qr' },
+    { label: 'Advertising', tab: 'advertising' },
     { label: 'Tip QR', tab: 'tip-qr' },
     { label: 'Accept Payment', tab: 'accept-payment' },
-    { label: 'Referral Link', tab: 'referral-link' },
-    { label: 'Advertising', tab: 'advertising' }
+    { label: 'Referral Link', tab: 'referral-link' }
   ];
   function renderPersonalQrMenu() {
     var active = PERSONAL_QR_ITEMS.some(function (item) { return item.tab === activeTab; });

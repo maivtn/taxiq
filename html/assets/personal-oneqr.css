@@ -102,6 +102,82 @@
 .pqr-dialog-body .pqr-phone { max-width: 340px; }
 .pqr-dialog-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0 15px; }
 .pqr-dialog-fields .full { grid-column: 1 / -1; }
+.pqr-contact-dialog { width: min(940px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: hidden; border: 0; border-radius: 18px; }
+.pqr-contact-dialog[open] { display: flex; flex-direction: column; }
+.pqr-contact-dialog * { box-sizing: border-box; }
+.pqr-contact-dialog .pqr-dialog-head { flex-shrink: 0; padding: 20px 24px; border-color: #e4e7ec; }
+.pqr-contact-dialog .pqr-dialog-head h2 { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; }
+.pqr-contact-dialog .pqr-dialog-head h2::before { content: ''; width: 40px; height: 40px; flex: 0 0 40px; background: #f5f3ff url('icon-oneqr/business-card-iconscout-10675394.png') center / 32px no-repeat; border-radius: 11px; }
+.pqr-contact-dialog .pqr-dialog-head .pqr-icon-button { width: 34px; height: 34px; border-radius: 9px; }
+.pqr-contact-dialog .pqr-dialog-body { display: flex; flex: 1 1 auto; min-height: 0; padding: 0; }
+.pqr-contact-form { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; min-height: 0; }
+.pqr-contact-layout { display: grid; flex: 1 1 auto; min-height: 0; grid-template-columns: minmax(0, 1fr) 300px; align-items: start; gap: 24px; padding: 24px; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.pqr-contact-fields { min-width: 0; }
+.pqr-contact-photo { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding: 14px; border: 1px solid #e4e7ec; border-radius: 12px; background: #f8fafc; }
+.pqr-contact-photo .pqr-avatar { flex: 0 0 64px; width: 64px; height: 64px; margin: 0; border: 2px solid #fff; box-shadow: 0 2px 8px #312e8112; }
+.pqr-contact-upload { position: relative; display: grid; justify-items: start; gap: 8px; min-width: 0; color: #596376; font-size: 11px; font-weight: 700; cursor: pointer; }
+.pqr-contact-upload .pqr-button { min-height: 32px; padding: 6px 11px; border-radius: 8px; font-size: 11px; }
+.pqr-contact-upload input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.pqr-contact-upload:focus-within .pqr-button { outline: 2px solid #a5b4fc; outline-offset: 3px; }
+.pqr-contact-fields .pqr-field { gap: 7px; margin-bottom: 16px; color: #596376; font-size: 11px; font-weight: 700; }
+.pqr-contact-fields .pqr-field input, .pqr-contact-fields .pqr-field textarea { min-height: 40px; border-color: #d0d5dd; border-radius: 9px; padding: 10px 11px; color: #172033; font-size: 12px; font-weight: 400; }
+.pqr-contact-fields .pqr-field textarea { min-height: 90px; }
+.pqr-contact-fields .pqr-field input:focus-visible, .pqr-contact-fields .pqr-field textarea:focus-visible { outline: 0; border-color: #7c73ee; box-shadow: 0 0 0 3px #4f46e51a; }
+.pqr-contact-fields .oneqr-phone-control { min-height: 40px; overflow: hidden; border: 1px solid #d0d5dd; border-radius: 9px; background: #fff; }
+.pqr-contact-fields .oneqr-phone-control:focus-within { border-color: #7c73ee; box-shadow: 0 0 0 3px #4f46e51a; }
+.pqr-contact-fields .oneqr-phone-control > select, .pqr-contact-fields .oneqr-phone-control > input[type="tel"] { min-height: 38px; margin: 0; border: 0; border-radius: 0; outline: 0; box-shadow: none; font-size: 12px; }
+.pqr-contact-fields .oneqr-phone-control > select { flex: 0 0 94px; width: 94px; padding: 9px 44px 9px 11px; border-right: 1px solid #e4e7ec; background-color: #f8fafc; background-position: right 16px center; background-size: 16px; }
+.pqr-contact-fields .oneqr-phone-control > input[type="tel"] { flex: 1 1 0; width: 0; min-width: 0; padding: 9px 11px; }
+.pqr-contact-privacy { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; min-width: 0; margin: 4px 0 0; padding: 0; border: 0; }
+.pqr-contact-privacy legend { margin-bottom: 10px; padding: 0; color: #596376; font-size: 11px; font-weight: 700; }
+.pqr-contact-privacy label { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 11px 10px; border: 1px solid #e4e7ec; border-radius: 9px; cursor: pointer; }
+.pqr-contact-privacy label:has(:checked) { border-color: #c8c4f4; background: #f8f7ff; }
+.pqr-contact-privacy label > img { width: 23px; height: 23px; flex: 0 0 23px; object-fit: contain; }
+.pqr-contact-privacy label > span { flex: 1; min-width: 0; color: #475467; font-size: 11px; font-weight: 600; }
+.pqr-contact-privacy .pqr-toggle { width: 34px; height: 20px; margin: 0; border: 0; }
+.pqr-contact-privacy .pqr-toggle::before { width: 14px; height: 14px; }
+.pqr-contact-privacy .pqr-toggle:checked::before { transform: translateX(14px); }
+.pqr-contact-dialog button:focus-visible, .pqr-contact-privacy input:focus-visible { outline: 2px solid #a5b4fc; outline-offset: 3px; }
+.pqr-contact-preview-wrap { position: sticky; top: 0; min-width: 0; }
+.pqr-contact-preview-label { display: block; margin-bottom: 10px; color: #667085; font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.pqr-contact-preview { padding: 22px; border-radius: 18px; background: linear-gradient(145deg, #312e81, #4f46e5); color: #fff; box-shadow: 0 16px 30px #312e8126; }
+.pqr-contact-brand { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pqr-contact-brand .pqr-avatar { flex: 0 0 58px; width: 58px; height: 58px; margin: 0; border: 2px solid #ffffff80; }
+.pqr-contact-brand small { color: #c7d2fe; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-align: right; }
+.pqr-contact-preview h3 { margin: 20px 0 0; color: #fff; font-size: 22px; font-weight: 800; line-height: 1.3; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.pqr-contact-bio { margin: 10px 0 0; color: #e0e7ff; font-size: 12px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.pqr-contact-details { display: grid; gap: 10px; margin-top: 20px; }
+.pqr-contact-details > div { display: flex; align-items: flex-start; gap: 8px; color: #e0e7ff; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.pqr-contact-details svg { flex: 0 0 14px; width: 14px; height: 16px; }
+.pqr-contact-details span { min-width: 0; }
+.pqr-contact-preview-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 22px; }
+.pqr-contact-preview-actions button { display: inline-flex; flex: 1; min-height: 36px; align-items: center; justify-content: center; gap: 6px; padding: 8px; border: 1px solid #ffffff52; border-radius: 9px; background: #ffffff1a; color: #fff; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.pqr-contact-preview-actions button:first-child { flex-basis: 100%; border-color: #fff; background: #fff; color: #4338ca; }
+.pqr-contact-preview-actions button:hover { box-shadow: 0 0 0 2px #ffffff26; }
+.pqr-contact-preview-actions svg { width: 14px; height: 14px; }
+.pqr-contact-footer { display: flex; flex-shrink: 0; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px 24px; border-top: 1px solid #e4e7ec; background: #fff; }
+.pqr-contact-footer .pqr-actions { margin-left: auto; }
+.pqr-contact-footer .pqr-button { min-height: 40px; padding: 10px 14px; border-radius: 8px; }
+.pqr-contact-footer .pqr-feedback:not(:empty) { flex-basis: 100%; order: -1; margin: 0; }
+.pqr-contact-unsaved { color: #b45309; font-size: 10px; font-weight: 700; }
+body:has(.pqr-contact-dialog[open]) { overflow: hidden; }
+@media (max-width: 760px) {
+  .pqr-contact-dialog { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
+  .pqr-contact-dialog .pqr-dialog-head { padding: 16px 18px; }
+  .pqr-contact-dialog .pqr-dialog-head h2 { gap: 9px; font-size: 19px; }
+  .pqr-contact-layout { grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 18px; }
+  .pqr-contact-preview-wrap { position: static; grid-row: 1; }
+  .pqr-contact-preview { padding: 18px; }
+  .pqr-contact-preview h3 { margin-top: 14px; font-size: 20px; }
+  .pqr-contact-footer { padding: 14px 18px; }
+}
+@media (max-width: 640px) {
+  .pqr-contact-fields .pqr-field input, .pqr-contact-fields .pqr-field textarea, .pqr-contact-fields .oneqr-phone-control > select, .pqr-contact-fields .oneqr-phone-control > input[type="tel"] { font-size: 16px; }
+  .pqr-contact-fields .oneqr-phone-control > select { flex-basis: 100px; width: 100px; }
+  .pqr-contact-privacy { grid-template-columns: minmax(0, 1fr); }
+  .pqr-contact-footer .pqr-actions { flex: 1; }
+  .pqr-contact-footer .pqr-button { flex: 1; }
+}
 .pqr-icon-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 12px; }
 .pqr-icon-choice { padding: 15px 5px; border: 1px solid var(--nexora-border); background: #fff; border-radius: 8px; cursor: pointer; }
 .pqr-icon-choice img { width: 40px; height: 40px; object-fit: contain; }
