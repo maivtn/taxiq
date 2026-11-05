@@ -47,3 +47,13 @@ body.community-deal-module #matchFilterFields #filt{margin:0;padding:0;border:0;
 body.community-deal-module #matchFilterFields .frow{align-items:start}
 @media(max-width:700px){.deal-collapsed-filters{grid-template-columns:minmax(0,1fr);padding:12px}.deal-filter-toggle{padding:9px 11px!important}.deal-search-filter-row{gap:8px}body.community-deal-module #cAsk .big{flex-wrap:wrap}body.community-deal-module #cAsk .big>input{flex:1 1 70%}}
 @media(max-width:700px){body.community-deal-module #mExplore{grid-template-columns:minmax(0,1fr)}.deal-category-selects{grid-template-columns:minmax(0,1fr);gap:4px}.deal-select-field{min-width:0}.deal-library-select .ts-control{min-height:44px!important}.deal-select-choice span{white-space:normal}}
+
+/* The offer form uses the same illustrated industry picker as discovery. */
+#templateForm[data-kind="deal"] .deal-library-select{position:relative;min-width:0}
+#templateForm[data-kind="deal"] .deal-library-select .ts-control{min-height:48px!important;font-size:13px;padding-block:10px!important}
+#templateForm[data-kind="deal"] .deal-library-select .ts-control input{font-size:13px!important}
+#templateForm[data-kind="deal"] .deal-library-select .ts-dropdown{z-index:250;max-width:100%;box-shadow:0 14px 38px #29365821}
+#templateForm[data-kind="deal"] .deal-library-select .ts-dropdown-content{max-height:230px;overscroll-behavior:contain}
+#templateForm[data-kind="deal"] .deal-library-select .ts-control .deal-select-choice{max-width:100%}
+#templateForm[data-kind="deal"] .deal-library-select .deal-select-choice img{width:26px;height:26px}
+#templateForm[data-kind="deal"] .deal-library-select.focus .ts-control{border-color:#a18aeb!important;box-shadow:0 0 0 3px #ece6ff!important}

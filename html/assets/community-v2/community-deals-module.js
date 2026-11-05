@@ -6,34 +6,8 @@
   const notify=data=>window.parent.postMessage(data,origin);
   const scope=new URLSearchParams(location.search).get('member')||'community';
   const key='nexora-community-deals-po-v1:'+module+':'+scope;
-  const phrases=Object.entries(window.NEXORA_DEAL_PHRASES||{}).filter(([vi,en])=>vi!==en&&vi.trim().length>2).sort((a,b)=>b[0].length-a[0].length);
-  const exact=new Map(phrases);
-  const replacements=phrases.map(([vi,en])=>[new RegExp('(^|[^\\p{L}\\p{N}_])'+vi.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?=$|[^\\p{L}\\p{N}_])','gu'),en]);
   let ready=false,renderQueued=false,lastHeight=0,lastModal=false,previousView='',lastSaved='',pendingClaim=null,lastFocus=null;
-  const userText=new Set();
   const html=text=>String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const english=text=>{
-    if(exact.has(text))return exact.get(text);
-    let out=text;
-    for(const [pattern,en] of replacements)out=out.replace(pattern,(_,prefix)=>prefix+en);
-    return out;
-  };
-  function translate(root){
-    const walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
-    const nodes=[];let node;while(node=walk.nextNode())nodes.push(node);
-    for(const text of nodes){
-      const parent=text.parentElement;
-      if(!parent||parent.closest('script,style,textarea,input,.vi,.biz,.nm,[contenteditable="true"]'))continue;
-      if(parent.closest('[data-user-text]')||userText.has(text.nodeValue))continue;
-      if(parent.tagName==='OPTION'&&!parent.hasAttribute('value'))parent.setAttribute('value',parent.textContent);
-      const next=english(text.nodeValue);if(next!==text.nodeValue)text.nodeValue=next;
-    }
-    root.querySelectorAll?.('[placeholder],[title],[aria-label],[data-en]').forEach(element=>{
-      if(element.hasAttribute('data-en')&&element.classList.contains('i18n-a'))element.setAttribute('data-en',english(element.getAttribute('data-en')));
-      for(const attr of ['placeholder','title','aria-label']){const value=element.getAttribute(attr);if(value){const next=english(value);if(next!==value)element.setAttribute(attr,next);}}
-    });
-    root.querySelectorAll?.('input[type="text"],input:not([type])').forEach(input=>{if(!input.dataset.userEdited&&input.value){const next=english(input.value);if(next!==input.value)input.value=next;}});
-  }
   function state(){return typeof S==='object'?S:null;}
   function save(){
     const value=state();if(!value||!ready)return;
@@ -48,19 +22,6 @@
     else if(module==='match'){if(typeof render==='function')render();}
     else if(typeof draw==='function')draw();
     schedule();
-  }
-  function translateSeed(){
-    const current=state();if(!current)return;
-    if(module==='deals'){
-      for(const list of [GROUPS,CATS])for(const row of list)if(row.en)row.n=row.en;
-      for(const row of current.D||[])if(!row.userCreated){row.title=english(row.title);row.cond=english(row.cond||'');}
-      for(const row of current.OPEN||[]){row.founder=english(row.founder);row.week=english(row.week);}
-      for(const template of TPL){template.n=english(template.n);for(const field of ['title','cond'])if(template.p[field])template.p[field]=english(template.p[field]);}
-    }
-    if(module==='match'){
-      for(const row of Object.values(SVC))if(row.en)row.n=row.en;
-      for(const row of current.deals||[])if(!row.mine)row.title=english(row.title);
-    }
   }
   function measure(){
     const height=Math.ceil(document.body.getBoundingClientRect().height);
@@ -94,7 +55,6 @@
       api.chips('fGrp','data-grp','Industry group',{industry:true,group:true});
       api.chips('fSvc','data-svc','Industry',{industry:true});
       api.chips('fLoc','data-loc','Area',{buttonsOnly:true});
-      api.chips('quick','data-q','Search deals',{industry:true});
     }
     if(module==='camp')api.chips('lf','data-lf','Status');
     for(const select of document.querySelectorAll('select:not([id^="deal-select-"])'))api.enhance(select,{industry:['cCat','sInd'].includes(select.id)});
@@ -118,9 +78,9 @@
       const categorySource=document.getElementById('catGrid');
       if(categorySource){
         let tools=document.getElementById('couponCategoryTools');
-        if(!tools){tools=document.createElement('div');tools.id='couponCategoryTools';tools.className='deal-category-tools';tools.innerHTML='<div class="deal-search-filter-row"><input type="search" class="in" id="couponIndustrySearch" placeholder="Search industries" aria-label="Search industries"><button type="button" class="btn ghost deal-filter-toggle" aria-expanded="false" aria-controls="couponCategoryFilters"><img src="../../icon-oneqr/issue-2040-oneqr-settings-2-3d.png" alt=""><span>Filters</span></button></div><div id="couponCategoryFilters" class="deal-collapsed-filters" hidden></div>';categorySource.before(tools);
+        if(!tools){tools=document.createElement('div');tools.id='couponCategoryTools';tools.className='deal-category-tools';tools.innerHTML='<div class="deal-search-filter-row"><input type="search" class="in" id="couponIndustrySearch" placeholder="Search deals: pedicure, facial, coffee…" aria-label="Search deals: pedicure, facial, coffee…"><button type="button" class="btn ghost deal-filter-toggle" aria-expanded="false" aria-controls="couponCategoryFilters"><img src="../../icon-oneqr/issue-2040-oneqr-settings-2-3d.png" alt=""><span>Filters</span></button></div><div id="couponCategoryFilters" class="deal-collapsed-filters" hidden></div>';categorySource.before(tools);
           tools.querySelector('button').addEventListener('click',event=>{const panel=tools.querySelector('#couponCategoryFilters');panel.hidden=!panel.hidden;event.currentTarget.setAttribute('aria-expanded',String(!panel.hidden));schedule();});
-          tools.querySelector('input').addEventListener('input',event=>{const value=event.target.value.trim();state().filt.cq=value;const matches=value?findCats(value):[];state().filt.cat=matches[0]?.id||null;state().filt.grp=null;render();});
+          tools.querySelector('input').addEventListener('input',event=>{state().filt.cq=event.target.value.trim();render();});
         }
         const panel=tools.querySelector('#couponCategoryFilters');
         for(const id of ['coupon-group','coupon-industry']){const field=document.getElementById('deal-field-'+id);if(field&&field.parentElement!==panel)panel.append(field);}
@@ -137,7 +97,6 @@
           button.addEventListener('click',()=>{panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));schedule();});
           const filters=document.getElementById('filt');if(filters)panel.append(filters);
         }
-        const quick=document.getElementById('deal-field-quick');if(quick&&quick.parentElement!==panel)panel.prepend(quick);
       }
     }
     if(module==='camp')listFilter('campaign','lf',document.getElementById('lf')?.parentElement,()=>[...document.querySelectorAll('section[data-v="list"] tbody tr')]);
@@ -149,24 +108,25 @@
     const field=document.getElementById('deal-field-'+fieldId);if(field&&field.parentElement!==tools.lastElementChild)tools.lastElementChild.append(field);
     const query=tools.querySelector('input').value.trim().toLowerCase();for(const item of items())item.classList.toggle('deal-search-hidden',!!query&&!item.textContent.toLowerCase().includes(query));
   }
-  function updateDemo(offers){
-    if(module!=='deals'||!Array.isArray(offers))return;
-    const byId=new Map(offers.map(offer=>[offer.id,offer]));
-    const updates={k1:'deal-bitcoin-weekday',g1:'f7',l1:'deal-spa-first-visit',s1:'deal-an-cut-style',x1:'deal-linh-lash',p1:'deal-bright-restock',f1:'deal-saigon-lunch',e2:'deal-bistro-coffee'};
-    const photos={nail:byId.get('f7')?.photo,hair:byId.get('deal-an-cut-style')?.photo,spa:byId.get('deal-spa-first-visit')?.photo,skin:byId.get('deal-spa-first-visit')?.photo,lash:byId.get('deal-linh-lash')?.photo,food:byId.get('deal-saigon-lunch')?.photo,drink:byId.get('deal-bistro-coffee')?.photo,bakery:byId.get('deal-bistro-coffee')?.photo,supply:byId.get('deal-bright-restock')?.photo};
-    for(const row of state().D){
-      const offer=byId.get(updates[row.id]);
-      if(offer&&!row.userCreated){row.title=offer.title;row.cond=offer.description;row.biz=offer.owner;row.photo=offer.photo;if(row.id==='l1')row.cat='skin';if(row.id==='e2')row.cat='food';row.t=String(offer.discount).includes('%')?'pct':'amt';row.v=Number(String(offer.discount).match(/[\d.]+/)?.[0])||row.v;if(offer.expires)row.expAt=+new Date(offer.expires+'T23:59:59');}
-      if(!row.photo&&photos[row.cat])row.photo=photos[row.cat];
+  function importOffers(offers){
+    if(module!=='deals')return;
+    let changed=false;
+    for(const offer of offers.filter(row=>String(row.id).startsWith('extra-'))){
+      const existing=state().D.find(row=>row.sourceId===offer.id);
+      if(existing){const fields={title:offer.title,cond:offer.description||'',photo:offer.photo,code:offer.code||''};if(Object.entries(fields).some(([key,value])=>existing[key]!==value)){Object.assign(existing,fields);changed=true;}continue;}
+      const discount=String(offer.discount||'');
+      const category=CATS.find(row=>row.n===offer.industry||row.en===offer.industry)||CATS.find(row=>row.id==='nail');
+      state().D.unshift({id:'v2-'+offer.id,sourceId:offer.id,code:offer.code||'',userCreated:true,biz:offer.owner,cat:category.id,aud:'cust',t:discount.includes('%')?'pct':'amt',v:Number(discount.match(/[\d.]+/)?.[0])||0,title:offer.title,cond:offer.description||'',photo:offer.photo,mi:0,ang:80,exp:7,expAt:offer.expires?+new Date(offer.expires+'T23:59:59'):Date.now()+7*86400000,qty:100,got:0,used:0,per:1,kw:offer.title,th:'royal'});
+      changed=true;
     }
-    refresh();
+    if(changed)refresh();
   }
   function modernCard(offer,preview){
     const category=CAT(offer.cat),saved=state().saved.includes(offer.id),claimed=state().wallet.some(row=>row.id===offer.id&&live(row)),remaining=left(offer),expired=isExp(offer);
     if(!preview)seen(offer);
     const [amount,kind]=stubTxt(offer),image=offer.photo,icon=window.NEXORA_DEAL_SELECTS.iconFor(category.id,category.n),until=new Date(expAt(offer)).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    const title=offer.userCreated?offer.title:english(offer.title),condition=offer.userCreated?offer.cond:english(offer.cond||'');
-    return `<article class="cp deal-modern-card ${hl===offer.id?'hl':''} ${sponsored(offer)?'spon':''}" data-card="${html(offer.id)}"><div class="deal-card-author"><span class="deal-card-avatar"><img src="${html(icon)}" alt=""></span><div class="deal-card-identity"><strong data-user-text>${html(offer.biz)}</strong><span class="deal-card-label">DEAL &amp; COUPON</span><small>${offer.mi==null?'Online':html(offer.mi)+' mi'} · ${html(category.n)}</small></div><span class="deal-card-business">${offer.own==='tech'?'Individual':'Business'}</span></div><h4${offer.userCreated?' data-user-text':''}>${html(title)}</h4><p class="deal-card-description"${offer.userCreated?' data-user-text':''}>${html(condition)}</p><div class="deal-card-tags"><span>${html(category.n)}</span><span class="deal-card-discount">${html(amount)} ${html(english(kind))}</span><span>Expires ${html(until)}</span>${sponsored(offer)?'<span class="tag spons">Sponsored</span>':''}</div>${image?`<img class="deal-card-photo" src="${html(image)}" alt="${html(title)}" loading="lazy">`:`<div class="deal-card-illustration"><img src="${html(icon)}" alt=""><span>${html(amount)} <small>${html(english(kind))}</small></span></div>`}<div class="deal-card-inventory"><span>${remaining}/${offer.qty} spots left</span><span>${expired?'Expired':offer.paused?'Paused':remaining<=8?'Ending soon':'Available'}</span></div><div class="bar"><i style="width:${Math.min(100,Math.round((offer.qty-remaining)/Math.max(1,offer.qty)*100))}%"></i></div>${preview?'':`<div class="deal-card-actions">${mine(offer)?'<span class="tag blue">Your coupon</span>':`<button type="button" class="btn" data-claim="${html(offer.id)}" ${remaining&&!offer.paused&&!expired||claimed?'':'disabled'}><img src="../../icon-oneqr/issue-2040-oneqr-ticket-3d.png" alt="">${claimed?'In wallet — open':'Get coupon'}</button>`}<button type="button" class="deal-card-save ${saved?'on':''}" data-save="${html(offer.id)}" aria-label="${saved?'Remove from Wish list':'Save to Wish list'}" aria-pressed="${saved}"><img src="../../icon-oneqr/issue-2040-oneqr-heart-3d.png" alt=""></button></div>`}</article>`;
+    const title=offer.title,condition=offer.cond||'';
+    return `<article class="cp deal-modern-card ${hl===offer.id?'hl':''} ${sponsored(offer)?'spon':''}" data-card="${html(offer.id)}"><div class="deal-card-author"><span class="deal-card-avatar"><img src="${html(icon)}" alt=""></span><div class="deal-card-identity"><strong data-user-text>${html(offer.biz)}</strong><span class="deal-card-label">DEAL &amp; COUPON</span><small>${offer.mi==null?'Online':html(offer.mi)+' mi'}</small></div><span class="deal-card-business">${offer.own==='tech'?'Individual':'Business'}</span></div><h4${offer.userCreated?' data-user-text':''}>${html(title)}</h4><p class="deal-card-description"${offer.userCreated?' data-user-text':''}>${html(condition)}</p><div class="deal-card-tags"><span>${html(category.n)}</span><span class="deal-card-discount">${html(amount)} ${html(kind)}</span><span>Expires ${html(until)}</span>${offer.code?`<span class="deal-card-code">Code: ${html(offer.code)}</span>`:''}${sponsored(offer)?'<span class="tag spons">Sponsored</span>':''}</div>${image?`<img class="deal-card-photo" src="${html(image)}" alt="${html(title)}" loading="lazy">`:`<div class="deal-card-illustration"><img src="${html(icon)}" alt=""><span>${html(amount)} <small>${html(kind)}</small></span></div>`}<div class="deal-card-inventory"><span>${remaining}/${offer.qty} spots left</span><span>${expired?'Expired':offer.paused?'Paused':remaining<=8?'Ending soon':'Available'}</span></div><div class="bar"><i style="width:${Math.min(100,Math.round((offer.qty-remaining)/Math.max(1,offer.qty)*100))}%"></i></div>${preview?'':`<div class="deal-card-actions">${mine(offer)?'<span class="tag blue">Your coupon</span>':`<button type="button" class="btn" data-claim="${html(offer.id)}" ${remaining&&!offer.paused&&!expired||claimed?'':'disabled'}><img src="../../icon-oneqr/issue-2040-oneqr-ticket-3d.png" alt="">${claimed?'In wallet — open':'Get coupon'}</button>`}${offer.code?`<button type="button" class="btn deal-card-copy" data-community-code="${html(offer.code)}">Copy code</button>`:''}<button type="button" class="deal-card-save ${saved?'on':''}" data-save="${html(offer.id)}" aria-label="${saved?'Remove from Wish list':'Save to Wish list'}" aria-pressed="${saved}"><img src="../../icon-oneqr/issue-2040-oneqr-heart-3d.png" alt=""></button></div>`}</article>`;
   }
   function artwork(){
     if(module!=='deals'||!window.NEXORA_DEAL_SELECTS)return;
@@ -181,9 +141,24 @@
       const image=document.createElement('img');image.src=window.NEXORA_DEAL_SELECTS.iconFor(group.id,group.n,true);image.alt='';image.width=image.height=18;entry.append(image,document.createTextNode(group.n));
     });
   }
+  function compactItems(){
+    if(module!=='deals')return;
+    for(const button of document.querySelectorAll('#openRow .hotc,#hotRow .hotc')){
+      if(button.classList.contains('deal-compact-item'))continue;
+      const opening=button.closest('#openRow');
+      const row=opening?state().OPEN.filter(row=>row.day>=0&&(row.mi<=Math.min(state().filt.r,25)||state().filt.r===999)).sort((a,b)=>a.day-b.day)[[...button.parentElement.children].indexOf(button)]:state().D.find(row=>row.id===button.dataset.pin);
+      if(!row)continue;
+      const image=row.photo||window.NEXORA_DEALS_DEMO.photos[row.cat],category=CAT(row.cat);
+      const badge=opening?(row.day===0?'Today':'In '+row.day+' days'):stubTxt(row)[0];
+      button.classList.add('deal-compact-item');button.style.removeProperty('background');
+      button.innerHTML=`<span class="deal-compact-photo ${image?'':'is-illustration'}"><img src="${html(image||window.NEXORA_DEAL_SELECTS.iconFor(row.cat,category.n))}" alt="" loading="lazy"></span><span class="deal-compact-copy"><b class="deal-compact-badge">${html(badge)}</b><strong>${html(opening?row.biz:row.title)}</strong><small>${html(opening?row.founder:row.biz)}</small><span>${opening?row.mi+' mi':left(row)+' spots left'}</span></span>`;
+    }
+    const result=document.getElementById('catList');
+    if(result){let heading=document.getElementById('industryResultHeading');if(!heading){heading=document.createElement('div');heading.id='industryResultHeading';heading.className='deal-results-heading';result.before(heading);}const count=result.querySelectorAll('[data-card]').length;const text=count+' coupons'; if(heading.textContent!==text)heading.textContent=text;}
+  }
   function schedule(){
     if(renderQueued)return;renderQueued=true;
-    requestAnimationFrame(()=>{renderQueued=false;observer.disconnect();translate(document.body);filters();artwork();save();measure();observer.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden','style']});});
+    requestAnimationFrame(()=>{renderQueued=false;observer.disconnect();filters();artwork();compactItems();save();measure();observer.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden','style']});});
   }
   const observer=new MutationObserver(schedule);
   function claimMatch(offer){
@@ -195,14 +170,14 @@
   window.addEventListener('message',event=>{
     if(event.source!==window.parent||location.protocol!=='file:'&&event.origin!==location.origin)return;
     const data=event.data||{};
-    if(data.type==='nexora-deals-context'){document.documentElement.lang='en';document.body.classList.add('lang-en');if(typeof window.__setLang==='function')window.__setLang('en');schedule();}
+    if(data.type==='nexora-deals-context'){document.documentElement.lang='en';document.body.classList.add('lang-en');schedule();}
     if(data.type==='nexora-deals-viewport'){if(Number.isFinite(data.top))document.documentElement.style.setProperty('--deal-modal-top',Math.max(16,data.top)+'px');if(Number.isFinite(data.height))document.documentElement.style.setProperty('--deal-modal-height',Math.max(240,data.height)+'px');}
     if(data.type==='nexora-deals-close-modal'){document.getElementById('modal')?.classList.add('hidden');lastFocus?.focus({preventScroll:true});schedule();}
-    if(data.type==='nexora-deals-offers'&&Array.isArray(data.offers)){for(const offer of data.offers){userText.add(offer.title);userText.add(offer.description);}updateDemo(data.offers);}
+    if(data.type==='nexora-deals-offers'&&Array.isArray(data.offers))importOffers(data.offers);
     if(data.type==='nexora-deals-match-coupon'){if(ready)claimMatch(data.offer);else pendingClaim=data.offer;}
     if(data.cmd==='view'||data.cmd==='lang'||data.cmd==='role')schedule();
   });
-  document.addEventListener('input',event=>{if(event.target.matches('input,textarea')){event.target.dataset.userEdited='true';userText.add(event.target.value);}schedule();});
+  document.addEventListener('input',schedule);
   document.addEventListener('change',schedule);
   document.addEventListener('click',event=>{
     if(!event.target.closest('#modal')&&event.target.closest('button,a,input'))lastFocus=event.target.closest('button,a,input');
@@ -220,12 +195,11 @@
   window.addEventListener('pagehide',save);
   window.addEventListener('resize',schedule);
   document.addEventListener('load',schedule,true);
+  const demoState=state()?JSON.parse(JSON.stringify(state())):null;
   restore();ready=true;
-  translateSeed();
+  window.NEXORA_DEAL_ITEMS.setup(module,state(),demoState);
   if(module==='deals')card=modernCard;
   document.documentElement.lang='en';document.body.classList.add('lang-en');
-  if(typeof window.__setLang==='function')window.__setLang('en');
-  if(typeof lang!=='undefined'&&lang!=='en')document.getElementById('langBtn')?.click();
   // Keep all module subviews reachable while the shared Community header stays in place.
   const localNav=document.querySelector('.top > .tabs,.top > .phases,.top > .roles');
   if(localNav){localNav.classList.add('deal-module-subnav');document.querySelector('main')?.before(localNav);}
