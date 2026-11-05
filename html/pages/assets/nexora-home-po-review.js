@@ -32,6 +32,7 @@
     'payment-gateway': 'payment-gateway-crypto-card.png',
     'exchange-hub': 'industry/remit.png',
     'program-hub': 'program-hub-icons8-3d.png',
+    'mobile-phone': 'contact-mobile-phone-9646214.png',
     analytics: '../icons/3d-fluency/analytics.png',
     'spin-wheel': '../icons/iconscout/prize-wheel-10862879.webp',
     nail: 'salon-nail-polish-iconscout-10843584.png',
@@ -72,7 +73,8 @@
   decorate(document.querySelector('#start-individual .start-path-icon'), 'user-round');
   document.querySelectorAll('.contact-detail').forEach(link => {
     const href = link.getAttribute('href') || '';
-    const name = href.startsWith('mailto:') ? 'mail' : href.startsWith('sms:') ? 'message-circle' : href.startsWith('tel:') ? 'phone' : 'map-pin';
+    const isMobile = Boolean(link.querySelector('[data-contact-i18n="textLabel"]'));
+    const name = isMobile ? 'mobile-phone' : href.startsWith('mailto:') ? 'mail' : href.startsWith('sms:') ? 'message-circle' : href.startsWith('tel:') ? 'phone' : 'map-pin';
     decorate(link.querySelector('.contact-detail-icon'), name);
   });
   const nodes = {
