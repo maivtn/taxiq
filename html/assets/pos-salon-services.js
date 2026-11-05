@@ -26,7 +26,7 @@
   const richToolbar = label => '<div class="salon-rich-toolbar" role="group" aria-label="'+esc(label)+' formatting">'+[['bold','Bold','type-bold'],['italic','Italic','type-italic'],['underline','Underline','type-underline'],['insertOrderedList','Numbered list','list-ol'],['insertUnorderedList','Bulleted list','list-ul'],['removeFormat','Clear formatting','eraser']].map(([command,name,glyph])=>button('data-rich-command="'+command+'" aria-label="'+name+'" title="'+name+'"','',glyph)).join('')+'</div>';
   panel.innerHTML = `
     ${showBrowser ? '<div class="salon-service-browser"><label class="salon-service-search">'+icon('search')+'<input type="search" data-service-search placeholder="'+text.search+'" aria-label="'+text.search+'"></label><div class="salon-service-view" role="group" aria-label="'+(menu?'Menu view':'Service view')+'">'+button('data-service-view="card" aria-pressed="false"','Card view','grid')+button('data-service-view="list" aria-pressed="true"','List view','list-ul')+'</div></div><div class="salon-service-filters" role="group" aria-label="Categories" data-service-filters></div>' : ''}
-    <div class="salon-service-toolbar"><div>${button('data-categories-open disabled','Manage Categories','diagram-3')}</div>${button('data-services-save disabled','Save','check-circle-fill','is-primary')}</div>
+    <div class="salon-service-toolbar"><div>${options.onboarding?button('data-onboarding-service-add disabled',menu?'Add item':'Add product','plus','is-primary'):''}${button('data-categories-open disabled','Manage Categories','diagram-3')}</div>${button('data-services-save disabled','Save','check-circle-fill','is-primary')}</div>
     <p class="salon-service-status" role="status" data-approval-status></p>
     <div class="salon-services" data-approval-services><p class="salon-empty">${text.loading}</p></div>
     <div class="salon-service-overlay" data-category-editor hidden><section class="salon-service-dialog" role="dialog" aria-modal="true" aria-labelledby="category-editor-title">
@@ -326,12 +326,18 @@
     if(target.matches('[data-category-add]')){categoryDraft.push({id:uid(),name:'',services:[],isDraft:true});renderCategories();$('[data-category-list]').lastElementChild.querySelector('input').focus();return;}
     if(target.matches('[data-category-remove]')){const c=categoryDraft.find(c=>c.id===target.dataset.categoryRemove);if(c.services.length&&!window.confirm('Remove category "'+c.name+'" and its '+text.noun+' entries?'))return;categoryDraft=categoryDraft.filter(c=>c.id!==target.dataset.categoryRemove);renderCategories();return;}
     if(target.matches('[data-category-save]')){try{const next=clone(categoryDraft);next.forEach(c=>{c.name=c.name.trim();delete c.isDraft;});persist(next);close($('[data-category-editor]'));}catch(failure){$('[data-category-error]').textContent=failure.message;$('[data-category-error]').hidden=false;}return;}
-    if(target.matches('[data-service-add]')){
+    if(target.matches('[data-service-add],[data-onboarding-service-add]')){
       event.preventDefault();
-      const c=categories.find(c=>c.id===target.dataset.serviceAdd),service=Object.assign({id:uid(),name:'',price:'',active:true,isDraft:true},menu?{}:{durationMin:options.onboarding?'':45});
+      if(!loaded)return;
+      const quickAdd=target.matches('[data-onboarding-service-add]');
+      let c=categories.find(c=>c.id===(quickAdd?categoryFilter:target.dataset.serviceAdd));
+      if(quickAdd&&!c)c=categories[0];
+      if(quickAdd&&!c){c={id:uid(),name:menu?'Menu':'Services',services:[]};categories.push(c);}
+      if(!c)return;
+      const service=Object.assign({id:uid(),name:'',price:'',active:true,isDraft:true},menu?{}:{durationMin:options.onboarding?'':45});
       c.services.push(service);
-      if(options.onboarding&&menu){openService(service.id,target);return;}
-      if(options.onboarding){serviceView='list';query='';const search=$('[data-service-search]');if(search)search.value='';}
+      if(options.onboarding&&menu&&!quickAdd){openService(service.id,target);return;}
+      if(options.onboarding){serviceView='list';query='';categoryFilter='';const search=$('[data-service-search]');if(search)search.value='';}
       markDirty();render();
       const category=Array.from(panel.querySelectorAll('[data-service-category]')).find(el=>el.dataset.serviceCategory===c.id);
       category.open=true;category.querySelector('.settings-service-row:last-child [data-inline-field="name"]').focus();return;
@@ -399,6 +405,7 @@
     base=catalog.categories.map(c=>({id:c.id,name:c.name,services:c.services.filter(s=>menu||s.type!=='add-on').map(s=>Object.assign({},s,menu?{}:{durationMin:s.durationMin||45}))})).filter(c=>options.onboarding||c.services.length);
     if(!options.onboarding)base.push({id:'custom-service-settings',name:'Other services',services:[{id:'__custom__',name:'Custom service'}]});
     categories=api.loadCatalog(selectedSalon,base);loaded=true;render();$('[data-services-save]').disabled=!!options.onboarding;$('[data-categories-open]').disabled=false;
+    if(options.onboarding)$('[data-onboarding-service-add]').disabled=false;
   }).catch(()=>{if(!destroyed&&panel.isConnected)$('[data-approval-services]').textContent=text.loadFailed;});
   return {ready, snapshot, save(){if(!loaded)throw new Error(text.loading);if(options.onboarding&&!categories.some(c=>c.services.some(s=>s.id!=='__custom__')))throw new Error(text.invalid);persist(clone(categories));return snapshot();}, destroy(){destroyed=true;editing=null;lifecycle.abort();$('[data-service-edit-categories]').tomselect?.destroy();if(panel.querySelector('.salon-service-overlay:not([hidden])'))document.body.style.overflow=priorOverflow;}};
   }
