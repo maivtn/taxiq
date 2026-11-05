@@ -26,6 +26,7 @@
     'check-in': '../icons/pos-front-desk/check-in.svg',
     'turn-board': '../icons/pos-front-desk/turn-board.svg',
     'vlinkpay-wallet': 'vlinkpay-wallet-show-wallet.png',
+    charity: 'charity-gift-card-payment.png',
     'merchant-atm': 'merchant-atm-icons8-3d.png',
     'mobile-atm': 'mobile-atm-payment-10647002.png',
     'payment-gateway': 'payment-gateway-secure-9506497.png',
@@ -76,7 +77,7 @@
   });
   const nodes = {
     tokenization: 'badge-dollar-sign', wallet: 'vlinkpay-wallet', 'crypto-card': 'credit-card',
-    merchant: 'store', charity: 'heart', gift: 'gift', 'merchant-atm': 'merchant-atm',
+    merchant: 'store', charity: 'charity', gift: 'gift', 'merchant-atm': 'merchant-atm',
     'mobile-atm': 'mobile-atm', exchange: 'exchange-hub', gateway: 'payment-gateway', program: 'program-hub'
   };
   Object.entries(nodes).forEach(([node, name]) => decorate(document.querySelector(`.eco-node[data-id="${node}"] .eco-node-icon`), name));
