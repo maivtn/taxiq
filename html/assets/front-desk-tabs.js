@@ -34,6 +34,12 @@
     {id: 'marketing', label: 'AI Marketing', artwork: 'megaphone', module: 'aihub&section=marketing'}
   ];
   let selectedScreens = [];
+  let tabOrder = [];
+  let reordering = false;
+  let drag = null;
+  let suppressClickUntil = 0;
+  const primaryCount = tabs.filter(tab => !tab.more).length;
+  const defaultOrder = [...tabs.map(tab => tab.id), ...screens.map(screen => 'extra-' + screen.id)];
   const nodes = new Map();
   const scrollKey = 'nexora:front-desk-tabs-scroll:v1';
   const primary = document.createElement('div');
@@ -51,12 +57,26 @@
   panel.innerHTML = '<div class="front-desk-more-head"><h2 id="front-desk-more-title">More tools</h2><button type="button" class="front-desk-more-close" aria-label="Close">×</button></div>';
   const secondary = document.createElement('div');
   secondary.className = 'front-desk-more-grid'; panel.appendChild(secondary);
+  primary.id = 'front-desk-primary-tabs';
+  const reorderActions = document.createElement('div');
+  reorderActions.className = 'front-desk-more-actions';
+  reorderActions.innerHTML = '<button type="button" class="front-desk-reorder" aria-pressed="false" aria-controls="front-desk-primary-tabs"><span aria-hidden="true">↔</span><span>Reorder</span></button>';
+  panel.appendChild(reorderActions);
+  const reorderButton = reorderActions.querySelector('button');
+  const reorderHint = document.createElement('p');
+  reorderHint.id = 'front-desk-reorder-hint'; reorderHint.className = 'front-desk-reorder-hint'; reorderHint.hidden = true;
+  reorderHint.textContent = 'Drag tiles to rearrange them. Use arrow keys when a tile has keyboard focus. The order is saved for this salon on this device.';
+  const reorderStatus = document.createElement('p');
+  reorderStatus.className = 'front-desk-reorder-status';
+  reorderStatus.setAttribute('role', 'status'); reorderStatus.setAttribute('aria-live', 'polite');
+  host.before(reorderHint, reorderStatus);
   host.append(primary, more, panel);
 
   tabs.forEach(tab => {
     const node = document.createElement(tab.href ? 'a' : 'button');
     if (tab.href) node.href = tab.href;
     else node.type = 'button';
+    node.draggable = false;
     node.dataset.frontDeskTab = tab.id;
     node.dataset.posWorkflow = tab.style || (tab.id === 'staff' ? 'staff' : tab.icon);
     if (tab.section) node.dataset.frontSection = tab.section;
@@ -90,14 +110,72 @@
   host.appendChild(screenDialog);
   const screenOptions = screenDialog.querySelector('.front-desk-screen-options');
 
-  function screenStorageKey() {
+  function salonStorageId() {
     let salon = window.NEXORA_ACTIVE_SALON;
     try { salon ||= window.NEXORA_SALON_DATA?.loadCatalog().salon; } catch (_) {}
-    return 'nexora:front-desk-extra-screens:v1:' + (salon?.id || salon?.name || 'Bitcoin Nail Bar');
+    return salon?.id || salon?.name || 'Bitcoin Nail Bar';
+  }
+  const screenStorageKey = () => 'nexora:front-desk-extra-screens:v1:' + salonStorageId();
+  const orderStorageKey = () => 'nexora:front-desk-tabs-order:v1:' + salonStorageId();
+  const tileId = tile => tile.dataset.frontDeskTab || 'extra-' + tile.dataset.frontDeskExtraScreen;
+  const tileLabel = tile => tile.querySelector('.workflow-label').textContent;
+  const primaryTiles = () => [...primary.children];
+
+  function loadTabOrder() {
+    tabOrder = [];
+    try {
+      const saved = JSON.parse(localStorage.getItem(orderStorageKey()) || '[]');
+      if (Array.isArray(saved)) tabOrder = [...new Set(saved.filter(id => defaultOrder.includes(id)))];
+    } catch (_) { /* Keep the default order when saved data is unavailable. */ }
+  }
+
+  function applyTabOrder() {
+    const all = [...nodes.values(), ...host.querySelectorAll('[data-front-desk-extra-screen]')];
+    const rank = tile => {
+      const id = tileId(tile), saved = tabOrder.indexOf(id);
+      return saved < 0 ? tabOrder.length + defaultOrder.indexOf(id) : saved;
+    };
+    all.sort((a, b) => rank(a) - rank(b));
+    all.forEach((tile, index) => {
+      if (reordering || index < primaryCount) primary.appendChild(tile);
+      else secondary.insertBefore(tile, addScreen);
+      if (reordering) {
+        tile.setAttribute('role', 'button');
+        tile.setAttribute('aria-label', tileLabel(tile) + '. Use arrow keys to move.');
+        tile.setAttribute('aria-keyshortcuts', 'ArrowLeft ArrowRight ArrowUp ArrowDown');
+      } else {
+        tile.removeAttribute('role'); tile.removeAttribute('aria-label'); tile.removeAttribute('aria-keyshortcuts');
+      }
+    });
+  }
+
+  function saveTabOrder(tile) {
+    const visible = primaryTiles().map(tileId);
+    tabOrder = [...visible, ...tabOrder.filter(id => !visible.includes(id))];
+    try { localStorage.setItem(orderStorageKey(), JSON.stringify(tabOrder)); } catch (_) {}
+    reorderStatus.textContent = tileLabel(tile) + ' moved to position ' + (visible.indexOf(tileId(tile)) + 1) + ' of ' + visible.length + '.';
+  }
+
+  function setReordering(enabled) {
+    finishDrag();
+    reordering = enabled;
+    setMoreOpen(false);
+    host.classList.toggle('is-reordering', enabled);
+    reorderHint.hidden = !enabled;
+    reorderButton.setAttribute('aria-pressed', String(enabled));
+    more.querySelector('.front-desk-more-icon').textContent = enabled ? '✓' : '•••';
+    more.querySelector('.workflow-label').textContent = enabled ? 'Done' : 'More';
+    if (enabled) {
+      more.removeAttribute('aria-haspopup'); more.removeAttribute('aria-expanded'); more.removeAttribute('aria-controls');
+    } else {
+      more.setAttribute('aria-haspopup', 'dialog'); more.setAttribute('aria-expanded', 'false'); more.setAttribute('aria-controls', panel.id);
+    }
+    applyTabOrder(); sync(); more.focus();
+    reorderStatus.textContent = enabled ? 'Reorder mode on.' : 'Shortcut order saved.';
   }
 
   function renderScreens() {
-    secondary.querySelectorAll('[data-front-desk-extra-screen]').forEach(node => node.remove());
+    host.querySelectorAll('[data-front-desk-extra-screen]').forEach(node => node.remove());
     screenOptions.replaceChildren();
     screens.forEach(screen => {
       const selected = selectedScreens.includes(screen.id);
@@ -110,6 +188,7 @@
       if (selected) {
         const link = document.createElement('a');
         link.href = 'dashboard.html?module=' + screen.module;
+        link.draggable = false;
         link.dataset.frontDeskExtraScreen = screen.id;
         link.dataset.posWorkflow = 'appointments';
         link.append(image.cloneNode(), label.cloneNode(true));
@@ -125,6 +204,7 @@
       option.append(image, label, state);
       screenOptions.appendChild(option);
     });
+    applyTabOrder();
     if (!panel.hidden) fitMorePanel();
   }
 
@@ -154,15 +234,16 @@
     const id = option.dataset.screenId;
     selectedScreens = selectedScreens.includes(id) ? selectedScreens.filter(value => value !== id) : [...selectedScreens, id];
     try { localStorage.setItem(screenStorageKey(), JSON.stringify(selectedScreens)); } catch (_) {}
-    renderScreens();
+    renderScreens(); sync();
     screenOptions.querySelector('[data-screen-id="' + id + '"]')?.focus();
   });
   host.dataset.initialized = 'true';
   try { primary.scrollLeft = Number(sessionStorage.getItem(scrollKey)) || 0; } catch (_) {}
 
   function setMoreOpen(open, restoreFocus = false) {
+    if (reordering && open) return;
     panel.hidden = !open;
-    more.setAttribute('aria-expanded', String(open));
+    if (!reordering) more.setAttribute('aria-expanded', String(open));
     if (open) fitMorePanel();
     if (restoreFocus) more.focus();
   }
@@ -171,9 +252,10 @@
     panel.style.maxHeight = Math.max(0, window.innerHeight - panel.getBoundingClientRect().top - 16) + 'px';
   }
 
-  more.addEventListener('click', () => setMoreOpen(panel.hidden));
+  reorderButton.addEventListener('click', () => setReordering(true));
+  more.addEventListener('click', () => reordering ? setReordering(false) : setMoreOpen(panel.hidden));
   more.addEventListener('keydown', event => {
-    if (event.key !== 'ArrowDown') return;
+    if (reordering || event.key !== 'ArrowDown') return;
     event.preventDefault(); setMoreOpen(true); secondary.firstElementChild?.focus();
   });
   panel.querySelector('.front-desk-more-close').addEventListener('click', () => setMoreOpen(false, true));
@@ -181,12 +263,107 @@
     if (!host.contains(event.target)) setMoreOpen(false);
   });
   host.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && reordering) {
+      event.preventDefault(); event.stopPropagation(); setReordering(false); return;
+    }
     if (event.key !== 'Escape' || panel.hidden) return;
     event.preventDefault(); event.stopPropagation(); setMoreOpen(false, true);
   });
   host.addEventListener('focusout', event => {
     if (event.relatedTarget && !host.contains(event.relatedTarget)) setMoreOpen(false);
   });
+
+  function blockReorderNavigation(event) {
+    if (!event.target.closest('a[data-front-desk-tab], a[data-front-desk-extra-screen]')) return;
+    if (!reordering && performance.now() >= suppressClickUntil) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+  }
+  host.addEventListener('click', blockReorderNavigation, true);
+  host.addEventListener('auxclick', blockReorderNavigation, true);
+  primary.addEventListener('dragstart', event => { if (reordering) event.preventDefault(); });
+  primary.addEventListener('contextmenu', event => { if (reordering) event.preventDefault(); });
+  primary.addEventListener('keydown', event => {
+    if (!reordering) return;
+    const tile = event.target.closest('a');
+    if (!tile || tile.parentElement !== primary) return;
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); return; }
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+    event.preventDefault();
+    const all = primaryTiles(), from = all.indexOf(tile);
+    const columns = getComputedStyle(primary).gridTemplateColumns.split(' ').filter(Boolean).length || 1;
+    const distance = {ArrowLeft: -1, ArrowRight: 1, ArrowUp: -columns, ArrowDown: columns}[event.key];
+    const to = Math.max(0, Math.min(all.length - 1, from + distance));
+    if (to === from) return;
+    primary.insertBefore(tile, to > from ? all[to].nextSibling : all[to]);
+    saveTabOrder(tile); tile.focus();
+  });
+
+  // A hold starts dragging only after More > Reorder has been selected.
+  primary.addEventListener('pointerdown', event => {
+    if (!reordering || drag || event.isPrimary === false || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    const tile = event.target.closest('a');
+    if (!tile || tile.parentElement !== primary) return;
+    const bounds = tile.getBoundingClientRect();
+    const pending = drag = {tile, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY,
+      offsetX: event.clientX - bounds.left, offsetY: event.clientY - bounds.top, started: false, moved: false};
+    pending.timer = window.setTimeout(() => {
+      if (drag !== pending || !reordering) return;
+      pending.started = true;
+      const style = getComputedStyle(tile);
+      const ghost = pending.ghost = tile.cloneNode(true);
+      ghost.className = 'front-desk-drag-ghost'; ghost.removeAttribute('aria-current'); ghost.removeAttribute('aria-label');
+      ghost.setAttribute('aria-hidden', 'true'); ghost.removeAttribute('href'); ghost.removeAttribute('role'); ghost.tabIndex = -1;
+      ghost.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+      Object.assign(ghost.style, {width: bounds.width + 'px', height: bounds.height + 'px', background: style.backgroundColor,
+        color: style.color, borderColor: style.borderColor, borderRadius: style.borderRadius,
+        left: (pending.startX - pending.offsetX) + 'px', top: (pending.startY - pending.offsetY) + 'px'});
+      const artwork = tile.querySelector('img');
+      if (artwork) {
+        const size = artwork.getBoundingClientRect();
+        Object.assign(ghost.querySelector('img').style, {width: size.width + 'px', height: size.height + 'px'});
+      }
+      document.body.appendChild(ghost);
+      tile.classList.add('is-drag-source'); host.classList.add('is-dragging');
+      tile.focus({preventScroll: true});
+      try { primary.setPointerCapture(pending.pointerId); } catch (_) {}
+    }, 300);
+  });
+  window.addEventListener('pointermove', event => {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    if (!drag.started) {
+      if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 8) finishDrag();
+      return;
+    }
+    event.preventDefault();
+    drag.ghost.style.left = (event.clientX - drag.offsetX) + 'px';
+    drag.ghost.style.top = (event.clientY - drag.offsetY) + 'px';
+    if (event.clientY < 56) window.scrollBy(0, -16);
+    else if (event.clientY > window.innerHeight - 56) window.scrollBy(0, 16);
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.front-desk-primary-tabs > a');
+    if (!target || target === drag.tile || target.parentElement !== primary) return;
+    const all = primaryTiles();
+    primary.insertBefore(drag.tile, all.indexOf(drag.tile) < all.indexOf(target) ? target.nextSibling : target);
+    drag.moved = true;
+  }, {passive: false});
+
+  function finishDrag() {
+    if (!drag) return;
+    const finished = drag; drag = null;
+    window.clearTimeout(finished.timer);
+    if (finished.started) suppressClickUntil = performance.now() + 600;
+    finished.tile.classList.remove('is-drag-source'); host.classList.remove('is-dragging');
+    finished.ghost?.remove();
+    try { primary.releasePointerCapture(finished.pointerId); } catch (_) {}
+    if (finished.moved) saveTabOrder(finished.tile);
+  }
+  ['pointerup', 'pointercancel'].forEach(name => window.addEventListener(name, event => {
+    if (drag && event.pointerId === drag.pointerId) finishDrag();
+  }));
+  primary.addEventListener('lostpointercapture', event => {
+    if (event.target === primary && drag && event.pointerId === drag.pointerId) finishDrag();
+  });
+  window.addEventListener('blur', finishDrag);
+  window.addEventListener('pagehide', finishDrag);
 
   function currentTab() {
     const page = location.pathname.split('/').pop(), params = new URLSearchParams(location.search);
@@ -240,8 +417,9 @@
       if (selected) node.setAttribute('aria-current', 'page');
       else node.removeAttribute('aria-current');
     });
-    more.classList.toggle('active', tabs.some(tab => tab.id === active && tab.more));
-    refreshCounts(); revealActive();
+    const activeNode = nodes.get(active);
+    more.classList.toggle('active', !!activeNode && secondary.contains(activeNode));
+    refreshCounts(); if (!reordering) revealActive();
   }
 
   host.addEventListener('click', event => {
@@ -264,12 +442,16 @@
     window.dispatchEvent(new PopStateEvent('popstate'));
   });
   primary.addEventListener('scroll', () => { try { sessionStorage.setItem(scrollKey, String(primary.scrollLeft)); } catch (_) {} }, {passive: true});
-  window.addEventListener('popstate', () => { setMoreOpen(false); sync(); });
-  window.addEventListener('pageshow', () => sync());
-  window.addEventListener('resize', () => { if (!panel.hidden) fitMorePanel(); revealActive(); });
+  window.addEventListener('popstate', () => { if (reordering) setReordering(false); setMoreOpen(false); sync(); });
+  window.addEventListener('pageshow', () => { if (reordering) setReordering(false); loadTabOrder(); loadScreens(); sync(); });
+  window.addEventListener('resize', () => { finishDrag(); if (!panel.hidden) fitMorePanel(); if (!reordering) revealActive(); });
   ['focus', 'storage', 'nexora:front-desk-data-changed', 'nexora:tickets-changed', 'nexora:pos-account-changed', 'nexora:pos-settings-changed'].forEach(name => window.addEventListener(name, refreshCounts));
-  window.addEventListener('storage', event => { if (event.key === screenStorageKey() || event.key === null) loadScreens(); });
+  window.addEventListener('storage', event => {
+    if (reordering || ![screenStorageKey(), orderStorageKey(), null].includes(event.key)) return;
+    loadTabOrder(); loadScreens(); sync();
+  });
   function connect() {
+    loadTabOrder();
     loadScreens();
     window.NEXORA_APPOINTMENTS_STORE?.subscribe?.(refreshCounts);
     sync();
