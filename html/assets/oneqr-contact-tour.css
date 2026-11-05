@@ -1,5 +1,6 @@
 .oneqr-tour-trigger { flex-shrink: 0; gap: 7px; }
 .oneqr-tour-trigger img { width: 20px; height: 20px; object-fit: contain; }
+.pqr-heading-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .oneqr-tour-spot { outline: 3px solid #6366f1 !important; outline-offset: 5px; box-shadow: 0 0 0 8px #6366f12e !important; scroll-margin-block: 100px 180px; }
 .oneqr-ai-tour { position: fixed; inset: auto 0 0; z-index: 10000; width: 100%; max-width: none; margin: 0; padding: 0 12px calc(env(safe-area-inset-bottom, 0px) + 12px); border: 0; overflow: visible; background: transparent; color: #fff; font-family: Inter, sans-serif; pointer-events: none; }
 .oneqr-ai-tour[hidden] { display: none !important; }

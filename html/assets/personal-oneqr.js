@@ -202,13 +202,16 @@
     });
   }
   function navigate(tab, updateURL = true) {
+    if (host.hasAttribute('data-personal-oneqr-tour')) window.dispatchEvent(new Event('nexora:qr-tab-changed'));
     moduleDrag = null;
     if (dialog.open) dialog.close();
     if (paymentController) { paymentController.destroy(); paymentController = null; }
     if (advertisingController) advertisingController.close();
     tab = aliases[tab] || tab; current = tabs.some(item => item.id === tab) ? tab : 'one-qr';
     if (updateURL) { const target = new URL(location.href); target.searchParams.delete('view'); target.searchParams.set('tab', current); history.pushState({}, '', target); }
-    host.innerHTML = '<div class="pqr-heading"><div><h1>My One QR</h1><p>One QR code to share your information and links.</p></div><span class="pqr-demo">Personal · ' + (api.linked ? 'Salon linked' : 'No salon linked') + '</span></div>' +
+    const tourTrigger = host.hasAttribute('data-personal-oneqr-tour') && current === 'one-qr' ? '<button class="oneqr-qrcard-btn oneqr-tour-trigger" type="button" id="oneqrAiTour" aria-controls="oneqrAiTourPanel" aria-expanded="false">' + image('sparkles') + 'AI Tour</button>' : '';
+    const badge = '<span class="pqr-demo">Personal · ' + (api.linked ? 'Salon linked' : 'No salon linked') + '</span>';
+    host.innerHTML = '<div class="pqr-heading"><div><h1>My One QR</h1><p>One QR code to share your information and links.</p></div>' + (tourTrigger ? '<div class="pqr-heading-actions">' + badge + tourTrigger + '</div>' : badge) + '</div>' +
       '<nav class="qr-tabs pqr-tabs" role="tablist" aria-label="One QR">' + tabs.map(item => '<button class="qr-tab' + (item.id === current ? ' is-active' : '') + '" id="pqr-tab-' + item.id + '" type="button" role="tab" aria-selected="' + (item.id === current) + '" aria-controls="pqr-panel" data-pqr-tab="' + item.id + '"><span class="qr-tab-icon">' + lucide(item.icon) + '</span><span>' + item.label + '</span></button>').join('') + '</nav><div id="pqr-panel" role="tabpanel" aria-labelledby="pqr-tab-' + current + '">' + ({ 'one-qr': buildMain, 'tip-qr': tipPanel, 'accept-payment': paymentPanel, 'referral-link': referralPanel, advertising: adPanel }[current])() + '</div><p class="pqr-feedback" data-pqr-feedback role="status" aria-live="polite"></p>';
     if (current === 'one-qr') { renderLinks(); renderLeads(); syncIconUploads(); }
     if (current === 'advertising') mountAdvertising();

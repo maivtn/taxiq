@@ -68,8 +68,13 @@
     ];
   }
   function defaults() {
-    return { version: 1, id: 'personal-demo', name: 'Nguyễn Văn A — One QR', greeting: 'Hi, I’m A. Nice to meet you!',
-      profile: { name: 'Nguyễn Văn A', bio: '', phone: '', email: '', showPhone: false, showEmail: false, avatar: '' },
+    // Staff contact details: from-po/OneQR-prototype-v25.html, Independent stylist.
+    const profile = linked ? {
+      name: 'Kim Nguyen', bio: 'Nail artist · Booth #4, Bitcoin Nail Bar', phone: '(346) 555-0142', email: 'kim@example.com',
+      showPhone: true, showEmail: true, avatar: new URL('../oneqr-dev/assets/avatars/kim-demo.jpg', pagesBase).href
+    } : { name: 'Nguyễn Văn A', bio: '', phone: '', email: '', showPhone: false, showEmail: false, avatar: '' };
+    return { version: 1, id: 'personal-demo', name: profile.name + ' — One QR', greeting: linked ? 'Hi, I’m Kim. Nice to meet you!' : 'Hi, I’m A. Nice to meet you!',
+      profile, ...(linked ? { staffContactDefaults: 1 } : {}),
       links: template(linked), salonId: linked ? salons[0].id : null, payments: {}, referral: 'https://localhost:3000/?ref=93176C31&leg=left&staff=NAIE5LMVX', referralPlacement: 'left', staffId: 'NAIE5LMVX', ads: false, consent: false, adIndustries: [], leads: [] };
   }
   function read() {
@@ -78,6 +83,18 @@
       const data = JSON.parse(localStorage.getItem(KEY));
       if (data && data.version === 1) {
         const result = { ...initial, ...data, profile: { ...initial.profile, ...data.profile } };
+        if (linked && data.staffContactDefaults !== 1) {
+          // Seed the previous empty demo once; later edits and visibility choices stay saved.
+          if (['Nguyễn Văn A', 'Nguyễn Minh An'].includes(result.profile.name)) result.profile.name = initial.profile.name;
+          for (const field of ['bio', 'phone', 'email', 'avatar']) {
+            if (!result.profile[field]) result.profile[field] = initial.profile[field];
+          }
+          if (!data.profile?.phone) result.profile.showPhone = true;
+          if (!data.profile?.email) result.profile.showEmail = true;
+          result.staffContactDefaults = 1;
+          if (['Nguyễn Văn A — One QR', 'NGUYỄN MINH AN — One QR'].includes(result.name)) result.name = initial.name;
+          if (['Hi, I’m A. Nice to meet you!', 'Hi, I’m An. Nice to meet you!'].includes(result.greeting)) result.greeting = initial.greeting;
+        }
         if (result.name === 'NGUYỄN MINH AN — One QR') result.name = initial.name;
         if (result.profile.name === 'Nguyễn Minh An') result.profile.name = initial.profile.name;
         result.links = Array.isArray(data.links) ? data.links.filter(item => item && typeof item.name === 'string' && typeof item.url === 'string').map(item => ({ ...item, icon: icons.includes(item.icon) || isIconImage(item.icon) ? item.icon : 'link', background: window.ONEQR_ACTION_APPEARANCE?.backgrounds.includes(item.background) ? item.background : '' })) : initial.links;

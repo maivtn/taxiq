@@ -1,8 +1,9 @@
 (() => {
   'use strict';
   // Tour copy and controls: from-po/OneQR-prototype-v25.html, AI Smart Tour.
-  const trigger = document.getElementById('oneqrAiTour');
-  if (!trigger || !document.querySelector('[data-qr-panel]')) return;
+  const personal = document.querySelector('[data-personal-oneqr-tour]');
+  const trigger = () => document.getElementById('oneqrAiTour');
+  if (!personal && (!trigger() || !document.querySelector('[data-qr-panel]'))) return;
   const contactDialog = document.getElementById('contact-card-modal');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const tour = document.createElement('section');
@@ -41,6 +42,38 @@
     window.NEXORA_CONTACT_CARD.open(tab);
     ownedDialog = contactDialog;
   }
+  function linkStep(selector, inputSelector) {
+    return {
+      selector,
+      text: 'Paste any link — we detect the platform.',
+      enter() {
+        const input = document.querySelector(inputSelector);
+        inputSnapshot = { input, value: input.value };
+      },
+      animate(time) {
+        const text = 'https://instagram.com/bitcoinnailbar';
+        // Show the PO typing example without submitting a module or changing its draft.
+        inputSnapshot.input.value = text.slice(0, reducedMotion.matches ? text.length : Math.floor(time / 32));
+      }
+    };
+  }
+  const personalSteps = [
+    { selector: '.pqr-master-card', textFrom: '.pqr-master-card .oneqr-qrcard-detail > p' },
+    { ...linkStep('[data-pqr-add-form]', '[data-pqr-add-form] [name="url"]'), text: 'Add a destination first, then choose what customers will see this action as.' },
+    { selector: '[data-pqr-links]', text: 'Each button: a name, a status, a switch.' },
+    { selector: '.pqr-builder .oneqr-preview', text: 'Preview exactly what a customer sees after scanning.' },
+    {
+      selector: '.pqr-contact-preview-wrap',
+      available: '[data-pqr-action="profile"]',
+      text: 'Solo pros fill the contact card once — customers tap to save it.',
+      enter() {
+        personal.querySelector('[data-pqr-action="profile"]').click();
+        ownedDialog = document.querySelector('.pqr-contact-dialog[open]');
+      }
+    },
+    { selector: '[data-pqr-leads]', text: 'After saving, the visitor can send their own contact back — it lands here.' },
+    { selector: '.oneqr-config [data-pqr-action="save"]', text: 'Save Settings to keep your module changes.' }
+  ];
   const oneqrSteps = [
     {
       selector: '#qr-panel-one-qr .oneqr-qrcard',
@@ -50,19 +83,7 @@
       selector: '[data-oneqr-editor-link]',
       text: 'Pick an industry — the buttons are built for it.'
     },
-    {
-      selector: '#oneqrModuleLinkForm',
-      text: 'Paste any link — we detect the platform.',
-      enter() {
-        const input = document.getElementById('oneqrModuleLinkInput');
-        inputSnapshot = { input, value: input.value };
-      },
-      animate(time) {
-        const text = 'https://instagram.com/bitcoinnailbar';
-        // Show the PO typing example without submitting a module or changing its draft.
-        inputSnapshot.input.value = text.slice(0, reducedMotion.matches ? text.length : Math.floor(time / 32));
-      }
-    },
+    linkStep('#oneqrModuleLinkForm', '#oneqrModuleLinkInput'),
     {
       selector: '#oneqrModuleList',
       text: 'Each button: a name, a status, a switch.'
@@ -125,6 +146,7 @@
     ]
   };
   function stepsFor(panel) {
+    if (personal) return personalSteps.filter(step => panel.querySelector(step.available || step.selector));
     const tab = panel.dataset.qrPanel;
     if (tab === 'one-qr') return oneqrSteps.filter(step => document.querySelector(step.selector));
     return (stationSteps[tab] || []).map(step => {
@@ -210,7 +232,7 @@
   }
   function stop({ handoff = false, restoreFocus = false } = {}) {
     running = false;
-    trigger.setAttribute('aria-expanded', 'false');
+    trigger()?.setAttribute('aria-expanded', 'false');
     cancelAnimationFrame(frame);
     cleanupStep(handoff);
     tour.hidden = true;
@@ -218,14 +240,14 @@
   }
   function start(manual = true) {
     clearTimeout(automaticStart);
-    const panel = document.querySelector('[data-qr-panel]:not([hidden])');
+    const panel = personal ? personal.querySelector('#pqr-panel[aria-labelledby="pqr-tab-one-qr"]') : document.querySelector('[data-qr-panel]:not([hidden])');
     if (document.querySelector('dialog[open]') || !panel) return;
     stop();
     steps = stepsFor(panel);
     if (!steps.length) return;
     opener = document.activeElement;
     running = true;
-    trigger.setAttribute('aria-expanded', 'true');
+    trigger()?.setAttribute('aria-expanded', 'true');
     index = 0;
     setPaused(false);
     showStep();
@@ -235,7 +257,9 @@
   pause.addEventListener('click', () => setPaused(!paused));
   tour.querySelector('[data-tour-next]').addEventListener('click', next);
   tour.querySelector('[data-tour-close]').addEventListener('click', () => stop({ restoreFocus: true }));
-  trigger.addEventListener('click', () => start());
+  document.addEventListener('click', event => {
+    if (event.target.closest('#oneqrAiTour')) start();
+  });
   function manualControl(event) {
     if (!event.isTrusted) return;
     if (tour.contains(event.target)) {
