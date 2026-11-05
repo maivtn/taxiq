@@ -29,7 +29,7 @@
     charity: 'charity-gift-card-payment.png',
     'merchant-atm': 'merchant-atm-icons8-3d.png',
     'mobile-atm': 'mobile-atm-payment-10647002.png',
-    'payment-gateway': 'payment-gateway-secure-9506497.png',
+    'payment-gateway': 'payment-gateway-crypto-card.png',
     'exchange-hub': 'industry/remit.png',
     'program-hub': 'program-hub-icons8-3d.png',
     analytics: '../icons/3d-fluency/analytics.png',
