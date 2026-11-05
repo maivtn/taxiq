@@ -25,9 +25,9 @@
 .community-feed-post-byline{display:flex;align-items:center;gap:2px;margin-top:5px;color:#8993a6;font-size:11px;line-height:1.4}
 .community-feed-post-destinations{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:6px}
 .community-feed-post-destination{display:inline-flex;align-items:center;max-width:100%;padding:3px 7px;border-radius:6px;background:#f3f5f9;color:#7a859a;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
-.community-feed-post-header>.community-social-menu-wrap{position:relative;align-self:start;z-index:3}
-.community-social-menu-toggle{display:grid;place-items:center;width:36px;height:36px;border:1px solid #e8eaf2;border-radius:10px;background:#fff;color:#66718a;font-size:22px;font-weight:800;line-height:1;cursor:pointer}
-.community-social-menu{position:absolute;right:0;top:40px;min-width:160px;padding:5px;border:1px solid #e2e7f0;border-radius:12px;background:#fff;box-shadow:0 10px 25px #1f2c4d1c}
+.community-feed-post-header>.community-social-menu-wrap{position:relative;align-self:start;margin-top:-3px;z-index:3}
+.community-social-menu-toggle{display:grid;place-items:center;width:28px;height:28px;padding:0;border:1px solid #e8eaf2;border-radius:8px;background:#fff;color:#66718a;font-size:18px;font-weight:800;line-height:1;cursor:pointer}
+.community-social-menu{position:absolute;right:0;top:calc(100% + 4px);min-width:160px;padding:5px;border:1px solid #e2e7f0;border-radius:12px;background:#fff;box-shadow:0 10px 25px #1f2c4d1c}
 .community-social-menu[hidden]{display:none}
 .community-social-menu .community-social-link{display:flex;width:100%;justify-content:flex-start;padding:11px 12px;border-radius:7px;text-align:left;white-space:nowrap}
 .community-social-menu .community-social-link:hover{background:#f2f0ff}
@@ -101,8 +101,6 @@ body .dialog.community-social-lightbox .dialog-footer .btn{min-width:0;white-spa
   .community-feed-post-header{gap:9px;margin-bottom:12px}
   .community-feed-post-avatar{width:44px;height:44px}
   .community-feed-post-author{font-size:13px}
-  .community-social-menu-toggle{width:44px;height:44px}
-  .community-feed-post-header .community-social-menu{top:48px}
   .community-social-menu .community-social-link{min-height:44px}
   .community-social-gallery-item{height:125px}
   .community-social-gallery[data-count="3"] .community-social-gallery-item:first-child{height:253px}
