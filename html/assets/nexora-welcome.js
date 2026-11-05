@@ -184,9 +184,50 @@
     var menu=kind==='menu',categories=menu?fields.menuCatalog:fields.serviceCatalog;
     if(!Array.isArray(categories)||!categories.length)return false;
     var services=categories.reduce(function(all,category){return all.concat(category.services||[]);},[]).filter(function(service){return service.id!=='__custom__';});
-    return services.length>0&&categories.every(function(category){return String(category.name||'').trim();})&&services.every(function(service){return String(service.name||'').trim()&&service.price!==''&&service.price!=null&&Number.isFinite(Number(service.price))&&Number(service.price)>=0&&(menu||Number.isInteger(Number(service.durationMin))&&Number(service.durationMin)>0);});
+    return services.length>0&&(!menu||categories.every(function(category){return String(category.name||'').trim();}))&&services.every(function(service){return String(service.name||'').trim()&&service.price!==''&&service.price!=null&&Number.isFinite(Number(service.price))&&Number(service.price)>=0;});
   }
   function destroyServiceWorkspace() {if(serviceWorkspace){serviceWorkspace.destroy();serviceWorkspace=null;}}
+  function mountSimpleServices(panel,initialCategories,initialApprovals,onChange) {
+    var categories=JSON.parse(JSON.stringify(initialCategories)),approvals=initialApprovals.slice();
+    var lifecycle=new AbortController();
+    function items(){return categories.reduce(function(all,category){return all.concat(category.services||[]);},[]).filter(function(item,index,all){return item.id!=='__custom__'&&all.findIndex(function(other){return other.id===item.id;})===index;});}
+    function snapshot(){return JSON.parse(JSON.stringify({categories:categories,approvals:approvals}));}
+    function render(){
+      panel.querySelector('[data-simple-service-list]').innerHTML='<div class="nxw-simple-service-head" aria-hidden="true"><span>'+escape(setupCopy.fieldItem)+'</span><span>'+escape(setupCopy.fieldPrice)+'</span><span></span></div>'+items().map(function(item){
+        return '<div class="nxw-simple-service-row" data-salon-service-row="'+escape(item.id)+'"><input data-inline-field="name" aria-label="'+escape(setupCopy.fieldItem)+'" maxlength="120" value="'+escape(item.name)+'"><span class="salon-input-wrap"><span>$</span><input data-inline-field="price" aria-label="'+escape(setupCopy.fieldPrice)+'" type="number" inputmode="decimal" min="0" step="0.01" value="'+escape(item.price??'')+'"></span><button type="button" data-simple-service-remove="'+escape(item.id)+'">Remove</button></div>';
+      }).join('');
+    }
+    panel.innerHTML='<div class="salon-service-toolbar">'+button('Add product','simple-service-add')+'</div><div data-simple-service-list></div>';
+    render();
+    panel.addEventListener('input',function(event){
+      var input=event.target.closest('[data-inline-field]');if(!input)return;
+      var id=input.closest('[data-salon-service-row]').dataset.salonServiceRow;
+      categories.forEach(function(category){category.services.filter(function(item){return item.id===id;}).forEach(function(item){item[input.dataset.inlineField]=input.value;});});
+      onChange(snapshot());
+    },{signal:lifecycle.signal});
+    panel.addEventListener('click',function(event){
+      var target=event.target.closest('button');if(!target)return;
+      if(target.dataset.action==='simple-service-add'){
+        var category=categories[0];
+        if(!category){category={id:'onboarding-services',name:'Services',services:[]};categories.push(category);}
+        var item={id:'onboarding-service-'+(window.crypto.randomUUID?window.crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2)),name:'',price:'',active:true};
+        category.services.push(item);onChange(snapshot());render();
+        panel.querySelector('[data-salon-service-row="'+item.id+'"] [data-inline-field="name"]').focus();
+      }
+      if(target.dataset.simpleServiceRemove){
+        var id=target.dataset.simpleServiceRemove;
+        categories.forEach(function(category){category.services=category.services.filter(function(item){return item.id!==id;});});
+        approvals=approvals.filter(function(value){return value!==id;});onChange(snapshot());render();
+        panel.querySelector('[data-action="simple-service-add"]').focus();
+      }
+    },{signal:lifecycle.signal});
+    return {snapshot:snapshot,save:function(){
+      if(!servicesComplete({serviceCatalog:categories},'services'))throw new Error(setupCopy.requiredMessage);
+      categories.forEach(function(category){category.services.forEach(function(item){if(item.id!=='__custom__'){item.name=String(item.name).trim();item.price=Number(item.price);delete item.isDraft;}});});
+      if(!onChange(snapshot()))throw new Error(setupCopy.saveFailed);
+      render();return snapshot();
+    },destroy:function(){lifecycle.abort();}};
+  }
   function mountServiceWorkspace(fields,kind) {
     kind=kind||'services';
     var menu=kind==='menu';
@@ -204,6 +245,7 @@
     function saveDraft(snapshot) {
       return savePreparationDraft(industry,kind,menu?{menuCatalog:snapshot.categories}:{serviceCatalog:snapshot.categories,serviceApprovals:snapshot.approvals});
     }
+    if(!menu){serviceWorkspace=mountSimpleServices(panel,categories||[],approvals,saveDraft);renderEnteredPreview();return;}
     serviceWorkspace=window.NEXORA_SALON_SERVICES.mount(panel,{
       onboarding:true, catalogType:menu?'menu':'services',salon:{id:'onboarding-'+industry}, categories:categories||[],
       api:{
@@ -371,7 +413,7 @@
     var kind=path()[selectedStep], fields=readStep(kind).fields;
     var tasks=(kind==='voice'?setupCopy.voiceTask:isSalon()?salonCopy['task'+(selectedStep+1)]:selectedStep===0?setupCopy.businessTask:setupCopy[guide().key+'Task'+selectedStep]) || '';
     var mode=fields.staffMode==='invite'?'invite':'manual';
-    var html='<div class="nxw-setup-intro"><h3 id="nxw-step-title">'+(selectedStep+1)+' · '+escape(stepTitle(selectedStep))+'</h3><strong class="nxw-task-label">'+escape(salonCopy.doThis)+'</strong><ul>'+tasks.split('|').filter(Boolean).map(function(task){return '<li>'+escape(task)+'</li>';}).join('')+'</ul></div>';
+    var html='<div class="nxw-setup-intro"><h3 id="nxw-step-title">'+(selectedStep+1)+' · '+escape(stepTitle(selectedStep))+'</h3>'+(kind==='services'?'':'<strong class="nxw-task-label">'+escape(salonCopy.doThis)+'</strong><ul>'+tasks.split('|').filter(Boolean).map(function(task){return '<li>'+escape(task)+'</li>';}).join('')+'</ul>')+'</div>';
     var formHeading='<strong class="nxw-form-title">'+escape(setupCopy.formTitle)+'</strong>';
     if(kind==='services'||kind==='menu')html+='<div class="nxw-services-preparation">'+formHeading+'<div data-settings-panel="services" data-onboarding-services></div></div>';
     if(kind==='qr')html+='<div class="nxw-qr-preparation">'+formHeading+'<div data-onboarding-qr></div></div>';
@@ -380,7 +422,7 @@
     if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):kind==='catalog'?catalogFieldsHTML(fields):'<div class="nxw-fields">'+(data.setup.fields[kind]||[]).filter(function(field){return field[0]!=='tipAmount'||guide().key==='restaurant';}).map(function(field){return fieldHTML(field,fields);}).join('')+'</div>';
     if(kind==='voice')html+='<div class="nxw-subsection"><strong>'+escape(setupCopy.voiceModeTitle)+'</strong>'+choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode')+'</div>'+(fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>')+'<p class="nxw-note">'+escape(setupCopy.voicePreviewNotice)+'</p>';
     html+='<button type="submit" class="nxw-btn">'+escape(setupCopy.saveStep)+'</button><div class="nxw-saved" id="nxw-save-status" role="status">'+escape(readStep(kind).completed?setupCopy.savedDone:Object.values(fields).some(function(value){return String(value).trim();})?setupCopy.draftSaved:setupCopy.autoSaveNote)+'</div><p class="nxw-note nxw-save-scope">'+escape(setupCopy.saveScope)+'</p></form>';
-    if(!['staff','qr','voice'].includes(kind)){
+    if(!['services','staff','qr','voice'].includes(kind)){
       var sample=kind==='business'?guide().exampleName:kind==='services'||kind==='catalog'||kind==='menu'?copy[guide().exampleOffering]:setupCopy[guide().key+(kind==='payment'?'PaymentSample':kind==='deal'?'DealSample':'ReviewSample')];
       html+='<div class="nxw-step-example"><strong>'+escape(salonCopy.example)+'</strong><p>'+escape(sample)+'</p></div>';
     }
@@ -433,7 +475,9 @@
       if(Array.isArray(categories))categories.reduce(function(all,category){return all.concat(category.services||[]);},[]).filter(function(item){return item.id!=='__custom__';}).slice(0,2).forEach(function(item,index){fields['item'+(index+1)+'Name']=item.name;fields['item'+(index+1)+'Price']=item.price==null?'':'$'+Number(item.price).toFixed(2);fields['item'+(index+1)+'Duration']=item.durationMin?item.durationMin+' min':'';fields['item'+(index+1)+'Detail']=item.description||'';});
     }
     if(kind==='staff'&&Array.isArray(fields.staffMembers))fields.staffMembers.slice(0,2).forEach(function(member,index){fields['staff'+(index+1)+'Name']=member.name;fields['staff'+(index+1)+'Hours']=(member.weekly||[]).filter(function(day){return !day.off&&day.start&&day.end;}).map(function(day){return day.start+'–'+day.end;}).filter(function(value,index,all){return all.indexOf(value)===index;}).join(' · ');});
-    var preview=window.NEXORA_RENDER_ONBOARDING_PREVIEW(guide(),kind,stepTitle(selectedStep),function(key){return copy[key]||salonCopy[key];},function(key){return setupCopy[key];},{fields:fields,businessName:business.name});
+    var previewCatalog=kind==='services'&&serviceWorkspace?serviceWorkspace.snapshot().categories:fields.serviceCatalog;
+    var previewItems=kind==='services'?(Array.isArray(previewCatalog)?previewCatalog:[]).reduce(function(all,category){return all.concat(category.services||[]);},[]).filter(function(item,index,all){return item.id!=='__custom__'&&all.findIndex(function(other){return other.id===item.id;})===index;}):undefined;
+    var preview=window.NEXORA_RENDER_ONBOARDING_PREVIEW(guide(),kind,stepTitle(selectedStep),function(key){return copy[key]||salonCopy[key];},function(key){return setupCopy[key];},{fields:fields,businessName:business.name,items:previewItems});
     preview.id='nxw-entered-preview';slot.append(preview);
   }
   function completeStep(event){

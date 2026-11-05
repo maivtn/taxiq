@@ -83,6 +83,11 @@
 .nxw [data-onboarding-services] .salon-service-filters button{min-height:32px;padding:6px 9px;color:#53617c;font-size:10px}
 .nxw [data-onboarding-services] .salon-service-filters button[aria-pressed=true]{background:#eeecff;border-color:#8e85dd;color:#5145cd}
 .nxw [data-onboarding-services] .salon-service-toolbar{margin-top:0}
+.nxw-simple-service-head,.nxw-simple-service-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(85px,.35fr) 72px;align-items:center;gap:10px}
+.nxw-simple-service-head{padding:0 9px 6px;color:#62728a;font-size:10px;font-weight:750}
+.nxw-simple-service-row{margin-top:8px;padding:8px;border:1px solid var(--svc-border);border-radius:9px;background:#fff}
+.nxw [data-onboarding-services] .nxw-simple-service-row input{min-height:38px;padding-top:8px;padding-bottom:8px}
+.nxw [data-onboarding-services] .nxw-simple-service-row button{min-height:38px;padding:8px 12px}
 .nxw [data-onboarding-services] .settings-service-category-body{overflow-x:auto}
 .nxw [data-onboarding-services] .settings-service-header,.nxw [data-onboarding-services] .settings-service-row{grid-template-columns:18px 30px minmax(130px,1fr) 76px 84px 62px 62px 32px 32px;min-width:650px}
 .nxw [data-onboarding-services] .salon-approval-state{color:#5145cd;text-align:center}
