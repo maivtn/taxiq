@@ -321,6 +321,8 @@
       const option = select.selectedOptions[0];
       const key = option?.value ? option.dataset.industryIcon || keyForLabel(option.textContent) || option.value : null;
       if (select.tomselect) {
+        // Deals pickers render their own OneQR artwork; keep one icon per choice.
+        if (select.tomselect.wrapper.classList.contains('deal-library-select')) return;
         for (const host of [select.tomselect.wrapper,select.tomselect.dropdown]) {
           host?.querySelectorAll('.item[data-value],.option[data-value]').forEach(element => {
             const item = Array.from(select.options).find(option => option.value === element.dataset.value);

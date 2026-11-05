@@ -145,8 +145,8 @@ table.st td{padding:10px 6px;border-bottom:1px solid #EEF2F7;vertical-align:midd
 </style>
 <link rel="stylesheet" href="../../vendor/tom-select/tom-select.css">
 <script src="../../vendor/tom-select/tom-select.complete.min.js"></script>
-<link rel="stylesheet" href="../community-deals-selects.css?v=20261105-deals-discovery-v3">
-<link rel="stylesheet" href="../community-deals-module.css?v=20261105-deals-discovery-v3">
+<link rel="stylesheet" href="../community-deals-selects.css?v=20261105-deals-controls-v4">
+<link rel="stylesheet" href="../community-deals-module.css?v=20261105-deals-controls-v4">
 </head>
 <body class="embed community-deal-module lang-en" data-module="deals">
 <div class="persona"><span>Demo role:</span><button data-role="tech" class="on">💅 Jessica · tech</button><button data-role="owner">🏪 Kayla · owner</button></div>
@@ -508,7 +508,7 @@ function card(d,preview){const [big,sm]=stubTxt(d);const pct=d.qty?Math.round((d
 function ticket(d,code){const [big,sm]=stubTxt(d);const c=CAT(d.cat);
   return `<div class="tk" style="background:${bg(d.th||'rose')}"><span class="pt">${d.e||'🎟️'}</span><div class="iss"><span class="lg">${esc((d.biz||'N')[0])}</span>${esc(d.biz)}</div>
   <div class="big">${esc(big)} <span style="font-size:15px;font-weight:700;text-transform:uppercase">${sm}</span></div><div class="ttl">${esc(d.title)}</div>
-  <div class="fine"><span>${c.ic} ${c.n} · ${esc(d.cond)}</span><span>⏳ ${code?'HSD '+fmtT(expAt(d))+' · '+code:(d.exp===1?"24 hours":d.exp+" days")}</span></div></div>`}
+  <div class="fine"><span>${c.ic} ${c.n} · ${esc(d.cond)}</span><span>⏳ ${code?'Expires '+fmtT(expAt(d))+' · '+code:(d.exp===1?"24 hours":d.exp+" days")}</span></div></div>`}
 function filtered(){const f=S.filt,q=f.q.toLowerCase();let L=S.D.filter(d=>!d.paused&&!isExp(d)&&(f.aud==='all'||d.aud===f.aud)&&(!f.egrp||CAT(d.cat).g===f.egrp)&&(d.mi==null?f.r===999:d.mi<=Math.min(f.r,25))&&(!q||(d.title+' '+d.biz+' '+(d.kw||'')+' '+CAT(d.cat).n).toLowerCase().includes(q)));
   const k={near:d=>d.mi??99,exp:d=>expAt(d),left:d=>left(d)}[f.sort];L.sort((a,b)=>(sponsored(b)-sponsored(a))||(k(a)-k(b)));return L}
 let MV='radar',leafMap=null,leafLayer=null;const GC={beauty:'#e87ba4',food:'#eda100',shop:'#1baf7a',health:'#2a78d6',auto:'#eb6834',svc:'#9085e9'};const gcol=d=>GC[CAT(d.cat).g]||'#94A3B8';
@@ -592,7 +592,7 @@ function claim(id){sweep();const d=S.D.find(x=>x.id===id);const w0=S.wallet.find
   const t=now(),holdUntil=d.hold?Math.min(expAt(d),t+d.hold*DAY):expAt(d);
   const w={id,code:mkCode(id),used:0,t,holdUntil};S.wallet.unshift(w);render();openSave(w)}
 function termsLine(d,w){const per=(d.per||1)>=99?"unlimited uses":"up to "+(d.per||1)+" uses per person";
-  return `<div class="ctl" data-noi18n><b>Coupon terms:</b> ${esc(d.cond)} · ${per} · each code works once · HSD <b>${fmtT(expAt(d))}</b>${w.holdUntil<expAt(d)?` · <b>use before ${fmtT(w.holdUntil)}</b>, unused spots return to the pool after the hold expires`:''}. Claiming this coupon means you agree to these terms.</div>`}
+  return `<div class="ctl" data-noi18n><b>Coupon terms:</b> ${esc(d.cond)} · ${per} · each code works once · Expires <b>${fmtT(expAt(d))}</b>${w.holdUntil<expAt(d)?` · <b>use before ${fmtT(w.holdUntil)}</b>, unused spots return to the pool after the hold expires`:''}. Claiming this coupon means you agree to these terms.</div>`}
 function openSave(w){const d=S.D.find(x=>x.id===w.id);
   $('#mBody').innerHTML=`<h3 style="font-size:17px;font-weight:800">🎟️ Coupon claimed!</h3><p class="muted" style="margin:4px 0 12px">Saved automatically to <b>NEXORA Wallet</b>. Save it another way too:</p>${ticket(d,w.code)}${termsLine(d,w)}
   <button class="saveopt" data-sv="wallet"><span class="oi">🎟️</span><div><b>Open NEXORA Wallet</b><small>QR + live PIN — use at the counter</small></div></button>
@@ -613,7 +613,7 @@ function pngOf(d,code){const cv=document.createElement('canvas');cv.width=720;cv
   const gr=x.createLinearGradient(0,0,720,400);gr.addColorStop(0,c1);gr.addColorStop(1,c2);x.fillStyle=gr;x.fillRect(0,0,720,400);
   x.fillStyle='#fff';x.font='700 22px Inter, Arial, sans-serif';x.fillText(d.biz,40,58);const [big,sm]=stubTxt(d);x.font='800 84px Inter, Arial, sans-serif';x.fillText(String(big),40,160);
   x.font='700 22px Inter, Arial, sans-serif';x.fillText(sm.toUpperCase(),44,194);x.font='700 30px Inter, Arial, sans-serif';wrapT(x,d.title,40,246,420,36);
-  x.font='500 18px Inter, Arial, sans-serif';x.globalAlpha=.92;x.fillText(d.cond.slice(0,46),40,340);x.fillText('HSD '+fmtT(expAt(d))+' · '+code,40,368);x.globalAlpha=1;
+  x.font='500 18px Inter, Arial, sans-serif';x.globalAlpha=.92;x.fillText(d.cond.slice(0,46),40,340);x.fillText('Expires '+fmtT(expAt(d))+' · '+code,40,368);x.globalAlpha=1;
   x.fillStyle='#fff';x.fillRect(500,110,180,180);const bits=qrBits(code),s=160/21;x.fillStyle='#0B1220';bits.forEach((b,i)=>{if(b)x.fillRect(510+(i%21)*s,120+Math.floor(i/21)*s,s+.5,s+.5)});
   x.fillStyle='#fff';x.font='600 14px Inter, Arial, sans-serif';x.fillText("NEXORA · scan at the counter",505,318);return cv.toDataURL('image/png')}
 function wrapT(x,t,X,Y,W,L){const ws=t.split(' ');let line='',y=Y;ws.forEach(w=>{const tt=line+w+' ';if(x.measureText(tt).width>W&&line){x.fillText(line,X,y);line=w+' ';y+=L}else line=tt});x.fillText(line,X,y)}
@@ -629,7 +629,7 @@ function drawWallet(){sweep();$('#walList').innerHTML=S.wallet.map((w,i)=>{const
   <div style="margin:6px 0"><span class="code">${w.code}</span></div>
   ${!w.used&&w.rel?(isExp(d)?`<span class="tag warn">⌛ Expired ${fmtT(expAt(d))}</span>`:`<span class="tag warn">⌛ Spot hold expired (${fmtT(w.holdUntil)})</span><div class="muted" style="margin-top:6px">The spot has returned to the pool. ${left(d)&&!d.paused?`<button class="btn sm" data-claim="${d.id}">Claim again</button>`:"Coupon is out of slots."}</div>`):
    w.used?`<span class="tag gray">✓ Used ${new Date(w.usedAt).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}${w.saved?" · saved "+money(w.saved):''}</span>`:
-   `<div class="muted">HSD ${fmtT(expAt(d))}${w.holdUntil<expAt(d)?" · <b>use before "+fmtT(w.holdUntil)+'</b>':''}</div><div class="muted">Live PIN · changes every 30 seconds</div><div class="pinv" data-pin-of="${w.code}">${pinOf(w.code)}</div><div class="cd"><i data-cd></i></div>
+   `<div class="muted">Expires ${fmtT(expAt(d))}${w.holdUntil<expAt(d)?" · <b>use before "+fmtT(w.holdUntil)+'</b>':''}</div><div class="muted">Live PIN · changes every 30 seconds</div><div class="pinv" data-pin-of="${w.code}">${pinOf(w.code)}</div><div class="cd"><i data-cd></i></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn ghost sm" data-resave="${i}">⬇ Save / send</button><button class="btn ghost sm" data-demoscan="${i}">🧾 Demo: show the cashier</button></div>`}</div></div>`}).join('')||"<div class=\"card muted\">No coupons yet. Tap “Get coupon” in Nearby deals.</div>";tickPins()}
 function tickPins(){const secs=Math.floor(Date.now()/1000)%WIN;$$('[data-cd]').forEach(el=>el.style.width=((WIN-secs)/WIN*100)+'%');$$('[data-pin-of]').forEach(el=>{const p=pinOf(el.dataset.pinOf);if(el.textContent!==p)el.textContent=p})}
 function simTxt(){$('#simNow').textContent=OFF?"Simulated time: "+fmtT(now()):''}
@@ -703,7 +703,7 @@ function banner(d,W,H,kind){const cv=document.createElement('canvas');cv.width=W
   x.font=F(base*.9,'800');x.fillText(d.biz,tx,ty+base);
   x.font=F(base*(kind==='wide'?2.2:3.2),'900');x.fillText(String(big),tx,ty+base*(kind==='wide'?3.1:4.4));
   x.font=F(base*.95,'800');x.fillText(sm.toUpperCase(),tx,ty+base*(kind==='wide'?4.2:5.6));
-  if(kind!=='wide'){x.font=F(base*1.35,'800');const yy=wrap(d.title,tx,ty+base*7.4,tw,base*1.6,3);x.globalAlpha=.9;x.font=F(base*.85,'500');wrap(d.cond+' · HSD '+fmtT(expAt(d)),tx,yy+base*1.6,tw,base*1.1,2);x.globalAlpha=1;
+  if(kind!=='wide'){x.font=F(base*1.35,'800');const yy=wrap(d.title,tx,ty+base*7.4,tw,base*1.6,3);x.globalAlpha=.9;x.font=F(base*.85,'500');wrap(d.cond+' · Expires '+fmtT(expAt(d)),tx,yy+base*1.6,tw,base*1.1,2);x.globalAlpha=1;
     const qs=Math.round(Math.min(W,H)*.16);x.fillStyle='#fff';x.fillRect(W-P-qs,H-P-qs,qs,qs);const bits=qrBits('c/'+(d.id||'new')),c=qs/21;x.fillStyle='#0B1220';bits.forEach((b,i)=>{if(b)x.fillRect(W-P-qs+(i%21)*c,H-P-qs+Math.floor(i/21)*c,c+.5,c+.5)});x.fillStyle='#fff';x.font=F(base*.7,'700');x.fillText(dUrl(d),tx,H-P)}
   else{x.font=F(base*1.1,'800');x.fillText(d.title.slice(0,40),tx+base*9,ty+base*2.6);x.font=F(base*.8,'600');x.fillText(dUrl(d)+'  ›',tx+base*9,ty+base*4.2)}
   return cv.toDataURL('image/png')}
@@ -715,7 +715,7 @@ function drawBanners(){if(!extOn)return;const d=draft();const out=[];
   if(PL.gs)out.push(`<figure style="grid-column:1/-1"><div class="txt"><b>Google Search (RSA)</b>\nH1: ${esc(d.title).slice(0,30)}\nH2: ${esc(d.biz).slice(0,30)}\nH3: ${esc(big+' '+sm).slice(0,30)}\nMô tả: ${esc(d.cond)}. Get coupon bằng SĐT, dùng tại quầy.
 URL: ${dUrl(d)}?c=google</div></figure>`);
   if(PL.gpt)out.push(`<figure style="grid-column:1/-1"><div class="txt"><b>ChatGPT Ads (sponsored answer)</b>
-Title: ${esc(d.title)}\nMô tả: ${esc(d.biz)} · ${esc(d.cond)} · HSD ${fmtT(expAt(d))}
+Title: ${esc(d.title)}\nMô tả: ${esc(d.biz)} · ${esc(d.cond)} · Expires ${fmtT(expAt(d))}
 Ảnh: banner 1080×1080 · CTA: “Get coupon” → ${dUrl(d)}?c=gpt\n(định dạng theo yêu cầu nền tảng — bản mẫu)</div></figure>`);
   $('#bannerGrid').innerHTML=out.join('')||"<div class=\"muted\">Select ít nhất 1 nền tảng.</div>"}
 ['#cVal','#cTitle','#cCond'].forEach(i=>$(i).addEventListener('input',()=>{if(extOn)drawBanners()}));
@@ -851,9 +851,9 @@ window.addEventListener('message',e=>{const d=e.data||{};try{
  if(d.cmd==='view'&&typeof window.__view==='function')window.__view(d.v);
 }catch(err){console.error(err)}});
 </script>
-<script src="../community-deals-selects.js?v=20261105-deals-discovery-v3"></script>
-<script src="../community-deals-demo.js?v=20261105-deals-discovery-v3"></script>
-<script src="../community-deals-items.js?v=20261105-deals-discovery-v3"></script>
-<script src="../community-deals-module.js?v=20261105-deals-discovery-v3"></script>
+<script src="../community-deals-selects.js?v=20261105-deals-controls-v4"></script>
+<script src="../community-deals-demo.js?v=20261105-deals-controls-v4"></script>
+<script src="../community-deals-items.js?v=20261105-deals-controls-v4"></script>
+<script src="../community-deals-module.js?v=20261105-deals-controls-v4"></script>
 </body>
 </html>

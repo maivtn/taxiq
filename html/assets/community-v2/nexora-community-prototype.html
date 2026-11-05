@@ -200,10 +200,10 @@
 @media(max-width:650px){#dealRefinements{gap:9px;padding:10px}#dealFilterToggle{font-size:12px;padding:9px 11px}}
 </style>
   <link rel="stylesheet" href="community-pages-screen.css?v=20261105-page-photo-controls-v10">
-  <link rel="stylesheet" href="community-deals-selects.css?v=20261105-deals-discovery-v3">
-  <link rel="stylesheet" href="community-deals-workflow.css?v=20261105-deals-discovery-v3">
+  <link rel="stylesheet" href="community-deals-selects.css?v=20261105-deals-controls-v4">
+  <link rel="stylesheet" href="community-deals-workflow.css?v=20261105-deals-controls-v4">
 
-  <script src="../industry-icons.js?v=2f6387c34b" data-industry-icons></script>
+  <script src="../industry-icons.js?v=20261105-deals-controls-v4" data-industry-icons></script>
 </head>
 <body>
 <script>
@@ -312,8 +312,8 @@
 <script src="community-shifts-workflow.js?v=20261029-community-tour-actions-v21"></script>
 <script src="community-feed-social.js?v=20261030-community-english-v32"></script>
 <script src="community-feed-composer.js?v=20261029-community-tour-actions-v21"></script>
-<script src="community-deals-selects.js?v=20261105-deals-discovery-v3"></script>
-<script src="community-deals-workflow.js?v=20261105-deals-discovery-v3"></script>
+<script src="community-deals-selects.js?v=20261105-deals-controls-v4"></script>
+<script src="community-deals-workflow.js?v=20261105-deals-controls-v4"></script>
 <script>
 (() => {
   const KEY='nexora-market-prototype-v1';
@@ -464,6 +464,7 @@
     let location=bar.querySelector('.community-context-location');
     if(!location){location=document.createElement('div');location.className='community-context-location';location.append($('#viewerLocationLabel'),$('#changeViewerLocation'));bar.prepend(location);}
     bar.querySelector('.community-context-action')?.remove();
+    if(next==='deals'&&dealsWorkflow){bar.classList.remove('has-context-action');return;}
     const action=next==='jobs'?{label:'Ca làm thêm',attribute:'data-view',value:'daywork'}:next==='deals'?{label:'Đăng ưu đãi',attribute:'data-template',value:'deal'}:next==='pages'?{label:'Tạo Fanpage',attribute:'data-template',value:'page'}:next==='blog'?{label:'Viết Blog',attribute:'data-blog-create',value:''}:next==='daywork'?{label:'Việc làm',attribute:'data-view',value:'jobs'}:next==='market'?{label:'Tạo bài đăng',attribute:'data-market-create',value:''}:null;
     bar.classList.toggle('has-context-action',Boolean(action));
     if(!action)return;

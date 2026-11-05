@@ -15,23 +15,34 @@
     if(!window.NEXORA_DEAL_INDUSTRY_FILES?.includes(key))key=/nail|làm đẹp|beauty/i.test(text)?'nail':/food|ăn uống|restaurant/i.test(text)?'food':/dịch vụ|services/i.test(text)?'software':'';
     return key&&window.NEXORA_DEAL_INDUSTRY_FILES?.includes(key)?new URL('industry/'+key+'.png',BASE).href:new URL('issue-2040-oneqr-store-3d.png',BASE).href;
   };
+  function syncState(select,control){
+    control.wrapper.classList.remove('in','select','field','demo-input','hidden','hide');
+    control.wrapper.style.maxWidth='';
+    control.wrapper.hidden=select.hidden||select.classList.contains('hidden')||select.classList.contains('hide');
+    if(control.isDisabled!==select.disabled){if(select.disabled)control.disable();else control.enable();}
+  }
   function enhance(select,options={}){
     if(!select||!window.TomSelect)return;
-    const rows=[...select.options].map(option=>({value:option.value,text:clean(label(option.textContent)),disabled:option.disabled,icon:option.dataset.dealIcon||iconFor(option.value,option.textContent,options.group)}));
-    const signature=JSON.stringify(rows),value=select.value;
+    const value=select.value,seen=new Set(),rows=[];
+    // TomSelect may append a second empty option. Canonicalize native options
+    // before comparing, so opening or searching cannot trigger a rebuild loop.
+    for(const option of [...select.options]){
+      if(seen.has(option.value)){option.remove();continue;}
+      seen.add(option.value);
+      rows.push({value:option.value,text:clean(label(option.textContent)),disabled:option.disabled,icon:option.dataset.dealIcon||iconFor(option.value,option.textContent,options.group)});
+    }
+    if(select.value!==value)select.value=value;
+    const signature=JSON.stringify(rows);
     if(select.tomselect){
-      select.tomselect.wrapper.classList.remove('in','select','field','demo-input');
-      select.tomselect.wrapper.style.maxWidth='';
       if(select.dataset.dealSelectOptions!==signature){const control=select.tomselect;control.clear(true);control.clearOptions();control.addOptions(rows);control.setValue(value,true);control.refreshOptions(false);select.dataset.dealSelectOptions=signature;}
       else if(String(select.tomselect.getValue())!==value)select.tomselect.setValue(value,true);
-      select.tomselect.wrapper.hidden=select.hidden||select.classList.contains('hidden')||select.classList.contains('hide');
+      syncState(select,select.tomselect);
       return select.tomselect;
     }
     const render=data=>`<div class="deal-select-choice">${options.industry&&data.value?`<img src="${esc(data.icon||iconFor(data.value,data.text,options.group))}" alt="" width="24" height="24">`:''}<span>${esc(data.text)}</span></div>`;
     select.dataset.dealSelectOptions=signature;
     const control=new window.TomSelect(select,{create:false,placeholder:options.placeholder||'Select',maxItems:1,maxOptions:null,allowEmptyOption:true,hideSelected:false,closeAfterSelect:true,options:rows,searchField:['text'],render:{option:render,item:render}});
-    control.wrapper.classList.remove('in','select','field','demo-input');
-    control.wrapper.style.maxWidth='';
+    syncState(select,control);
     control.wrapper.classList.add('deal-library-select');
     control.control_input?.setAttribute('aria-label',options.label||select.getAttribute('aria-label')||'Search');
     return control;

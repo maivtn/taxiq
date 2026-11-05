@@ -301,3 +301,10 @@ body.community-deal-module #openRow .deal-compact-item,body.community-deal-modul
 .deal-opening-offer-columns strong{display:block;color:#654aaf;font-size:12px;line-height:1.65;font-weight:750}
 .deal-opening-offer-columns p{color:#6f788e;font-size:12px;line-height:1.65}
 @media(max-width:420px){.deal-opening-offers>.deal-opening-offer-columns{grid-template-columns:1fr;padding:0}.deal-opening-offer-columns>div{padding:12px 13px}.deal-opening-offer-columns>div+div{border-left:0;border-top:1px solid #e8e4ef}}
+
+/* Keep the dismiss action reachable without scrolling through a long coupon. */
+body.community-deal-module .modal .box{display:flex;flex-direction:column;overflow:hidden}
+body.community-deal-module .modal .box>#mBody{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+body.community-deal-module .modal .box>.ft{flex-shrink:0;position:relative;padding:12px 16px;border-top:1px solid #e7e4ef;background:#fff}
+body.community-deal-module .modal .box>.ft>.btn{min-height:44px}
+body.community-deal-module .cp.deal-modern-card .deal-opening-actions>.btn,body.community-deal-module .cp.deal-modern-card .deal-opening-secondary>.btn{min-height:44px}
