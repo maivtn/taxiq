@@ -25,6 +25,7 @@
     'voice-sms': 'issue-2040-oneqr-phone-3d.png',
     'check-in': '../icons/pos-front-desk/check-in.svg',
     'turn-board': '../icons/pos-front-desk/turn-board.svg',
+    'vlinkpay-wallet': 'vlinkpay-wallet-show-wallet.png',
     'merchant-atm': 'merchant-atm-icons8-3d.png',
     'mobile-atm': 'mobile-atm-payment-10647002.png',
     'payment-gateway': 'payment-gateway-secure-9506497.png',
@@ -74,7 +75,7 @@
     decorate(link.querySelector('.contact-detail-icon'), name);
   });
   const nodes = {
-    tokenization: 'badge-dollar-sign', wallet: 'wallet', 'crypto-card': 'credit-card',
+    tokenization: 'badge-dollar-sign', wallet: 'vlinkpay-wallet', 'crypto-card': 'credit-card',
     merchant: 'store', charity: 'heart', gift: 'gift', 'merchant-atm': 'merchant-atm',
     'mobile-atm': 'mobile-atm', exchange: 'exchange-hub', gateway: 'payment-gateway', program: 'program-hub'
   };
