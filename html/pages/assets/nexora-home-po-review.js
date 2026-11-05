@@ -28,7 +28,7 @@
     'vlinkpay-wallet': 'vlinkpay-wallet-show-wallet.png',
     charity: 'charity-gift-card-payment.png',
     'merchant-atm': 'merchant-atm-icons8-3d.png',
-    'mobile-atm': 'mobile-atm-payment-10647002.png',
+    'mobile-atm': 'mobile-atm-car-coins.png',
     'payment-gateway': 'payment-gateway-crypto-card.png',
     'exchange-hub': 'industry/remit.png',
     'program-hub': 'program-hub-icons8-3d.png',
