@@ -1,4 +1,12 @@
 /* Compact accordion navigation for the homepage on phones and tablets. */
+/* Menu and X SVG paths from the local Lucide icon library. */
+.nexora-icon-upgrade .menu-toggle { padding: 0; line-height: 0; }
+.nexora-icon-upgrade .menu-toggle svg { display: block; width: 22px; height: 22px; }
+.nexora-icon-upgrade .menu-toggle .menu-toggle-close,
+.nexora-icon-upgrade .menu-toggle[aria-expanded="true"] .menu-toggle-menu { display: none; }
+.nexora-icon-upgrade .menu-toggle[aria-expanded="true"] .menu-toggle-close { display: block; }
+.nexora-icon-upgrade .menu-toggle[aria-expanded="true"]::before { content: none; }
+
 .nexora-icon-upgrade .main-nav > .nav-news {
   display: inline-flex;
   align-items: center;
