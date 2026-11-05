@@ -10,7 +10,7 @@
   }
   async function mount(host,options={}){
     if(host.communityHub)return host.communityHub;
-    const url=new URL('nexora-community-complete.html?v=20261030-community-list-spacing-v53',BASE_URL);
+    const url=new URL('nexora-community-complete.html?v=20261105-community-deals-v54',BASE_URL);
     const parsed=new DOMParser().parseFromString(await read(url),'text/html');
     const styles=await Promise.all([...parsed.head.querySelectorAll('style,link[rel="stylesheet"]')].map(async node=>{const source=node.tagName==='STYLE'?url:new URL(node.getAttribute('href'),url);return scopedCSS(node.tagName==='STYLE'?node.textContent:await read(source),source);}));
     parsed.body.querySelectorAll('script').forEach(node=>node.remove());
@@ -160,7 +160,7 @@
       for(const frame of [community,connect])frame.addEventListener('load',()=>{const element=frame.contentDocument?.documentElement;if(element&&window.ResizeObserver)new ResizeObserver(syncPaneGutter).observe(element);syncPaneGutter();});
       if(context.native&&window.ResizeObserver)new ResizeObserver(()=>{updateMobileHeading();syncPaneGutter();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}}).observe(root.host);
       const communitySource=new URL(community.dataset.src,BASE_URL);
-      for(const key of ['member','role','account','post','postId','comment','commentId','thread','threadId','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','pageId','pageMode','pageTab','pageScope'])if(params.get(key))communitySource.searchParams.set(key,params.get(key));
+      for(const key of ['dealTab','member','role','account','post','postId','comment','commentId','thread','threadId','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','pageId','pageMode','pageTab','pageScope'])if(params.get(key))communitySource.searchParams.set(key,params.get(key));
       const connectSource=new URL(connect.dataset.src,BASE_URL);
       connectSource.searchParams.set('section',connectSection);for(const key of ['member','role','account'])if(params.get(key))connectSource.searchParams.set(key,params.get(key));
       ensurePane(view==='connect'?connect:community);

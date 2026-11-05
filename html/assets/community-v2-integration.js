@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community-v2/community-hub.js?v=20261030-community-list-spacing-v53',document.currentScript.src);
+  var componentURL=new URL('community-v2/community-hub.js?v=20261105-community-deals-v54',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -15,7 +15,7 @@
   var routes = ['feed', 'groups', 'market', 'pages', 'deals', 'jobs', 'shift', 'blog', 'connect', 'chatgroups', 'calls', 'privacy'];
   var aliases = {mkt:'market', fanpage:'pages', daywork:'shift', shifts:'shift', profile:'jobs', 'jobs-my-posts':'jobs', 'jobs-applied':'jobs', 'shift-payments':'shift', learning:'feed', events:'feed', dcats:'deals', dmatch:'deals', dopen:'deals', dlast:'deals', dlastt:'deals', dlastb:'deals', dcamp:'deals', dwallet:'deals', dcreate:'deals', dmanage:'deals', dredeem:'deals', dwish:'deals'};
 
-  var contextKeys=['groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId'];
+  var contextKeys=['dealTab','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId'];
   function routeContext(){var query=new URLSearchParams(location.search),result={};for(var key of contextKeys)if(query.has(key))result[key]=query.get(key);return result;}
   function route(value) {
     value = aliases[value] || value;
@@ -104,7 +104,7 @@
       send('nexora-community-language',{language:communityLanguage()});
       send('nexora-community-navigate', {route:current,context:routeContext()});
     }
-    if(data.type==='nexora-community-context'){var url=new URL(location.href),ctx=data.context||{};if(ctx.closeDetail){clearContextOnBack=detailOpen||detailBackPending;for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);}else{var keys=Object.hasOwn(ctx,'jobsTab')?['jobsTab','jobId','profileRequired']:Object.hasOwn(ctx,'shiftTab')?['shiftTab','shiftId','assignmentId','settlementId','invitationId']:contextKeys;for(var key of keys){if(ctx[key])url.searchParams.set(key,ctx[key]);else url.searchParams.delete(key);}}history.replaceState(history.state,'',url);}
+    if(data.type==='nexora-community-context'){var url=new URL(location.href),ctx=data.context||{};if(ctx.closeDetail){clearContextOnBack=detailOpen||detailBackPending;for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);}else{var keys=Object.hasOwn(ctx,'dealTab')?['dealTab']:Object.hasOwn(ctx,'jobsTab')?['jobsTab','jobId','profileRequired']:Object.hasOwn(ctx,'shiftTab')?['shiftTab','shiftId','assignmentId','settlementId','invitationId']:contextKeys;for(var key of keys){if(ctx[key])url.searchParams.set(key,ctx[key]);else url.searchParams.delete(key);}}history.replaceState(history.state,'',url);}
     if(data.type==='nexora-community-pos')location.href='pos-recruitment.html';
     if (data.type === 'nexora-community-route' && ready) show(data.route, true, Boolean(data.replace));
     if(data.type==='nexora-feed-post-close'){clearPostOnBack=true;if(!detailOpen&&!detailBackPending)clearPostLink();}
@@ -150,7 +150,7 @@
   // Keep ownership local instead of replacing the browser's history API.
   function recordInitialRoute() {
     clearDetailState();
-    var originalTab=new URLSearchParams(location.search).get('tab');var originalUrl=new URL(location.href);var legacyContext={profile:['jobsTab','profile'],'jobs-my-posts':['jobsTab','myPosts'],'jobs-applied':['jobsTab','applied'],'shift-payments':['shiftTab','payments']}[originalTab];if(legacyContext){originalUrl.searchParams.set(legacyContext[0],legacyContext[1]);history.replaceState(history.state,'',originalUrl);}
+    var originalTab=new URLSearchParams(location.search).get('tab');var dealAlias={dcats:'industry',dmatch:'match',dopen:'opening',dwallet:'wallet',dwish:'saved',dcreate:'create',dmanage:'manage',dredeem:'redeem',dcamp:'campaign'}[originalTab];if(dealAlias){var dealUrl=new URL(location.href);dealUrl.searchParams.set('dealTab',dealAlias);history.replaceState(history.state,'',dealUrl);}var originalUrl=new URL(location.href);var legacyContext={profile:['jobsTab','profile'],'jobs-my-posts':['jobsTab','myPosts'],'jobs-applied':['jobsTab','applied'],'shift-payments':['shiftTab','payments']}[originalTab];if(legacyContext){originalUrl.searchParams.set(legacyContext[0],legacyContext[1]);history.replaceState(history.state,'',originalUrl);}
     show(originalTab, false, true);
     var params=new URLSearchParams(location.search);
     params.set('tab',current);
