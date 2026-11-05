@@ -10,6 +10,39 @@ body.community-page-screen #pagesView > :not(#communityPageScreen) { display:non
 #communityPageScreen .dialog-footer { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; position:sticky; bottom:0; z-index:3; padding:14px 20px; border-top:1px solid #e6eaf2; background:#fff; border-radius:0 0 16px 16px; }
 #communityPageScreen :is(.btn,.icon-btn) { min-height:44px; }
 #communityPageScreen .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+
+/* Change Page photos from their previews, using the shared camera/file picker. */
+.page-creation-preview { overflow:visible; }
+.page-creation-preview .page-preview-cover { position:relative; height:160px; border-radius:12px 12px 0 0; }
+.page-creation-preview .page-preview-bottom { align-items:center; gap:14px; margin:-30px 16px 14px; }
+.page-creation-preview .page-preview-name { padding-top:30px; font-size:15px; }
+.page-preview-photo-editor { position:relative; flex:none; }
+.page-preview-photo-editor[open] { z-index:5; }
+.page-preview-photo-editor.is-cover { position:absolute; right:12px; bottom:12px; }
+.page-preview-photo-trigger { display:flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:10px 14px; border:1px solid #dfe5ef; border-radius:9px; background:#fff; color:#30394f; font-size:13px; font-weight:750; line-height:1.4; list-style:none; cursor:pointer; box-shadow:0 2px 6px #17213814; }
+.page-preview-photo-trigger::-webkit-details-marker { display:none; }
+.page-preview-photo-trigger::marker { content:''; }
+.page-preview-photo-trigger:hover { background:#f3f5fa; }
+.page-preview-photo-trigger:focus-visible { outline:3px solid #6655ed; outline-offset:3px; }
+.page-preview-photo-trigger svg { width:18px; height:18px; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.is-avatar > .page-preview-photo-trigger { position:relative; display:block; width:88px; height:88px; padding:0; border:0; border-radius:50%; background:transparent; box-shadow:none; }
+.is-avatar .page-preview-avatar { width:88px; height:88px; }
+.page-preview-camera { position:absolute; right:-2px; bottom:0; display:grid; place-items:center; width:34px; height:34px; border:3px solid #fff; border-radius:50%; background:#edf0f5; color:#30394f; box-shadow:0 2px 5px #17213818; }
+.is-avatar > .page-preview-photo-trigger:hover .page-preview-camera { background:#dfe5ef; }
+.page-preview-photo-menu { position:absolute; top:calc(100% + 8px); right:0; z-index:6; width:190px; padding:6px; border:1px solid #dfe5ef; border-radius:12px; background:#fff; box-shadow:0 8px 26px #17213826; }
+.is-avatar > .page-preview-photo-menu { right:auto; left:0; }
+.page-preview-photo-menu .community-photo-actions { flex-direction:column; align-items:stretch; gap:2px; margin:0; }
+body .page-preview-photo-menu .community-photo-button { width:100%; justify-content:flex-start; border:0; background:#fff; color:#30394f; box-shadow:none; }
+body .page-preview-photo-menu .community-photo-button:hover { background:#f0edff; color:#5947ce; }
+.page-creation-preview .page-preview-help { padding:0 16px 14px; }
+.page-creation-preview .page-media-error:empty { display:none; }
+.page-creation-preview .page-media-error:not(:empty) { padding-bottom:12px!important; }
+@media(max-width:650px){
+  .page-creation-preview .page-preview-cover { height:144px; }
+  .page-preview-photo-editor.is-cover { right:10px; bottom:10px; }
+  .is-cover > .page-preview-photo-trigger { gap:6px; padding:9px 10px; font-size:12px; }
+  .page-creation-preview .page-preview-bottom { gap:10px; margin-inline:12px; }
+}
 @media(max-width:800px){
   #communityPageScreen .dialog-head { align-items:flex-start; flex-wrap:wrap; padding:14px; }
   #communityPageScreen .dialog-head h2 { font-size:18px; }
