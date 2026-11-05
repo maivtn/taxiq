@@ -55,15 +55,12 @@
     }
   }
 
-  const retainedAppIcons = new Set(['one-qr', 'payments-payouts', 'reviews', 'analytics']);
   Object.entries(products).forEach(([product, name]) => {
     decorate(document.querySelector(`.ecosystem-item[href="products/${product}/index.html"] .product-icon`), name);
     decorate(document.querySelector(`.eco-nexora-item[data-product="${product}"] .eco-nexora-icon`), name);
-    if (!retainedAppIcons.has(product)) {
-      const appIcon = document.querySelector(`.apps-grid a[href="products/${product}/index.html"] > span[aria-hidden="true"]`);
-      if (appIcon) appIcon.classList.add('app-product-icon');
-      decorate(appIcon, name);
-    }
+    const appIcon = document.querySelector(`.apps-grid a[href="products/${product}/index.html"] > span[aria-hidden="true"]`);
+    if (appIcon) appIcon.classList.add('app-product-icon');
+    decorate(appIcon, name);
   });
   const journey = ['check-in', 'turn-board', 'hand-coins', 'heart'];
   document.querySelectorAll('.journey-icon').forEach((element, index) => decorate(element, journey[index]));
