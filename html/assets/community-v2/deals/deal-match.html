@@ -46,8 +46,8 @@ main{max-width:640px;margin:0 auto;padding:12px 14px 120px}section[data-v]{displ
 .hidden{display:none!important}.embedonly{display:none}body.embed .embedonly{display:block}body.embed .top{display:none}body.embed main{padding-top:10px}body.lang-en .vi{display:none}body:not(.lang-en) .en{display:none}
 </style><link rel="stylesheet" href="../../vendor/tom-select/tom-select.css">
 <script src="../../vendor/tom-select/tom-select.complete.min.js"></script>
-<link rel="stylesheet" href="../community-deals-selects.css?v=20261105-deals-controls-v4">
-<link rel="stylesheet" href="../community-deals-module.css?v=20261105-deals-controls-v4">
+<link rel="stylesheet" href="../community-deals-selects.css?v=20261105-deals-controls-v5">
+<link rel="stylesheet" href="../community-deals-module.css?v=20261105-deals-controls-v5">
 </head><body class="embed community-deal-module lang-en" data-module="match"><script>window.__EMBED=true</script>
 <div class="top"><div class="bar"><div><h1>✦ NEXORA Deal Match <span class="badge">DEMO</span></h1><div class="sub"><span class="vi">Clients say what they want · salons answer with a deal · the system matches</span><span class="en">Clients say what they want · salons answer with a deal · the system matches</span></div></div><span style="flex:1"></span><button class="btn ghost sm" id="tourBtn">✦ AI Tour</button><button class="btn ghost sm" id="langBtn">EN</button></div>
 <div class="roles" id="roles"><button data-v="cust" class="on">🙋 <span class="vi">Client</span><span class="en">Client</span></button><button data-v="biz">🏪 <span class="vi">Salon</span><span class="en">Salon</span><span class="n" id="nDem">0</span></button><button data-v="sys">⚙️ <span class="vi">Broker</span><span class="en">Broker</span></button></div></div>
@@ -58,7 +58,7 @@ main{max-width:640px;margin:0 auto;padding:12px 14px 120px}section[data-v]{displ
   <div class="card" id="cAsk">
     <h3 class="vi">You muốn gì?</h3><h3 class="en">What do you want?</h3>
     <p class="muted vi">Gõ or nói một câu. Có matches thì hiện ngay; chưa có thì bấm một nút để tiệm gần bạn biết.</p><p class="muted en">Type or say one line. Matching deals show instantly; if none, one tap tells nearby salons.</p>
-    <div class="big" style="margin-top:10px"><input id="q" placeholder="E.g. Gel-X under $40 near Bellaire this weekend" autocomplete="off"><button class="mic" id="mic" title="Speak">🎤</button></div>
+    <div class="big" style="margin-top:10px"><input id="q" placeholder="E.g. Gel-X under $40 near Bellaire this weekend" autocomplete="off"><button class="mic" id="mic" title="Speak" aria-label="Speak"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></button></div>
     <div class="chips deal-filter-source" id="quick"><button class="chip" data-q="pedicure dưới $35">🦶 Pedicure &lt; $35</button><button class="chip" data-q="gel-x dưới $45 weekend">✨ Gel-X weekend</button><button class="chip" data-q="massage 60 min dưới $60">💆 Massage &lt; $60</button><button class="chip" data-q="nối mi off giá">👁️ Nối mi</button><button class="chip" data-q="cắt tóc nam dưới $25">💇 Cắt tóc</button><button class="chip" data-q="phở combo dưới $15 gần Bellaire">🍜 Ăn trưa</button><button class="chip" data-q="bột nail sỉ off giá">📦 Supply</button><button class="chip" data-q="rửa xe dưới $20">🧽 Rửa xe</button><button class="chip" data-q="nha sĩ khám răng clients mới">🦷 Dentist</button><button class="chip" data-q="đưa đón sân bay">🚕 Airport</button></div>
     <div class="parsed" id="parsed"></div>
     <div class="filt" id="filt">
@@ -291,8 +291,8 @@ window.addEventListener('message',e=>{const d=e.data||{};try{
  // Deal demo copy is fixed in English.
  if(d.cmd==='view')go(d.v);
 }catch(err){console.error(err)}});
-</script><script src="../community-deals-selects.js?v=20261105-deals-controls-v4"></script>
-<script src="../community-deals-demo.js?v=20261105-deals-controls-v4"></script>
-<script src="../community-deals-items.js?v=20261105-deals-controls-v4"></script>
-<script src="../community-deals-module.js?v=20261105-deals-controls-v4"></script>
+</script><script src="../community-deals-selects.js?v=20261105-deals-controls-v5"></script>
+<script src="../community-deals-demo.js?v=20261105-deals-controls-v5"></script>
+<script src="../community-deals-items.js?v=20261105-deals-controls-v5"></script>
+<script src="../community-deals-module.js?v=20261105-deals-controls-v5"></script>
 </body></html>

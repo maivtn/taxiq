@@ -70,7 +70,7 @@
       if(frames.has(name))return frames.get(name);
       const frame=document.createElement('iframe');frame.className='community-deals-frame';frame.title=ROUTES[selected].label;frame.hidden=true;
       const record={frame,ready:false};frames.set(name,record);
-      const url=new URL('deals/'+name+'.html?v=20261105-deals-controls-v4',BASE);url.searchParams.set('member',adapter.member);url.searchParams.set('role',adapter.role);
+      const url=new URL('deals/'+name+'.html?v=20261105-deals-controls-v5',BASE);url.searchParams.set('member',adapter.member);url.searchParams.set('role',adapter.role);
       frame.src=url.href;frameHost.append(frame);
       frame.addEventListener('load',()=>{record.ready=true;if(active&&ROUTES[selected].module===name)configure(record);});
       return record;

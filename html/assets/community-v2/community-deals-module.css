@@ -194,7 +194,7 @@ body.community-deal-module #results{display:grid;grid-template-columns:repeat(2,
 body.community-deal-module #results>.empty{grid-column:1/-1;padding:28px;border-radius:14px;border:1px dashed #dcd6ef;background:#faf9ff;display:flex;flex-direction:column;gap:7px}
 .deal-match-price{color:#6850ce;font-size:16px;font-weight:800;white-space:nowrap}
 body.community-deal-module #matchFilterFields #filt .frow{display:block;margin:0}
-body.community-deal-module #matchFilterFields #filt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+body.community-deal-module #matchFilterFields #filt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
 #matchFilterFields .frow>.fl{display:none!important}
 #matchFilterFields .frow>div{min-width:0}
 #matchFilterFields .frow .deal-select-field{margin-bottom:12px!important}
@@ -202,7 +202,10 @@ body.community-deal-module #matchFilterFields #filt{display:grid;grid-template-c
 #matchFilterFields #fLoc{display:block;margin:0}
 #matchFilterFields #geo{gap:10px;margin-top:12px}
 #matchFilterFields #geo>.deal-library-select{flex:1 1 180px;min-width:0}
-#matchFilterFields #fR+ .ts-wrapper{margin-top:12px}
+#matchFilterFields #fR+ .ts-wrapper{margin-top:0}
+#matchFilterFields #matchRadiusField{margin:0!important}
+body.community-deal-module #cAsk .big>.mic{display:grid;place-items:center}
+.deal-filter-toggle>svg{display:block;width:18px;height:18px;flex-shrink:0}
 body.community-deal-module #cMy{padding:20px;border-radius:15px;box-shadow:none}
 #cMy>h3{font-size:15px;margin-bottom:14px}
 #myWishes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}

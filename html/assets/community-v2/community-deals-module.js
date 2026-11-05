@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   const module=document.body.dataset.module;
+  const filterIcon='<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal" aria-hidden="true"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></svg>';
   const origin=location.protocol==='file:'?'*':location.origin;
   const notify=data=>window.parent.postMessage(data,origin);
   const scope=new URLSearchParams(location.search).get('member')||'community';
@@ -66,7 +67,7 @@
       if(explore&&search){
         let button=document.getElementById('nearbyFilterToggle'),panel=document.getElementById('nearbyFilterFields');
         if(!button){
-          button=document.createElement('button');button.type='button';button.id='nearbyFilterToggle';button.className='btn ghost deal-filter-toggle';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','nearbyFilterFields');button.innerHTML='<img src="../../icon-oneqr/issue-2040-oneqr-settings-2-3d.png" alt=""><span>Filters</span><span class="deal-filter-count" hidden></span>';
+          button=document.createElement('button');button.type='button';button.id='nearbyFilterToggle';button.className='btn ghost deal-filter-toggle';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','nearbyFilterFields');button.innerHTML=filterIcon+'<span>Filters</span><span class="deal-filter-count" hidden></span>';
           panel=document.createElement('div');panel.id='nearbyFilterFields';panel.className='deal-collapsed-filters';panel.hidden=true;explore.append(panel);search.append(button);
           button.addEventListener('click',()=>{panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));schedule();});
         }
@@ -78,7 +79,7 @@
       const categorySource=document.getElementById('catGrid');
       if(categorySource){
         let tools=document.getElementById('couponCategoryTools');
-        if(!tools){tools=document.createElement('div');tools.id='couponCategoryTools';tools.className='deal-category-tools';tools.innerHTML='<div class="deal-search-filter-row"><input type="search" class="in" id="couponIndustrySearch" placeholder="Search deals: pedicure, facial, coffee…" aria-label="Search deals: pedicure, facial, coffee…"><button type="button" class="btn ghost deal-filter-toggle" aria-expanded="false" aria-controls="couponCategoryFilters"><img src="../../icon-oneqr/issue-2040-oneqr-settings-2-3d.png" alt=""><span>Filters</span></button></div><div id="couponCategoryFilters" class="deal-collapsed-filters" hidden></div>';categorySource.before(tools);
+        if(!tools){tools=document.createElement('div');tools.id='couponCategoryTools';tools.className='deal-category-tools';tools.innerHTML='<div class="deal-search-filter-row"><input type="search" class="in" id="couponIndustrySearch" placeholder="Search deals: pedicure, facial, coffee…" aria-label="Search deals: pedicure, facial, coffee…"><button type="button" class="btn ghost deal-filter-toggle" aria-expanded="false" aria-controls="couponCategoryFilters">'+filterIcon+'<span>Filters</span></button></div><div id="couponCategoryFilters" class="deal-collapsed-filters" hidden></div>';categorySource.before(tools);
           tools.querySelector('button').addEventListener('click',event=>{const panel=tools.querySelector('#couponCategoryFilters');panel.hidden=!panel.hidden;event.currentTarget.setAttribute('aria-expanded',String(!panel.hidden));schedule();});
           tools.querySelector('input').addEventListener('input',event=>{state().filt.cq=event.target.value.trim();render();});
         }
@@ -93,9 +94,15 @@
         let panel=document.getElementById('matchFilterFields');
         if(!panel){
           panel=document.createElement('div');panel.id='matchFilterFields';panel.className='deal-collapsed-filters';panel.hidden=true;
-          const button=document.createElement('button');button.type='button';button.className='btn ghost deal-filter-toggle';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls',panel.id);button.innerHTML='<img src="../../icon-oneqr/issue-2040-oneqr-settings-2-3d.png" alt=""><span>Filters</span>';search.append(button);container.append(panel);
+          const button=document.createElement('button');button.type='button';button.className='btn ghost deal-filter-toggle';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls',panel.id);button.innerHTML=filterIcon+'<span>Filters</span>';search.append(button);container.append(panel);
           button.addEventListener('click',()=>{panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden));schedule();});
           const filters=document.getElementById('filt');if(filters)panel.append(filters);
+        }
+        const radius=document.getElementById('fR');
+        if(radius){
+          let field=document.getElementById('matchRadiusField');
+          if(!field){field=document.createElement('label');field.id='matchRadiusField';field.className='deal-select-field';field.innerHTML='<span class="deal-select-label">Radius</span>';field.append(radius);if(radius.tomselect)field.append(radius.tomselect.wrapper);document.getElementById('filt').append(field);}
+          const hidden=radius.classList.contains('hidden')||radius.hidden;if(field.hidden!==hidden)field.hidden=hidden;
         }
       }
     }
@@ -104,7 +111,7 @@
   function listFilter(name,fieldId,container,items){
     if(!container)return;
     let tools=document.getElementById(name+'SearchTools');
-    if(!tools){tools=document.createElement('div');tools.className='deal-category-tools';tools.id=name+'SearchTools';tools.innerHTML=`<div class="deal-search-filter-row"><input type="search" class="in" placeholder="Search deals" aria-label="Search deals"><button type="button" class="btn ghost deal-filter-toggle" aria-expanded="false" aria-controls="${name}FilterFields"><img src="../../icon-oneqr/issue-2040-oneqr-settings-2-3d.png" alt=""><span>Filters</span></button></div><div id="${name}FilterFields" class="deal-collapsed-filters" hidden></div>`;container.append(tools);tools.querySelector('button').addEventListener('click',event=>{const panel=tools.lastElementChild;panel.hidden=!panel.hidden;event.currentTarget.setAttribute('aria-expanded',String(!panel.hidden));schedule();});tools.querySelector('input').addEventListener('input',schedule);}
+    if(!tools){tools=document.createElement('div');tools.className='deal-category-tools';tools.id=name+'SearchTools';tools.innerHTML=`<div class="deal-search-filter-row"><input type="search" class="in" placeholder="Search deals" aria-label="Search deals"><button type="button" class="btn ghost deal-filter-toggle" aria-expanded="false" aria-controls="${name}FilterFields">${filterIcon}<span>Filters</span></button></div><div id="${name}FilterFields" class="deal-collapsed-filters" hidden></div>`;container.append(tools);tools.querySelector('button').addEventListener('click',event=>{const panel=tools.lastElementChild;panel.hidden=!panel.hidden;event.currentTarget.setAttribute('aria-expanded',String(!panel.hidden));schedule();});tools.querySelector('input').addEventListener('input',schedule);}
     const field=document.getElementById('deal-field-'+fieldId);if(field&&field.parentElement!==tools.lastElementChild)tools.lastElementChild.append(field);
     const query=tools.querySelector('input').value.trim().toLowerCase();for(const item of items())item.classList.toggle('deal-search-hidden',!!query&&!item.textContent.toLowerCase().includes(query));
   }
