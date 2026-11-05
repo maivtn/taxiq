@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   const KEY = 'nexora.personal-oneqr.v1';
-  const icons = window.ONEQR_ACTION_APPEARANCE ? window.ONEQR_ACTION_APPEARANCE.icons : ['user-round', 'instagram', 'credit-card', 'share-2', 'hand-coins', 'dollar-sign', 'calendar-check', 'globe-2', 'link', 'phone', 'mail', 'qr-code', 'wallet', 'megaphone'];
+  const icons = window.ONEQR_ACTION_APPEARANCE ? window.ONEQR_ACTION_APPEARANCE.icons : ['user-round', 'facebook', 'instagram', 'linkedin', 'youtube', 'heart', 'credit-card', 'share-2', 'hand-coins', 'dollar-sign', 'calendar-check', 'globe-2', 'link', 'phone', 'mail', 'qr-code', 'wallet', 'megaphone'];
   const isIconImage = value => /^data:image\/(?:png|jpeg|webp|gif);base64,/i.test(value || '');
   const legacyLabels = { 'Gửi tip cho tôi': 'Send me a tip', 'Đặt lịch với tôi tại tiệm': 'Book an appointment with me', 'Instagram của tôi': 'My Instagram', 'Gửi thanh toán': 'Send a payment', 'Hồ sơ cá nhân': 'Personal profile', 'Tham gia cùng tôi': 'Join me' };
   const methodConfig = [
@@ -55,10 +55,11 @@
   }
   function template(isLinked) {
     return isLinked ? [
-      { id: 'tip', name: 'Send me a tip', url: salons[0].tipUrl, icon: 'dollar-sign', enabled: true, kind: 'tip' },
-      { id: 'booking', name: 'Book an appointment with me', url: new URL('../customer/booking.html', pagesBase).href, icon: 'calendar-check', enabled: true, kind: 'booking' },
-      { id: 'instagram', name: 'My Instagram', url: 'https://www.instagram.com/', icon: 'instagram', enabled: true },
-      { id: 'payment', name: 'Send a payment', url: publicUrl('payment'), icon: 'credit-card', enabled: true, kind: 'payment' }
+      { id: 'facebook', name: 'Facebook', url: 'https://www.facebook.com/', icon: 'facebook', enabled: true },
+      { id: 'instagram', name: 'Instagram', url: 'https://www.instagram.com/', icon: 'instagram', enabled: true },
+      { id: 'linkedin', name: 'LinkedIn', url: 'https://www.linkedin.com/', icon: 'linkedin', enabled: true },
+      { id: 'youtube', name: 'YouTube', url: 'https://www.youtube.com/', icon: 'youtube', enabled: true },
+      { id: 'donate', name: 'Donate', url: 'https://www.paypal.com/donate/', icon: 'heart', enabled: true }
     ] : [
       { id: 'profile', name: 'Personal profile', url: publicUrl('profile'), icon: 'user-round', enabled: true, kind: 'profile' },
       { id: 'instagram', name: 'My Instagram', url: 'https://www.instagram.com/', icon: 'instagram', enabled: true },
@@ -97,6 +98,21 @@
             if (salon) link.url = salon.tipUrl;
           }
         });
+        // Refresh untouched demo lists; keep links the user has added or customized.
+        if (linked) {
+          const personalDefaults = template(false);
+          const staffDefaults = [
+            { id: 'tip', name: 'Send me a tip', url: salons[0].tipUrl, icon: 'dollar-sign', enabled: true, kind: 'tip' },
+            { id: 'booking', name: 'Book an appointment with me', url: new URL('../customer/booking.html', pagesBase).href, icon: 'calendar-check', enabled: true, kind: 'booking' },
+            personalDefaults.find(link => link.id === 'instagram'),
+            personalDefaults.find(link => link.id === 'payment')
+          ];
+          const untouched = [staffDefaults, personalDefaults].some(links => links.length === result.links.length && links.every((link, index) => {
+            const saved = result.links[index];
+            return !saved.background && ['id', 'name', 'url', 'icon', 'enabled', 'kind'].every(key => saved[key] === link[key]);
+          }));
+          if (untouched) result.links = template(true);
+        }
         result.leads = Array.isArray(data.leads) ? data.leads : [];
         const legacyPayments = data.payments && typeof data.payments === 'object' ? data.payments : {};
         result.payments = Object.fromEntries(methods.map(method => [method, payment({ payments: legacyPayments }, method)]));
