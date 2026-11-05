@@ -661,6 +661,7 @@
   <link rel="stylesheet" href="assets/nexora-home-icons.css?v=20261105-vmmtravel">
   <link rel="stylesheet" href="assets/nexora-home-po-review.css?v=20261104-icons">
   <link rel="stylesheet" href="assets/nexora-home-mobile.css?v=20261105-firstview">
+  <link rel="stylesheet" href="assets/nexora-language-picker.css?v=20261105">
 </head>
 <body class="po-review nexora-icon-upgrade">
   <a class="skip" href="#main" data-i18n="skip">Bỏ qua menu</a>
@@ -739,7 +740,11 @@
     </nav>
     <div class="header-actions">
       <a class="header-news" href="https://nexoratouch.com/dashboard/news-library?tab=news" data-i18n="headerNews">Tin tức</a>
-      <label class="lang-switch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-4 6-4 9s1 6 4 9M12 3c3 3 4 6 4 9s-1 6-4 9"/></svg><span id="language-code" aria-hidden="true">VI</span><select class="language" id="language" aria-label="Ngôn ngữ"><option value="vi">Tiếng Việt</option><option value="en">English</option><option value="zh">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ja">日本語</option><option value="th">ภาษาไทย</option><option value="ar">العربية</option><option value="fr">Français</option></select></label>
+      <div class="language-picker">
+        <button class="lang-switch" id="language-trigger" type="button" aria-label="Ngôn ngữ" aria-haspopup="menu" aria-expanded="false" aria-controls="language-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-4 6-4 9s1 6 4 9M12 3c3 3 4 6 4 9s-1 6-4 9"/></svg><span id="language-code" aria-hidden="true">VI</span></button>
+        <select class="language" id="language" aria-label="Ngôn ngữ" hidden><option value="vi">Tiếng Việt</option><option value="en">English</option><option value="zh">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ja">日本語</option><option value="th">ภาษาไทย</option><option value="ar">العربية</option><option value="fr">Français</option></select>
+        <div class="language-menu" id="language-menu" role="menu" aria-labelledby="language-trigger" hidden></div>
+      </div>
       <div class="apps-wrap"><button class="apps-trigger" id="apps-trigger" type="button" aria-expanded="false" aria-controls="apps-menu"><span class="sr-only" data-i18n="headerApps">Mở menu sản phẩm</span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></button><div class="apps-popover" id="apps-menu" hidden><strong data-i18n="headerProducts">Sản phẩm NEXORA TOUCH</strong><div class="apps-grid"><a href="products/si-pos/index.html"><span aria-hidden="true">▣</span>SI POS</a><a href="products/one-qr/index.html"><span aria-hidden="true">▦</span>One QR</a><a href="products/payments-payouts/index.html"><span aria-hidden="true">＄</span>Payments &amp; Payouts</a><a href="products/ai-hub/index.html"><span aria-hidden="true">✦</span>AI Hub</a><a href="products/reviews/index.html"><span aria-hidden="true">☆</span>Reviews</a><a href="products/gift-card-center/index.html"><span aria-hidden="true">◇</span>Gift Card Center</a><a href="products/analytics/index.html"><span aria-hidden="true">▥</span>Analytics</a><a href="products/community/index.html"><span aria-hidden="true">♧</span>Community</a><a href="products/tax-iq/index.html"><span aria-hidden="true">▤</span>TAX IQ</a><a href="products/ai-voice-sms/index.html"><span aria-hidden="true">◉</span>AI Voice SMS</a><a href="products/ai-marketing/index.html"><span aria-hidden="true">✧</span>AI Marketing Tool</a><a href="products/spin-wheel/index.html"><span aria-hidden="true">◎</span>Spin Wheel</a></div></div></div>
       <a class="header-login guest-only" href="https://nexoratouch.com/login" data-i18n="headerLogin">Đăng nhập</a><a class="header-signup guest-only" href="https://nexoratouch.com/register" data-i18n="headerSignup">Đăng ký</a><a class="header-dashboard member-only" href="https://nexoratouch.com/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span data-i18n="headerDashboard">Bảng điều khiển</span></a><button class="header-logout member-only" id="header-logout" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M13 8l4 4-4 4M8 12h9"/></svg><span data-i18n="headerLogout">Đăng xuất</span></button><button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Mở menu">☰</button>
     </div>
@@ -1249,6 +1254,7 @@
   <script src="assets/nexora-main-nav.js"></script>
   <script src="assets/nexora-nav-motion.js"></script>
   <script src="assets/nexora-header-actions.js"></script>
+  <script src="assets/nexora-language-picker.js?v=20261105"></script>
   <script src="assets/nexora-video.js"></script>
   <script src="assets/nexora-contact.js?v=3"></script>
   <script src="assets/nexora-about.js?v=3"></script>
