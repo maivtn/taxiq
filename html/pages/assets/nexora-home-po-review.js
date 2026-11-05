@@ -1,24 +1,30 @@
-/* Decorative icons for the separate PO review; original navigation stays intact. */
+/* Shared semantic icons; original navigation and business behavior stay intact. */
 (() => {
   'use strict';
-  if (!document.body.classList.contains('po-review')) return;
+  if (!document.body.classList.contains('nexora-icon-upgrade')) return;
 
   const products = {
     'si-pos': 'pos',
     'one-qr': 'qr-code',
-    'payments-payouts': 'wallet',
+    'payments-payouts': 'payments',
     'ai-hub': 'bot',
     reviews: 'star',
-    'gift-card-center': 'gift',
+    'gift-card-center': 'gift-card',
     analytics: 'analytics',
     community: 'users-round',
-    'tax-iq': 'receipt',
-    'ai-voice-sms': 'phone',
+    'tax-iq': 'tax-iq',
+    'ai-voice-sms': 'voice-sms',
     'ai-marketing': 'megaphone',
     'spin-wheel': 'spin-wheel'
   };
   const specificImages = {
     pos: '../icons/3d-fluency/pos.png',
+    payments: '../icons/3d-fluency/payments.png',
+    'gift-card': '../icons/pos-front-desk/gift-card-center.svg',
+    'tax-iq': '../icons/3d-fluency/taxiq.png',
+    'voice-sms': 'issue-2040-oneqr-phone-3d.png',
+    'check-in': '../icons/pos-front-desk/check-in.svg',
+    'turn-board': '../icons/pos-front-desk/turn-board.svg',
     analytics: '../icons/3d-fluency/analytics.png',
     'spin-wheel': '../icons/iconscout/prize-wheel-10862879.webp',
     nail: 'salon-nail-polish-iconscout-10843584.png',
@@ -33,13 +39,19 @@
     element.dataset.reviewIcon = name;
     element.setAttribute('aria-hidden', 'true');
     element.style.setProperty('--review-icon-image', `url("${image.href}")`);
+    if (name === 'voice-sms') {
+      const message = new URL('../assets/icon-oneqr/issue-2040-oneqr-message-circle-3d.png', document.baseURI);
+      element.style.setProperty('--review-icon-secondary', `url("${message.href}")`);
+    } else {
+      element.style.removeProperty('--review-icon-secondary');
+    }
   }
 
   Object.entries(products).forEach(([product, name]) => {
     decorate(document.querySelector(`.ecosystem-item[href="products/${product}/index.html"] .product-icon`), name);
     decorate(document.querySelector(`.eco-nexora-item[data-product="${product}"] .eco-nexora-icon`), name);
   });
-  const journey = ['calendar-check', 'users-round', 'hand-coins', 'heart'];
+  const journey = ['check-in', 'turn-board', 'hand-coins', 'heart'];
   document.querySelectorAll('.journey-icon').forEach((element, index) => decorate(element, journey[index]));
   const pillars = ['layout-list', 'users-round', 'rocket'];
   document.querySelectorAll('.about-pillar-icon').forEach((element, index) => decorate(element, pillars[index]));

@@ -1,0 +1,33 @@
+/* Shared semantic icons for the homepage and its separate PO review. */
+.nexora-icon-upgrade .review-icon { position: relative; flex-shrink: 0; isolation: isolate; }
+.nexora-icon-upgrade :is(.product-icon, .journey-icon, .start-path-icon, .eco-node-icon,
+  .eco-nexora-icon, .about-pillar-icon, .contact-detail-icon,
+  .hero-poster-icon, .review-industry-icon).review-icon {
+  font-size: 0;
+  line-height: 0;
+  color: transparent;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.nexora-icon-upgrade .review-icon > svg { opacity: 0; }
+.nexora-icon-upgrade .review-icon::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--review-icon-image) no-repeat center / contain;
+  pointer-events: none;
+}
+.nexora-icon-upgrade .review-icon[data-review-icon="voice-sms"]::before { inset: 0 20% 20% 0; }
+.nexora-icon-upgrade .review-icon[data-review-icon="voice-sms"]::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 52%;
+  height: 52%;
+  background: var(--review-icon-secondary) no-repeat center / contain;
+  pointer-events: none;
+}
+.nexora-icon-upgrade .eco-nexora-icon { width: 30px; height: 30px; }
+.nexora-icon-upgrade .review-industry-icon { display: inline-block; width: 26px; height: 26px; }

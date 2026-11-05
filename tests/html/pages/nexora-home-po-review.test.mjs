@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
 const pages = new URL('../../../html/pages/', import.meta.url);
-const originalFile = new URL('nexora-home.html', pages);
+const originalFile = new URL('nexora-home-po-original.html', pages);
 const reviewFile = new URL('nexora-home-po-review.html', pages);
 
 function parse(file) {
@@ -216,7 +216,7 @@ test('PO review local icons follow the selected hero slide and every referenced 
   for (const icon of d.querySelectorAll('[data-review-icon]')) {
     assert.equal(icon.getAttribute('aria-hidden'), 'true');
     const image = new URL(icon.style.getPropertyValue('--review-icon-image').slice(5, -2));
-    assert.match(image.pathname, /^\/html\/assets\/(?:icon-oneqr|icons\/(?:3d-fluency|iconscout))\//);
+    assert.match(image.pathname, /^\/html\/assets\/(?:icon-oneqr|icons\/(?:3d-fluency|iconscout|pos-front-desk))\//);
     assert.ok(existsSync(new URL(image.pathname.slice(1), new URL('../../../', import.meta.url))), image.pathname);
   }
 });
