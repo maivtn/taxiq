@@ -64,14 +64,21 @@ window.NEXORA_RENDER_ONBOARDING_PREVIEW = function (guide, kind, stepTitle, indu
   } else if (kind === 'services' || kind === 'catalog' || kind === 'menu') {
     body.append(el('div', 'setup-sample-section-title', setupT('itemLabel')));
     const list = el('div', 'setup-sample-list');
-    for (const [index, item] of [offering, second].entries()) {
+    const items = new Map([[1, offering], [2, second]]);
+    if (kind === 'catalog') for (const key of Object.keys(fields)) {
+      const match = /^item([1-9]\d*)(?:Name|Price)$/.exec(key);
+      if (match && Number(match[1]) > 2 && (String(fields[`item${match[1]}Name`] ?? '').trim() || String(fields[`item${match[1]}Price`] ?? '').trim())) {
+        items.set(Number(match[1]), {name: '', detail: '', price: ''});
+      }
+    }
+    for (const [number, item] of [...items].sort(([a], [b]) => a - b)) {
       const row = el('div', 'setup-sample-list-row');
       const icon = el('span', 'setup-sample-list-icon', kind === 'menu' ? '☕' : kind === 'catalog' ? '▣' : '✦');
       const info = el('div', 'setup-sample-list-info');
-      const duration = String(fields[`item${index + 1}Duration`] ?? '').trim();
-      const description = String(fields[`item${index + 1}Detail`] ?? '').trim();
-      info.append(el('strong', '', pick(`item${index + 1}Name`, item.name)), el('small', '', [duration, description].filter(Boolean).join(' · ') || item.detail));
-      row.append(icon, info, el('b', 'setup-sample-price', pick(`item${index + 1}Price`, item.price)));
+      const duration = String(fields[`item${number}Duration`] ?? '').trim();
+      const description = String(fields[`item${number}Detail`] ?? '').trim();
+      info.append(el('strong', '', pick(`item${number}Name`, item.name)), el('small', '', [duration, description].filter(Boolean).join(' · ') || item.detail));
+      row.append(icon, info, el('b', 'setup-sample-price', pick(`item${number}Price`, item.price)));
       list.append(row);
     }
     body.append(list);

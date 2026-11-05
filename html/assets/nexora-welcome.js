@@ -307,6 +307,20 @@
     var examples = {name:guide().exampleName,phone:'(312) 555-0148',address:'123 Main St · Chicago, IL',hours:'09:00–18:00',item1Name:first[0],item1Duration:first[1],item1Price:first[first.length-1],item2Name:second[0],item2Duration:second[1],item2Price:second[second.length-1],qrLabel:readStep('business').fields.name||guide().exampleName,qrLocation:copy[guide().exampleTouchpoint],paymentMethod:setupCopy.methodExample,amount:first[first.length-1],tipAmount:'$3.00',offerTitle:setupCopy.retailDealSample,discountCode:'SAVE10',discountPercent:'10',inviteText:setupCopy.defaultInvite,replyText:setupCopy.replyText};
     return '<label class="nxw-field"><span>' + escape(label) + (repeat ? ' ' + repeat : '') + (required ? ' *' : '') + '</span><input name="' + name + '" type="' + (name==='phone'?'tel':name==='discountPercent'?'number':'text') + '"' + (name==='discountPercent'?' min="1" max="100"':'') + ' value="' + escape(fields[name] || '') + '" placeholder="' + escape(examples[name] || '') + '" maxlength="' + (name === 'address' ? 120 : name === 'replyText' || name === 'inviteText' ? 180 : 90) + '"' + (required ? ' required' : '') + (name === 'phone' ? ' inputmode="tel"' : /Price|amount|tipAmount/.test(name) ? ' inputmode="decimal"' : '') + ' autocomplete="off"></label>';
   }
+  function catalogItemIndexes(fields) {
+    var indexes=[1,2];
+    Object.keys(fields).forEach(function(key){
+      var match=/^item([1-9]\d*)(?:Name|Price)$/.exec(key);
+      if(match&&indexes.indexOf(Number(match[1]))===-1)indexes.push(Number(match[1]));
+    });
+    return indexes.sort(function(a,b){return a-b;});
+  }
+  function catalogItemHTML(index,fields) {
+    return fieldHTML(['item'+index+'Name','fieldItem',index===1,index],fields)+fieldHTML(['item'+index+'Price','fieldPrice',index===1,index],fields);
+  }
+  function catalogFieldsHTML(fields) {
+    return '<div class="nxw-fields" data-catalog-items>'+catalogItemIndexes(fields).map(function(index){return catalogItemHTML(index,fields);}).join('')+'</div>'+button('Add product','add-catalog-item',true);
+  }
   function businessPhone(fields, name) {
     var value = String(fields[name] || ''), country = businessCountries.find(function (item) { return item[0] === fields[name + 'Country']; });
     if (!country && value.charAt(0) === '+') country = businessCountries.slice().sort(function (a, b) { return b[2].length - a[2].length; }).find(function (item) { return value.indexOf('+' + item[2]) === 0; });
@@ -363,7 +377,7 @@
     if(kind==='qr')html+='<div class="nxw-qr-preparation">'+formHeading+'<div data-onboarding-qr></div></div>';
     if(kind==='staff')html+='<div class="nxw-staff-preparation">'+formHeading+'<div class="nxw-subsection" data-staff-mode><strong>'+escape(setupCopy.staffMethodTitle)+'</strong>'+choicesHTML([{key:'manual',label:'staffManual',defaultValue:'manual'},{key:'invite',label:'staffInvite',defaultValue:'manual'}],fields,'staffMode')+'</div>'+(mode==='manual'?'<div data-onboarding-staff></div>':'<div data-onboarding-staff-invite></div>')+'</div>';
     html+='<form id="nxw-setup-form" aria-labelledby="nxw-step-title" novalidate>'+(['services','menu','staff','qr'].includes(kind)?'':formHeading);
-    if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">'+(data.setup.fields[kind]||[]).filter(function(field){return field[0]!=='tipAmount'||guide().key==='restaurant';}).map(function(field){return fieldHTML(field,fields);}).join('')+'</div>';
+    if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):kind==='catalog'?catalogFieldsHTML(fields):'<div class="nxw-fields">'+(data.setup.fields[kind]||[]).filter(function(field){return field[0]!=='tipAmount'||guide().key==='restaurant';}).map(function(field){return fieldHTML(field,fields);}).join('')+'</div>';
     if(kind==='voice')html+='<div class="nxw-subsection"><strong>'+escape(setupCopy.voiceModeTitle)+'</strong>'+choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode')+'</div>'+(fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>')+'<p class="nxw-note">'+escape(setupCopy.voicePreviewNotice)+'</p>';
     html+='<button type="submit" class="nxw-btn">'+escape(setupCopy.saveStep)+'</button><div class="nxw-saved" id="nxw-save-status" role="status">'+escape(readStep(kind).completed?setupCopy.savedDone:Object.values(fields).some(function(value){return String(value).trim();})?setupCopy.draftSaved:setupCopy.autoSaveNote)+'</div><p class="nxw-note nxw-save-scope">'+escape(setupCopy.saveScope)+'</p></form>';
     if(!['staff','qr','voice'].includes(kind)){
@@ -549,6 +563,15 @@
     if(action==='help-voice')selectHelpTask('voice');
     if(action==='start-first'){selectedStep=0;renderSetupStep();document.getElementById('nxw-step-title').tabIndex=-1;document.getElementById('nxw-step-title').focus();}
     if(action==='next-step'){selectedStep=Math.min(path().length-1,selectedStep+1);renderSetupStep();}
+    if(action==='add-catalog-item'&&path()[selectedStep]==='catalog'){
+      var fields=readStep('catalog').fields,index=catalogItemIndexes(fields).pop()+1,patch={};
+      patch['item'+index+'Name']='';patch['item'+index+'Price']='';
+      var stored=writeStep('catalog',patch);
+      main.querySelector('[data-catalog-items]').insertAdjacentHTML('beforeend',catalogItemHTML(index,patch));
+      main.querySelector('[name="item'+index+'Name"]').focus();
+      document.getElementById('nxw-save-status').textContent=stored?setupCopy.draftSaved:setupCopy.saveFailed;
+      renderEnteredPreview();updateProgress();
+    }
     if(action.indexOf('download-')===0)download(action.slice(9));
   });
   if(view==='onboarding'){
