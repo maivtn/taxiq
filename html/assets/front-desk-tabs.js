@@ -298,41 +298,44 @@
     saveTabOrder(tile); tile.focus();
   });
 
-  // A hold starts dragging only after More > Reorder has been selected.
+  // In Reorder mode, grab anywhere on a tile and move without a hold delay.
   primary.addEventListener('pointerdown', event => {
     if (!reordering || drag || event.isPrimary === false || (event.pointerType === 'mouse' && event.button !== 0)) return;
     const tile = event.target.closest('a');
     if (!tile || tile.parentElement !== primary) return;
     const bounds = tile.getBoundingClientRect();
-    const pending = drag = {tile, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY,
+    drag = {tile, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY,
       offsetX: event.clientX - bounds.left, offsetY: event.clientY - bounds.top, started: false, moved: false};
-    pending.timer = window.setTimeout(() => {
-      if (drag !== pending || !reordering) return;
-      pending.started = true;
-      const style = getComputedStyle(tile);
-      const ghost = pending.ghost = tile.cloneNode(true);
-      ghost.className = 'front-desk-drag-ghost'; ghost.removeAttribute('aria-current'); ghost.removeAttribute('aria-label');
-      ghost.setAttribute('aria-hidden', 'true'); ghost.removeAttribute('href'); ghost.removeAttribute('role'); ghost.tabIndex = -1;
-      ghost.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
-      Object.assign(ghost.style, {width: bounds.width + 'px', height: bounds.height + 'px', background: style.backgroundColor,
-        color: style.color, borderColor: style.borderColor, borderRadius: style.borderRadius,
-        left: (pending.startX - pending.offsetX) + 'px', top: (pending.startY - pending.offsetY) + 'px'});
-      const artwork = tile.querySelector('img');
-      if (artwork) {
-        const size = artwork.getBoundingClientRect();
-        Object.assign(ghost.querySelector('img').style, {width: size.width + 'px', height: size.height + 'px'});
-      }
-      document.body.appendChild(ghost);
-      tile.classList.add('is-drag-source'); host.classList.add('is-dragging');
-      tile.focus({preventScroll: true});
-      try { primary.setPointerCapture(pending.pointerId); } catch (_) {}
-    }, 300);
   });
+
+  function startDrag() {
+    const {tile} = drag;
+    const bounds = tile.getBoundingClientRect();
+    const style = getComputedStyle(tile);
+    drag.started = true;
+    const ghost = drag.ghost = tile.cloneNode(true);
+    ghost.className = 'front-desk-drag-ghost'; ghost.removeAttribute('aria-current'); ghost.removeAttribute('aria-label');
+    ghost.setAttribute('aria-hidden', 'true'); ghost.removeAttribute('href'); ghost.removeAttribute('role'); ghost.tabIndex = -1;
+    ghost.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+    Object.assign(ghost.style, {width: bounds.width + 'px', height: bounds.height + 'px', background: style.backgroundColor,
+      color: style.color, borderColor: style.borderColor, borderRadius: style.borderRadius,
+      left: (drag.startX - drag.offsetX) + 'px', top: (drag.startY - drag.offsetY) + 'px'});
+    const artwork = tile.querySelector('img');
+    if (artwork) {
+      const size = artwork.getBoundingClientRect();
+      Object.assign(ghost.querySelector('img').style, {width: size.width + 'px', height: size.height + 'px'});
+    }
+    document.body.appendChild(ghost);
+    tile.classList.add('is-drag-source'); host.classList.add('is-dragging');
+    tile.focus({preventScroll: true});
+    try { primary.setPointerCapture(drag.pointerId); } catch (_) {}
+  }
+
   window.addEventListener('pointermove', event => {
     if (!drag || event.pointerId !== drag.pointerId) return;
     if (!drag.started) {
-      if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 8) finishDrag();
-      return;
+      if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 4) return;
+      startDrag();
     }
     event.preventDefault();
     drag.ghost.style.left = (event.clientX - drag.offsetX) + 'px';
@@ -349,7 +352,6 @@
   function finishDrag() {
     if (!drag) return;
     const finished = drag; drag = null;
-    window.clearTimeout(finished.timer);
     if (finished.started) suppressClickUntil = performance.now() + 600;
     finished.tile.classList.remove('is-drag-source'); host.classList.remove('is-dragging');
     finished.ghost?.remove();
