@@ -29,37 +29,32 @@
     border-radius: 18px;
   }
   .nexora-icon-upgrade .main-nav > .mobile-auth {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
+    gap: 6px;
     margin: 0 0 12px;
-    padding: 4px;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    background: #f1f5f9;
+    padding: 0 0 12px;
+    border: 0;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 0;
+    background: transparent;
   }
   .nexora-icon-upgrade .main-nav .mobile-auth :is(a, button) {
-    min-width: 0;
-    min-height: 40px;
-    padding: 8px 6px;
-    border: 0;
+    border: 1px solid #d8e0ed;
     border-radius: 10px;
-    background: transparent;
-    color: #263958;
+    background: #fff;
+    color: #43516b;
     box-shadow: none;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.3;
   }
   .nexora-icon-upgrade .main-nav .mobile-auth a[href$="/register"] {
-    background: #4648d4;
+    border-color: #6755e8;
+    background: #6755e8;
     color: #fff;
-    box-shadow: 0 3px 9px rgb(70 72 212 / 18%);
   }
-  .nexora-icon-upgrade .main-nav .mobile-auth a:hover { background: #fff; }
-  .nexora-icon-upgrade .main-nav .mobile-auth a[href$="/register"]:hover { background: #3a3bbf; }
   .nexora-icon-upgrade .main-nav .nav-group { margin-bottom: 7px; border-radius: 12px; }
   .nexora-icon-upgrade .main-nav .nav-trigger { min-height: 44px; padding: 10px 12px; font-size: 13px; }
+  .nexora-icon-upgrade .main-nav > .nav-news { min-height: 44px; padding: 10px 12px; border-radius: 12px; font-size: 13px; }
   .nexora-icon-upgrade .main-nav .nav-panel > a { min-height: 40px; padding-block: 8px; }
   .nexora-icon-upgrade .apps-popover { position: fixed; top: 68px; inset-inline: 12px; width: auto; max-width: none; max-height: calc(100dvh - 82px); padding: 14px; overflow-y: auto; border-radius: 16px; }
   .nexora-icon-upgrade .apps-grid { gap: 6px; }

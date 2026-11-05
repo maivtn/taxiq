@@ -35,9 +35,10 @@
     'mobile-phone': 'contact-mobile-phone-9646214.png',
     analytics: '../icons/3d-fluency/analytics.png',
     'spin-wheel': '../icons/iconscout/prize-wheel-10862879.webp',
-    nail: 'salon-nail-polish-iconscout-10843584.png',
-    hair: 'salon-hair-barber-iconscout-13377568.png',
-    spa: 'salon-spa-wellness-iconscout-9099883.png'
+    nail: 'industry/nail.png',
+    hair: 'industry/hair.png',
+    spa: 'industry/spa.png',
+    restaurant: 'industry/food.png'
   };
   function decorate(element, name) {
     if (!element || !name || element.dataset.reviewIcon === name) return;
@@ -90,7 +91,7 @@
   if (heroLink) new MutationObserver(decorateHero).observe(heroLink, { attributes: true, attributeFilter: ['href'] });
 
   const tabs = document.getElementById('industry-tabs');
-  const industries = ['nail', 'hair', 'spa', 'utensils', 'briefcase'];
+  const industries = ['nail', 'hair', 'spa', 'restaurant', 'store'];
   function decorateIndustries() {
     tabs?.querySelectorAll('button').forEach((button, index) => {
       if (button.querySelector('.review-industry-icon')) return;
