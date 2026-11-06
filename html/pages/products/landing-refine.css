@@ -89,22 +89,47 @@ a:hover .direction-icon,a:focus-visible .direction-icon,button:hover .direction-
 .story-card:nth-child(4){background:#edf4fc;border-color:#dce8f6}
 @media(max-width:620px){.story-grid{grid-template-columns:1fr}}
 
-/* Shared 3D navigation across the product directory and all twelve landings. */
-.top nav,.feature-toc,.scenario-list,.hero-controls,.hub-grid,.ecosystem-products{perspective:800px}
-.top nav a,.features .feature-toc a,.scenario-button,.breadcrumb a,.home-link,.footer-home,.product-footer-bottom nav a,.hero-controls button,.hub-card,.ecosystem-product,.ecosystem-spotlight-toggle,.ecosystem-spotlight-link,.home-return,.final-products-link{transform-style:preserve-3d;transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .25s,border-color .25s,color .25s}
-.top nav a,.features .feature-toc a,.scenario-button,.ecosystem-product{box-shadow:inset 0 1px #fff,0 3px 0 #dce1f0,0 8px 13px #25366a0c}
-.features .feature-toc a:hover,.features .feature-toc a:focus-visible,.top nav a:hover,.top nav a:focus-visible,.scenario-button:not([aria-selected=true]):hover,.scenario-button:not([aria-selected=true]):focus-visible,.ecosystem-product:hover,.ecosystem-product:focus-visible{transform:perspective(700px) rotateX(5deg) rotateY(-3deg) translate3d(0,-3px,5px);box-shadow:inset 0 1px #fff,0 6px 0 #aaa6df,0 12px 18px #4b489c25}
-.scenario-button[aria-selected=true]{box-shadow:inset 0 1px #ffffff88,0 5px 0 #182447,0 12px 21px #14204436;animation:productMenuChoice .42s cubic-bezier(.2,.8,.2,1)}
-.scenario-button[aria-selected=true]:hover,.scenario-button[aria-selected=true]:focus-visible{transform:perspective(700px) rotateX(4deg) translate3d(0,-3px,5px);box-shadow:inset 0 1px #ffffff88,0 7px 0 #182447,0 15px 22px #1420443d}
-.hero-controls>button:hover,.hero-controls>button:focus-visible{transform:perspective(650px) rotateX(7deg) translateY(-3px);box-shadow:0 4px 0 #14234d,0 10px 17px #0613295a}
-.hub-card:hover,.hub-card:focus-visible{transform:perspective(950px) rotateX(3deg) translateY(-5px);box-shadow:0 23px 37px #1a31502a}
-.ecosystem-spotlight-toggle:hover,.ecosystem-spotlight-toggle:focus-visible,.home-return:hover,.home-return:focus-visible{transform:perspective(700px) rotateX(5deg) translateY(-3px);box-shadow:0 5px 0 #aaa6df,0 12px 17px #4b489c25}
-.breadcrumb a:hover,.breadcrumb a:focus-visible,.home-link:hover,.home-link:focus-visible,.footer-home:hover,.footer-home:focus-visible,.product-footer-bottom nav a:hover,.product-footer-bottom nav a:focus-visible,.ecosystem-spotlight-link:hover,.ecosystem-spotlight-link:focus-visible,.final-products-link:hover,.final-products-link:focus-visible{transform:perspective(700px) rotateX(5deg) translateY(-2px)}
-.top nav a:active,.features .feature-toc a:active,.scenario-button:active,.hero-controls button:active,.hub-card:active,.ecosystem-product:active,.ecosystem-spotlight-toggle:active,.home-return:active{transform:perspective(650px) rotateX(-3deg) translateY(2px);box-shadow:inset 0 2px 5px #18244822,0 1px 0 #aba8d8}
-.top nav a:focus-visible,.features .feature-toc a:focus-visible,.scenario-button:focus-visible,.breadcrumb a:focus-visible,.home-link:focus-visible,.footer-home:focus-visible,.product-footer-bottom nav a:focus-visible,.hero-controls button:focus-visible,.hub-card:focus-visible,.ecosystem-product:focus-visible,.ecosystem-spotlight-toggle:focus-visible,.ecosystem-spotlight-link:focus-visible,.home-return:focus-visible,.final-products-link:focus-visible{outline:3px solid #25bfe0;outline-offset:3px}
-@keyframes productMenuChoice{from{transform:perspective(700px) rotateX(-8deg) translateY(4px) scale(.97)}65%{transform:perspective(700px) rotateX(4deg) translateY(-3px) scale(1.02)}to{transform:perspective(700px) rotateX(0) translateY(0) scale(1)}}
-@media(hover:none){.top nav a:hover,.features .feature-toc a:hover,.scenario-button:hover,.hero-controls button:hover,.hub-card:hover,.ecosystem-product:hover,.ecosystem-spotlight-toggle:hover,.home-return:hover,.breadcrumb a:hover,.home-link:hover,.footer-home:hover,.product-footer-bottom nav a:hover,.ecosystem-spotlight-link:hover,.final-products-link:hover{transform:none}}
-@media(prefers-reduced-motion:reduce){.top nav a,.features .feature-toc a,.scenario-button,.breadcrumb a,.home-link,.footer-home,.product-footer-bottom nav a,.hero-controls button,.hub-card,.ecosystem-product,.ecosystem-spotlight-toggle,.ecosystem-spotlight-link,.home-return,.final-products-link{animation:none!important;transition:none!important;transform:none!important}}
+/* PO control hierarchy with the current web's softer elevation and brand colors. */
+:root { --product-control-primary:#4648d4; --product-control-hover:#3a3bbf; --product-control-soft:#e9e9ff; }
+.button { min-height:44px; gap:12px; padding:11px 16px; border-radius:12px; line-height:1.4; box-shadow:inset 0 1px #ffffff48,0 2px 5px #14264a14; transition:background .15s,border-color .15s,box-shadow .15s,transform .15s; }
+.button-light { background:#fff; color:#252d69; }
+.button-outline { border-color:#ffffff80; background:#ffffff14; color:#fff; }
+.button-dark { background:var(--navy,#20375e); color:#fff; }
+.button-light:hover { background:#f4f5ff; }
+.button-outline:hover { border-color:#ffffffc0; background:#ffffff24; }
+.button-dark:hover { background:#172d50; }
+.button:hover { transform:translateY(-1px); box-shadow:inset 0 1px #ffffff60,0 4px 10px #14264a20; }
+.button:active { transform:translateY(1px); box-shadow:inset 0 1px 3px #14264a20; }
+.button:disabled, .button[aria-disabled=true] { opacity:.55; transform:none; box-shadow:none; cursor:not-allowed; }
+.top nav a, .features .feature-toc a, .scenario-button, .hero-controls > button, .ecosystem-product, .ecosystem-spotlight-toggle, .home-return { transition:background .15s,border-color .15s,box-shadow .15s,transform .15s; }
+.top nav a, .features .feature-toc a, .ecosystem-product { box-shadow:inset 0 1px #fff,0 1px 3px #25366a0c; }
+.top nav a, .hero-controls > button, .ecosystem-spotlight-toggle { min-height:40px; }
+.top nav a { display:inline-flex; align-items:center; }
+.top nav a:hover, .features .feature-toc a:hover, .ecosystem-product:hover, .ecosystem-spotlight-toggle:hover { transform:translateY(-1px); box-shadow:0 3px 8px #4648d416; }
+.features .feature-toc a:hover, .features .feature-toc a:focus-visible { color:var(--product-control-primary); border-color:#a4a4ed; background:#f6f7ff; }
+.scenario-button { border-radius:12px; box-shadow:inset 0 1px #fff,0 1px 4px #25366a0c; }
+.scenario-button:not([aria-selected=true]):hover { border-color:#a4a4ed; background:#f6f7ff; transform:translateY(-1px); box-shadow:0 4px 10px #4648d414; }
+.scenario-button[aria-selected=true] { border-color:#20375e; background:linear-gradient(135deg,#243e67,#20375e); color:#fff; box-shadow:inset 0 1px #ffffff40,0 2px 0 #142448,0 5px 12px #1424481c; animation:none; }
+.scenario-button[aria-selected=true]:hover { transform:translateY(-1px); box-shadow:inset 0 1px #ffffff50,0 2px 0 #142448,0 7px 14px #14244822; }
+.hero-controls > button:hover, .hero-controls > button:focus-visible { transform:translateY(-1px); box-shadow:0 3px 8px #06132940; }
+.home-return { border-radius:12px; }
+.home-return:hover, .home-return:focus-visible { transform:translateY(-1px); box-shadow:0 4px 10px #4648d414; }
+:is(.top nav a,.features .feature-toc a,.scenario-button,.hero-controls > button,.ecosystem-product,.ecosystem-spotlight-toggle,.home-return):active { transform:translateY(1px); box-shadow:inset 0 1px 3px #14244820; }
+:is(.button,.top nav a,.features .feature-toc a,.scenario-button,.breadcrumb a,.home-link,.footer-home,.product-footer-bottom nav a,.hero-controls button,.hub-card,.ecosystem-product,.ecosystem-spotlight-toggle,.ecosystem-spotlight-link,.home-return,.final-products-link):focus-visible { outline:3px solid var(--product-control-primary); outline-offset:3px; }
+.hero :is(a,button):focus-visible { outline-color:#c9d4ff; }
+@media(min-width:1080px) {
+ .features .feature-toc a:hover, .features .feature-toc a:focus-visible { border-color:transparent; border-inline-start-color:var(--product-control-primary); }
+}
+@media(max-width:600px) {
+ .button { gap:10px; padding:10px 14px; }
+ .top nav a, .features .feature-toc a, .hero-controls > button, .ecosystem-spotlight-toggle { min-height:44px; }
+}
+@media(hover:none) {
+ :is(.button,.top nav a,.features .feature-toc a,.scenario-button,.hero-controls > button,.ecosystem-product,.ecosystem-spotlight-toggle,.home-return):hover { transform:none; }
+}
+@media(prefers-reduced-motion:reduce) {
+ :is(.button,.top nav a,.features .feature-toc a,.scenario-button,.hero-controls > button,.ecosystem-product,.ecosystem-spotlight-toggle,.home-return) { animation:none!important; transition:none!important; transform:none!important; }
+}
 
 /* Keep every product page's navigation and feature links visible on phones. */
 @media(max-width:480px){

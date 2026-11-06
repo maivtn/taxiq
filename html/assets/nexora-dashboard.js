@@ -60,6 +60,7 @@
     node.className = 'detail-link' + (unavailable ? ' unavailable' : '');
     if (pos) {
       node.classList.add('pos-action');
+      if (workflow && index === 0) node.classList.add('primary');
       var top = document.createElement('span'); top.className = 'pos-action-top'; top.appendChild(actionIcon(item.icon));
       if (workflow) { var step = document.createElement('span'); step.className = 'pos-action-step'; step.textContent = String(index + 1); step.setAttribute('aria-hidden', 'true'); top.appendChild(step); }
       node.appendChild(top);

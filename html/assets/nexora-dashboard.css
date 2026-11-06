@@ -51,7 +51,7 @@
 .nexora-dashboard .module-browser[hidden], .nexora-dashboard .module-detail[hidden] { display: none; }
 .nexora-dashboard .module-detail { padding: 22px; border: 1px solid var(--line); border-radius: 15px; background: #fff; box-shadow: var(--shadow); animation: detail-enter .28s ease-out both; }
     @keyframes detail-enter { from { opacity: 0; translate: 0 9px; } to { opacity: 1; translate: 0 0; } }
-.nexora-dashboard { --ink:#152448; --muted:#52637f; --violet:#5b46da; --line:#dde5f0; --shadow:0 4px 18px #2637590d; max-width:1680px; margin:auto; }
+.nexora-dashboard { --ink:#152448; --muted:#52637f; --violet:#4648d4; --control-hover:#3a3bbf; --control-active:#2d2eaa; --control-soft:#e9e9ff; --control-gradient:linear-gradient(135deg,#2f63ff,#7a3df5); --line:#dde5f0; --shadow:0 4px 18px #2637590d; max-width:1680px; margin:auto; }
 .nexora-dashboard .module-head { display:flex; flex-wrap:wrap; align-items:center; }
 .nexora-dashboard .module-heading { flex:1 1 340px; }
 .nexora-dashboard .filters { flex:2 1 520px; }
@@ -63,23 +63,25 @@
 .nexora-dashboard [hidden] { display:none !important; }
 .nexora-dashboard .empty { text-align:center; padding:40px 18px; color:var(--muted); background:#fff; border:1px dashed var(--line); border-radius:14px; }
 .nexora-dashboard .empty p { font-size:13px; }
-.nexora-dashboard .button { min-height:44px; padding:10px 18px; border:1px solid #c9c2f0; border-radius:9px; background:#f7f5ff; color:#4939b5; cursor:pointer; }
+.nexora-dashboard .button { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:9px 14px; border:1px solid var(--violet); border-radius:12px; background:var(--control-gradient); color:#fff; font-family:inherit; font-size:12px; font-weight:750; line-height:1.35; cursor:pointer; box-shadow:inset 0 1px #ffffff70,0 2px 5px #4648d419; transition:background .15s,border-color .15s,box-shadow .15s,transform .15s; }
+.nexora-dashboard .button.secondary { border-color:#d8d9f5; background:#fff; color:var(--violet); }
 .nexora-dashboard .detail-return-actions { display:flex; flex-wrap:wrap; gap:8px 18px; margin-bottom:16px; }
-.nexora-dashboard .detail-back, .nexora-dashboard .detail-pos-back { display:inline-flex; align-items:center; min-height:44px; padding:8px 12px; border:1px solid #d9d2f3; border-radius:9px; background:#f7f5ff; color:#4939b5; text-decoration:none; font-size:12px; font-weight:700; cursor:pointer; }
+.nexora-dashboard .detail-back, .nexora-dashboard .detail-pos-back { display:inline-flex; align-items:center; min-height:40px; padding:8px 12px; border:1px solid #d8d9f5; border-radius:12px; background:#fff; color:var(--violet); text-decoration:none; font-size:12px; font-weight:750; cursor:pointer; }
+.nexora-dashboard .detail-back { padding-inline:0; border-color:transparent; border-radius:0; background:transparent; }
 .nexora-dashboard .detail-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin:0 0 20px; }
 .nexora-dashboard .detail-head h2 { margin:0 0 8px; font-size:26px; }
 .nexora-dashboard .detail-head p { max-width:800px; margin:0; font-size:13px; color:var(--muted); line-height:1.6; }
-.nexora-dashboard .detail-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 16px; }
-.nexora-dashboard .detail-tabs button { min-height:44px; border:1px solid var(--line); border-radius:9px; padding:9px 13px; background:#fff; color:var(--muted); font-size:12px; font-weight:700; cursor:pointer; }
-.nexora-dashboard .detail-tabs [aria-selected="true"] { color:#fff; background:var(--violet); border-color:var(--violet); }
+.nexora-dashboard .detail-tabs { display:flex; flex-wrap:nowrap; gap:7px; margin:20px 0 13px; padding:0 0 9px; border-bottom:1px solid var(--line); overflow-x:auto; scrollbar-width:thin; }
+.nexora-dashboard .detail-tabs button { flex:none; min-height:40px; border:1px solid var(--line); border-radius:12px; padding:8px 12px; background:#fff; color:#485a76; font-size:12px; font-weight:750; white-space:nowrap; cursor:pointer; box-shadow:inset 0 1px #fff,0 1px 3px #283c680d; transition:background .15s,border-color .15s,box-shadow .15s,transform .15s; }
+.nexora-dashboard .detail-tabs [aria-selected="true"] { color:#fff; background:var(--control-gradient); border-color:var(--violet); box-shadow:inset 0 1px #ffffff80,0 2px 0 #2d2eaa,0 5px 12px #4648d426; }
 .nexora-dashboard .detail-link-list { display:flex; flex-wrap:wrap; gap:10px; }
 .nexora-dashboard .detail-section { margin-top:16px; }
 .nexora-dashboard .detail-section h3 { font-size:14px; margin:0 0 12px; }
-.nexora-dashboard .detail-link { font-family:inherit; text-align:left; flex:1 1 calc(50% - 10px); min-width:220px; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:15px; border:1px solid var(--line); border-radius:10px; background:#f9faff; color:var(--ink); text-decoration:none; font-size:13px; font-weight:600; overflow-wrap:anywhere; }
+.nexora-dashboard .detail-link { font-family:inherit; text-align:left; flex:1 1 calc(50% - 10px); min-width:220px; min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 13px; border:1px solid #d8d9f5; border-radius:12px; background:#fff; color:var(--violet); text-decoration:none; font-size:12px; font-weight:750; overflow-wrap:anywhere; box-shadow:inset 0 1px #fff,0 1px 3px #283c680d; transition:background .15s,border-color .15s,box-shadow .15s,transform .15s; }
 .nexora-dashboard .detail-link small { display:block; margin-top:5px; font-size:11px; font-weight:400; color:var(--muted); line-height:1.5; }
 .nexora-dashboard .detail-link-arrow { width:16px; height:16px; flex:0 0 16px; color:var(--muted); }
 .nexora-dashboard .detail-link.unavailable { color:#68778c; background:#f5f6f8; }
-.nexora-dashboard .detail-link[href]:hover { border-color:var(--violet); background:#f2efff; }
+.nexora-dashboard .detail-link[href]:hover { border-color:var(--violet); background:#f6f7ff; transform:translateY(-1px); box-shadow:0 4px 10px #4648d414; }
 .nexora-dashboard .detail-upcoming { font-size:13px; color:#7f5c28; background:#fff5df; padding:14px; border-radius:10px; line-height:1.6; }
 .nexora-dashboard :focus-visible { outline:3px solid #8e7be8; outline-offset:3px; }
 @media (min-width:768px) and (max-width:1023px) { .nexora-dashboard .card { flex-basis:calc((100% - 14px)/2); } }
@@ -154,13 +156,14 @@
 .nexora-dashboard .detail-tax-audience .nexora-3d-icon { flex-shrink:0; }
 
 /* Restore the PO's operational tiles and service-menu panel. */
-.nexora-dashboard .detail-product-page { display:inline-flex; align-items:center; min-height:44px; margin-left:auto; padding:8px 12px; border:1px solid var(--line); border-radius:9px; color:var(--violet); font-size:12px; font-weight:700; text-decoration:none; }
+.nexora-dashboard .detail-product-page { display:inline-flex; align-items:center; min-height:40px; margin-left:auto; padding:8px 12px; border:1px solid #d8d9f5; border-radius:12px; background:#fff; color:var(--violet); font-size:12px; font-weight:750; text-decoration:none; }
 .nexora-dashboard .detail-link-copy { min-width:0; }
 .nexora-dashboard .detail-link[aria-disabled="true"] { border-style:dashed; cursor:default; }
 .nexora-dashboard button.detail-link { cursor:pointer; }
-.nexora-dashboard button.detail-link:hover { border-color:var(--violet); background:#f2efff; }
+.nexora-dashboard button.detail-link:hover { border-color:var(--violet); background:#f6f7ff; transform:translateY(-1px); box-shadow:0 4px 10px #4648d414; }
 .nexora-dashboard .pos-actions { align-items:stretch; }
-.nexora-dashboard .pos-action { position:relative; flex:0 1 calc((100% - 20px)/3); min-width:0; min-height:166px; flex-direction:column; align-items:stretch; justify-content:flex-start; gap:13px; padding:16px; background:linear-gradient(145deg,#fff,#f6f8fe); }
+.nexora-dashboard .pos-action { position:relative; flex:0 1 calc((100% - 20px)/3); min-width:0; min-height:148px; flex-direction:column; align-items:stretch; justify-content:flex-start; gap:11px; padding:14px; border-color:var(--line); background:#fbfcff; color:var(--ink); }
+.nexora-dashboard .pos-action.primary { border-color:#a4a4ed; background:#f4f3ff; }
 .nexora-dashboard .pos-action-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .nexora-dashboard .pos-action-top img { width:36px; height:36px; object-fit:contain; }
 .nexora-dashboard .pos-action-step { display:flex; align-items:center; justify-content:center; width:25px; height:25px; border-radius:8px; background:#eeebff; color:#6551c8; font-size:11px; font-weight:800; }
@@ -200,7 +203,15 @@
 .nexora-dashboard .detail-link-copy { flex:1; }
 .nexora-dashboard .detail-link.unavailable .detail-link-icon { opacity:.55; }
 .nexora-dashboard .menu-sync-panel h3 { display:flex; align-items:center; gap:8px; }
+.nexora-dashboard .detail-return-actions a:hover, .nexora-dashboard .button.secondary:hover { border-color:var(--violet); background:#f6f7ff; }
+.nexora-dashboard .detail-back:hover { color:var(--control-hover); text-decoration:underline; text-underline-offset:3px; }
+.nexora-dashboard .detail-tabs button:not([aria-selected="true"]):hover { color:var(--violet); border-color:#a4a4ed; background:#f6f7ff; }
+.nexora-dashboard .detail-tabs [aria-selected="true"]:hover, .nexora-dashboard .button:not(.secondary):hover { background:linear-gradient(135deg,#2457f5,#6c35ea); }
+.nexora-dashboard .detail-tabs button:active, .nexora-dashboard .button:active, .nexora-dashboard .detail-link[href]:active, .nexora-dashboard button.detail-link:active { transform:translateY(1px); box-shadow:inset 0 1px 3px #2d2eaa20; }
+.nexora-dashboard :is(button,a):focus-visible { outline:3px solid var(--violet); outline-offset:3px; }
+.nexora-dashboard :is(button,a):disabled, .nexora-dashboard [aria-disabled="true"] { box-shadow:none; transform:none; }
 @media(max-width:767px) {
+ .nexora-dashboard .detail-tabs button, .nexora-dashboard .detail-return-actions :is(button,a), .nexora-dashboard .button { min-height:44px; }
  .nexora-dashboard .detail-head h2 > .nexora-content-icon { width:34px; height:34px; }
  .nexora-dashboard .detail-link-icon { flex-basis:34px; width:34px; height:34px; }
  .nexora-dashboard .detail-link-icon > .nexora-content-icon { width:30px; height:30px; }
