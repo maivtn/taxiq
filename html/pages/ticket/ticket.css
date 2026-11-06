@@ -216,3 +216,7 @@ body:not(.checkout-mode) #collapse-ticket{display:none}
 @media(max-width:650px){.payment-extra button{flex:1 1 44%;font-size:13px}}
 .payment-summary-actions #discount-all{display:inline-flex;align-items:center;justify-content:center;gap:5px}
 .payment-summary-actions #discount-all svg{width:14px;height:14px;flex:none}
+.status.unassigned{background:#fff1dd;color:#a96517}
+.technician-group[data-group="unassigned"]{border-color:#efcf94;background:#fffdfa}
+.technician-group[data-group="unassigned"] .group-heading{background:#fff8ec}
+.ticket-line.needs-tech .line-tech-trigger{border-color:#efc875;background:#fff6e6;color:#995a0c}
