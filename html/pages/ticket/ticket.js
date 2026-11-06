@@ -249,9 +249,27 @@
   }
 
   function renderPrintPreview() {
+    $('print-dialog').classList.remove('receipt-preview');
+    $('print-dialog').querySelector('.print-dialog-header small').hidden = false;
+    $('print-dialog-title').textContent = 'Print Ticket';
+    $('print-now').textContent = 'Print Ticket';
     const groups = state.groups.filter(group => visibleLines(group).length);
     const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date()).replace(' at ', ' ');
     $('print-pages').innerHTML = groups.map((group, index) => `<article class="print-page"><div class="print-title">Ticket #1</div><div class="print-date">${escape(date)}</div><div class="print-customer">Customer: <strong>Mai test Upload Image 1</strong></div><div class="print-tech">${escape(group.tech || 'Technician needed')}</div>${visibleLines(group).map(item => `<div class="print-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price - item.discount)}</strong></div>${visibleAddons(item).map(addon => `<div class="print-item print-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price - (addon.discount || 0))}</strong></div>`).join('')}`).join('')}${group.tech === 'NEXORA_02' ? '<div class="print-note"><strong>NOTE</strong><p><b>Pedicure · President 7 Star:</b> Client requested a shorter finish</p></div>' : ''}<div class="print-page-number">${index + 1} / ${groups.length}</div></article>`).join('');
+  }
+
+  function renderReceiptPreview() {
+    $('print-dialog').classList.add('receipt-preview');
+    $('print-dialog').querySelector('.print-dialog-header small').hidden = true;
+    $('print-dialog-title').textContent = 'Print preview';
+    $('print-now').textContent = 'Print';
+    const dateParts = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).formatToParts(new Date());
+    const datePart = type => dateParts.find(part => part.type === type)?.value || '';
+    const date = `${datePart('month')} ${datePart('day')}, ${datePart('year')} ${datePart('hour')}:${datePart('minute')} ${datePart('dayPeriod').toLowerCase()}`;
+    const discount = allLines().filter(filled).reduce((sum, item) => sum + item.discount + visibleAddons(item).reduce((addonSum, addon) => addonSum + (addon.discount || 0), 0), 0);
+    const groups = state.groups.filter(group => visibleLines(group).length);
+    const services = groups.map(group => `<section class="receipt-tech"><h3>${escape(group.tech || 'Technician needed')}</h3>${visibleLines(group).map(item => `<div class="receipt-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price)}</strong></div>${visibleAddons(item).map(addon => `<div class="receipt-item receipt-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price)}</strong></div>`).join('')}`).join('')}</section>`).join('');
+    $('print-pages').innerHTML = `<article class="print-page checkout-receipt"><h2>Receipt #1</h2><p class="receipt-date">${escape(date)}</p><div class="receipt-salon"><strong>Quan Salon</strong><span>10401 LA VITA CT SAN DIEGO, Houston, Texas 300000, US</span><span>(111) 111-1111</span></div><div class="receipt-customer"><span>Customer: MAI TEST UPLOAD IMAGE 1</span><span>Phone: ***-***-1111</span></div>${services}<div class="receipt-totals"><div><span>Subtotal</span><strong>${money(subtotal() + discount)}</strong></div>${discount ? `<div><span>Discount</span><strong>-${money(discount)}</strong></div>` : ''}${state.tip ? `<div><span>Tip</span><strong>${money(state.tip)}</strong></div>` : ''}<div class="receipt-grand-total"><span>Total</span><strong>${money(total())}</strong></div></div><p class="receipt-thanks">Thank you for visiting!</p></article>`;
   }
 
   function markPending() { state.hasPendingChanges = true; }
@@ -489,6 +507,7 @@
     if (button.id === 'save-tip') { const input = $('tip-values').querySelector('input'); const value = input?.value ? Number(input.value) : state.tipChoice; if (!Number.isFinite(value) || value < 0) return; state.tip = state.tipType === 'percent' ? Math.round(subtotal() * value) / 100 : value; $('tip-dialog').close(); render(); return; }
     if (button.id === 'remove-tip') { state.tip = 0; $('tip-dialog').close(); render(); return; }
     if (button.id === 'print-ticket') { renderPrintPreview(); $('print-dialog').showModal(); return; }
+    if (button.id === 'receipt-print-preview') { renderReceiptPreview(); $('print-dialog').showModal(); return; }
     if (button.classList.contains('close-print')) { $('print-dialog').close(); return; }
     if (button.id === 'print-now') { window.print(); return; }
     if (button.id === 'confirm-pay') { $('confirm-dialog').close(); return; }

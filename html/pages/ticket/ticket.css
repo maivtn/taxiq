@@ -249,3 +249,21 @@ body:not(.checkout-mode) #collapse-ticket{display:none}
 .workspace-heading{flex-wrap:wrap}
 .clear-data-button{margin-left:auto;min-height:44px;padding:0 15px;border:1px solid #f2c5cd;border-radius:8px;background:#fff6f7;color:#b84358;font-size:13px;font-weight:800}
 .clear-data-button:hover{background:#ffeaee}
+.receipt-preview .print-dialog-header h2{margin:0;font-size:18px}
+.receipt-preview .print-pages{padding:20px}
+.checkout-receipt{width:min(100%,360px);min-height:auto;padding:22px 18px 24px;color:#111;font-size:11px;line-height:1.45}
+.checkout-receipt h2{margin:0;text-align:center;font-size:19px;font-weight:900}
+.receipt-date{margin:2px 0 15px;text-align:center;font-size:10px}
+.receipt-salon,.receipt-customer{display:grid;justify-items:center;gap:3px;text-align:center}
+.receipt-salon strong{font-size:16px}
+.receipt-customer{margin:16px 0 13px}
+.receipt-tech{padding:9px 0;border-top:1px dashed #d7d7d7}
+.receipt-tech h3{margin:0 0 7px;font-size:12px;text-align:center}
+.receipt-item{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.receipt-item strong{flex:none;font-weight:700}
+.receipt-addon{padding-left:13px}
+.receipt-totals{display:grid;gap:5px;margin-top:8px;padding-top:11px;border-top:1px dashed #d7d7d7}
+.receipt-totals>div{display:flex;justify-content:space-between;gap:10px}
+.receipt-grand-total{padding-top:6px;border-top:1px solid #d7d7d7;font-size:13px;font-weight:800}
+.receipt-thanks{margin:20px 0 0;text-align:center}
+@media print{.receipt-preview .print-pages{padding:0}.checkout-receipt{width:100%;padding:0;break-after:auto}}
