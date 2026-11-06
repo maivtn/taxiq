@@ -1,0 +1,110 @@
+{
+  "results": [
+    {
+      "name": "responsive food",
+      "pass": true
+    },
+    {
+      "name": "responsive realestate",
+      "pass": true
+    },
+    {
+      "name": "responsive shop",
+      "pass": true
+    },
+    {
+      "name": "responsive reels",
+      "pass": true
+    },
+    {
+      "name": "responsive live",
+      "pass": true
+    },
+    {
+      "name": "responsive news",
+      "pass": true
+    },
+    {
+      "name": "responsive wallet",
+      "pass": true
+    },
+    {
+      "name": "responsive wheel",
+      "pass": true
+    },
+    {
+      "name": "responsive meet",
+      "pass": true
+    },
+    {
+      "name": "responsive account",
+      "pass": true
+    },
+    {
+      "name": "responsive assistant",
+      "pass": true
+    },
+    {
+      "name": "responsive notifications",
+      "pass": true
+    },
+    {
+      "name": "More menu and return to Feed",
+      "pass": true
+    },
+    {
+      "name": "cancel stale lazy navigation",
+      "pass": true
+    },
+    {
+      "name": "Food review uses the common point wallet",
+      "pass": true
+    },
+    {
+      "name": "storefront setup and product persistence",
+      "pass": true
+    },
+    {
+      "name": "staff trade-service form and Jobs permissions",
+      "pass": true
+    },
+    {
+      "name": "salon transfer uses the existing Jobs engine",
+      "pass": true
+    },
+    {
+      "name": "Meet schedule and shared notification detail",
+      "pass": true
+    },
+    {
+      "name": "Privacy and Profile share one NEXORA ID",
+      "pass": true
+    },
+    {
+      "name": "Real Estate listing wizard and saved photo",
+      "pass": true
+    },
+    {
+      "name": "Reels video creation and persisted preview",
+      "pass": true
+    },
+    {
+      "name": "default staff identity matches the existing Community frame",
+      "pass": true
+    },
+    {
+      "name": "leaving Meet does not stop another hosts recording",
+      "pass": true
+    },
+    {
+      "name": "legacy contacts keep four-key search and their existing thread",
+      "pass": true
+    },
+    {
+      "name": "original Jobs and Connect samples are preserved",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "pass": true
+}

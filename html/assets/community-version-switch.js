@@ -4,7 +4,7 @@
   const script=document.currentScript,version=script.dataset.communityVersion;
   if(!['v2','v3.1'].includes(version)||document.getElementById('communityVersionSwitch'))return;
   const next=version==='v2'?'v3.1':'v2';
-  const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('community-version-switch.css?v=20261106-v1',script.src).href;document.head.append(style);
+  const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('community-version-switch.css?v=20261106-v2',script.src).href;document.head.append(style);
   const panel=document.createElement('nav');panel.id='communityVersionSwitch';panel.className='community-version-switch';panel.setAttribute('aria-label','Community versions');
   const badge=document.createElement('strong');badge.className='community-version-badge';badge.textContent=version;
   const link=document.createElement('a');link.className='community-version-button';link.textContent='Switch to '+next+' →';

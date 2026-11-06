@@ -7,7 +7,7 @@ const root=path.resolve(__dirname,'../../..');
 const evidence=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-clone-visible-evidence';
 fs.mkdirSync(evidence,{recursive:true});
 const base=process.env.COMMUNITY_TEST_ORIGIN||'http://127.0.0.1:5503';
-const screens=['feed','groups','market','pages','deals','jobs','shift','blog','connect'];
+const screens=(process.env.COMMUNITY_TEST_SCREENS||'feed,groups,market,pages,deals,jobs,shift,blog,connect').split(',');
 const viewports=[[1440,1000],[834,1112],[390,844]];
 async function navigate(page,tab){
   await page.bringToFront();
@@ -56,6 +56,10 @@ async function snapshot(page,label,tab,width,height){
         return {tag:element.tagName,id:element.id,box:[rect.x,rect.y,rect.width,rect.height].map(value=>Math.round(value*10)/10)};
       }),
       overflow:document.documentElement.scrollWidth>innerWidth
+      ,shellChrome:[...document.querySelector('.shell').querySelectorAll('aside,header,a,button,input,select,img')].filter(element=>element.getClientRects().length).map(element=>{
+        const rect=element.getBoundingClientRect(),style=getComputedStyle(element);
+        return {tag:element.tagName,text:normalize(element.innerText||''),box:[rect.x,rect.y,rect.width,rect.height].map(value=>Math.round(value*10)/10),color:style.color,background:style.backgroundColor};
+      })
     };
   });
   await page.screenshot({path:path.join(evidence,'visible-'+label+'-'+tab+'-'+width+'.png'),animations:'disabled'});
@@ -80,7 +84,7 @@ async function snapshot(page,label,tab,width,height){
     await navigate(pages[0],tab);await navigate(pages[1],tab);
     for(const [width,height] of viewports){
       const a=await snapshot(pages[0],'v2',tab,width,height),b=await snapshot(pages[1],'v31',tab,width,height);
-      const row={tab,width,height,contentEqual:a.text===b.text&&a.heading===b.heading,imagesEqual:JSON.stringify(a.images)===JSON.stringify(b.images),layoutEqual:JSON.stringify(a.layout)===JSON.stringify(b.layout),v2BrokenImages:a.images.filter(image=>!image.loaded),v31BrokenImages:b.images.filter(image=>!image.loaded),overflow:a.overflow||b.overflow};
+      const row={tab,width,height,contentEqual:a.text===b.text&&a.heading===b.heading,imagesEqual:JSON.stringify(a.images)===JSON.stringify(b.images),layoutEqual:JSON.stringify(a.layout)===JSON.stringify(b.layout),shellChromeEqual:JSON.stringify(a.shellChrome)===JSON.stringify(b.shellChrome),v2BrokenImages:a.images.filter(image=>!image.loaded),v31BrokenImages:b.images.filter(image=>!image.loaded),overflow:a.overflow||b.overflow};
       rows.push(row);fs.writeFileSync(path.join(evidence,'visible-parity-result.json'),JSON.stringify({rows,errors},null,2));
       console.log(JSON.stringify(row));
     }
@@ -91,7 +95,7 @@ async function snapshot(page,label,tab,width,height){
   await page.locator('#communityVersionSwitch strong').filter({hasText:'v2'}).waitFor();
   await page.locator('#communityVersionSwitch a').click();await page.waitForURL(url=>url.pathname==='/html/v3.1/community.html');
   await page.locator('#communityVersionSwitch strong').filter({hasText:'v3.1'}).waitFor();
-  const result={browser:'visible Chromium',rows,errors,versionSwitchBothWays:true,pass:rows.every(row=>row.contentEqual&&row.imagesEqual&&row.layoutEqual&&!row.v2BrokenImages.length&&!row.v31BrokenImages.length&&!row.overflow)&&!errors.length};
+  const result={browser:'visible Chromium',rows,errors,versionSwitchBothWays:true,pass:rows.every(row=>row.contentEqual&&row.imagesEqual&&row.layoutEqual&&row.shellChromeEqual&&!row.v2BrokenImages.length&&!row.v31BrokenImages.length&&!row.overflow)&&!errors.length};
   fs.writeFileSync(path.join(evidence,'visible-parity-result.json'),JSON.stringify(result,null,2));
   console.log('Visible browser comparison: '+(result.pass?'PASS':'FAIL'));
   process.exit(result.pass?0:2);

@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community/community-hub.js?v=20261106-community-form-lucide-v60',document.currentScript.src);
+  var componentURL=new URL('community/community-hub.js?v=20261106-v31-po6',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -12,10 +12,27 @@
   var current = '';
   var detailOpen = false;
   var ready = false;
-  var routes = ['feed', 'groups', 'market', 'pages', 'deals', 'jobs', 'shift', 'blog', 'connect', 'chatgroups', 'calls', 'privacy'];
+  var routes = ['feed', 'groups', 'market', 'pages', 'deals', 'jobs', 'shift', 'blog', 'connect', 'chatgroups', 'calls', 'privacy', 'food', 'realestate', 'shop', 'transfer', 'reels', 'live', 'news', 'wallet', 'wheel', 'meet', 'account', 'assistant', 'notifications'];
   var aliases = {mkt:'market', fanpage:'pages', daywork:'shift', shifts:'shift', profile:'jobs', 'jobs-my-posts':'jobs', 'jobs-applied':'jobs', 'shift-payments':'shift', learning:'feed', events:'feed', dcats:'deals', dmatch:'deals', dopen:'deals', dlast:'deals', dlastt:'deals', dlastb:'deals', dcamp:'deals', dwallet:'deals', dcreate:'deals', dmanage:'deals', dredeem:'deals', dwish:'deals'};
 
-  var contextKeys=['dealTab','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId'];
+  var contextKeys=['dealTab','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','listingId','meetingId','meetView','recordId','wheelTab','foodPostId','reelId'];
+  // Only Community is cloned. Other business tools retain their original destinations.
+  var cloneRoot=new URL('./',location.href),pagesRoot=new URL('../pages/',cloneRoot);
+  var clonePages=new Set(['community.html','community.htm','staff-community.html','index.html']);
+  function syncShellLinks(){
+    document.querySelectorAll('.shell a[href],.shell form[action]').forEach(function(node){
+      var attribute=node.tagName==='FORM'?'action':'href',value=node.getAttribute(attribute);
+      if(!value||/^(?:#|javascript:|mailto:|tel:)/i.test(value))return;
+      var target=new URL(value,location.href),name=target.pathname.split('/').pop();
+      if(target.origin===location.origin&&target.pathname===cloneRoot.pathname+name&&/\.html?$/.test(name)&&!clonePages.has(name)){
+        // The shared header selects icon colors using the original relative href.
+        if(node.matches('.shell-workspace-actions a'))node.style.color=getComputedStyle(node).color;
+        target.pathname=pagesRoot.pathname+name;node.setAttribute(attribute,target.href);
+      }
+    });
+  }
+  new MutationObserver(syncShellLinks).observe(document.querySelector('.shell'),{childList:true,subtree:true});
+  syncShellLinks();
   function routeContext(){var query=new URLSearchParams(location.search),result={};for(var key of contextKeys)if(query.has(key))result[key]=query.get(key);return result;}
   function route(value) {
     value = aliases[value] || value;
@@ -105,7 +122,7 @@
       send('nexora-community-navigate', {route:current,context:routeContext()});
     }
     if(data.type==='nexora-community-context'){var url=new URL(location.href),ctx=data.context||{};if(ctx.closeDetail){clearContextOnBack=detailOpen||detailBackPending;for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);}else{var keys=Object.hasOwn(ctx,'dealTab')?['dealTab']:Object.hasOwn(ctx,'jobsTab')?['jobsTab','jobId','profileRequired']:Object.hasOwn(ctx,'shiftTab')?['shiftTab','shiftId','assignmentId','settlementId','invitationId']:contextKeys;for(var key of keys){if(ctx[key])url.searchParams.set(key,ctx[key]);else url.searchParams.delete(key);}}history.replaceState(history.state,'',url);}
-    if(data.type==='nexora-community-pos')location.href='pos-recruitment.html';
+    if(data.type==='nexora-community-pos')location.href='../pages/pos-recruitment.html';
     if (data.type === 'nexora-community-route' && ready) show(data.route, true, Boolean(data.replace));
     if(data.type==='nexora-feed-post-close'){clearPostOnBack=true;if(!detailOpen&&!detailBackPending)clearPostLink();}
     if (data.type === 'nexora-community-detail') {

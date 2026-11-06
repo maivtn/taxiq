@@ -1,0 +1,43 @@
+{
+  "baseCommit": "792563d8",
+  "browser": "visible Chromium",
+  "baselineBeforeAdditions": {
+    "screenPairs": 27,
+    "matched": 27,
+    "sourceCommunityFilesIdentical": 75,
+    "copiedDependencyFilesIdentical": 554
+  },
+  "retainedScreensAfterAdditions": {
+    "screenPairs": 24,
+    "matched": 24,
+    "shellHeaderAndSidebarCompared": true
+  },
+  "additions": {
+    "scenarios": 26,
+    "passed": 26,
+    "responsiveWidths": [
+      1440,
+      834,
+      390
+    ],
+    "pageErrors": []
+  },
+  "npmTest": {
+    "total": 2109,
+    "pass": 1818,
+    "fail": 291,
+    "exitCode": 1,
+    "baselinePass": 1818,
+    "baselineFail": 291
+  },
+  "meetMedia": "Prototype flows; group media provider integration remains pending in the PO.",
+  "originalSamplesCompared": [
+    "Jobs listings",
+    "Jobs candidate profiles",
+    "Jobs applications",
+    "Message request",
+    "Kim and Sally chats",
+    "Call history",
+    "POS group"
+  ]
+}

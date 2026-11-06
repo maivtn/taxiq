@@ -1,0 +1,2275 @@
+<!-- Adapted from PO goi-community-giao-dev / realestate.html; host owns identity, navigation and points. -->
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<title>Địa ốc · NAILHUB.AI — Nhà đất cho cộng đồng nail Việt tại Mỹ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#ffffff; --surface2:#efece3; --ink:#14201d; --ink2:#43524d; --muted:#71807a;
+  --line:#ddd8ca; --brand:#0b6b57; --brand-d:#084e3f; --accent:#c8841a; --accent-soft:#f7ead3;
+  --teal-soft:#e2efe9; --danger:#b3261e; --danger-soft:#fbe9e7; --ok:#0b6b57;
+  --radius:14px; --shadow:0 10px 30px rgba(20,32,29,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#101613; --surface:#1a211e; --surface2:#232c28; --ink:#eef2ee; --ink2:#c3cfc8; --muted:#8fa198;
+  --line:#33403a; --brand:#2fae8f; --brand-d:#7fd3ba; --accent:#e0a03c; --accent-soft:#3a2f1a; --teal-soft:#1d2f29; --danger:#ff8a80; --danger-soft:#3a211f; --shadow:0 10px 30px rgba(0,0,0,.4);}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Be Vietnam Pro",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink)}
+h1,h2,h3{line-height:1.2;margin:0}
+a{color:var(--brand)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+/* top bar */
+.topbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{display:flex;align-items:center;gap:14px;padding:12px 0}
+.logo{font-weight:900;letter-spacing:.02em;font-size:1.05rem;color:var(--ink);text-decoration:none;white-space:nowrap}
+.logo span{color:var(--brand)}
+.crumb{color:var(--muted);font-size:.9rem;white-space:nowrap}
+.crumb b{color:var(--ink)}
+.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.lang-toggle{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.lang-toggle button{border:0;background:transparent;padding:7px 13px;font-weight:700;font-size:.85rem;color:var(--muted)}
+.lang-toggle button.on{background:var(--brand);color:#fff}
+.btn{border:0;border-radius:10px;padding:10px 18px;font-weight:700;background:var(--brand);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:8px;font-size:.95rem}
+.btn:hover{background:var(--brand-d)}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.small{padding:8px 13px;font-size:.88rem}
+.btn.warn{background:var(--accent);color:#1c1405}
+/* hero */
+.hero{padding:26px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch}
+.hero-copy{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:30px 30px 26px;display:flex;flex-direction:column;justify-content:center}
+.hero-copy h1{font-family:"Fraunces",serif;font-size:2.35rem;font-weight:900;letter-spacing:-.01em}
+.hero-copy h1 em{font-style:normal;color:var(--brand)}
+.hero-copy p{color:var(--ink2);margin:14px 0 20px;max-width:52ch}
+.hero-photo{border-radius:20px;overflow:hidden;min-height:280px;position:relative;border:1px solid var(--line)}
+.hero-photo img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.hero-photo .cap{position:absolute;left:14px;bottom:14px;background:rgba(10,20,17,.78);color:#fff;padding:8px 13px;border-radius:9px;font-size:.83rem;font-weight:600}
+.searchbar{display:flex;gap:8px;flex-wrap:wrap}
+.searchbar input[type=search]{flex:1 1 220px;padding:13px 15px;border:1px solid var(--line);border-radius:11px;background:var(--bg)}
+.searchbar select{padding:13px 12px;border:1px solid var(--line);border-radius:11px;background:var(--bg)}
+.hero-notes{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.note-chip{font-size:.8rem;font-weight:600;background:var(--teal-soft);color:var(--brand-d);border-radius:999px;padding:6px 12px}
+@media (prefers-color-scheme: dark){.note-chip{color:var(--brand)}}
+/* type chips */
+.types{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 4px}
+.tchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 17px;font-weight:700;font-size:.92rem;color:var(--ink2)}
+.tchip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tchip .n{opacity:.65;font-weight:600;font-size:.8rem;margin-left:5px}
+/* layout */
+.layout{display:grid;grid-template-columns:272px 1fr;gap:22px;margin:18px 0 10px;align-items:start}
+.filters{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:sticky;top:78px}
+.filters h3{font-size:1rem;margin-bottom:14px}
+.fgroup{margin-bottom:16px}
+.fgroup label{display:block;font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:7px}
+.frow{display:flex;gap:8px}
+.frow input,.frow select{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);font-size:.92rem}
+.checkline{display:flex;gap:9px;align-items:center;font-size:.92rem;font-weight:600}
+.checkline input{width:18px;height:18px;accent-color:var(--brand)}
+.filters .btn{width:100%;justify-content:center;margin-top:4px}
+.linkbtn{background:none;border:0;color:var(--brand);font-weight:700;padding:6px 0;font-size:.9rem}
+.results-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.results-head h2{font-size:1.3rem}
+.results-head .count{color:var(--muted);font-weight:600;font-size:.92rem}
+.results-head select{margin-left:auto;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .15s ease, box-shadow .15s ease}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card .ph{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--surface2)}
+.card .ph img{width:100%;height:100%;object-fit:cover}
+.badges{position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:.72rem;font-weight:800;padding:4px 9px;border-radius:999px;letter-spacing:.02em}
+.badge.verified{background:var(--brand);color:#fff}
+.badge.featured{background:var(--accent);color:#1c1405}
+.badge.type{background:rgba(10,20,17,.8);color:#fff}
+.badge.sample{background:#fff;color:#7a4d05;border:1.5px solid var(--accent);font-weight:900}
+.sample-note{background:var(--accent-soft);border:1px solid var(--accent);border-radius:11px;padding:12px 15px;font-size:.9rem;margin-bottom:14px;color:var(--ink)}
+.fav{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:1.05rem;line-height:1;color:#5a6a64}
+.fav.on{color:#c22f4e}
+.card .body{padding:15px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.price{font-size:1.28rem;font-weight:900}
+.price small{font-size:.85rem;font-weight:600;color:var(--muted)}
+.card h3{font-size:1rem;font-weight:700;cursor:pointer}
+.card h3:hover{color:var(--brand)}
+.specs{color:var(--ink2);font-size:.88rem;display:flex;gap:12px;flex-wrap:wrap}
+.loc{color:var(--muted);font-size:.86rem}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+.meta time{color:var(--muted);font-size:.8rem}
+.meta button{background:none;border:0;color:var(--brand);font-weight:700;font-size:.88rem;padding:4px 0}
+.wanted-card .ph{display:flex;align-items:center;justify-content:center;background:var(--accent-soft);aspect-ratio:4/2.1}
+.wanted-card .ph .big{font-family:"Fraunces",serif;font-size:1.5rem;font-weight:900;color:var(--accent);text-align:center;padding:0 18px}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);padding:34px;text-align:center;color:var(--ink2)}
+/* AI strip */
+.ai-strip{margin:26px 0 6px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:var(--radius);padding:20px 22px}
+.ai-strip h2{font-size:1.15rem}
+.ai-strip p{color:var(--ink2);margin:8px 0 0;max-width:78ch}
+.ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:16px}
+.ai-item{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:14px 15px}
+.ai-item b{display:block;margin-bottom:5px;font-size:.95rem}
+.ai-item p{font-size:.88rem;margin:0}
+/* sections */
+section.block{margin:34px 0}
+section.block>h2{font-size:1.45rem;margin-bottom:6px}
+section.block>.sub{color:var(--ink2);margin:0 0 18px;max-width:75ch}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:14px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:19px}
+.step .num{font-family:"Fraunces",serif;font-size:1.6rem;font-weight:900;color:var(--brand)}
+.step h3{font-size:1rem;margin:6px 0}
+.step p{color:var(--ink2);font-size:.9rem;margin:0}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:19px}
+.rule h3{font-size:1rem;margin-bottom:7px}
+.rule p{color:var(--ink2);font-size:.9rem;margin:0}
+.crosslink{margin:30px 0;background:var(--teal-soft);border-radius:var(--radius);padding:22px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.crosslink h3{font-size:1.1rem}
+.crosslink p{color:var(--ink2);margin:4px 0 0;max-width:62ch}
+.disclaimer{border-top:1px solid var(--line);margin:36px 0 0;padding:20px 0 40px;color:var(--muted);font-size:.85rem;max-width:95ch}
+/* modal */
+.modal-back{position:fixed;inset:0;background:rgba(8,14,12,.62);z-index:90;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:18px 12px}
+.modal-back.open{display:flex}
+.modal{background:var(--surface);border-radius:18px;max-width:860px;width:100%;padding:0;overflow:hidden;box-shadow:var(--shadow)}
+.modal .mhead{display:flex;align-items:center;gap:10px;padding:16px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2}
+.modal .mhead h3{font-size:1.1rem}
+.modal .x{margin-left:auto;border:0;background:var(--surface2);width:36px;height:36px;border-radius:50%;font-size:1.05rem;color:var(--ink)}
+.modal .mbody{padding:20px 22px 26px}
+.gallery{border-radius:14px;overflow:hidden;aspect-ratio:16/9;background:var(--surface2)}
+.gallery img{width:100%;height:100%;object-fit:cover}
+.dprice{font-size:1.7rem;font-weight:900;margin:16px 0 2px}
+.dspecs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.dspec{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:.9rem;font-weight:600}
+.rentline{font-size:.84rem;color:var(--ink2);margin-top:5px;line-height:1.5}
+.rentline.dim{color:var(--muted);font-size:.8rem;margin-top:2px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 22px;margin:14px 0;font-size:.94rem}
+.dgrid div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:7px 0}
+.dgrid span{color:var(--muted)}
+.notice{border-radius:11px;padding:13px 15px;font-size:.9rem;margin:14px 0}
+.notice.warn{background:var(--accent-soft);border:1px solid var(--accent)}
+.notice.danger{background:var(--danger-soft);border:1px solid var(--danger)}
+.contact-box{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.similar h4{margin:20px 0 10px}
+.similar .grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+/* form */
+.psteps{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.pstep{flex:1;min-width:110px;text-align:center;padding:9px 6px;border-radius:9px;background:var(--surface2);font-size:.83rem;font-weight:700;color:var(--muted)}
+.pstep.on{background:var(--brand);color:#fff}
+.pstep.done{background:var(--teal-soft);color:var(--brand-d)}
+.field{margin-bottom:15px}
+.field label{display:block;font-weight:700;font-size:.88rem;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.field textarea{min-height:110px;resize:vertical}
+.field .hint{font-size:.8rem;color:var(--muted);margin-top:5px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.typepick{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.typepick button{border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:14px;text-align:left;font-weight:700}
+.typepick button small{display:block;font-weight:500;color:var(--muted);margin-top:3px;font-size:.8rem}
+.typepick button.on{border-color:var(--brand);background:var(--teal-soft);box-shadow:inset 0 0 0 1px var(--brand)}
+.fh-alert{display:none;border-radius:11px;padding:13px 15px;font-size:.9rem;margin:10px 0;background:var(--danger-soft);border:1px solid var(--danger)}
+.fh-alert.show{display:block}
+.ai-box{display:none;border-radius:11px;padding:14px 15px;font-size:.92rem;margin:10px 0;background:var(--accent-soft);border:1px solid var(--accent)}
+.ai-box.show{display:block}
+.ai-box textarea{min-height:80px}
+.form-nav{display:flex;gap:10px;justify-content:space-between;margin-top:20px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--bg);padding:13px 20px;border-radius:12px;font-weight:600;font-size:.92rem;z-index:120;transition:transform .25s ease;max-width:92vw;text-align:center;box-shadow:var(--shadow);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.saved-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.saved-chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:.85rem;font-weight:600}
+.saved-chip b{color:var(--brand)}
+/* Smart Import */
+.import-cta{margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--teal-soft);border:1px solid var(--brand);border-radius:12px;padding:13px 15px}
+.import-cta p{margin:0!important;font-size:.9rem;color:var(--ink2)}
+.import-cta p b{color:var(--ink)}
+.import-panel{border:1.5px solid var(--brand);background:var(--teal-soft);border-radius:14px;padding:16px 17px;margin-bottom:18px}
+.import-panel h4{margin:0 0 4px;font-size:1rem}
+.import-panel p{margin:0 0 12px;color:var(--ink2);font-size:.88rem}
+.import-row{display:flex;gap:8px;flex-wrap:wrap}
+.import-row input[type=url]{flex:1 1 260px;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);min-width:0}
+.import-sources{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.src-chip{font-size:.78rem;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--ink2)}
+.src-chip.on{border-color:var(--brand);color:var(--brand);background:#fff}
+.rights-line{display:flex;gap:9px;align-items:flex-start;font-size:.88rem;font-weight:600;margin:10px 0;line-height:1.45}
+.rights-line input{width:18px;height:18px;accent-color:var(--brand);flex:0 0 auto;margin-top:2px}
+.import-status{display:none;margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 13px;font-size:.88rem}
+.import-status.show{display:block}
+.import-status b{color:var(--brand)}
+.import-demo{margin-top:10px;font-size:.83rem;color:var(--muted)}
+.import-demo button{background:none;border:0;color:var(--brand);font-weight:700;text-decoration:underline;padding:2px 4px;font-size:.83rem}
+.import-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.import-how .ih{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px}
+.import-how .ih b{display:block;margin-bottom:5px}
+.import-how .ih p{color:var(--ink2);font-size:.9rem;margin:0}
+.imported-badge{display:none;background:var(--brand);color:#fff;font-size:.75rem;font-weight:800;border-radius:999px;padding:4px 9px;margin-left:8px;vertical-align:middle}
+.imported-badge.show{display:inline-block}
+.ai-steps{list-style:none;margin:0;padding:0}
+.ai-steps li{padding:3px 0;color:var(--muted)}
+.ai-steps li.run{color:var(--ink);font-weight:700}
+.ai-steps li.done{color:var(--brand);font-weight:600}
+.ai-fields{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 4px}
+.ai-fields span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:.8rem;font-weight:700}
+/* AI Assistant (NEXI) */
+.assistant{position:fixed;right:14px;bottom:14px;z-index:80;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}
+.assist-panel,.assist-row{pointer-events:auto}
+.assist-bubble{display:none;max-width:252px;background:var(--surface);border:1px solid var(--line);border-radius:14px 14px 4px 14px;box-shadow:var(--shadow);padding:11px 32px 11px 13px;font-size:.86rem;font-weight:600;position:relative;cursor:pointer;line-height:1.45}
+.assist-bubble.show{display:block;pointer-events:auto;animation:bubbleIn .3s ease}
+@keyframes bubbleIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.assist-bubble.gone{display:none}
+.assist-bubble .bx{position:absolute;top:4px;right:6px;border:0;background:none;color:var(--muted);font-size:.85rem;line-height:1;padding:4px;cursor:pointer}
+.assist-row{display:flex;align-items:flex-end;gap:8px}
+.assist-sound{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);font-size:.95rem;line-height:1}
+.assist-avatar{width:80px;height:82px;border:0;background:none;padding:0;cursor:pointer;filter:drop-shadow(0 8px 14px rgba(20,32,29,.25))}
+.assist-mini{width:40px;height:41px;flex:0 0 auto;display:block}
+.assist-mini svg{width:100%;height:100%;display:block}
+.assist-picker{padding:10px 12px 12px;background:var(--surface);border-bottom:1px solid var(--line);flex:0 0 auto}
+.assist-picker-t{font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--brand-d);margin-bottom:8px}
+@media (prefers-color-scheme: dark){.assist-picker-t{color:var(--brand)}}
+.assist-picker-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.pick{border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:0}
+.pick.on{border-color:var(--brand);background:var(--teal-soft);box-shadow:0 0 0 1.5px var(--brand)}
+.pick-av{width:54px;height:62px;display:block}
+.pick-av svg{width:100%;height:100%;display:block}
+.pick-name{font-size:.74rem;font-weight:700;line-height:1.2;text-align:center;color:var(--ink2)}
+.assist-picker.flash{animation:pickerFlash 1.15s ease-in-out 2}
+@keyframes pickerFlash{0%,100%{background:var(--surface)}50%{background:var(--teal-soft)}}
+.assist-pickbtn{display:flex;align-items:center;gap:7px;border:1.5px solid var(--brand);background:var(--surface);color:var(--brand-d);border-radius:999px;padding:5px 13px 5px 6px;font-weight:800;font-size:.82rem;box-shadow:var(--shadow);cursor:pointer;line-height:1.1}
+@media (prefers-color-scheme: dark){.assist-pickbtn{color:var(--brand)}}
+.assist-pickbtn .pb-av{width:30px;height:32px;display:block;flex:0 0 auto}
+.assist-pickbtn .pb-av svg{width:100%;height:100%;display:block}
+.assist-pickbtn,.assist-avatar,.assist-sound,.assist-bubble,.assist-picker-row .pick{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.assistant.open .assist-pickbtn{display:none}
+.assist-avatar.attn{animation:assistAttn .9s ease-in-out 3}
+@keyframes assistAttn{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+.chip-group{flex:1 0 100%;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.assist-chips button.soon{border-style:dashed;color:var(--muted)}
+.assist-mic{width:46px;height:46px;border-radius:50%;border:1px solid var(--brand);background:var(--teal-soft);display:flex;align-items:center;justify-content:center;flex:0 0 auto;position:relative;color:var(--brand-d);cursor:pointer;touch-action:none}
+@media (prefers-color-scheme: dark){.assist-mic{color:var(--brand)}}
+.assist-mic svg{width:22px;height:22px}
+.assist-mic.live{background:var(--brand);color:#fff}
+.assist-mic.live::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--brand);animation:micPulse 1.1s ease-out infinite}
+@keyframes micPulse{0%{transform:scale(.82);opacity:.9}100%{transform:scale(1.35);opacity:0}}
+.assist-mic.off{opacity:.45}
+.assistant.listening .assist-char{animation-duration:.9s}
+.assist-voice-note{font-size:.78rem;color:var(--muted);padding:0 12px 9px;background:var(--surface);display:none;line-height:1.45;flex:0 0 auto}
+.assist-voice-note.show{display:block}
+.assist-avatar svg{width:100%;height:100%;overflow:visible;display:block}
+.char-wrap{position:relative;display:block;width:100%;height:100%;animation:assistBob 3.2s ease-in-out infinite}
+.assist-char-img{width:100%;height:100%;display:block;object-fit:contain}
+.char-blink{position:absolute;inset:0;opacity:0;pointer-events:none;transform:translateY(2.6%);clip-path:inset(var(--eye,29%) 0 calc(100% - var(--eye,29%) - 6.4%) 0);animation:charBlink var(--bd,5.6s) linear infinite;animation-delay:var(--bdel,0s)}
+@keyframes charBlink{0%,93.6%,100%{opacity:0}95.2%,96.8%{opacity:1}}
+.assistant.talking .char-wrap{animation:assistTalkImg .17s ease-in-out infinite alternate}
+@keyframes assistTalkImg{from{transform:scale(1) rotate(-1.1deg)}to{transform:scale(1.07) rotate(1.1deg)}}
+.assistant.listening .char-wrap{animation-duration:.9s}
+.assist-panel{display:none;width:min(392px,calc(100vw - 24px));height:min(700px,calc(100dvh - 112px));background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);flex-direction:column;overflow:hidden}
+.assistant.open .assist-panel{display:flex}
+.assist-head{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--teal-soft);flex:0 0 auto}
+.assist-head b{font-size:.95rem}
+.assist-head small{display:block;color:var(--ink2);font-weight:600;font-size:.76rem}
+.assist-head .hx{margin-left:auto;border:0;background:var(--surface);width:32px;height:32px;border-radius:50%;color:var(--ink);font-size:.95rem;flex:0 0 auto}
+.assist-msgs{flex:1 1 auto;min-height:46px;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:9px;background:var(--bg)}
+.msg{max-width:86%;padding:9px 12px;border-radius:13px;font-size:.9rem;line-height:1.5;white-space:pre-wrap}
+.msg.bot{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px;align-self:flex-start}
+.msg.me{background:var(--brand);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.msg.typing{color:var(--muted);font-style:italic}
+.assist-chips{display:flex;gap:6px;flex-wrap:wrap;padding:9px 12px;border-top:1px solid var(--line);background:var(--surface);max-height:104px;overflow-y:auto;flex:0 0 auto}
+@media (max-height:720px){
+  .assist-picker{max-height:32dvh;overflow-y:auto}
+  .assist-chips{max-height:72px}
+  .assist-note{max-height:40px}
+}
+.msg.wide{max-width:95%}
+.chat-cards{display:flex;flex-direction:column;gap:8px}
+.mini-card{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:10px 12px;font-size:.86rem;line-height:1.45}
+.mini-card b{display:block;font-size:.92rem;margin-bottom:2px}
+.mini-card .mc-meta{color:var(--ink2)}
+.mini-card .mc-price{font-weight:900;color:var(--brand-d);margin-top:3px}
+@media (prefers-color-scheme: dark){.mini-card .mc-price{color:var(--brand)}}
+.chat-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.assist-chips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 11px;font-size:.8rem;font-weight:700;color:var(--brand-d)}
+@media (prefers-color-scheme: dark){.assist-chips button{color:var(--brand)}}
+.assist-input{display:flex;gap:7px;padding:10px 12px;border-top:1px solid var(--line);background:var(--surface);flex:0 0 auto}
+.assist-input input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-width:0}
+.assist-note{font-size:.72rem;color:var(--muted);padding:2px 12px 10px;background:var(--surface);line-height:1.45;flex:0 0 auto;max-height:56px;overflow-y:auto}
+@keyframes assistBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes assistBlink{0%,91%,100%{transform:scaleY(1)}94.5%{transform:scaleY(.06)}98%{transform:scaleY(1)}}
+@keyframes assistWave{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-26deg)}}
+@keyframes assistTalk{from{transform:scaleY(.25)}to{transform:scaleY(1.2)}}
+.assist-char{animation:assistBob 3.2s ease-in-out infinite}
+.assist-eyes{transform-box:fill-box;transform-origin:center;animation:assistBlink 4.4s infinite}
+.assist-arm{transform-box:fill-box;transform-origin:12% 88%;animation:assistWave 1.7s ease-in-out infinite}
+.assist-mouth{transform-box:fill-box;transform-origin:center}
+.assistant.talking .assist-mouth{animation:assistTalk .16s ease-in-out infinite alternate}
+@media (prefers-reduced-motion: reduce){.assist-char,.assist-eyes,.assist-arm,.assistant.talking .assist-mouth,.assist-avatar.attn,.assist-picker.flash,.char-wrap,.char-blink,.assistant.talking .char-wrap{animation:none}}
+footer{padding-bottom:10px}
+@media (max-width:640px){
+  .searchbar select{flex:1 1 128px;min-width:0;padding:11px 9px;font-size:.93rem}
+  .hero-notes{gap:6px}
+  .note-chip{font-size:.78rem;padding:6px 10px}
+  .assist-avatar{width:64px;height:66px}
+  .assist-pickbtn{font-size:.78rem;padding:4px 11px 4px 5px}
+  .assist-pickbtn .pb-av{width:26px;height:28px}
+  .assist-sound{width:30px;height:30px;font-size:.85rem}
+}
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-photo{min-height:210px}
+  .layout{grid-template-columns:1fr}
+  .filters{position:static}
+  .hero-copy h1{font-size:1.85rem}
+  .dgrid{grid-template-columns:1fr}
+  .f2{grid-template-columns:1fr}
+  .crumb{display:none}
+}
+
+/* V14 — visible, gentle motion for the original 12 mascot photos. */
+.assist-avatar{width:96px;height:108px;filter:drop-shadow(0 8px 15px rgba(20,32,29,.22))}
+.assist-mini{width:43px;height:45px}
+.pick-av{width:62px;height:70px}
+.assist-pickbtn .pb-av{width:34px;height:37px}
+.char-wrap{overflow:hidden;border-radius:17px;background:#e9dfd5;transform-origin:50% 85%;animation:mascotSway 4.8s ease-in-out infinite;animation-delay:var(--phase,0s);will-change:transform}
+.assist-char-img{width:100%;height:100%;object-fit:cover;object-position:center 28%;transform:scale(1.12);animation:mascotLook 6.3s ease-in-out infinite;animation-delay:var(--phase,0s);will-change:transform}
+.assist-avatar .char-wrap{border-radius:21px}
+.assist-mini .char-wrap,.assist-pickbtn .char-wrap{border-radius:10px}
+.pick-av .char-wrap{border-radius:12px}
+.pick.on .char-wrap{animation-duration:3.1s}
+.pick:hover .char-wrap,.assist-avatar:hover .char-wrap{animation-duration:2.5s}
+@keyframes mascotSway{0%,100%{transform:translateY(2px) rotate(-2deg)}24%{transform:translateY(-5px) rotate(1.8deg)}51%{transform:translateY(0) rotate(2.5deg)}76%{transform:translateY(-4px) rotate(-1.3deg)}}
+@keyframes mascotLook{0%,13%,100%{transform:scale(1.12) translateX(0)}29%,43%{transform:scale(1.12) translateX(-2.7%)}62%,76%{transform:scale(1.12) translateX(2.7%)}}
+.assistant.talking .char-wrap{animation:mascotSpeak .24s ease-in-out infinite alternate}
+.assistant.talking .assist-char-img{animation:mascotLook 2s ease-in-out infinite}
+@keyframes mascotSpeak{from{transform:translateY(1px) rotate(-2deg) scale(.99)}to{transform:translateY(-4px) rotate(2deg) scale(1.04)}}
+.assistant.listening .char-wrap{animation-duration:2.1s}
+@media(max-width:640px){.assist-avatar{width:78px;height:88px}.pick-av{width:54px;height:61px}}
+@media(prefers-reduced-motion:reduce){.char-wrap,.assist-char-img,.assistant.talking .char-wrap,.assistant.talking .assist-char-img{animation:none!important;transform:none!important}}
+</style>
+
+<style id="realestate-full-mascots-v27">
+/* The supplied portraits are 1:2 static WebP images. Keep the complete art and its original background visible. */
+.assist-picker{max-height:min(42dvh,370px);overflow-y:auto;overscroll-behavior:contain}
+.assist-picker-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pick{padding:7px 4px 8px;background:var(--surface);min-height:155px}
+.pick-av{width:66px;height:125px;flex:none}
+.pick-name{font-size:.72rem}
+.assist-avatar{width:82px;height:150px}
+.assist-mini{width:30px;height:56px}
+.assist-pickbtn .pb-av{width:29px;height:55px}
+.char-wrap{overflow:visible;background:transparent;transform-origin:50% 75%;animation:mascotFloatV27 3.4s ease-in-out infinite;animation-delay:var(--phase,0s);will-change:transform}
+.assist-char-img{width:100%;height:100%;object-fit:contain;object-position:center;transform:none;border-radius:12px;animation:mascotBreathV27 3.4s ease-in-out infinite;animation-delay:var(--phase,0s);will-change:transform}
+.assist-avatar .assist-char-img{border-radius:18px}
+.pick.on .char-wrap{animation-duration:2.5s}
+.pick:hover .char-wrap,.assist-avatar:hover .char-wrap{animation-duration:1.9s}
+.assistant.talking .char-wrap{animation:mascotTalkV27 .35s ease-in-out infinite alternate}
+.assistant.talking .assist-char-img{animation:mascotBreathV27 1.1s ease-in-out infinite alternate}
+@keyframes mascotFloatV27{0%,100%{transform:translateY(3px) rotate(-2.2deg)}25%{transform:translateY(-5px) rotate(1.5deg)}50%{transform:translateY(0) rotate(2.2deg)}75%{transform:translateY(-4px) rotate(-1.2deg)}}
+@keyframes mascotBreathV27{0%,100%{transform:scale(.95)}50%{transform:scale(1)}}
+@keyframes mascotTalkV27{from{transform:translateY(2px) rotate(-3deg) scale(.98)}to{transform:translateY(-5px) rotate(3deg) scale(1.02)}}
+@media(max-width:640px){.assist-picker{max-height:35dvh}.pick-av{width:57px;height:108px}.pick{min-height:137px}.assist-avatar{width:68px;height:124px}.assist-mini{width:26px;height:49px}.assist-pickbtn .pb-av{width:25px;height:47px}}
+@media(prefers-reduced-motion:reduce){.char-wrap,.assist-char-img,.assistant.talking .char-wrap,.assistant.talking .assist-char-img{animation:none!important;transform:none!important}}
+</style>
+
+<style>
+.property-workbench{margin:22px 0 24px;padding:22px;border:1px solid #cde7dc;border-radius:20px;background:linear-gradient(135deg,#effaf5,#fff 62%);box-shadow:0 8px 24px rgba(13,89,72,.06)}
+.property-workbench *{box-sizing:border-box}
+.pb-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:16px}
+.pb-head h2{margin:0 0 5px;font-size:1.4rem;color:#12382f}
+.pb-head p{margin:0;color:#536960;font-size:.88rem;line-height:1.5}
+.pb-ask{border:0;border-radius:12px;background:#086b55;color:#fff;padding:11px 15px;font-weight:800;cursor:pointer;white-space:nowrap}
+.pb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pb-task{display:flex;align-items:flex-start;gap:11px;text-align:left;width:100%;border:1px solid #d7e5de;border-radius:14px;background:#fff;padding:14px;cursor:pointer;min-width:0;box-shadow:0 2px 8px rgba(12,60,44,.04)}
+.pb-task:hover,.pb-task:focus-visible,.pb-template button:hover{border-color:#168a6f;background:#f4fcf8}
+.pb-icon{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:10px;background:#e9f7ef;font-size:20px}
+.pb-task strong{display:block;color:#163d32;font-size:.94rem;line-height:1.25}
+.pb-task small{display:block;color:#61766d;margin-top:4px;line-height:1.4}
+.pb-subhead{margin:23px 0 10px;font-size:1.08rem;color:#173d32}
+.pb-templates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pb-template{border:1px solid #d7e5de;border-radius:14px;background:#fff;padding:14px;min-width:0}
+.pb-template .pb-label{display:block;color:#08775d;font-size:.7rem;font-weight:900;letter-spacing:.08em;margin-bottom:7px}
+.pb-template h3{margin:0 0 7px;color:#1b3d34;font-size:.96rem}
+.pb-template p{margin:0 0 11px;color:#5d7067;font-size:.8rem;line-height:1.5}
+.pb-template button{border:1px solid #d7e5de;background:#f9fcfa;color:#075e4b;border-radius:9px;padding:8px 10px;font-weight:800;cursor:pointer}
+.pb-note{margin:14px 0 0;color:#607269;font-size:.77rem;line-height:1.5}
+@media(max-width:860px){.pb-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pb-templates{grid-template-columns:1fr}}
+@media(max-width:570px){.property-workbench{margin:16px 0 19px;padding:15px;border-radius:15px}.pb-head{align-items:stretch;flex-direction:column}.pb-head h2{font-size:1.2rem}.pb-grid{grid-template-columns:1fr}.pb-task{padding:12px}.pb-ask{width:100%}}
+</style>
+<style>
+ header,.sidebar,.bottom-nav,.live-links,.mobile-top,.mobile-nav,.social-rail,.ai-fab,.assistant-fab,.assist-bubble,.assist-panel,.assist-launch,.tour-banner,#tour-banner{display:none!important}
+ body{margin:0}.shell,.app,.layout{min-height:0}#page-view{width:100%;max-width:1140px;margin:auto}.main,main{margin-left:0!important}select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-position:right 16px center;background-repeat:no-repeat;padding-right:44px!important}
+ @media(max-width:767px){.owner-grid,.transfer-grid{grid-template-columns:1fr}.store-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+ </style></head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="logo" href="#">NAILHUB<span>.AI</span></a>
+    <span class="crumb">/ <b data-i18n="section">Địa ốc</b> · Houston, TX</span>
+    <div class="top-actions">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button id="langVi" class="on" data-act="setLang" data-arg="vi">VI</button>
+        <button id="langEn" data-act="setLang" data-arg="en">EN</button>
+      </div>
+      <span id="loginBtn" hidden></span>
+      <button class="btn small" data-act="openPost" data-i18n="postCta">+ Đăng tin địa ốc</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO + SEARCH -->
+  <div class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1 data-i18n-html="heroTitle">Nhà đất cho cộng đồng <em>nail Việt</em> tại Mỹ</h1>
+        <p data-i18n="heroSub">Bán nhà, cho thuê nhà, cho thuê phòng và mặt bằng mở tiệm — đăng tin miễn phí, tin qua kiểm tra tự động là hiện ngay. Bắt đầu tại Houston, Texas.</p>
+        <form class="searchbar" data-act="doSearch">
+          <input type="search" id="q" data-i18n-ph="searchPh" placeholder="Tìm theo khu vực, ZIP, tên đường…">
+          <select id="qState" aria-label="State" data-act="stateChange">
+            <option value="">Tất cả tiểu bang</option>
+            <option value="TX" selected>Texas</option>
+            <option value="CA">California</option>
+            <option value="FL">Florida</option>
+            <option value="GA">Georgia</option>
+            <option value="WA">Washington</option>
+            <option value="VA">Virginia</option>
+            <option value="NC">North Carolina</option>
+          </select>
+          <select id="qCity" aria-label="City" data-act="cityChange"></select>
+          <select id="qArea" aria-label="Area" data-act="renderNow"></select>
+          <button class="btn" type="submit" data-i18n="searchBtn">Tìm kiếm</button>
+        </form>
+        <div class="hero-notes">
+          <span class="note-chip" data-i18n="chip1">Đăng tin miễn phí</span>
+          <span class="note-chip" data-i18n="chip2">Kiểm tra tự động — hiện ngay khi đạt</span>
+          <span class="note-chip" data-i18n="chip3">Không môi giới · Không giữ tiền cọc</span>
+        </div>
+        <div class="import-cta">
+          <button class="btn warn" type="button" data-act="openPostImport">✦ <span data-i18n="importCtaBtn">Dán link — AI điền sẵn</span></button>
+          <p><b data-i18n="importCtaT">Đã có tin ở Zillow, Facebook hay HAR?</b> <span data-i18n="importCtaP">Dán link vào, AI tự đọc và điền sẵn giá, phòng, diện tích, ảnh &amp; mô tả — bạn chỉ kiểm tra lại rồi bấm đăng.</span></p>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <img src="media/300cfdfefbac9fd0.jpg" alt="Khu nhà ở tại Houston, Texas">
+        <div class="cap" data-i18n="heroCap">Khu dân cư Houston — nơi cộng đồng thợ nail sinh sống và làm việc</div>
+      </div>
+    </div>
+  </div>
+
+
+  <section class="property-workbench" id="property-workbench" aria-label="Công cụ Địa ốc">
+    <div class="pb-head">
+      <div><h2 data-pb-vi="Bạn muốn làm gì với Địa ốc?" data-pb-en="What would you like to do in Real Estate?">Bạn muốn làm gì với Địa ốc?</h2>
+      <p data-pb-vi="Chọn việc để NEXI hỏi từng bước, tìm tin phù hợp hoặc giúp soạn bản nháp." data-pb-en="Pick a task. NEXI will ask step by step, find matching listings or draft a post.">Chọn việc để NEXI hỏi từng bước, tìm tin phù hợp hoặc giúp soạn bản nháp.</p></div>
+      <button type="button" class="pb-ask" data-pb-action="ask" data-pb-vi="🎙 Nói / hỏi NEXI" data-pb-en="🎙 Talk to NEXI">🎙 Nói / hỏi NEXI</button>
+    </div>
+    <div class="pb-grid">
+      <button type="button" class="pb-task" data-pb-action="findHome"><span class="pb-icon">🔎</span><span><strong data-pb-vi="Tìm mua hoặc thuê" data-pb-en="Find a place to buy or rent">Tìm mua hoặc thuê</strong><small data-pb-vi="NEXI hỏi khu vực, ngân sách và nhu cầu rồi đưa tin khớp." data-pb-en="NEXI asks about area, budget and needs, then shows matches.">NEXI hỏi khu vực, ngân sách và nhu cầu rồi đưa tin khớp.</small></span></button>
+      <button type="button" class="pb-task" data-pb-action="sell"><span class="pb-icon">🏠</span><span><strong data-pb-vi="Bán nhà / đất" data-pb-en="Sell a property">Bán nhà / đất</strong><small data-pb-vi="Kể thông tin cho NEXI để điền bản nháp đăng tin." data-pb-en="Tell NEXI the details to prepare a listing draft.">Kể thông tin cho NEXI để điền bản nháp đăng tin.</small></span></button>
+      <button type="button" class="pb-task" data-pb-action="rent"><span class="pb-icon">🔑</span><span><strong data-pb-vi="Cho thuê nhà / phòng" data-pb-en="Rent out a home or room">Cho thuê nhà / phòng</strong><small data-pb-vi="Soạn tin cho thuê theo câu hỏi từng bước." data-pb-en="Draft a rental listing through guided questions.">Soạn tin cho thuê theo câu hỏi từng bước.</small></span></button>
+      <button type="button" class="pb-task" data-pb-action="wanted"><span class="pb-icon">📌</span><span><strong data-pb-vi="Đăng cần mua / cần thuê" data-pb-en="Post buying or rental needs">Đăng cần mua / cần thuê</strong><small data-pb-vi="Để người có tin phù hợp thấy nhu cầu của bạn." data-pb-en="Let owners with relevant listings see your needs.">Để người có tin phù hợp thấy nhu cầu của bạn.</small></span></button>
+      <button type="button" class="pb-task" data-pb-action="import"><span class="pb-icon">🔗</span><span><strong data-pb-vi="Dán link tin của tôi" data-pb-en="Paste my listing link">Dán link tin của tôi</strong><small data-pb-vi="Mở công cụ điền nháp từ một link đã đăng." data-pb-en="Open the draft importer for an existing listing link.">Mở công cụ điền nháp từ một link đã đăng.</small></span></button>
+      <button type="button" class="pb-task" data-pb-action="samples"><span class="pb-icon">🗂️</span><span><strong data-pb-vi="Xem tin & bộ lọc" data-pb-en="Browse listings and filters">Xem tin & bộ lọc</strong><small data-pb-vi="Xem tin mẫu, lọc khu vực và lưu tìm kiếm." data-pb-en="Browse sample listings, filter by area and save a search.">Xem tin mẫu, lọc khu vực và lưu tìm kiếm.</small></span></button>
+    </div>
+    <h3 class="pb-subhead" data-pb-vi="Mẫu nội dung để bắt đầu" data-pb-en="Writing templates to get started">Mẫu nội dung để bắt đầu</h3>
+    <div class="pb-templates">
+      <article class="pb-template"><small class="pb-label" data-pb-vi="MẪU NỘI DUNG" data-pb-en="CONTENT TEMPLATE">MẪU NỘI DUNG</small><h3 data-pb-vi="Tin bán nhà" data-pb-en="Home for sale">Tin bán nhà</h3><p data-pb-vi="[Loại nhà] tại [khu vực], [thành phố]. Có [số phòng], diện tích [sqft]. Giá đề nghị [giá]. Nêu tình trạng nhà, điểm nổi bật và cách liên hệ." data-pb-en="[Property type] in [area], [city]. [Beds] bedrooms, [sqft] square feet. Asking [price]. Describe condition, highlights and contact.">[Loại nhà] tại [khu vực], [thành phố]. Có [số phòng], diện tích [sqft]. Giá đề nghị [giá]. Nêu tình trạng nhà, điểm nổi bật và cách liên hệ.</p><button type="button" data-pb-action="sell" data-pb-vi="Soạn với NEXI →" data-pb-en="Draft with NEXI →">Soạn với NEXI →</button></article>
+      <article class="pb-template"><small class="pb-label" data-pb-vi="MẪU NỘI DUNG" data-pb-en="CONTENT TEMPLATE">MẪU NỘI DUNG</small><h3 data-pb-vi="Tin cho thuê" data-pb-en="Rental listing">Tin cho thuê</h3><p data-pb-vi="Cho thuê [nhà/phòng/mặt bằng] tại [khu vực]. Giá [giá]/tháng, sẵn từ [ngày]. Ghi tiện ích, điều kiện thuê, tiền cọc và cách liên hệ." data-pb-en="[Home/room/space] for rent in [area]. [Price]/month, available [date]. Include amenities, lease terms, deposit and contact.">Cho thuê [nhà/phòng/mặt bằng] tại [khu vực]. Giá [giá]/tháng, sẵn từ [ngày]. Ghi tiện ích, điều kiện thuê, tiền cọc và cách liên hệ.</p><button type="button" data-pb-action="rent" data-pb-vi="Soạn với NEXI →" data-pb-en="Draft with NEXI →">Soạn với NEXI →</button></article>
+      <article class="pb-template"><small class="pb-label" data-pb-vi="MẪU NỘI DUNG" data-pb-en="CONTENT TEMPLATE">MẪU NỘI DUNG</small><h3 data-pb-vi="Tin cần mua / thuê" data-pb-en="Looking to buy or rent">Tin cần mua / thuê</h3><p data-pb-vi="Tôi cần [mua/thuê] [loại nhà] ở [khu vực], ngân sách [khoảng giá], mong muốn [số phòng/diện tích]. Ghi thời điểm cần và cách liên hệ." data-pb-en="I want to [buy/rent] [property type] in [area], budget [range], with [beds/size]. Include timing and contact.">Tôi cần [mua/thuê] [loại nhà] ở [khu vực], ngân sách [khoảng giá], mong muốn [số phòng/diện tích]. Ghi thời điểm cần và cách liên hệ.</p><button type="button" data-pb-action="wanted" data-pb-vi="Soạn với NEXI →" data-pb-en="Draft with NEXI →">Soạn với NEXI →</button></article>
+    </div>
+    <p class="pb-note" data-pb-vi="NEXI trong bản xem trước hoạt động theo kịch bản; tin và kết quả khớp là dữ liệu mẫu. Bạn tự kiểm tra nội dung trước khi đăng." data-pb-en="NEXI follows a guided demo script here; listings and matches are samples. Review all details before posting.">NEXI trong bản xem trước hoạt động theo kịch bản; tin và kết quả khớp là dữ liệu mẫu. Bạn tự kiểm tra nội dung trước khi đăng.</p>
+  </section>
+
+  <!-- TYPE CHIPS -->
+  <nav class="types" id="typeChips" aria-label="Loại tin"></nav>
+
+  <!-- AI SUGGESTED -->
+  <div class="ai-strip" id="aiStrip">
+    <h2>✦ <span data-i18n="aiTitle">Gợi ý cho bạn</span> <span style="color:var(--muted);font-size:.8rem;font-weight:600" data-i18n="aiTag">AI gợi ý · dựa trên khu vực và loại tin bạn hay xem</span></h2>
+    <p data-i18n="aiSub">Tin mới đăng sẽ được tự động khớp với tin Cần thuê / Cần mua và tìm kiếm đã lưu của bạn — khớp tốt là hệ thống báo ngay, bạn không cần canh trang.</p>
+    <div class="ai-grid" id="aiGrid"></div>
+  </div>
+
+  <!-- LISTINGS -->
+  <div class="layout">
+    <aside class="filters" aria-label="Filters">
+      <h3 data-i18n="filterTitle">Bộ lọc</h3>
+      <div class="fgroup">
+        <label data-i18n="fPrice">Khoảng giá (USD)</label>
+        <div class="frow">
+          <input type="number" id="fPriceMin" placeholder="Min" min="0">
+          <input type="number" id="fPriceMax" placeholder="Max" min="0">
+        </div>
+      </div>
+      <div class="fgroup">
+        <label data-i18n="fZip">Mã ZIP</label>
+        <input type="text" id="fZip" inputmode="numeric" maxlength="5" placeholder="77042" style="width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg)">
+      </div>
+      <div class="fgroup">
+        <label data-i18n="fBeds">Phòng ngủ (tối thiểu)</label>
+        <select id="fBeds" style="width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg)">
+          <option value="0">—</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option>
+        </select>
+      </div>
+      <div class="fgroup">
+        <label data-i18n="fBaths">Phòng tắm (tối thiểu)</label>
+        <select id="fBaths" style="width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg)">
+          <option value="0">—</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option>
+        </select>
+      </div>
+      <div class="fgroup">
+        <label data-i18n="fSqft">Diện tích tối thiểu (sqft)</label>
+        <input type="number" id="fSqft" placeholder="800" min="0" style="width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg)">
+      </div>
+      <div class="fgroup checkline">
+        <input type="checkbox" id="fVerified">
+        <label for="fVerified" style="margin:0" data-i18n="fVerified">Chỉ hiện tin đã xác thực</label>
+      </div>
+      <button class="btn" data-act="applyFilters" data-i18n="fApply">Áp dụng bộ lọc</button>
+      <button class="linkbtn" data-act="clearFilters" data-i18n="fClear">Xoá bộ lọc</button>
+      <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+      <button class="btn ghost" style="width:100%;justify-content:center" data-act="saveSearch" data-i18n="saveSearch">Lưu tìm kiếm này</button>
+      <div class="saved-list" id="savedList"></div>
+    </aside>
+
+    <div>
+      <div class="results-head">
+        <h2 data-i18n="listTitle">Tin đang đăng</h2>
+        <span class="count" id="resultCount"></span>
+        <select id="sortSel" data-act="renderNow" aria-label="Sort">
+          <option value="new" data-i18n="sNew">Mới nhất</option>
+          <option value="plo" data-i18n="sPlo">Giá thấp → cao</option>
+          <option value="phi" data-i18n="sPhi">Giá cao → thấp</option>
+          <option value="big" data-i18n="sBig">Diện tích lớn → nhỏ</option>
+        </select>
+      </div>
+      <div class="sample-note" data-i18n-html="sampleNote">Danh sách dưới đây là <b>tin mẫu để xem trước giao diện</b> — chưa phải tin thật. Khi mục mở chính thức, tin thật do cộng đồng đăng — điền tay hoặc dán link để AI Smart Import tự điền từ tin sẵn có của họ (mục tiêu 30–50 tin đầu tiên tại Houston) — sẽ thay thế toàn bộ tin mẫu này.</div>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="emptyBox" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- SMART IMPORT -->
+  <section class="block" id="smartImport">
+    <h2 data-i18n="importTitle">Đã đăng ở chỗ khác? Dán link — AI điền sẵn trong vài giây</h2>
+    <p class="sub" data-i18n="importSub">Không cần gõ lại từ đầu. Bạn dán link tin của chính mình ở Zillow, Facebook, HAR, Realtor.com… — AI đọc trang tin, trích xuất giá, phòng, diện tích, ảnh rồi soạn sẵn tiêu đề &amp; mô tả vào form. Bạn là người kiểm tra, sửa và bấm đăng cuối cùng — NAILHUB.AI không tự lấy tin của người khác đăng thay.</p>
+    <div class="import-how">
+      <div class="ih"><b data-i18n="imp1t">1 · Dán link của bạn</b><p data-i18n="imp1p">Copy link tin nhà/phòng/mặt bằng bạn đang đăng ở nơi khác, dán vào ô AI Smart Import trong form đăng tin — AI tự chạy ngay khi dán.</p></div>
+      <div class="ih"><b data-i18n="imp2t">2 · AI tự điền sẵn</b><p data-i18n="imp2p">AI trích xuất giá, số phòng ngủ/tắm, diện tích, khu vực, ZIP, ảnh và soạn sẵn mô tả trung tính đã qua rà soát Fair Housing. Trường nào AI đọc không được, bạn điền tay như bình thường.</p></div>
+      <div class="ih"><b data-i18n="imp3t">3 · Bạn duyệt &amp; đăng</b><p data-i18n="imp3p">Xác nhận “đây là tin của tôi / tôi được phép đăng”, kiểm tra lại, bấm Gửi — tin chạy cổng kiểm tra tự động và hiện ngay khi đạt.</p></div>
+    </div>
+    <div style="margin-top:14px"><button class="btn" data-act="openPostImport">✦ <span data-i18n="importCtaBtn">Dán link — AI điền sẵn</span></button></div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="block">
+    <h2 data-i18n="howTitle">Đăng tin là hiện ngay — không chờ duyệt tay</h2>
+    <p class="sub" data-i18n="howSub">Mỗi tin gửi lên chạy qua cổng kiểm tra tự động trước khi hiện. Tin sạch hiện trong vòng một phút; tin dính dấu hiệu rủi ro mới chuyển cho người xem lại.</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3 data-i18n="st1t">Điền tin & tải ảnh</h3><p data-i18n="st1p">4 bước: loại tin → thông tin nhà đất → ảnh & mô tả → liên hệ & xem trước. Form lưu nháp tự động sau mỗi bước.</p></div>
+      <div class="step"><div class="num">2</div><h3 data-i18n="st2t">Cổng kiểm tra tự động</h3><p data-i18n="st2p">Hệ thống kiểm tra ảnh tối thiểu, địa chỉ, ngôn ngữ phân biệt đối xử (Fair Housing), mẫu lừa đảo và tin trùng lặp.</p></div>
+      <div class="step"><div class="num">3</div><h3 data-i18n="st3t">Hiện ngay hoặc xem lại</h3><p data-i18n="st3p">Đạt → đăng ngay. Dính cờ → vào hàng đợi xem lại, bạn nhận thông báo kết quả kèm lý do nếu bị từ chối.</p></div>
+      <div class="step"><div class="num">4</div><h3 data-i18n="st4t">AI khớp nhu cầu</h3><p data-i18n="st4p">Tin mới được chấm điểm khớp với tin Cần thuê / Cần mua và tìm kiếm đã lưu. Khớp từ 70/100 điểm trở lên là báo cho người có nhu cầu.</p></div>
+    </div>
+  </section>
+
+  <!-- RULES -->
+  <section class="block">
+    <h2 data-i18n="ruleTitle">An toàn cho cả người đăng và người xem</h2>
+    <p class="sub"></p>
+    <div class="rules">
+      <div class="rule"><h3 data-i18n="r1t">✓ Tin “Đã xác thực” là kiểm chứng riêng</h3><p data-i18n="r1p">Tin bán nhà đăng ngay cả khi chưa có giấy tờ, nhưng chỉ được gắn nhãn Đã xác thực sau khi quản trị kiểm tra giấy tờ sở hữu, giấy uỷ quyền hoặc license môi giới. Tin chưa xác thực luôn hiện dòng cảnh báo.</p></div>
+      <div class="rule"><h3 data-i18n="r2t">✓ Số điện thoại không phơi trần</h3><p data-i18n="r2p">Mặc định liên hệ ngay trong nền tảng. Người đăng có thể chọn hiện số sau khi khách đăng nhập — lựa chọn của người đăng, hệ thống không khoá cứng.</p></div>
+      <div class="rule"><h3 data-i18n="r3t">✓ Cộng đồng báo tin xấu</h3><p data-i18n="r3p">Ai cũng báo được tin lừa đảo, sai thông tin hoặc phân biệt đối xử. Tin bị từ 3 báo cáo trở lên tự tạm ẩn chờ xem lại. Địa chỉ nhà cho thuê mặc định chỉ hiện khu vực + ZIP.</p></div>
+    </div>
+  </section>
+
+  <!-- CROSS LINK -->
+  <div class="crosslink">
+    <div>
+      <h3 data-i18n="crossT">Đang tìm tiệm để sang hoặc mở mới?</h3>
+      <p data-i18n="crossP">Mục Sang nhượng tiệm của NAILHUB.AI đang chạy riêng trên cùng nền tảng. Xem nhà xong, ghé xem tiệm gần khu vực đó — và ngược lại.</p>
+    </div>
+    <a class="btn" style="margin-left:auto" href="https://nailhub.ai" target="_blank" rel="noopener" data-i18n="crossBtn">Xem mục Sang tiệm →</a>
+  </div>
+
+  <p class="disclaimer" data-i18n="disclaimer">NAILHUB.AI là nền tảng đăng tin, không phải công ty môi giới địa ốc và không tham gia vào giao dịch giữa các bên. Thông tin do người đăng cung cấp; vui lòng tự kiểm chứng trước khi giao dịch.</p>
+</main>
+
+<footer class="wrap">
+  <p style="color:var(--muted);font-size:.85rem">NAILHUB.AI · <span data-i18n="section">Địa ốc</span> · Houston, Texas</p>
+</footer>
+
+<!-- DETAIL MODAL -->
+<div class="modal-back" id="detailBack">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="mhead"><h3 data-i18n="detailT">Chi tiết tin</h3><button class="x" data-act="closeModal" data-arg="detailBack" aria-label="Close">✕</button></div>
+    <div class="mbody" id="detailBody"></div>
+  </div>
+</div>
+
+<!-- POST MODAL -->
+<div class="modal-back" id="postBack">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:720px">
+    <div class="mhead"><h3 data-i18n="postCta">Đăng tin địa ốc</h3><button class="x" data-act="closeModal" data-arg="postBack" aria-label="Close">✕</button></div>
+    <div class="mbody">
+      <div class="import-panel" id="importPanel">
+        <h4>✦ <span data-i18n="importPanelT">AI Smart Import — Dán link, AI điền sẵn toàn bộ form</span><span class="imported-badge" id="importedBadge">AI ĐÃ ĐIỀN ✓</span></h4>
+        <p data-i18n="importPanelP">Dán link tin của bạn ở Zillow, Facebook Marketplace, HAR hay Realtor.com — AI tự chạy ngay khi bạn dán link: đọc trang tin, điền sẵn giá, phòng, diện tích, ZIP, tiêu đề &amp; mô tả. Bạn sửa lại nếu cần rồi đi tiếp.</p>
+        <div class="import-row">
+          <input type="url" id="importUrl" data-i18n-ph="importPh" placeholder="Dán link vào đây — VD: https://www.zillow.com/homedetails/…">
+          <button class="btn" type="button" id="importBtn" data-act="doImport"><span data-i18n="importBtn">✦ AI tự điền form</span></button>
+        </div>
+        <div class="import-sources" id="importSources">
+          <span class="src-chip" data-src="Zillow">Zillow</span>
+          <span class="src-chip" data-src="Facebook">Facebook Marketplace</span>
+          <span class="src-chip" data-src="HAR">HAR.com</span>
+          <span class="src-chip" data-src="Realtor.com">Realtor.com</span>
+          <span class="src-chip" data-src="Khác">Trang khác</span>
+        </div>
+        <label class="rights-line">
+          <input type="checkbox" id="importRights">
+          <span data-i18n="importRights">Tôi xác nhận đây là tin của tôi, hoặc tôi được chủ nhà / người đăng gốc cho phép đăng lại trên NAILHUB.AI. Tôi chịu trách nhiệm về nội dung và hình ảnh.</span>
+        </label>
+        <div class="import-status" id="importStatus" role="status"></div>
+        <div class="import-demo">
+          <span data-i18n="importDemo">Chưa có link sẵn? Thử ngay với link mẫu:</span>
+          <button type="button" data-act="sampleLink" data-arg="zillow">Link Zillow (bán nhà)</button> ·
+          <button type="button" data-act="sampleLink" data-arg="facebook">Link Facebook (cho thuê phòng)</button> ·
+          <button type="button" data-act="sampleLink" data-arg="har">Link HAR (cho thuê nhà)</button>
+        </div>
+      </div>
+      <div class="psteps" id="psteps">
+        <div class="pstep on" data-i18n="ps1">1 · Loại tin</div>
+        <div class="pstep" data-i18n="ps2">2 · Thông tin</div>
+        <div class="pstep" data-i18n="ps3">3 · Ảnh & mô tả</div>
+        <div class="pstep" data-i18n="ps4">4 · Liên hệ & đăng</div>
+      </div>
+
+      <div class="pstage" id="stage1">
+        <p style="color:var(--muted);font-size:.88rem;margin:0 0 12px" data-i18n="importOrType">Hoặc chọn loại tin và điền tay như bình thường — AI Smart Import ở trên chỉ là đường tắt, không bắt buộc.</p>
+        <div class="typepick" id="typePick"></div>
+      </div>
+
+      <div class="pstage" id="stage2" style="display:none">
+        <div class="field"><label data-i18n="pfTitle">Tiêu đề tin *</label><input id="pfTitle" maxlength="120" placeholder="VD: Nhà 4 phòng ngủ gần Bellaire, sân rộng"></div>
+        <div class="f2">
+          <div class="field"><label data-i18n="pfPrice">Giá (USD) *</label><input type="number" id="pfPrice" min="0" placeholder="2500"></div>
+          <div class="field"><label data-i18n="pfPriceType">Kiểu giá</label>
+            <select id="pfPriceType"><option value="PER_MONTH">/ tháng (thuê)</option><option value="TOTAL">Tổng giá (bán)</option><option value="NEGOTIABLE">Thương lượng</option></select></div>
+        </div>
+        <div class="f2">
+          <div class="field"><label data-i18n="pfBeds">Phòng ngủ *</label><input type="number" id="pfBeds" min="0" value="3"></div>
+          <div class="field"><label data-i18n="pfBaths">Phòng tắm *</label><input type="number" id="pfBaths" min="0" step="0.5" value="2"></div>
+        </div>
+        <div class="f2">
+          <div class="field"><label>Diện tích (sqft)</label><input type="number" id="pfSqft" min="0" placeholder="1600"></div>
+          <div class="field"><label>ZIP *</label><input id="pfZip" maxlength="5" inputmode="numeric" placeholder="77042"></div>
+        </div>
+        <div class="f2">
+          <div class="field"><label data-i18n="pfCity">Thành phố</label>
+            <select id="pfCity"><option>Houston</option><option>Katy</option><option>Sugar Land</option><option>Pearland</option><option>Cypress</option><option>Spring</option></select></div>
+          <div class="field"><label data-i18n="pfArea">Khu vực</label><input id="pfArea" placeholder="Westheimer / Alief / Bellaire…"></div>
+        </div>
+        <div class="ai-box" id="priceRefBox"></div>
+      </div>
+
+      <div class="pstage" id="stage3" style="display:none">
+        <div class="field"><label data-i18n="pfPhotos">Ảnh *</label>
+          <input type="file" id="pfPhotos" accept="image/*" multiple>
+          <div class="hint" data-i18n="pfPhotosHint">Tin bán nhà cần tối thiểu 3 ảnh; các loại còn lại tối thiểu 1 ảnh. Tối đa 20 ảnh.</div>
+          <div class="hint" id="photoCount"></div>
+        </div>
+        <div class="field"><label data-i18n="pfDesc">Mô tả * (tối thiểu 30 ký tự)</label>
+          <textarea id="pfDesc" placeholder="Mô tả căn nhà/phòng: vị trí, tiện ích, điều kiện thuê/bán…"></textarea>
+          <div class="fh-alert" id="fhAlert"></div>
+          <div class="ai-box" id="aiRewriteBox">
+            <b data-i18n="aiRewriteT">AI đề xuất bản mô tả trung tính:</b>
+            <textarea id="aiRewriteText"></textarea>
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn small" data-act="applyRewrite" data-i18n="aiApply">Áp dụng bản này</button>
+              <button class="btn ghost small" data-act="hideRewrite" data-i18n="aiKeep">Giữ bản của tôi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pstage" id="stage4" style="display:none">
+        <div class="field"><label data-i18n="pfContact">Cách liên hệ</label>
+          <select id="pfContact">
+            <option value="IN_PLATFORM" data-i18n="pfContact1">Chỉ liên hệ trong nền tảng (khuyên dùng)</option>
+            <option value="SHOW_PHONE" data-i18n="pfContact2">Hiện số điện thoại sau khi khách đăng nhập</option>
+          </select>
+        </div>
+        <div class="field"><label data-i18n="pfAddr">Cách hiện địa chỉ</label>
+          <select id="pfAddr">
+            <option value="AREA_ONLY" data-i18n="pfAddr1">Chỉ hiện khu vực + ZIP (khuyên dùng cho tin thuê)</option>
+            <option value="FULL" data-i18n="pfAddr2">Hiện địa chỉ đầy đủ</option>
+          </select>
+          <div class="hint" data-i18n="pfLife">Tin có hiệu lực 30 ngày. Trước khi hết hạn 3 ngày hệ thống sẽ nhắc gia hạn.</div>
+        </div>
+        <div class="ai-box show" id="previewBox" style="background:var(--bg);border-color:var(--line)"></div>
+      </div>
+
+      <div class="form-nav">
+        <button class="btn ghost" id="prevBtn" data-act="stepPrev" style="visibility:hidden" data-i18n="back">← Quay lại</button>
+        <button class="btn" id="nextBtn" data-act="stepNext" data-i18n="next">Tiếp tục →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SALON TRANSFER FORM (mẫu cho mục Sang nhượng tiệm) -->
+<div class="modal-back" id="salonBack">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:640px">
+    <div class="mhead"><h3>Đăng tin tiệm nail · Salon listing</h3><button class="x" data-act="closeModal" data-arg="salonBack" aria-label="Close">✕</button></div>
+    <div class="mbody">
+      <p style="color:var(--muted);font-size:.88rem;margin:0 0 14px">Form mẫu theo mẫu form Địa ốc — bản thật dùng form đăng tin của mục Sang nhượng tiệm trên NAILHUB.AI. Tin đăng qua đây thuộc mục Sang tiệm, trang Địa ốc chỉ liên kết chéo hai chiều.</p>
+      <div class="f2">
+        <div class="field"><label>Loại tin · Type</label>
+          <select id="sfType"><option value="SANG">Sang nhượng tiệm / Salon for transfer</option><option value="CAN_MUA">Cần mua tiệm / Salon wanted</option></select></div>
+        <div class="field"><label>Tên tiệm · Salon name *</label><input id="sfName" maxlength="80" placeholder="VD: Tiệm nail Westheimer"></div>
+      </div>
+      <div class="f2">
+        <div class="field"><label>Giá sang / Ngân sách (USD) *</label><input type="number" id="sfPrice" min="0" placeholder="85000"></div>
+        <div class="field"><label>Thuê mặt bằng / tháng (USD)</label><input type="number" id="sfRent" min="0" placeholder="2600"></div>
+      </div>
+      <div class="f2">
+        <div class="field"><label>Số ghế · Chairs</label><input type="number" id="sfChairs" min="0" placeholder="10"></div>
+        <div class="field"><label>Số bàn · Tables</label><input type="number" id="sfTables" min="0" placeholder="6"></div>
+      </div>
+      <div class="f2">
+        <div class="field"><label>Diện tích (sqft)</label><input type="number" id="sfSqft" min="0" placeholder="1600"></div>
+        <div class="field"><label>ZIP</label><input id="sfZip" maxlength="5" inputmode="numeric" placeholder="77042"></div>
+      </div>
+      <div class="f2">
+        <div class="field"><label>Thành phố · City</label>
+          <select id="sfCity"><option>Houston</option><option>Katy</option><option>Sugar Land</option><option>Pearland</option><option>Cypress</option><option>Spring</option></select></div>
+        <div class="field"><label>Khu vực · Area</label><input id="sfArea" placeholder="Westheimer / Katy Asian Town…"></div>
+      </div>
+      <div class="field"><label>Mô tả · Description</label><textarea id="sfDesc" placeholder="Tình trạng tiệm, khách, thiết bị, lý do sang…"></textarea></div>
+      <div class="field"><label>Cách liên hệ · Contact</label>
+        <select id="sfContact"><option value="IN_PLATFORM">Chỉ liên hệ trong nền tảng (khuyên dùng)</option><option value="SHOW_PHONE">Hiện số điện thoại sau khi khách đăng nhập</option></select>
+        <div class="hint">Liên hệ luôn qua nền tảng — không hiển thị số điện thoại cá nhân công khai.</div>
+      </div>
+      <div class="form-nav">
+        <button class="btn ghost" data-act="closeModal" data-arg="salonBack">Đóng</button>
+        <button class="btn" data-act="submitSalon">Đăng tin tiệm →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JOB FORM (tuyển thợ / hồ sơ thợ tìm việc) -->
+<div class="modal-back" id="jobBack">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:640px">
+    <div class="mhead"><h3 id="jobFormTitle">Đăng tin tuyển thợ</h3><button class="x" data-act="closeModal" data-arg="jobBack" aria-label="Close">✕</button></div>
+    <div class="mbody">
+      <p style="color:var(--muted);font-size:.88rem;margin:0 0 14px">Form mẫu cho mục Việc làm của NAILHUB.AI — bản thật dùng dữ liệu Việc làm / Tìm thợ thật trên site. Liên hệ luôn qua nền tảng.</p>
+      <div id="jobGroupJob">
+        <div class="f2">
+          <div class="field"><label>Tên tiệm · Salon *</label><input id="jfSalon" maxlength="80" placeholder="VD: Nail Spa Westheimer"></div>
+          <div class="field"><label>Cần thợ · Skill needed</label>
+            <select id="jfSkill"><option>Bột (Acrylic)</option><option>Dip</option><option>Gel / Gel-X</option><option>Chân tay nước</option><option>Đa năng</option></select></div>
+        </div>
+        <div class="field"><label>Lương / ăn chia đề xuất · Pay *</label><input id="jfPay" maxlength="80" placeholder="VD: $200/ngày bảo đảm hoặc ăn chia 60/40"></div>
+      </div>
+      <div id="jobGroupTech" style="display:none">
+        <div class="f2">
+          <div class="field"><label>Tên hiển thị · Display name *</label><input id="tfName" maxlength="40" placeholder="VD: Lan T."></div>
+          <div class="field"><label>Tay nghề · Skill</label>
+            <select id="tfSkill"><option>Bột (Acrylic)</option><option>Dip</option><option>Gel / Gel-X</option><option>Chân tay nước</option><option>Đa năng</option></select></div>
+        </div>
+        <div class="f2">
+          <div class="field"><label>Kinh nghiệm (năm) · Experience</label><input type="number" id="tfExp" min="0" placeholder="5"></div>
+          <div class="field"><label>Thời gian làm được · Availability</label><input id="tfAvail" maxlength="60" placeholder="VD: Full-time, nghỉ Chủ nhật"></div>
+        </div>
+      </div>
+      <div class="f2">
+        <div class="field"><label>Thành phố · City</label>
+          <select id="jbCity"><option>Houston</option><option>Katy</option><option>Sugar Land</option><option>Pearland</option><option>Cypress</option><option>Spring</option></select></div>
+        <div class="field"><label>ZIP</label><input id="jbZip" maxlength="5" inputmode="numeric" placeholder="77042"></div>
+      </div>
+      <div class="field"><label>Khu vực · Area</label><input id="jbArea" placeholder="Westheimer / Bellaire / Katy…"></div>
+      <div class="field"><label>Mô tả · Description</label><textarea id="jbDesc" placeholder="Chi tiết thêm về việc / hồ sơ…"></textarea></div>
+      <div class="form-nav">
+        <button class="btn ghost" data-act="closeModal" data-arg="jobBack">Đóng</button>
+        <button class="btn" id="jobSubmitBtn" data-act="submitJob">Đăng tin →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI ASSISTANT (NEXI) -->
+<div class="assistant" id="assistant">
+  <div class="assist-panel" role="dialog" aria-label="AI assistant chat">
+    <div class="assist-head">
+      <span class="assist-mini" id="assistCharMini"></span>
+      <div><b id="assistName">Trợ lý NAILHUB</b><small id="assistStatus">Trực tuyến</small></div>
+      <button class="hx" data-act="closeAssist" aria-label="Close chat">✕</button>
+    </div>
+    <div class="assist-picker" id="assistPicker">
+      <div class="assist-picker-t" id="assistPickerT">Chọn nhân vật trợ lý — đủ 12 con, chạm là đổi</div>
+      <div class="assist-picker-row" id="assistPickerRow"></div>
+    </div>
+    <div class="assist-msgs" id="assistMsgs"></div>
+    <div class="assist-chips" id="assistChips"></div>
+    <form class="assist-input" data-act="assistSend">
+      <button type="button" class="assist-mic" id="assistMic" aria-label="Bấm giữ để nói · Push to talk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button>
+      <input id="assistText" autocomplete="off" placeholder="Hỏi NEXI… (VD: cách đăng tin)">
+      <button class="btn small" type="submit" id="assistSendBtn">Gửi</button>
+    </form>
+    <div class="assist-voice-note" id="assistVoiceNote"></div>
+    <div class="assist-note" id="assistNote">Bản demo: NEXI làm việc theo kịch bản và đọc bằng giọng của trình duyệt. Bản thật: file chào giọng clone “Brian Nguyen 1”, AI hội thoại thật ở backend dùng chung lớp AI của spec §12A, chạy trên dữ liệu thật của toàn hub NAILHUB.AI (Địa ốc · Sang tiệm · Việc làm…) và khớp hai chiều thợ ↔ tin tuyển, tin ↔ nhu cầu như §12A.</div>
+  </div>
+  <div class="assist-bubble" id="assistBubble" data-act="openAssist">
+    <button class="bx" data-act="closeBubble" aria-label="Close">✕</button>
+    <span id="assistBubbleText">Chào bạn! Mình là NEXI — cần tìm nhà, thuê phòng hay đăng tin, cứ hỏi mình nhé! Bấm nút “Đổi trợ lý · 12” ngay dưới đây để xem đủ 12 nhân vật và chọn một con.</span>
+  </div>
+  <div class="assist-row">
+    <button class="assist-pickbtn" id="assistPickBtn" data-act="openPicker" aria-label="Đổi trợ lý — xem đủ 12 nhân vật"><span class="pb-av" id="assistPickChar"></span><span id="assistPickBtnT">Đổi trợ lý · 12</span></button>
+    <button class="assist-sound" id="assistSoundBtn" data-act="toggleSound" aria-label="Bật/tắt tiếng trợ lý">🔊</button>
+    <button class="assist-avatar" id="assistAvatar" data-act="avatarClick" aria-label="Trợ lý AI NEXI — bấm để trò chuyện / nghe lại câu chào">
+      <span id="assistChar" style="display:block;width:100%;height:100%"></span>
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+/* ============ DATA — tin minh họa cho bản xem trước mục Địa ốc, khu vực Houston ============ */
+var LISTINGS = JSON.parse(localStorage.getItem('nexora-v31:realestate-records')||'[]');
+var SANG_TIEM = [
+ {t:'Sang tiệm nail 10 ghế — Westheimer',name:'Tiệm nail Westheimer',area:'Westheimer · 77042',city:'Houston',zip:'77042',price:'$85,000',priceN:85000,rent:2600,chairs:10,tables:6,sqft:1600,desc:'Tiệm đang hoạt động ổn định trên Westheimer, khách quen nhiều, đầy đủ thiết bị, vào là làm ngay.',sample:true},
+ {t:'Sang tiệm nail khu Katy Asian Town',name:'Tiệm nail Katy Asian Town',area:'Katy · 77494',city:'Katy',zip:'77494',price:'$120,000',priceN:120000,rent:3200,chairs:12,tables:8,sqft:2100,desc:'Tiệm lớn trong khu Katy Asian Town đông khách, bãi đậu xe rộng, doanh thu ổn định.',sample:true},
+ {t:'Sang tiệm nhỏ 6 ghế — Bellaire',name:'Tiệm nail Bellaire',area:'Bellaire · 77072',city:'Houston',zip:'77072',price:'$55,000',priceN:55000,rent:1900,chairs:6,tables:4,sqft:1100,desc:'Tiệm nhỏ gọn mặt tiền Bellaire Blvd, phù hợp thợ muốn tự làm chủ lần đầu.',sample:true},
+ {t:'Sang tiệm nail 8 ghế — Sugar Land',name:'Tiệm nail Sugar Land',area:'Sugar Land · 77479',city:'Sugar Land',zip:'77479',price:'$95,000',priceN:95000,rent:2800,chairs:8,tables:5,sqft:1500,desc:'Tiệm khu dân cư cao cấp Sugar Land, khách tip tốt, hợp đồng thuê còn dài.',sample:true},
+ {t:'Sang tiệm nail 8 ghế — Cypress',name:'Tiệm nail Cypress',area:'Cypress · 77433',city:'Cypress',zip:'77433',price:'$70,000',priceN:70000,rent:2200,chairs:8,tables:6,sqft:1400,desc:'Tiệm mới sửa sang tại Cypress, khu dân cư đang phát triển nhanh.',sample:true}
+];
+var SALON_WANTED = [];
+/* Dữ liệu mẫu cho Việc làm hai chiều (tin tuyển thợ + hồ sơ thợ) — bản thật lấy từ mục Việc làm thật của NAILHUB.AI */
+var JOBS = [
+ {salon:'Nail Spa Westheimer',skill:'Bột (Acrylic)',pay:'$200/ngày bảo đảm hoặc ăn chia 60/40',area:'Westheimer',city:'Houston',zip:'77042',desc:'Tiệm đông khách trên Westheimer cần thợ bột giỏi, có khách sẵn, tip cao. Làm full-time, nghỉ Chủ nhật.',sample:true},
+ {salon:'Luxury Nails Katy',skill:'Dip',pay:'Ăn chia 55/45, có bảo đảm tuần đầu',area:'Katy Asian Town',city:'Katy',zip:'77494',desc:'Cần thợ dip + gel-x, tiệm mới mở khu Katy Asian Town, hỗ trợ đào tạo thêm gel-x.',sample:true},
+ {salon:'Bellaire Nail Lounge',skill:'Chân tay nước',pay:'$180/ngày + tip',area:'Bellaire',city:'Houston',zip:'77072',desc:'Cần thợ chân tay nước làm việc cẩn thận, khách khu Bellaire ổn định, môi trường nhẹ nhàng.',sample:true},
+ {salon:'Cypress Nail Studio',skill:'Đa năng',pay:'Thương lượng theo tay nghề',area:'Towne Lake',city:'Cypress',zip:'77433',desc:'Cần thợ đa năng làm cả tay và chân, tiệm mới, chủ dễ tính, có thể ở lại phòng của tiệm gần đó.',sample:true}
+];
+var TECHS = [
+ {name:'Lan T.',skill:'Bột (Acrylic)',exp:6,area:'Westheimer',city:'Houston',zip:'77042',avail:'Full-time, nghỉ Chủ nhật',desc:'Thợ bột 6 năm, làm được design đơn giản, có khách quen theo.',sample:true},
+ {name:'Hùng P.',skill:'Đa năng',exp:9,area:'Bellaire · Alief',city:'Houston',zip:'77072',avail:'Full-time',desc:'9 năm kinh nghiệm, làm tốt cả bột, dip và chân tay nước, giao tiếp tiếng Anh tốt.',sample:true},
+ {name:'Vy N.',skill:'Gel / Gel-X',exp:3,area:'Katy',city:'Katy',zip:'77494',avail:'Part-time + cuối tuần',desc:'Chuyên gel-x và nail art, 3 năm kinh nghiệm, cần việc gần Katy.',sample:true},
+ {name:'Thảo M.',skill:'Chân tay nước',exp:4,area:'Cypress',city:'Cypress',zip:'77433',avail:'Full-time',desc:'Thợ chân tay nước 4 năm, làm kỹ, được khách khen, mới chuyển về Cypress.',sample:true}
+];
+var TYPES = [
+ {code:'ALL',vi:'Tất cả',en:'All'},
+ {code:'FOR_SALE',vi:'Bán nhà',en:'Home for Sale'},
+ {code:'FOR_RENT_HOUSE',vi:'Cho thuê nhà',en:'House for Rent'},
+ {code:'FOR_RENT_ROOM',vi:'Cho thuê phòng',en:'Room for Rent'},
+ {code:'FOR_RENT_COMMERCIAL',vi:'Cho thuê mặt bằng',en:'Commercial Space'},
+ {code:'WANTED',vi:'Cần thuê / Cần mua',en:'Wanted'}
+];
+var I18N = {
+ vi:{section:'Địa ốc',postCta:'+ Đăng tin địa ốc',heroTitle:'Nhà đất cho cộng đồng <em>nail Việt</em> tại Mỹ',heroSub:'Bán nhà, cho thuê nhà, cho thuê phòng và mặt bằng mở tiệm — đăng tin miễn phí, tin qua kiểm tra tự động là hiện ngay. Bắt đầu tại Houston, Texas.',searchPh:'Tìm theo khu vực, ZIP, tên đường…',searchBtn:'Tìm kiếm',chip1:'Đăng tin miễn phí',chip2:'Kiểm tra tự động — hiện ngay khi đạt',chip3:'Không môi giới · Không giữ tiền cọc',heroCap:'Khu dân cư Houston — nơi cộng đồng thợ nail sinh sống và làm việc',aiTitle:'Gợi ý cho bạn',aiTag:'AI gợi ý · dựa trên khu vực và loại tin bạn hay xem',aiSub:'Tin mới đăng sẽ được tự động khớp với tin Cần thuê / Cần mua và tìm kiếm đã lưu của bạn — khớp tốt là hệ thống báo ngay, bạn không cần canh trang.',filterTitle:'Bộ lọc',fPrice:'Khoảng giá (USD)',fZip:'Mã ZIP',fBeds:'Phòng ngủ (tối thiểu)',fBaths:'Phòng tắm (tối thiểu)',fSqft:'Diện tích tối thiểu (sqft)',fVerified:'Chỉ hiện tin đã xác thực',fApply:'Áp dụng bộ lọc',fClear:'Xoá bộ lọc',saveSearch:'Lưu tìm kiếm này',listTitle:'Tin đang đăng',sNew:'Mới nhất',sPlo:'Giá thấp → cao',sPhi:'Giá cao → thấp',sBig:'Diện tích lớn → nhỏ',empty:'Chưa có tin địa ốc nào trong khu vực này.',howTitle:'Đăng tin là hiện ngay — không chờ duyệt tay',howSub:'Mỗi tin gửi lên chạy qua cổng kiểm tra tự động trước khi hiện. Tin sạch hiện trong vòng một phút; tin dính dấu hiệu rủi ro mới chuyển cho người xem lại.',st1t:'Dán link hoặc điền tin & tải ảnh',st1p:'Đường nhanh: dán link tin sẵn có ở Zillow/Facebook/HAR — AI tự điền sẵn toàn bộ form. Hoặc điền tay 4 bước: loại tin → thông tin → ảnh & mô tả → liên hệ & xem trước.',st2t:'Cổng kiểm tra tự động',st2p:'Hệ thống kiểm tra ảnh tối thiểu, địa chỉ, ngôn ngữ phân biệt đối xử (Fair Housing), mẫu lừa đảo và tin trùng lặp.',st3t:'Hiện ngay hoặc xem lại',st3p:'Đạt → đăng ngay. Dính cờ → vào hàng đợi xem lại, bạn nhận thông báo kết quả kèm lý do nếu bị từ chối.',st4t:'AI khớp nhu cầu',st4p:'Tin mới được chấm điểm khớp với tin Cần thuê / Cần mua và tìm kiếm đã lưu. Khớp từ 70/100 điểm trở lên là báo cho người có nhu cầu.',ruleTitle:'An toàn cho cả người đăng và người xem',r1t:'✓ Tin “Đã xác thực” là kiểm chứng riêng',r1p:'Tin bán nhà đăng ngay cả khi chưa có giấy tờ, nhưng chỉ được gắn nhãn Đã xác thực sau khi quản trị kiểm tra giấy tờ sở hữu, giấy uỷ quyền hoặc license môi giới. Tin chưa xác thực luôn hiện dòng cảnh báo.',r2t:'✓ Số điện thoại không phơi trần',r2p:'Mặc định liên hệ ngay trong nền tảng. Người đăng có thể chọn hiện số sau khi khách đăng nhập — lựa chọn của người đăng, hệ thống không khoá cứng.',r3t:'✓ Cộng đồng báo tin xấu',r3p:'Ai cũng báo được tin lừa đảo, sai thông tin hoặc phân biệt đối xử. Tin bị từ 3 báo cáo trở lên tự tạm ẩn chờ xem lại. Địa chỉ nhà cho thuê mặc định chỉ hiện khu vực + ZIP.',crossT:'Đang tìm tiệm để sang hoặc mở mới?',crossP:'Mục Sang nhượng tiệm của NAILHUB.AI đang chạy riêng trên cùng nền tảng. Xem nhà xong, ghé xem tiệm gần khu vực đó — và ngược lại.',sampleNote:'Danh sách dưới đây là <b>tin mẫu để xem trước giao diện</b> — chưa phải tin thật. Khi mục mở chính thức, tin thật do cộng đồng đăng — điền tay hoặc dán link để AI Smart Import tự điền từ tin sẵn có của họ (mục tiêu 30–50 tin đầu tiên tại Houston) — sẽ thay thế toàn bộ tin mẫu này.',crossBtn:'Xem mục Sang tiệm →',disclaimer:'NAILHUB.AI là nền tảng đăng tin, không phải công ty môi giới địa ốc và không tham gia vào giao dịch giữa các bên. Thông tin do người đăng cung cấp; vui lòng tự kiểm chứng trước khi giao dịch.',detailT:'Chi tiết tin',ps1:'1 · Loại tin',ps2:'2 · Thông tin',ps3:'3 · Ảnh & mô tả',ps4:'4 · Liên hệ & đăng',pfTitle:'Tiêu đề tin *',pfPrice:'Giá (USD) *',pfPriceType:'Kiểu giá',pfBeds:'Phòng ngủ *',pfBaths:'Phòng tắm *',pfCity:'Thành phố',pfArea:'Khu vực',pfPhotos:'Ảnh *',pfPhotosHint:'Tin bán nhà cần tối thiểu 3 ảnh; các loại còn lại tối thiểu 1 ảnh. Tối đa 20 ảnh.',pfDesc:'Mô tả * (tối thiểu 30 ký tự)',aiRewriteT:'AI đề xuất bản mô tả trung tính:',aiApply:'Áp dụng bản này',aiKeep:'Giữ bản của tôi',pfContact:'Cách liên hệ',pfContact1:'Chỉ liên hệ trong nền tảng (khuyên dùng)',pfContact2:'Hiện số điện thoại sau khi khách đăng nhập',pfAddr:'Cách hiện địa chỉ',pfAddr1:'Chỉ hiện khu vực + ZIP (khuyên dùng cho tin thuê)',pfAddr2:'Hiện địa chỉ đầy đủ',pfLife:'Tin có hiệu lực 30 ngày. Trước khi hết hạn 3 ngày hệ thống sẽ nhắc gia hạn.',back:'← Quay lại',next:'Tiếp tục →',importCtaBtn:'Dán link — AI điền sẵn',importCtaT:'Đã có tin ở Zillow, Facebook hay HAR?',importCtaP:'Dán link vào, AI tự đọc và điền sẵn giá, phòng, diện tích, ảnh & mô tả — bạn chỉ kiểm tra lại rồi bấm đăng.',importTitle:'Đã đăng ở chỗ khác? Dán link — AI điền sẵn trong vài giây',importSub:'Không cần gõ lại từ đầu. Bạn dán link tin của chính mình ở Zillow, Facebook, HAR, Realtor.com… — AI đọc trang tin, trích xuất giá, phòng, diện tích, ảnh rồi soạn sẵn tiêu đề & mô tả vào form. Bạn là người kiểm tra, sửa và bấm đăng cuối cùng — NAILHUB.AI không tự lấy tin của người khác đăng thay.',imp1t:'1 · Dán link của bạn',imp1p:'Copy link tin nhà/phòng/mặt bằng bạn đang đăng ở nơi khác, dán vào ô AI Smart Import trong form đăng tin — AI tự chạy ngay khi dán.',imp2t:'2 · AI tự điền sẵn',imp2p:'AI trích xuất giá, số phòng ngủ/tắm, diện tích, khu vực, ZIP, ảnh và soạn sẵn mô tả trung tính đã qua rà soát Fair Housing. Trường nào AI đọc không được, bạn điền tay như bình thường.',imp3t:'3 · Bạn duyệt & đăng',imp3p:'Xác nhận “đây là tin của tôi / tôi được phép đăng”, kiểm tra lại, bấm Gửi — tin chạy cổng kiểm tra tự động và hiện ngay khi đạt.',importPanelT:'AI Smart Import — Dán link, AI điền sẵn toàn bộ form',importPanelP:'Dán link tin của bạn ở Zillow, Facebook Marketplace, HAR hay Realtor.com — AI tự chạy ngay khi bạn dán link: đọc trang tin, điền sẵn giá, phòng, diện tích, ZIP, tiêu đề & mô tả. Bạn sửa lại nếu cần rồi đi tiếp.',importPh:'Dán link vào đây — VD: https://www.zillow.com/homedetails/…',importBtn:'✦ AI tự điền form',importRights:'Tôi xác nhận đây là tin của tôi, hoặc tôi được chủ nhà / người đăng gốc cho phép đăng lại trên NAILHUB.AI. Tôi chịu trách nhiệm về nội dung và hình ảnh.',importDemo:'Chưa có link sẵn? Thử ngay với link mẫu:',importOrType:'Hoặc chọn loại tin và điền tay như bình thường — AI Smart Import ở trên chỉ là đường tắt, không bắt buộc.'},
+ en:{section:'Real Estate',postCta:'+ Post a Listing',heroTitle:'Homes & spaces for the <em>Vietnamese nail community</em> in the U.S.',heroSub:'Homes for sale, houses and rooms for rent, and commercial space for your salon — free to post, live as soon as the automated check passes. Starting in Houston, Texas.',searchPh:'Search by area, ZIP, street…',searchBtn:'Search',chip1:'Free to post',chip2:'Automated check — live when it passes',chip3:'Not a brokerage · No deposits held',heroCap:'A Houston neighborhood — where nail professionals live and work',aiTitle:'Suggested for You',aiTag:'AI picks · based on areas and types you view',aiSub:'New listings are automatically matched against Wanted posts and your saved searches — a strong match notifies you right away.',filterTitle:'Filters',fPrice:'Price Range (USD)',fZip:'ZIP Code',fBeds:'Bedrooms (min)',fBaths:'Bathrooms (min)',fSqft:'Min. area (sqft)',fVerified:'Verified listings only',fApply:'Apply Filters',fClear:'Clear filters',saveSearch:'Save this search',listTitle:'Live listings',sNew:'Newest',sPlo:'Price low → high',sPhi:'Price high → low',sBig:'Largest area',empty:'No real estate listings in this area yet.',howTitle:'Post and go live — no manual pre-approval wait',howSub:'Every listing runs through an automated check first. Clean listings go live within a minute; only flagged ones go to a human review queue.',st1t:'Paste a link, or fill in & add photos',st1p:'Fast path: paste your existing Zillow/Facebook/HAR link and AI fills in the whole form. Or fill in by hand in 4 steps: type → details → photos & text → contact & preview.',st2t:'Automated check gate',st2p:'The system checks minimum photos, address, Fair Housing language, scam patterns and duplicates.',st3t:'Live now, or reviewed',st3p:'Pass → published instantly. Flagged → review queue; you get the result, with a reason if rejected.',st4t:'AI demand matching',st4p:'New listings are scored against Wanted posts and saved searches. A match of 70/100 or higher notifies the person looking.',ruleTitle:'Safety for posters and viewers alike',r1t:'✓ “Verified” is a separate document check',r1p:'A for-sale listing can go live without documents, but the Verified badge is only added after an admin checks a deed, owner authorization, or broker license. Unverified listings always show a warning.',r2t:'✓ Phone numbers are never exposed raw',r2p:'Contact stays in-platform by default. Posters may choose to show their number after a viewer logs in — their choice, never a hard lock.',r3t:'✓ The community can report bad listings',r3p:'Anyone can report scams, wrong info, or discrimination. A listing with 3+ reports is auto-hidden pending review. Rental addresses show area + ZIP by default.',crossT:'Looking for a salon to buy or take over?',crossP:'NAILHUB.AI’s salon-transfer section runs separately on the same platform. Check homes here, then salons nearby — and back again.',sampleNote:'The listings below are <b>sample listings for interface preview</b> — not real posts yet. When the section officially opens, real community listings — typed in, or pasted via a link that AI Smart Import fills in from their existing posts (target: the first 30–50 in Houston) — will replace all samples.',crossBtn:'View Salon Transfers →',disclaimer:'NAILHUB.AI is a listing platform, not a real estate brokerage, and is not a party to transactions between users. Information is provided by the poster; please verify independently before transacting.',detailT:'Listing details',ps1:'1 · Type',ps2:'2 · Details',ps3:'3 · Photos & text',ps4:'4 · Contact & post',pfTitle:'Listing title *',pfPrice:'Price (USD) *',pfPriceType:'Price type',pfBeds:'Bedrooms *',pfBaths:'Bathrooms *',pfCity:'City',pfArea:'Area',pfPhotos:'Photos *',pfPhotosHint:'For-sale listings need at least 3 photos; other types at least 1. Max 20 photos.',pfDesc:'Description * (min. 30 characters)',aiRewriteT:'AI suggests a neutral rewrite:',aiApply:'Use this version',aiKeep:'Keep mine',pfContact:'Contact method',pfContact1:'In-platform only (recommended)',pfContact2:'Show phone number after viewer logs in',pfAddr:'Address display',pfAddr1:'Area + ZIP only (recommended for rentals)',pfAddr2:'Show full address',pfLife:'Listings run 30 days. You get a renewal reminder 3 days before expiry.',back:'← Back',next:'Continue →',importCtaBtn:'Paste a link — AI fills it in',importCtaT:'Already listed on Zillow, Facebook or HAR?',importCtaP:'Paste the link and AI reads it and fills in price, rooms, area, photos & description — you just review it, then post.',importTitle:'Already posted elsewhere? Paste the link — AI fills it in within seconds',importSub:'No retyping. Paste your own listing link from Zillow, Facebook, HAR, Realtor.com… and AI reads the listing page, extracts price, rooms, area and photos, and drafts the title & description into the form. You review, edit and hit Post — NAILHUB.AI never copies someone else’s listing for you.',imp1t:'1 · Paste your link',imp1p:'Copy the link to the home, room or space you already posted elsewhere and paste it into AI Smart Import in the posting form — AI starts the moment you paste.',imp2t:'2 · AI fills it in for you',imp2p:'AI extracts price, bedrooms/bathrooms, sqft, area, ZIP and photos, and drafts a neutral description already checked against Fair Housing wording rules. Anything AI cannot read, you fill in by hand as usual.',imp3t:'3 · You approve & post',imp3p:'Confirm “this is my listing / I have permission to repost”, review it, and submit — it runs the automated check and goes live when it passes.',importPanelT:'AI Smart Import — Paste a link, AI fills the whole form',importPanelP:'Paste your listing link from Zillow, Facebook Marketplace, HAR or Realtor.com — AI runs the moment you paste: it reads the page and fills in price, rooms, area, ZIP, title & description. Edit if needed, then continue.',importPh:'Paste link here — e.g. https://www.zillow.com/homedetails/…',importBtn:'✦ AI auto-fill',importRights:'I confirm this is my listing, or the owner / original poster has given me permission to repost it on NAILHUB.AI. I am responsible for its content and photos.',importDemo:'No link handy? Try it now with a sample link:',importOrType:'Or pick a listing type and fill in by hand as usual — AI Smart Import above is just a shortcut, never required.'}
+};
+var lang=localStorage.getItem('nexora-v31:nexora-community-language')||'en', activeType='ALL', favs={}, loggedIn=true, savedSearches=[], reports={};
+function T(k){return (I18N[lang]&&I18N[lang][k])||I18N.vi[k]||k;}
+function typeName(c){var t=TYPES.filter(function(x){return x.code===c})[0];return t?(lang==='en'?t.en:t.vi):c;}
+function fmt(n){return '$'+n.toLocaleString('en-US');}
+function priceLabel(l){
+  if(l.type==='WANTED') return (lang==='en'?'Budget up to ':'Ngân sách tới ')+fmt(l.budget||l.price)+(lang==='en'?'/mo':'/tháng');
+  if(l.pt==='NEGOTIABLE') return lang==='en'?'Negotiable':'Thương lượng';
+  return fmt(l.price)+(l.pt==='PER_MONTH'?(lang==='en'?'/month':'/tháng'):'');
+}
+function daysLabel(d){ if(lang==='en') return d===0?'Today':d===1?'1 day ago':d+' days ago'; return d===0?'Hôm nay':d+' ngày trước'; }
+function setLang(l){
+  lang=l;
+  document.getElementById('langVi').classList.toggle('on',l==='vi');
+  document.getElementById('langEn').classList.toggle('on',l==='en');
+  document.documentElement.lang=l;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){el.textContent=T(el.getAttribute('data-i18n'));});
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el){el.innerHTML=T(el.getAttribute('data-i18n-html'));});
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){el.placeholder=T(el.getAttribute('data-i18n-ph'));});
+  document.getElementById('loginBtn').textContent = loggedIn ? (l==='en'?'Account: Poster':'Tài khoản: Người đăng') : (l==='en'?'Log in':'Đăng nhập');
+  updateAssistantLang();
+  buildCityOptions();
+  buildChips(); buildTypePick(); render(); renderAI();
+}
+function buildChips(){
+  var box=document.getElementById('typeChips'); box.innerHTML='';
+  TYPES.forEach(function(t){
+    var n = t.code==='ALL'?LISTINGS.length:LISTINGS.filter(function(l){return l.type===t.code}).length;
+    var b=document.createElement('button'); b.className='tchip'+(activeType===t.code?' on':'');
+    b.innerHTML=(lang==='en'?t.en:t.vi)+'<span class="n">'+n+'</span>';
+    b.onclick=function(){activeType=t.code;buildChips();render();};
+    box.appendChild(b);
+  });
+}
+function specsLine(l){
+  var p=[];
+  if(l.type==='WANTED'){ p.push((lang==='en'?'Needs: ':'Cần: ')+l.beds+(lang==='en'?' bed':' phòng ngủ')); }
+  else{
+    if(l.beds>0)p.push(l.beds+(lang==='en'?' bd':' PN'));
+    if(l.baths>0)p.push(l.baths+(lang==='en'?' ba':' PT'));
+    if(l.sqft>0)p.push(l.sqft.toLocaleString('en-US')+' sqft');
+  }
+  return p.join(' · ');
+}
+function isRent(l){ return l.type==='FOR_RENT_HOUSE'||l.type==='FOR_RENT_ROOM'||l.type==='FOR_RENT_COMMERCIAL'; }
+function rentFactsHTML(l){
+  if(!isRent(l))return '';
+  var rf=[];
+  if(l.deposit)rf.push((lang==='en'?'Deposit ':'Cọc ')+fmt(l.deposit));
+  if(l.avail)rf.push((lang==='en'?'Available: ':'Vào ở: ')+l.avail);
+  if(l.lease)rf.push((lang==='en'?'Lease ':'HĐ ')+l.lease+(lang==='en'?' mo':' tháng'));
+  var rf2=[];
+  if(l.incl)rf2.push('✓ '+l.incl);
+  if(l.parking)rf2.push('🅿 '+l.parking);
+  return (rf.length?'<div class="rentline">'+rf.join(' · ')+'</div>':'')+(rf2.length?'<div class="rentline dim">'+rf2.join(' · ')+'</div>':'');
+}
+function cardHTML(l){
+  var badges='<span class="badge sample">'+(lang==='en'?'SAMPLE':'TIN MẪU')+'</span><span class="badge type">'+typeName(l.type)+'</span>'+(l.verified?'<span class="badge verified">'+(lang==='en'?'Verified':'Đã xác thực')+'</span>':'')+(l.featured?'<span class="badge featured">'+(lang==='en'?'Featured':'Nổi bật')+'</span>':'');
+  var cardTitle = l.street && l.area.indexOf(l.street)!==0 ? l.street+' · '+l.area : l.area;
+  var ph = l.type==='WANTED'
+    ? '<div class="ph"><div class="big">'+(lang==='en'?'WANTED':'CẦN THUÊ')+'<br><span style="font-size:.95rem;font-family:inherit">'+l.area+'</span></div><div class="badges">'+badges+'</div></div>'
+    : '<div class="ph"><img src="'+l.img+'" alt="'+l.area+', '+l.city+'"><div class="badges">'+badges+'</div><button class="fav'+(favs[l.id]?' on':'')+'" data-act="toggleFav" data-arg="'+l.id+'" aria-label="Save">♥</button></div>';
+  return '<article class="card'+(l.type==='WANTED'?' wanted-card':'')+'">'+ph+'<div class="body">'
+    +'<div class="price">'+priceLabel(l)+'</div>'
+    +'<h3 data-act="openDetail" data-arg="'+l.id+'">'+(l.type==='WANTED'?(lang==='en'?'Wanted: ':'Cần thuê: ')+l.area+' — '+l.city:cardTitle)+'</h3>'
+    +'<div class="specs">'+specsLine(l)+'</div>'
+    +rentFactsHTML(l)
+    +'<div class="loc">📍 '+l.area+' · '+l.city+', TX '+l.zip+'</div>'
+    +'<div class="meta"><time>'+daysLabel(l.days)+'</time><button data-act="openDetail" data-arg="'+l.id+'">'+(lang==='en'?'View →':'Xem tin →')+'</button></div>'
+    +'</div></article>';
+}
+/* ===== CÂY ĐỊA ĐIỂM: Tiểu bang → Thành phố → Khu vực =====
+   Houston/Texas có tin mẫu trước. Các tiểu bang/thành phố khác có sẵn trong cấu trúc lọc;
+   chưa có tin thì hiện "Chưa có tin — đăng ký nhận thông báo", KHÔNG bịa tin cho các nơi đó. */
+var STATE_NAMES={TX:'Texas',CA:'California',FL:'Florida',GA:'Georgia',WA:'Washington',VA:'Virginia',NC:'North Carolina'};
+var LOC_TREE={
+ TX:['Houston','Katy','Sugar Land','Pearland','Cypress','Spring','Dallas','Austin','San Antonio'],
+ CA:['Westminster','Garden Grove','San Jose','Los Angeles','Sacramento','San Diego'],
+ FL:['Orlando','Tampa','Jacksonville','Miami'],
+ GA:['Atlanta','Duluth','Doraville'],
+ WA:['Seattle','Tacoma','Everett'],
+ VA:['Falls Church','Richmond','Virginia Beach'],
+ NC:['Charlotte','Raleigh','Greensboro']
+};
+function areasFor(city){
+  var seen={},out=[];
+  LISTINGS.forEach(function(l){ if(l.city===city&&l.area&&!seen[l.area]){ seen[l.area]=1; out.push(l.area); } });
+  return out;
+}
+function buildAreaOptions(){
+  var city=document.getElementById('qCity').value;
+  var as=document.getElementById('qArea'); if(!as)return;
+  var cur=as.value, areas=city?areasFor(city):[];
+  as.innerHTML='<option value="">'+(lang==='en'?'All areas':'Tất cả khu vực')+'</option>'+areas.map(function(a){return '<option>'+a+'</option>';}).join('');
+  if(cur&&areas.indexOf(cur)>-1)as.value=cur;
+}
+function buildCityOptions(){
+  var st=document.getElementById('qState').value;
+  var cs=document.getElementById('qCity'); if(!cs)return;
+  var cur=cs.value, cities=[];
+  if(!st){ Object.keys(LOC_TREE).forEach(function(k){ LOC_TREE[k].forEach(function(c){ cities.push({v:c,t:c+', '+k}); }); }); }
+  else cities=(LOC_TREE[st]||[]).map(function(c){ return {v:c,t:c}; });
+  cs.innerHTML='<option value="">'+(lang==='en'?'All cities':'Tất cả thành phố')+'</option>'+cities.map(function(c){return '<option value="'+c.v+'">'+c.t+'</option>';}).join('');
+  if(cur&&cities.some(function(c){return c.v===cur;}))cs.value=cur;
+  buildAreaOptions();
+}
+function onStateChange(){ buildCityOptions(); render(); }
+function onCityChange(){ buildAreaOptions(); render(); }
+function notifyArea(){
+  toast(lang==='en'?'Notifications on (preview): the first listing in this area will be sent to you as soon as it appears.':'Đã đăng ký nhận thông báo (bản xem trước): có tin đầu tiên ở khu vực này, hệ thống sẽ báo ngay cho bạn.');
+}
+function renderEmpty(){
+  var box=document.getElementById('emptyBox');
+  var st=document.getElementById('qState').value, city=document.getElementById('qCity').value, area=document.getElementById('qArea').value;
+  var where=area||city||(st?STATE_NAMES[st]:'');
+  if(where){
+    box.innerHTML='<b style="font-size:1.08rem">'+(lang==='en'?'No listings yet — ':'Chưa có tin — ')+where+'</b>'
+      +'<p style="margin:9px 0 15px">'+(lang==='en'?'NAILHUB.AI is live in Houston, Texas first and expanding state by state. There are no listings in this area yet — register for a notification and we will alert you the moment the first one appears.':'NAILHUB.AI đang mở trước tại Houston, Texas và mở rộng dần theo từng tiểu bang. Khu vực này chưa có tin — đăng ký nhận thông báo, có tin đầu tiên ở đây là hệ thống báo ngay cho bạn.')+'</p>'
+      +'<button class="btn" data-act="notifyArea">🔔 '+(lang==='en'?'Notify me about this area':'Đăng ký nhận thông báo')+'</button>';
+  } else {
+    box.innerHTML='<b style="font-size:1.08rem">'+(lang==='en'?'No listings match the current filters':'Chưa có tin nào khớp bộ lọc hiện tại')+'</b>'
+      +'<p style="margin:9px 0 15px">'+(lang==='en'?'Try widening the price range or clearing a few filters.':'Bạn thử nới khoảng giá hoặc xoá bớt điều kiện lọc xem sao.')+'</p>'
+      +'<button class="btn" data-act="notifyArea">🔔 '+(lang==='en'?'Notify me when new listings appear':'Đăng ký nhận thông báo khi có tin mới')+'</button>';
+  }
+}
+function getFiltered(){
+  var q=(document.getElementById('q').value||'').toLowerCase();
+  var state=document.getElementById('qState').value;
+  var city=document.getElementById('qCity').value;
+  var area=document.getElementById('qArea').value;
+  var pmin=parseFloat(document.getElementById('fPriceMin').value)||0;
+  var pmax=parseFloat(document.getElementById('fPriceMax').value)||Infinity;
+  var zip=(document.getElementById('fZip').value||'').trim();
+  var beds=parseInt(document.getElementById('fBeds').value)||0;
+  var baths=parseFloat(document.getElementById('fBaths').value)||0;
+  var sqft=parseFloat(document.getElementById('fSqft').value)||0;
+  var ver=document.getElementById('fVerified').checked;
+  var list=LISTINGS.filter(function(l){
+    if(activeType!=='ALL'&&l.type!==activeType)return false;
+    if(state&&(l.state||'TX')!==state)return false;
+    if(city&&l.city!==city)return false;
+    if(area&&l.area!==area)return false;
+    if(q){var hay=(l.area+' '+l.city+' '+l.zip+' '+l.street+' '+l.desc).toLowerCase(); if(hay.indexOf(q)<0)return false;}
+    var eff=l.type==='WANTED'?(l.budget||0):(l.pt==='NEGOTIABLE'?null:l.price);
+    if(eff!==null&&(eff<pmin||eff>pmax))return false;
+    if(zip&&l.zip!==zip)return false;
+    if(l.beds<beds)return false;
+    if(l.baths<baths)return false;
+    if(sqft&&l.sqft>0&&l.sqft<sqft)return false;
+    if(ver&&!l.verified)return false;
+    return true;
+  });
+  var s=document.getElementById('sortSel').value;
+  list.sort(function(a,b){
+    var pa=a.pt==='NEGOTIABLE'?Infinity:a.price, pb=b.pt==='NEGOTIABLE'?Infinity:b.price;
+    if(s==='plo')return pa-pb;
+    if(s==='phi')return (b.pt==='NEGOTIABLE'?-Infinity:b.price)-(a.pt==='NEGOTIABLE'?-Infinity:a.price);
+    if(s==='big')return b.sqft-a.sqft;
+    return a.days-b.days;
+  });
+  return list;
+}
+function render(){
+  var list=getFiltered();
+  document.getElementById('grid').innerHTML=list.map(cardHTML).join('');
+  if(!list.length)renderEmpty();
+  document.getElementById('emptyBox').style.display=list.length?'none':'block';
+  document.getElementById('resultCount').textContent=list.length+(lang==='en'?' listings':' tin');
+}
+function renderAI(){
+  var picks=LISTINGS.filter(function(l){return l.verified||l.featured}).slice(0,3);
+  var wants=LISTINGS.filter(function(l){return l.type==='WANTED'});
+  var html=picks.map(function(l){
+    var match='';
+    wants.forEach(function(w){
+      if(w.zip===l.zip||w.city===l.city){
+        var budget=w.budget||0;
+        if(l.pt==='PER_MONTH'&&budget>=l.price) match='<div style="margin-top:7px;font-weight:700;color:var(--brand)">⇄ '+(lang==='en'?'Matches a Wanted post in ':'Khớp với tin Cần thuê tại ')+w.area+' · '+(lang==='en'?'score 86/100':'điểm khớp 86/100')+'</div>';
+      }
+    });
+    return '<div class="ai-item"><b>'+priceLabel(l)+' — '+l.area+'</b> <span class="badge sample">'+(lang==='en'?'SAMPLE':'TIN MẪU')+'</span><p>'+typeName(l.type)+' · '+specsLine(l)+' · '+l.city+', TX '+l.zip+'</p>'+match+'<div style="margin-top:8px"><button class="linkbtn" data-act="openDetail" data-arg="'+l.id+'">'+(lang==='en'?'View listing →':'Xem tin →')+'</button></div></div>';
+  }).join('');
+  document.getElementById('aiGrid').innerHTML=html;
+}
+function toggleFav(id){ favs[id]=!favs[id]; render(); toast(favs[id]?(lang==='en'?'Saved to your favorites':'Đã lưu tin vào mục yêu thích'):(lang==='en'?'Removed from favorites':'Đã bỏ lưu tin')); }
+function applyFilters(){ render(); toast(lang==='en'?'Filters applied':'Đã áp dụng bộ lọc'); }
+function clearFilters(){
+  ['fPriceMin','fPriceMax','fZip','fSqft','q'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('fBeds').value='0'; document.getElementById('fBaths').value='0';
+  document.getElementById('fVerified').checked=false;
+  document.getElementById('qState').value='TX'; document.getElementById('qCity').value=''; buildCityOptions();
+  activeType='ALL'; buildChips(); render();
+}
+function doSearch(e){ e.preventDefault(); render(); document.getElementById('grid').scrollIntoView({behavior:'smooth',block:'start'}); }
+function saveSearch(){
+  var parts=[];
+  if(activeType!=='ALL')parts.push(typeName(activeType));
+  var stt=document.getElementById('qState').value; if(stt)parts.push(STATE_NAMES[stt]);
+  var city=document.getElementById('qCity').value; if(city)parts.push(city);
+  var area=document.getElementById('qArea').value; if(area)parts.push(area);
+  var zip=document.getElementById('fZip').value; if(zip)parts.push('ZIP '+zip);
+  var label=parts.length?parts.join(' · '):(lang==='en'?'All Houston':'Toàn Houston');
+  var n=getFiltered().length;
+  savedSearches.push(label);
+  document.getElementById('savedList').innerHTML=savedSearches.map(function(s){return '<span class="saved-chip">🔔 '+s+' — <b>'+n+' '+(lang==='en'?'now':'tin hiện có')+'</b></span>'}).join('');
+  toast(lang==='en'?'Search saved. New matching listings will notify you.':'Đã lưu tìm kiếm. Có tin mới khớp, hệ thống sẽ báo cho bạn.');
+}
+function toggleLogin(){
+  loggedIn=!loggedIn;
+  document.getElementById('loginBtn').textContent=loggedIn?(lang==='en'?'Account: Poster':'Tài khoản: Người đăng'):(lang==='en'?'Log in':'Đăng nhập');
+  toast(loggedIn?(lang==='en'?'Logged in with NEXORA ID (demo)':'Đã đăng nhập bằng NEXORA ID (bản xem trước)'):(lang==='en'?'Logged out':'Đã đăng xuất'));
+}
+/* ===== DETAIL ===== */
+function openDetail(id){
+  var l=LISTINGS.filter(function(x){return x.id===id})[0]; if(!l)return;
+  var addr = l.addrMode==='FULL'&&l.street ? (l.street+', '+l.city+', TX '+l.zip) : (l.area+' · '+l.city+', TX '+l.zip+(lang==='en'?' (area only)':' (chỉ hiện khu vực)'));
+  var rows='';
+  function row(k,v){ if(v===null||v===undefined||v===''||v===0)return ''; return '<div><span>'+k+'</span><b>'+v+'</b></div>'; }
+  if(l.type==='FOR_SALE'){
+    rows=row(lang==='en'?'Property type':'Loại nhà',l.ptype)+row(lang==='en'?'Year built':'Năm xây',l.year)+row('HOA',l.hoa?fmt(l.hoa)+(lang==='en'?'/month':'/tháng'):(lang==='en'?'None':'Không có'))+row(lang==='en'?'Address':'Địa chỉ',addr)+row(lang==='en'?'Posted':'Ngày đăng',daysLabel(l.days))+row(lang==='en'?'Poster':'Người đăng',l.poster);
+  } else if(l.type==='WANTED'){
+    rows=row(lang==='en'?'Max budget':'Ngân sách tối đa',fmt(l.budget||l.price)+(lang==='en'?'/month':'/tháng'))+row(lang==='en'?'Desired area':'Khu vực cần',l.area)+row(lang==='en'?'City':'Thành phố',l.city+', TX '+l.zip)+row(lang==='en'?'Posted':'Ngày đăng',daysLabel(l.days))+row(lang==='en'?'Poster':'Người đăng',l.poster);
+  } else {
+    rows=row(lang==='en'?'Deposit':'Tiền cọc',l.deposit?fmt(l.deposit):'')+row(lang==='en'?'Available':'Vào ở',l.avail||'')+row(lang==='en'?'Lease term':'Hợp đồng',l.lease?l.lease+(lang==='en'?' months':' tháng'):'')+row(lang==='en'?'Utilities & included':'Tiện ích / bao gồm',l.util||'')+row(lang==='en'?'Laundry':'Giặt ủi',l.laundry||'')+row(lang==='en'?'Parking':'Đậu xe',l.parking||'')+row(lang==='en'?'Furnished':'Nội thất',l.furn||l.use||'')+row(lang==='en'?'Pets':'Thú cưng',l.pet||'')+row(lang==='en'?'Address':'Địa chỉ',addr)+row(lang==='en'?'Posted':'Ngày đăng',daysLabel(l.days))+row(lang==='en'?'Poster':'Người đăng',l.poster);
+  }
+  var termsHTML=(isRent(l)&&l.terms)?'<div class="notice" style="margin:2px 0 14px"><b>'+(lang==='en'?'Lease conditions: ':'Điều kiện thuê: ')+'</b>'+l.terms+'</div>':'';
+  var unverified = (l.type==='FOR_SALE'&&!l.verified) ? '<div class="notice warn">⚠ '+(lang==='en'?'This listing\'s ownership has not been verified. Please verify documents yourself before paying any deposit or transferring money.':'Tin này chưa được xác thực quyền sở hữu. Vui lòng tự kiểm chứng giấy tờ trước khi đặt cọc hoặc chuyển tiền.')+'</div>' : '';
+  var similar=LISTINGS.filter(function(x){return x.id!==l.id&&x.type===l.type}).slice(0,3);
+  var simHTML=similar.length?'<div class="similar"><h4>'+(lang==='en'?'Similar listings':'Tin tương tự')+'</h4><div class="grid">'+similar.map(cardHTML).join('')+'</div></div>':'';
+  var cross='';
+  if(l.type!=='FOR_RENT_COMMERCIAL'&&l.type!=='WANTED'){
+    var st=SANG_TIEM.filter(function(s){return s.area.indexOf(l.zip)>-1})[0]||SANG_TIEM[0];
+    cross='<div class="crosslink" style="margin:20px 0 4px"><div><h3>'+(lang==='en'?'Salon for transfer near this area':'Tiệm nail đang sang nhượng gần khu vực này')+'</h3><p>'+st.t+' — '+st.area+' · '+st.price+'</p></div><a class="btn" style="margin-left:auto" href="https://nailhub.ai" target="_blank" rel="noopener">'+(lang==='en'?'View →':'Xem →')+'</a></div>';
+  }
+  document.getElementById('detailBody').innerHTML=
+    (l.type==='WANTED'
+      ? '<div class="gallery" style="display:flex;align-items:center;justify-content:center;background:var(--accent-soft)"><div style="font-family:Fraunces,serif;font-size:2rem;font-weight:900;color:var(--accent)">'+(lang==='en'?'WANTED':'CẦN THUÊ / CẦN MUA')+'</div></div>'
+      : '<div class="gallery"><img src="'+l.img+'" alt="'+l.area+', '+l.city+'"></div>')
+    +'<div class="dprice">'+priceLabel(l)+'</div>'
+    +'<h3 style="font-size:1.25rem">'+typeName(l.type)+' — '+l.area+', '+l.city+'</h3>'
+    +'<div class="dspecs"><span class="dspec">'+specsLine(l)+'</span><span class="dspec">📍 '+addr+'</span>'+(l.verified?'<span class="dspec" style="color:var(--brand);font-weight:800">✓ '+(lang==='en'?'Verified':'Đã xác thực')+'</span>':'')+'</div>'
+    +unverified
+    +'<p style="color:var(--ink2)">'+l.desc+'</p>'
+    +'<div class="dgrid">'+rows+'</div>'
+    +termsHTML
+    +'<div class="contact-box">'
+    +'<button class="btn" data-act="contactCall" data-arg="'+l.id+'">📞 '+(lang==='en'?'Call Poster':'Gọi người đăng')+'</button>'
+    +'<button class="btn ghost" data-act="contactMsg" data-arg="'+l.id+'">💬 '+(lang==='en'?'Send Message':'Nhắn tin')+'</button>'
+    +'<button class="btn ghost" data-act="report" data-arg="'+l.id+'">⚑ '+(lang==='en'?'Report this listing':'Báo tin này')+'</button>'
+    +'</div>'
+    +(loggedIn?'':'<p style="color:var(--muted);font-size:.88rem">'+(lang==='en'?'Log in to see contact info. Phone numbers are never shown to logged-out visitors.':'Đăng nhập để xem thông tin liên hệ. Số điện thoại không hiển thị cho khách chưa đăng nhập.')+'</p>')
+    +cross+simHTML
+    +'<p class="disclaimer" style="margin-top:22px">'+T('disclaimer')+'</p>';
+  document.getElementById('detailBack').classList.add('open');
+}
+function contactAction(kind,id){
+  if(!loggedIn){ toast(lang==='en'?'Please log in first to contact the poster.':'Bạn cần đăng nhập trước khi liên hệ người đăng.'); toggleLogin(); return; }
+  toast(kind==='call'?(lang==='en'?'Calling the poster inside the platform… (demo)':'Đang gọi người đăng ngay trong nền tảng… (bản xem trước)'):(lang==='en'?'Message window opened inside the platform (demo)':'Đã mở khung nhắn tin trong nền tảng (bản xem trước)'));
+}
+function reportListing(id){
+  reports[id]=(reports[id]||0)+1;
+  if(reports[id]>=3){ toast(lang==='en'?'This listing hit 3 reports and was auto-hidden pending review.':'Tin đã đủ 3 báo cáo — hệ thống tự tạm ẩn chờ xem lại.'); closeModal('detailBack'); LISTINGS=LISTINGS.filter(function(x){return x.id!==id}); buildChips(); render(); renderAI(); }
+  else toast((lang==='en'?'Report sent. ':'Đã gửi báo cáo. ')+reports[id]+'/3 '+(lang==='en'?'reports trigger auto-hide.':'báo cáo sẽ kích hoạt tạm ẩn tự động.'));
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-back').forEach(function(b){ b.addEventListener('click',function(e){ if(e.target===b)b.classList.remove('open'); }); });
+/* ===== SMART IMPORT ===== */
+var imported={count:0,source:'',url:'',img:''};
+var importBusy=false, lastAutoUrl='';
+var SAMPLE_LINKS={
+  zillow:'https://www.zillow.com/homedetails/12345-Forest-Oaks-Dr-Houston-TX-77042/12345678_zpid/',
+  facebook:'https://www.facebook.com/marketplace/item/987654321-phong-rieng-westheimer/',
+  har:'https://www.har.com/homedetail/6789-granville-ave-houston-tx-77072/9876543'
+};
+var IMPORT_DATA={
+  zillow:{source:'Zillow',type:'FOR_SALE',title:'Nhà 4 phòng ngủ gần Westheimer, sân rộng, gara 2 xe',price:465000,pt:'TOTAL',beds:4,baths:3,sqft:2310,city:'Houston',area:'Westchase · Westheimer',zip:'77042',photos:6,img:'media/424dff85992568ed.jpg',desc:'Nhà 2 tầng, 4 phòng ngủ, 3 phòng tắm, gara 2 xe, sân sau rộng. Khu Westchase yên tĩnh, gần chợ Hồng Kông và nhiều tiệm nail trên Westheimer. Mái thay năm 2023, máy lạnh mới.'},
+  facebook:{source:'Facebook Marketplace',type:'FOR_RENT_ROOM',title:'Phòng riêng có phòng tắm riêng gần Westheimer — bao điện nước',price:650,pt:'PER_MONTH',beds:1,baths:1,sqft:220,city:'Houston',area:'Westheimer · Gessner',zip:'77042',photos:4,img:'media/5635565bd0a7e425.jpg',desc:'Phòng riêng có phòng tắm riêng, lối đi riêng, gần tiệm nail trên Westheimer — đi làm 5 phút. Bao điện nước và internet. Có chỗ đậu xe trong sân, đầy đủ nội thất.'},
+  har:{source:'HAR.com',type:'FOR_RENT_HOUSE',title:'Cho thuê nhà nguyên căn 3 phòng ngủ khu Alief · Bellaire',price:1750,pt:'PER_MONTH',beds:3,baths:2,sqft:1520,city:'Houston',area:'Alief · Bellaire',zip:'77072',photos:5,img:'media/7bcaa7b082e2795f.jpg',desc:'Nhà 3 phòng ngủ gần trung tâm Bellaire, đi bộ ra chợ và nhà hàng Việt. Có máy giặt sấy trong nhà, sân sau có mái che. Bao nước, ưu tiên hợp đồng 12 tháng.'},
+  generic:{source:'Trang khác',type:'FOR_RENT_HOUSE',title:'Nhà cho thuê — đã nhập từ link của bạn, hãy kiểm tra lại',price:1800,pt:'PER_MONTH',beds:3,baths:2,sqft:1500,city:'Houston',area:'Houston',zip:'77042',photos:3,img:'media/7bcaa7b082e2795f.jpg',desc:'Thông tin được điền sẵn từ link bạn dán. Vui lòng kiểm tra kỹ giá, diện tích và mô tả, sửa lại cho đúng với căn nhà/phòng của bạn trước khi đăng.'}
+};
+function fillSampleLink(kind){
+  var inp=document.getElementById('importUrl');
+  inp.value=SAMPLE_LINKS[kind]||'';
+  document.getElementById('importRights').checked=true;
+  markSource(kind==='zillow'?'Zillow':kind==='facebook'?'Facebook':'HAR');
+  toast(lang==='en'?'Sample link pasted — AI is auto-filling the form…':'Đã dán link mẫu — AI đang tự điền form…');
+  inp.focus();
+  setTimeout(function(){ doImport(); },450);
+}
+function detectSourceKey(url){
+  var u=(url||'').toLowerCase();
+  if(u.indexOf('zillow')>-1)return 'zillow';
+  if(u.indexOf('facebook')>-1||u.indexOf('fb.com')>-1)return 'facebook';
+  if(u.indexOf('har.com')>-1)return 'har';
+  return 'generic';
+}
+function markSource(name){
+  document.querySelectorAll('#importSources .src-chip').forEach(function(c){
+    var src=c.getAttribute('data-src');
+    var on = src===name || (name&&name.indexOf(src)>-1) || (src&&name&&src.indexOf(name)>-1);
+    c.classList.toggle('on',!!on);
+  });
+}
+function openPostImport(){
+  openPost();
+  setTimeout(function(){
+    var p=document.getElementById('importPanel');
+    if(p)p.scrollIntoView({behavior:'smooth',block:'start'});
+    var inp=document.getElementById('importUrl'); if(inp)inp.focus();
+  },60);
+}
+function doImport(){
+  var url=(document.getElementById('importUrl').value||'').trim();
+  var status=document.getElementById('importStatus');
+  if(!url){ toast(lang==='en'?'Please paste your listing link first.':'Bạn chưa dán link. Hãy dán link tin của bạn vào ô Smart Import trước.'); return; }
+  if(!/^https?:\/\/.+\..+/.test(url)){ toast(lang==='en'?'That does not look like a valid link. Check and paste again.':'Link chưa đúng định dạng. Kiểm tra lại và dán link đầy đủ (bắt đầu bằng https://).'); return; }
+  if(!document.getElementById('importRights').checked){
+    status.innerHTML='⚠ '+(lang==='en'?'Please tick the confirmation first: this must be your own listing, or one you have permission to repost. NAILHUB.AI does not copy other people’s listings without permission.':'Vui lòng tick xác nhận trước: đây phải là tin của bạn, hoặc tin bạn được phép đăng lại. NAILHUB.AI không tự lấy tin của người khác khi chưa được phép.');
+    status.classList.add('show');
+    toast(lang==='en'?'Please confirm the listing is yours / you have permission.':'Vui lòng xác nhận tin này là của bạn / bạn được phép đăng lại.');
+    return;
+  }
+  if(importBusy)return; importBusy=true;
+  lastAutoUrl=url;
+  var btn=document.getElementById('importBtn');
+  var oldBtn=btn.innerHTML;
+  btn.innerHTML=lang==='en'?'✦ AI is filling the form…':'✦ AI đang điền form…'; btn.disabled=true;
+  var aiSteps=lang==='en'
+    ? ['AI is opening your link and reading the listing page…','AI is extracting price, rooms, area and photos…','AI is drafting the title & description and running the Fair Housing wording check…']
+    : ['AI đang mở link và đọc trang tin của bạn…','AI đang trích xuất giá, số phòng, diện tích và ảnh…','AI đang soạn sẵn tiêu đề & mô tả, rà soát ngôn ngữ Fair Housing…'];
+  function renderAiSteps(doneCount){
+    status.innerHTML='<ul class="ai-steps">'+aiSteps.map(function(s,i){
+      var cls=i<doneCount?'done':(i===doneCount?'run':'');
+      var mark=i<doneCount?'✓ ':(i===doneCount?'✦ ':'· ');
+      return '<li class="'+cls+'">'+mark+s+'</li>';
+    }).join('')+'</ul>';
+  }
+  status.classList.add('show'); renderAiSteps(0);
+  setTimeout(function(){renderAiSteps(1);},550);
+  setTimeout(function(){renderAiSteps(2);},1100);
+  setTimeout(function(){
+    var key=detectSourceKey(url);
+    var d=IMPORT_DATA[key];
+    postType=d.type; buildTypePick();
+    document.getElementById('pfTitle').value=d.title;
+    document.getElementById('pfPrice').value=d.price;
+    document.getElementById('pfPriceType').value=d.pt;
+    document.getElementById('pfBeds').value=d.beds;
+    document.getElementById('pfBaths').value=d.baths;
+    document.getElementById('pfSqft').value=d.sqft;
+    document.getElementById('pfCity').value=d.city;
+    document.getElementById('pfArea').value=d.area;
+    document.getElementById('pfZip').value=d.zip;
+    document.getElementById('pfDesc').value=d.desc;
+    imported={count:d.photos,source:d.source,url:url,img:d.img};
+    markSource(d.source);
+    document.getElementById('importedBadge').classList.add('show');
+    var priceTxt=d.pt==='NEGOTIABLE'?(lang==='en'?'Negotiable':'Thương lượng'):fmt(d.price)+(d.pt==='PER_MONTH'?(lang==='en'?'/mo':'/tháng'):'');
+    var aiChips=[priceTxt,d.beds+(lang==='en'?' bd':' PN'),d.baths+(lang==='en'?' ba':' PT'),d.sqft.toLocaleString('en-US')+' sqft',d.city+' · ZIP '+d.zip,d.photos+(lang==='en'?' photos':' ảnh')].map(function(c){return '<span>'+c+'</span>';}).join('');
+    status.innerHTML='<b>✓ '+(lang==='en'?'AI filled the whole form from your ':'AI đã điền sẵn toàn bộ form từ ')+d.source+(lang==='en'?' link.':' link của bạn.')+'</b>'
+      +'<div class="ai-fields">'+aiChips+'</div>'
+      +(lang==='en'?'The title & description were drafted by AI and checked against Fair Housing wording rules. Review everything, edit if needed, then continue.':'Tiêu đề & mô tả do AI soạn sẵn và đã rà soát theo quy định Fair Housing. Bạn kiểm tra lại toàn bộ, sửa nếu cần, rồi bấm Tiếp tục.')
+      +'<br>📷 '+(lang==='en'?d.photos+' photos found on the link — they will be used at the Photos step (you can still replace them with your own files).':d.photos+' ảnh tìm thấy trên link — sẽ dùng ở bước Ảnh (bạn vẫn thay bằng file của mình được).')
+      +'<br><span style="color:var(--muted)">'+(lang==='en'?'Preview note: AI is simulated here with sample data so you can see the flow. On the live site, AI reads your real link.':'Lưu ý bản xem trước: AI được mô phỏng bằng dữ liệu mẫu để bạn thấy luồng hoạt động. Khi chạy thật, AI sẽ đọc đúng link thật của bạn.')+'</span>';
+    document.getElementById('photoCount').textContent=(lang==='en'?'Imported ':'Đã nhập ')+d.photos+(lang==='en'?' photo(s) from your link · you can also add/replace files below':' ảnh từ link của bạn · bạn cũng có thể thêm/thay bằng file ở dưới');
+    btn.innerHTML=oldBtn; btn.disabled=false; importBusy=false;
+    updatePriceRef();
+    toast(lang==='en'?'AI filled the form from your link. Review it, then continue.':'AI đã điền sẵn form từ link của bạn. Kiểm tra lại rồi bấm Tiếp tục.');
+    step=2; showStep();
+  },1700);
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('importUrl');
+  if(!inp)return;
+  var deb=null;
+  function maybeAuto(){
+    var k=detectSourceKey(inp.value); markSource(IMPORT_DATA[k]?IMPORT_DATA[k].source:'Khác');
+    var url=(inp.value||'').trim();
+    if(!/^https?:\/\/.+\..+/.test(url))return;
+    if(url===lastAutoUrl||importBusy)return;
+    if(!document.getElementById('importRights').checked){
+      var status=document.getElementById('importStatus');
+      status.innerHTML='✦ '+(lang==='en'?'AI has your link and is ready. Tick the confirmation below (“this is my listing”) and AI will fill the whole form for you automatically.':'AI đã nhận link và sẵn sàng. Bạn tick ô xác nhận “đây là tin của tôi” bên dưới — AI sẽ tự điền sẵn toàn bộ form ngay.');
+      status.classList.add('show');
+      return;
+    }
+    doImport();
+  }
+  inp.addEventListener('input',function(){ clearTimeout(deb); deb=setTimeout(maybeAuto,650); });
+  inp.addEventListener('paste',function(){ setTimeout(maybeAuto,80); });
+  document.getElementById('importRights').addEventListener('change',function(){ if(this.checked)maybeAuto(); });
+});
+/* ===== POST FORM ===== */
+var step=1, postType='FOR_RENT_ROOM';
+function buildTypePick(){
+  var box=document.getElementById('typePick'); if(!box)return; box.innerHTML='';
+  TYPES.filter(function(t){return t.code!=='ALL'}).forEach(function(t){
+    var hints={FOR_SALE:['Cần tối thiểu 3 ảnh','Needs 3+ photos'],FOR_RENT_HOUSE:['Thuê nguyên căn','Whole house'],FOR_RENT_ROOM:['Phòng riêng / ở ghép','Single room'],FOR_RENT_COMMERCIAL:['Mở tiệm / kinh doanh','For business'],WANTED:['Đăng nhu cầu, chờ khớp tin','Post your need']};
+    var b=document.createElement('button'); b.type='button';
+    b.className=postType===t.code?'on':'';
+    b.innerHTML=(lang==='en'?t.en:t.vi)+'<small>'+hints[t.code][lang==='en'?1:0]+'</small>';
+    b.onclick=function(){postType=t.code;buildTypePick();updatePriceRef();};
+    box.appendChild(b);
+  });
+}
+function openPost(){
+  if(!loggedIn){ toggleLogin(); }
+  step=1; showStep(); document.getElementById('postBack').classList.add('open'); buildTypePick();
+}
+function showStep(){
+  [1,2,3,4].forEach(function(i){
+    document.getElementById('stage'+i).style.display=i===step?'block':'none';
+    var el=document.querySelectorAll('#psteps .pstep')[i-1];
+    el.className='pstep'+(i===step?' on':i<step?' done':'');
+  });
+  document.getElementById('prevBtn').style.visibility=step===1?'hidden':'visible';
+  document.getElementById('nextBtn').textContent=step===4?(lang==='en'?'Submit — run automated check':'Gửi tin — chạy kiểm tra tự động'):T('next');
+  if(step===2)updatePriceRef();
+  if(step===4)updatePreview();
+}
+var FH_WORDS=['không trẻ em','no kids','no children','chỉ người việt','vietnamese only','chỉ nữ','only female','chỉ nam','only male','không nhận section 8','người việt mới được thuê'];
+function fhCheck(text){
+  var low=' '+text.toLowerCase()+' ';
+  return FH_WORDS.filter(function(w){return low.indexOf(w)>=0;});
+}
+function checkDesc(){
+  var ta=document.getElementById('pfDesc'); var hits=fhCheck(ta.value);
+  var alertBox=document.getElementById('fhAlert'); var aiBox=document.getElementById('aiRewriteBox');
+  if(hits.length){
+    alertBox.innerHTML='⚠ '+(lang==='en'?'Your description may violate Fair Housing policy. Please rewrite it neutrally, describing only the property. Flagged: ':'Mô tả có nội dung có thể vi phạm chính sách nhà ở công bằng (Fair Housing). Vui lòng viết lại theo hướng trung tính, chỉ mô tả về căn nhà/phòng. Cụm bị gắn cờ: ')+hits.join(', ');
+    alertBox.classList.add('show');
+    var cleaned=ta.value;
+    FH_WORDS.forEach(function(w){ var re=new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'); cleaned=cleaned.replace(re,''); });
+    cleaned=cleaned.replace(/\s{2,}/g,' ').replace(/\s+([.,])/g,'$1').trim();
+    if(cleaned.length<10)cleaned=ta.value.split('.')[0]+'.';
+    document.getElementById('aiRewriteText').value=cleaned;
+    aiBox.classList.add('show');
+    return false;
+  }
+  alertBox.classList.remove('show'); aiBox.classList.remove('show');
+  return true;
+}
+function applyRewrite(){ document.getElementById('pfDesc').value=document.getElementById('aiRewriteText').value; document.getElementById('aiRewriteBox').classList.remove('show'); document.getElementById('fhAlert').classList.remove('show'); toast(lang==='en'?'Neutral description applied. You can keep editing it.':'Đã áp dụng bản mô tả trung tính. Bạn vẫn sửa tiếp được.'); }
+function updatePriceRef(){
+  var box=document.getElementById('priceRefBox'); if(!box)return;
+  var zip=(document.getElementById('pfZip').value||'').trim();
+  var comp=LISTINGS.filter(function(l){return l.type===postType&&l.pt!=='NEGOTIABLE'&&l.type!=='WANTED'&&(!zip||l.zip===zip);});
+  if(comp.length>=5){
+    var prices=comp.map(function(l){return l.price}).sort(function(a,b){return a-b});
+    box.innerHTML='💡 '+(lang==='en'?'Price reference from ':'Tham khảo giá từ ')+comp.length+(lang==='en'?' live listings of the same type on NAILHUB.AI: ':' tin cùng loại đang đăng trên NAILHUB.AI: ')+fmt(prices[0])+' – '+fmt(prices[prices.length-1])+(comp[0].pt==='PER_MONTH'?(lang==='en'?'/month':'/tháng'):'');
+    box.classList.add('show');
+  } else {
+    box.innerHTML='💡 '+(lang==='en'?'Not enough comparable data yet ('+comp.length+'/5 live listings) — no price reference shown.':'Chưa đủ dữ liệu so sánh ('+comp.length+'/5 tin đang đăng) — hệ thống không hiện giá tham khảo.');
+    box.classList.add('show');
+  }
+}
+function updatePreview(){
+  var title=document.getElementById('pfTitle').value||'(chưa có tiêu đề)';
+  var price=parseFloat(document.getElementById('pfPrice').value)||0;
+  var pt=document.getElementById('pfPriceType').value;
+  var priceTxt=pt==='NEGOTIABLE'?(lang==='en'?'Negotiable':'Thương lượng'):fmt(price)+(pt==='PER_MONTH'?(lang==='en'?'/month':'/tháng'):'');
+  document.getElementById('previewBox').innerHTML='<b>'+(lang==='en'?'Preview — as viewers will see it:':'Xem trước — đúng như khách sẽ thấy:')+'</b><br>'+typeName(postType)+' · <b>'+priceTxt+'</b><br>'+title+'<br><span style="color:var(--muted)">'+document.getElementById('pfArea').value+' · '+document.getElementById('pfCity').value+', TX '+document.getElementById('pfZip').value+'</span>';
+}
+function stepNav(dir){
+  if(dir>0){
+    if(step===2){
+      var title=document.getElementById('pfTitle').value.trim();
+      var zip=document.getElementById('pfZip').value.trim();
+      if(title.length<5){toast(lang==='en'?'Please enter a title (min. 5 characters).':'Vui lòng nhập tiêu đề tin (tối thiểu 5 ký tự).');return;}
+      if(!/^\d{5}$/.test(zip)){toast(lang==='en'?'ZIP must be 5 digits.':'Mã ZIP phải đúng 5 số.');return;}
+      var pt=document.getElementById('pfPriceType').value;
+      if(pt!=='NEGOTIABLE'&&!(parseFloat(document.getElementById('pfPrice').value)>0)){toast(lang==='en'?'Please enter a price above 0, or choose Negotiable.':'Vui lòng nhập giá lớn hơn 0, hoặc chọn Thương lượng.');return;}
+    }
+    if(step===3){
+      var minPhotos=postType==='FOR_SALE'?3:1;
+      var files=document.getElementById('pfPhotos').files;
+      var totalPhotos=Math.max(files.length, imported.count||0);
+      if(totalPhotos<minPhotos){toast((lang==='en'?'This type needs at least ':'Loại tin này cần tối thiểu ')+minPhotos+(lang==='en'?' photo(s). You picked ':' ảnh. Bạn mới chọn ')+totalPhotos+'.');return;}
+      var desc=document.getElementById('pfDesc').value.trim();
+      if(desc.length<30){toast(lang==='en'?'Description needs at least 30 characters.':'Mô tả cần tối thiểu 30 ký tự.');return;}
+      if(!checkDesc()){toast(lang==='en'?'Description was flagged by the Fair Housing check — please fix or use the AI suggestion.':'Mô tả bị gắn cờ Fair Housing — hãy sửa lại hoặc dùng bản AI đề xuất.');return;}
+    }
+    if(step===4){ submitPost(); return; }
+    step++;
+  } else step--;
+  showStep();
+}
+function submitPost(){
+  var pt=document.getElementById('pfPriceType').value;
+  var price=parseFloat(document.getElementById('pfPrice').value)||0;
+  var files=document.getElementById('pfPhotos').files;
+  var img=imported.img||'media/7bcaa7b082e2795f.jpg';
+  if(files.length&&window.URL){ try{ img=URL.createObjectURL(files[0]); }catch(e){} }
+  var nl={
+    id:Date.now(), type:postType, price:price, pt:pt,
+    beds:parseInt(document.getElementById('pfBeds').value)||0,
+    baths:parseFloat(document.getElementById('pfBaths').value)||0,
+    sqft:parseInt(document.getElementById('pfSqft').value)||0,
+    city:document.getElementById('pfCity').value,
+    area:document.getElementById('pfArea').value||document.getElementById('pfCity').value,
+    zip:document.getElementById('pfZip').value.trim(),
+    img:img, verified:false, featured:false, days:0,
+    poster:lang==='en'?'You — poster':'Bạn — người đăng',
+    addrMode:document.getElementById('pfAddr').value, street:'',
+    desc:document.getElementById('pfDesc').value.trim(),
+    budget:price
+  };
+  LISTINGS.unshift(nl);
+  closeModal('postBack'); buildChips(); activeType='ALL'; render(); renderAI();
+  var matchNote='';
+  if(nl.type==='WANTED'){
+    var m=LISTINGS.filter(function(l){return l.id!==nl.id&&l.type!=='WANTED'&&l.zip===nl.zip&&l.pt==='PER_MONTH'&&l.price<=(nl.budget||Infinity)}).length;
+    matchNote=m?(' '+(lang==='en'?'AI found '+m+' live listing(s) matching your need — check Suggested for You.':'AI thấy '+m+' tin đang đăng khớp nhu cầu của bạn — xem mục Gợi ý cho bạn.')):'';
+  } else {
+    var wm=LISTINGS.filter(function(l){return l.type==='WANTED'&&l.zip===nl.zip}).length;
+    if(wm)matchNote=' '+(lang==='en'?'AI matched your listing to '+wm+' Wanted post(s) nearby and notified them.':'AI đã khớp tin của bạn với '+wm+' tin Cần thuê gần đó và đã báo cho họ.');
+  }
+  toast('✓ '+(lang==='en'?'Automated check passed — your listing is LIVE now.':'Tin đã qua kiểm tra tự động — ĐÃ ĐĂNG và đang hiển thị ngay.')+matchNote);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('pfDesc').addEventListener('blur',checkDesc);
+document.getElementById('pfPhotos').addEventListener('change',function(){
+  var n=this.files.length; var min=postType==='FOR_SALE'?3:1;
+  document.getElementById('photoCount').textContent=(lang==='en'?'Selected ':'Đã chọn ')+n+(lang==='en'?' photo(s) · minimum for this type: ':' ảnh · tối thiểu cho loại tin này: ')+min;
+});
+document.getElementById('pfZip').addEventListener('change',updatePriceRef);
+['fPriceMin','fPriceMax','fZip','fBeds','fBaths','fSqft','fVerified'].forEach(function(id){document.getElementById(id).addEventListener('change',render);});
+function toast(msg){
+  var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show')},4200);
+}
+/* ===== AI ASSISTANT — NEXI (demo: kịch bản song ngữ + giọng đọc trình duyệt) ===== */
+var assistSound=true, assistGreeted=false, assistBubbleGone=false;
+var ASSIST={
+ vi:{name:'Trợ lý NAILHUB',statusBase:'Trực tuyến · một trợ lý dùng chung cho cả hub NAILHUB.AI',pickerT:'Chọn nhân vật trợ lý — đủ 12 con, chạm là đổi',pickBtn:'Đổi trợ lý · 12',bubble:'Chào bạn! Mình là NEXI — cần tìm nhà, thuê phòng hay đăng tin, cứ hỏi mình nhé! Bấm nút “Đổi trợ lý · 12” ngay dưới đây để xem đủ 12 nhân vật và chọn một con.',ph:'Hỏi NEXI… (VD: cách đăng tin)',send:'Gửi',typing:'NEXI đang trả lời…',
+  menu:[{g:'Địa ốc'},{t:'Bán nhà',a:'sell'},{t:'Cho thuê nhà / phòng',a:'rent'},{t:'Cần mua / Cần thuê',a:'wanted'},{t:'Tìm nhà mua / thuê',a:'findHome'},{t:'Dán link Smart Import',a:'imp'},{t:'Liên hệ người đăng',a:'contact'},{g:'Sang tiệm'},{t:'Sang tiệm nail',a:'salonSell'},{t:'Mua tiệm nail',a:'salonBuy'},{g:'Việc làm / Tìm thợ'},{t:'Thợ tìm việc',a:'jobFind'},{t:'Chủ tiệm tìm thợ',a:'ownerFind'},{g:'Mục khác của hub'},{t:'Lớp học',a:'soon',sv:'Lớp học',se:'Classes'},{t:'Sản phẩm',a:'soon',sv:'Sản phẩm',se:'Products'},{t:'Dịch vụ',a:'soon',sv:'Dịch vụ',se:'Services'}],
+  note:'Bản demo: NEXI làm việc theo kịch bản và đọc bằng giọng của trình duyệt. Bản thật: file chào giọng clone “Brian Nguyen 1”, AI hội thoại thật ở backend dùng chung lớp AI của spec §12A, chạy trên dữ liệu thật của toàn hub NAILHUB.AI (Địa ốc · Sang tiệm · Việc làm…) và khớp hai chiều thợ ↔ tin tuyển, tin ↔ nhu cầu như §12A. Nhận giọng nói: bản web dùng Web Speech API (tốt nhất trên Chrome), bản app dùng nhận giọng nói native của thiết bị + giọng clone cho câu chào. Hình trợ lý: bản thật dùng bộ mascot gốc do đội ngũ cung cấp; lựa chọn nhân vật lưu theo tài khoản NEXORA ID.',
+  greet:'Chào bạn! Mình là NEXI, trợ lý AI của NAILHUB.AI. Mình không chỉ trả lời — mình làm luôn việc qua trò chuyện: đăng bán nhà, cho thuê, đăng tin cần mua/thuê, tìm nhà, sang tiệm, mua tiệm, tìm việc và tìm thợ. Bạn bấm một nút việc bên dưới, hoặc cứ gõ nhu cầu của bạn.',
+  hello:'Chào bạn! Cứ hỏi mình về tìm nhà/phòng, cách đăng tin, hay dán link AI Smart Import nhé — hoặc bấm một nút gợi ý bên dưới.',
+  find:'Bạn gõ khu vực hoặc ZIP vào ô tìm kiếm ở đầu trang, chọn loại tin (Bán nhà · Cho thuê nhà · Cho thuê phòng · Mặt bằng), rồi lọc thêm theo giá và số phòng ở cột Bộ lọc bên trái. Muốn nhanh, bấm nút “Tìm phòng gần Westheimer” bên dưới — mình tự lọc cho bạn xem ngay.',
+  searchDone:'Đã lọc xong các tin quanh Westheimer cho bạn — xem mục Tin đang đăng ở trên nhé. Trong danh sách hiện tại có phòng riêng từ $650/tháng và nhà bán quanh khu Westchase.',
+  post:'Đăng tin miễn phí, 4 bước: bấm “+ Đăng tin địa ốc” → chọn loại tin → điền thông tin & tải ảnh → chọn cách liên hệ rồi Gửi. Tin chạy cổng kiểm tra tự động, đạt là hiện ngay — không chờ duyệt tay. Nhanh hơn nữa: nếu bạn đã có tin ở nơi khác, dùng AI Smart Import — dán link là AI điền sẵn toàn bộ form.',
+  imp:'AI Smart Import chạy thế này: mở form Đăng tin → dán link tin của chính bạn ở Zillow / Facebook / HAR vào ô AI Smart Import → tick xác nhận “đây là tin của tôi” → AI tự đọc trang, điền sẵn giá, phòng, diện tích, ảnh và soạn sẵn tiêu đề & mô tả. Bạn kiểm tra lại rồi bấm Tiếp tục. Lưu ý: chỉ dán link tin của bạn, hoặc tin bạn được phép đăng lại.',
+  contact:'Mở tin bạn quan tâm → bấm “Gọi người đăng” hoặc “Nhắn tin”. Bạn cần đăng nhập bằng NEXORA ID trước; số điện thoại không hiển thị cho khách chưa đăng nhập để chống làm phiền. Tin có nhãn “Đã xác thực” đã qua kiểm tra giấy tờ riêng — an toàn hơn khi đặt cọc, chuyển tiền.',
+  price:'Trong form đăng tin có mục tham khảo giá: khi một khu vực + loại tin có từ 5 tin đang đăng trở lên, hệ thống hiện khoảng giá thật lấy từ chính các tin đó. Chưa đủ 5 tin thì không hiện gì cả — NAILHUB.AI không bịa số liệu thị trường.',
+  safety:'Ba điểm an toàn cần nhớ: (1) tin chưa xác thực luôn có dòng cảnh báo — tự kiểm chứng giấy tờ trước khi đặt cọc; (2) ai cũng báo được tin xấu, tin đủ 3 báo cáo sẽ tự tạm ẩn chờ xem lại; (3) NAILHUB.AI chỉ là nền tảng đăng tin — không giữ tiền cọc, không tham gia giao dịch giữa các bên.',
+  salon:'Mục Địa ốc chỉ đăng nhà đất thôi. Nếu bạn tìm tiệm nail để sang nhượng, ghé mục Sang nhượng tiệm — cuối trang này có nút dẫn qua, và trong chi tiết từng tin nhà cũng có gợi ý tiệm đang sang gần khu vực đó.',
+  fallback:'Câu này nằm ngoài kịch bản demo của mình. Mình trả lời được: tìm nhà/phòng, cách đăng tin, dán link AI Smart Import, liên hệ người đăng, giá tham khảo và an toàn giao dịch. Bạn bấm một nút gợi ý bên dưới nhé! Ở bản thật, NEXI nối AI thật ở backend nên trò chuyện tự do được.'},
+ en:{name:'NAILHUB Assistant',statusBase:'Online · one assistant for the whole NAILHUB.AI hub',pickerT:'Pick your assistant — all 12 characters, tap to switch',pickBtn:'Change assistant · 12',bubble:'Hi! I’m NEXI — ask me about finding a home, renting a room, or posting a listing! Tap the “Change assistant · 12” button right below to see all 12 characters and pick one.',ph:'Ask NEXI… (e.g. how to post)',send:'Send',typing:'NEXI is typing…',
+  menu:[{g:'Real Estate'},{t:'Sell a home',a:'sell'},{t:'Rent out house / room',a:'rent'},{t:'Wanted: buy / rent',a:'wanted'},{t:'Find a home',a:'findHome'},{t:'Paste a Smart Import link',a:'imp'},{t:'Contact the poster',a:'contact'},{g:'Salon Transfers'},{t:'Transfer a nail salon',a:'salonSell'},{t:'Buy a nail salon',a:'salonBuy'},{g:'Jobs / Find a Tech'},{t:'Tech: find a job',a:'jobFind'},{t:'Owner: find techs',a:'ownerFind'},{g:'More of the hub'},{t:'Classes',a:'soon',sv:'Lớp học',se:'Classes'},{t:'Products',a:'soon',sv:'Sản phẩm',se:'Products'},{t:'Services',a:'soon',sv:'Dịch vụ',se:'Services'}],
+  note:'Demo: NEXI works from a script and speaks with the browser voice. Live version: greeting file in the cloned “Brian Nguyen 1” voice, a real conversational AI backend sharing the §12A AI layer, running on real data across the whole NAILHUB.AI hub (Real Estate · Salon Transfers · Jobs…) with two-way matching — techs ↔ job posts, listings ↔ wants — like §12A. Voice input: the web uses the Web Speech API (best on Chrome); the app uses native device speech recognition + the cloned greeting voice. Assistant artwork: the live version uses the team’s original mascot set; the character choice is saved to the NEXORA ID account.',
+  greet:'Hi there! I’m NEXI, the AI assistant for NAILHUB.AI. I don’t just answer questions — I do the work with you by chat: post a home for sale, rent out a place, post a Wanted ad, find a home, transfer or buy a salon, find a job, or find techs. Tap a task below, or just type what you need.',
+  hello:'Hi! Ask me about finding a home or room, posting a listing, or pasting a link with AI Smart Import — or tap a suggestion below.',
+  find:'Type an area or ZIP into the search bar at the top, pick a listing type (For Sale · House for Rent · Room for Rent · Commercial), then narrow it down with the price and bedroom filters on the left. Quick try: tap “Find a room near Westheimer” below and I’ll filter it for you right away.',
+  searchDone:'Done — I filtered the listings around Westheimer for you. Check the Live listings section above: the current list has a private room from $650/month and homes for sale around Westchase.',
+  post:'Posting is free and takes 4 steps: tap “+ Post a Listing” → pick the type → add details & photos → choose contact & Submit. Your listing runs through an automated check and goes live as soon as it passes — no manual pre-approval wait. Faster still: if your listing already exists elsewhere, use AI Smart Import — paste the link and AI fills in the whole form.',
+  imp:'Here is how AI Smart Import works: open the posting form → paste your own listing link from Zillow / Facebook / HAR into the AI Smart Import box → tick “this is my listing” → AI reads the page and fills in price, rooms, area and photos, and drafts the title & description. You review everything, then continue. Note: only paste links to your own listing, or one you have permission to repost.',
+  contact:'Open the listing you like → tap “Call Poster” or “Send Message”. You need to log in with NEXORA ID first; phone numbers are never shown to logged-out visitors. Listings with the “Verified” badge passed a separate document check — safer for deposits and transfers.',
+  price:'The posting form shows a price reference: when an area + listing type has 5 or more live listings, you see the real price range taken from those listings. Under 5, nothing is shown — NAILHUB.AI never invents market data.',
+  safety:'Three safety points: (1) unverified listings always carry a warning — check documents yourself before paying any deposit; (2) anyone can report a bad listing, and 3 reports auto-hide it pending review; (3) NAILHUB.AI is only a listing platform — it never holds deposits and is not a party to your deal.',
+  salon:'This section is homes and spaces only. If you are looking for a nail salon to take over, check the Salon Transfers section — there is a link at the bottom of this page, and listing details also suggest salons for transfer near that area.',
+  fallback:'That one is outside my demo script. I can answer: finding homes/rooms, how to post, pasting a link with AI Smart Import, contacting posters, price references, and transaction safety. Tap a suggestion below! On the live version, NEXI connects to a real AI backend and can chat freely.'}
+};
+/* ===== NHÂN VẬT TRỢ LÝ — 12 con, khách tự chọn (mặc định: Cô thợ nail) =====
+   Dùng đúng 12 HÌNH GỐC của đội ngũ (assets/chars/01–12), không vẽ lại; chuyển động nhẹ áp thẳng lên hình gốc.
+   Cả 12 con dùng CHUNG một bộ não/luồng việc NEXI — chỉ khác hình. Lựa chọn của khách được nhớ cho lần sau. */
+var CHARACTERS=[
+ {id:'girl',vi:'Cô thợ nail',en:'Nail Tech Girl',img:'media/182e5c7597e946fd.webp',eye:34.6},
+ {id:'cat',vi:'Mèo nail',en:'Nail Cat',img:'media/3f7e290c00b1614b.webp',eye:28.6},
+ {id:'hand',vi:'Bàn tay nail',en:'Nail Hand',img:'media/392c332ee48e25a8.webp',eye:43.2},
+ {id:'bear',vi:'Gấu thợ nail',en:'Nail Bear',img:'media/5bba1144e9a581cd.webp',eye:25.1},
+ {id:'rabbit',vi:'Thỏ nail',en:'Nail Bunny',img:'media/1d1467a972d713d4.webp',eye:38.3},
+ {id:'corgi',vi:'Corgi nail',en:'Nail Corgi',img:'media/782585a567f1af38.webp',eye:31.0},
+ {id:'fox',vi:'Cáo nail',en:'Nail Fox',img:'media/b8e218aba71068c4.webp',eye:24.6},
+ {id:'unicorn',vi:'Kỳ lân nail',en:'Nail Unicorn',img:'media/a7998d1781719974.webp',eye:24.8},
+ {id:'penguin',vi:'Chim cánh cụt nail',en:'Nail Penguin',img:'media/ed9ff67ad318fb01.webp',eye:27.1},
+ {id:'pig',vi:'Heo nail',en:'Nail Pig',img:'media/15d473c8f6d9aeb3.webp',eye:26.0},
+ {id:'panda',vi:'Gấu trúc nail',en:'Nail Panda',img:'media/b03e618b9973e027.webp',eye:24.5},
+ {id:'boy',vi:'Chàng thợ nail',en:'Nail Tech Guy',img:'media/b5a547ef3dede9f6.webp',eye:30.4}
+];
+var assistCharId='girl';
+try{ var savedChar=localStorage.getItem('nexora-v31:nexiChar'); if(savedChar&&CHARACTERS.some(function(c){return c.id===savedChar;}))assistCharId=savedChar; }catch(e){}
+function currentChar(){ for(var i=0;i<CHARACTERS.length;i++)if(CHARACTERS[i].id===assistCharId)return CHARACTERS[i]; return CHARACTERS[0]; }
+function charArt(c){
+  var i=CHARACTERS.indexOf(c), nm=(lang==='en'?c.en:c.vi);
+  var phase=(-(i*0.37)).toFixed(2);
+  return '<span class="char-wrap" style="--phase:'+phase+'s"><img class="assist-char-img" src="'+c.img+'" alt="'+nm+'" loading="lazy" draggable="false"></span>';
+}
+function renderAssistChar(){
+  var c=currentChar();
+  var av=document.getElementById('assistAvatar'); if(av)av.innerHTML=charArt(c);
+  var mn=document.getElementById('assistCharMini'); if(mn)mn.innerHTML=charArt(c);
+  var pb=document.getElementById('assistPickChar'); if(pb)pb.innerHTML=charArt(c);
+  var holder=document.getElementById('assistChar'); if(holder)holder.innerHTML='';
+  var st=document.getElementById('assistStatus'); if(st)st.textContent=(lang==='en'?c.en:c.vi)+' · '+(assistStrings().statusBase||'');
+}
+function buildPicker(){
+  var row=document.getElementById('assistPickerRow'); if(!row)return; row.innerHTML='';
+  CHARACTERS.forEach(function(c){
+    var b=document.createElement('button'); b.type='button'; b.className='pick'+(c.id===assistCharId?' on':'');
+    var av=document.createElement('span'); av.className='pick-av'; av.innerHTML=charArt(c);
+    var nm=document.createElement('span'); nm.className='pick-name'; nm.textContent=lang==='en'?c.en:c.vi;
+    b.appendChild(av); b.appendChild(nm);
+    b.onclick=function(){ setAssistChar(c.id,true); };
+    row.appendChild(b);
+  });
+}
+function setAssistChar(id,announce){
+  assistCharId=id;
+  try{ localStorage.setItem('nexora-v31:nexiChar',id); }catch(e){}
+  renderAssistChar(); buildPicker();
+  if(announce){
+    var nm=(lang==='en'?currentChar().en:currentChar().vi);
+    appendMsg('bot',F('Đã đổi trợ lý thành '+nm+' — vẫn là mình đây, chỉ khác hình thôi. Lựa chọn của bạn đã được lưu cho lần sau.','Switched your assistant to '+nm+' — same me, just a new look. Your choice is saved for next time.'));
+    toast(F('Đã chọn trợ lý: ','Assistant selected: ')+nm);
+  }
+}
+/* ===== NHẬN GIỌNG NÓI — push-to-talk (Web Speech API) ===== */
+var recog=null, recogOn=false, recogFinal='', micMode=null, micT0=0, micSuppress=false;
+function assistSR(){ return window.SpeechRecognition||window.webkitSpeechRecognition||null; }
+function refreshVoiceNote(){
+  var n=document.getElementById('assistVoiceNote'); if(!n)return;
+  if(!assistSR()){ n.textContent=F('Trình duyệt này chưa hỗ trợ nói trực tiếp — bạn cứ gõ chữ, mình vẫn làm việc bình thường. (Nói trực tiếp chạy tốt nhất trên Chrome.)','This browser does not support voice input yet — just type, I still work the same. (Voice input works best on Chrome.)'); n.classList.add('show'); }
+  else if(!recogOn){ n.classList.remove('show'); }
+}
+function setListening(on){
+  var a=document.getElementById('assistant'); if(a)a.classList.toggle('listening',on);
+  var btn=document.getElementById('assistMic'); if(btn)btn.classList.toggle('live',on);
+  var inp=document.getElementById('assistText');
+  var n=document.getElementById('assistVoiceNote');
+  if(on){
+    if(inp){ inp.dataset.ph0=inp.placeholder; inp.placeholder=F('Đang nghe… bạn cứ nói','Listening… speak now'); }
+    if(n){ n.textContent=F('Đang nghe… nói xong buông tay, hoặc bấm micro lần nữa — tin nhắn tự gửi luôn.','Listening… release, or tap the mic again — your message sends automatically.'); n.classList.add('show'); }
+  } else {
+    if(inp&&inp.dataset.ph0)inp.placeholder=inp.dataset.ph0;
+    refreshVoiceNote();
+  }
+}
+function startRecog(){
+  var SR=assistSR(); if(!SR)return;
+  try{
+    if(recog){ try{recog.abort();}catch(e){} }
+    recog=new SR();
+    recog.lang=lang==='en'?'en-US':'vi-VN';
+    recog.interimResults=true; recog.continuous=false; recog.maxAlternatives=1;
+    recogFinal='';
+    var inp=document.getElementById('assistText');
+    recog.onresult=function(ev){
+      var interim='', fin='';
+      for(var i=ev.resultIndex;i<ev.results.length;i++){
+        if(ev.results[i].isFinal)fin+=ev.results[i][0].transcript; else interim+=ev.results[i][0].transcript;
+      }
+      if(fin)recogFinal+=fin;
+      inp.value=(recogFinal+' '+interim).trim();
+    };
+    recog.onend=function(){
+      var was=recogOn; recogOn=false; setListening(false);
+      if(was){ var txt=(inp.value||'').trim(); if(txt){ inp.value=''; assistAsk(txt); } }
+    };
+    recog.onerror=function(ev){
+      recogOn=false; setListening(false);
+      if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){
+        var n=document.getElementById('assistVoiceNote');
+        if(n){ n.textContent=F('Trình duyệt chưa cho dùng micro — bạn kiểm tra quyền micro, hoặc gõ chữ như thường nhé.','The browser blocked the microphone — check the mic permission, or just type as usual.'); n.classList.add('show'); }
+      }
+    };
+    recog.start(); recogOn=true; setListening(true);
+  }catch(e){ recogOn=false; setListening(false); }
+}
+function stopRecog(){ if(recog&&recogOn){ try{recog.stop();}catch(e){} } }
+function initMic(){
+  var btn=document.getElementById('assistMic'); if(!btn)return;
+  if(!assistSR()){ btn.classList.add('off'); refreshVoiceNote(); return; }
+  btn.addEventListener('pointerdown',function(e){ e.preventDefault(); micT0=Date.now(); if(!recogOn){ micMode='hold'; startRecog(); } });
+  btn.addEventListener('pointerup',function(){
+    if(!recogOn)return;
+    var dt=Date.now()-micT0;
+    if(micMode==='tap')return;
+    if(dt<260){ micMode='tap'; micSuppress=true; setTimeout(function(){micSuppress=false;},350); return; }
+    stopRecog(); micSuppress=true; setTimeout(function(){micSuppress=false;},350);
+  });
+  btn.addEventListener('pointerleave',function(){ if(recogOn&&micMode==='hold'&&(Date.now()-micT0)>=260){ stopRecog(); } });
+  btn.addEventListener('click',function(){
+    if(micSuppress)return;
+    if(recogOn&&micMode==='tap'){ micMode=null; stopRecog(); }
+    else if(!recogOn){ micMode='tap'; startRecog(); }
+  });
+}
+function assistStrings(){ return ASSIST[lang]||ASSIST.vi; }
+function updateAssistantLang(){
+  var s=assistStrings();
+  var set=function(id,txt){var el=document.getElementById(id); if(el)el.textContent=txt;};
+  set('assistName',s.name); set('assistBubbleText',s.bubble); set('assistNote',s.note); set('assistSendBtn',s.send); set('assistPickerT',s.pickerT); set('assistPickBtnT',s.pickBtn);
+  var inp=document.getElementById('assistText'); if(inp)inp.placeholder=s.ph;
+  renderAssistChar(); buildPicker(); buildAssistChips(); refreshVoiceNote();
+}
+function buildAssistChips(){
+  var box=document.getElementById('assistChips'); if(!box)return; box.innerHTML='';
+  (assistStrings().menu||[]).forEach(function(m){
+    if(m.g){ var lb=document.createElement('div'); lb.className='chip-group'; lb.textContent=m.g; box.appendChild(lb); return; }
+    var b=document.createElement('button'); b.type='button';
+    b.textContent=m.a==='soon'?(m.t+(lang==='en'?' · Soon':' · Sắp có')):m.t;
+    if(m.a==='soon')b.className='soon';
+    b.onclick=function(){ assistMenuAct(m); };
+    box.appendChild(b);
+  });
+}
+function assistMenuAct(m){
+  var a=document.getElementById('assistant');
+  if(!a.classList.contains('open')){ a.classList.add('open'); closeBubble(); }
+  assistGreeted=true;
+  if(flow){ botSay(lang==='en'?'You are in the middle of another task — please answer the question above, or type "cancel" to stop it and pick a new one.':'Đang dở một việc khác — bạn trả lời tiếp câu hỏi ở trên, hoặc gõ "huỷ" để dừng việc đó rồi chọn việc mới.'); return; }
+  appendMsg('me',m.t);
+  if(m.a==='soon'){ botSay(F('Mục '+m.sv+' đang được xây dựng trên NAILHUB.AI — sắp có, mình chưa dựng luồng giả cho mục này. Khi mục mở, vẫn là mình đây — một trợ lý dùng chung cho cả hub — sẽ làm việc đó cho bạn ngay trong khung chat này. Hiện tại bạn dùng được ngay: Địa ốc, Sang tiệm và Việc làm / Tìm thợ.','The '+m.se+' section is being built on NAILHUB.AI — coming soon; I have no fake flow for it. When it opens, it will still be me — one assistant for the whole hub — doing that work for you right in this chat. Available right now: Real Estate, Salon Transfers and Jobs / Find a Tech.')); return; }
+  if(m.a==='imp'){ botSay(assistStrings().imp); return; }
+  if(m.a==='contact'){ botSay(assistStrings().contact); return; }
+  startFlow(m.a);
+}
+function pickAssistVoice(){
+  try{
+    var vs=window.speechSynthesis.getVoices(); if(!vs||!vs.length)return null;
+    var want=(lang==='en'?'en':'vi'), wantFull=(lang==='en'?'en-us':'vi-vn');
+    var best=null, bestScore=-1e9;
+    for(var i=0;i<vs.length;i++){
+      var v=vs[i], vl=(''+(v.lang||'')).toLowerCase().replace('_','-'), nm=(''+(v.name||'')).toLowerCase();
+      if(vl.indexOf(want)!==0)continue;
+      var sc=0;
+      if(vl===wantFull)sc+=60; else if(vl.indexOf(wantFull)===0)sc+=40;
+      if(nm.indexOf('natural')>-1)sc+=55;
+      if(nm.indexOf('neural')>-1)sc+=50;
+      if(nm.indexOf('premium')>-1)sc+=48;
+      if(nm.indexOf('enhanced')>-1)sc+=42;
+      if(nm.indexOf('google')>-1)sc+=34;
+      if(nm.indexOf('online')>-1)sc+=22;
+      if(nm.indexOf('compact')>-1)sc-=45;
+      if(nm.indexOf('eloquence')>-1)sc-=30;
+      if(v.localService===false)sc+=6;
+      if(sc>bestScore){ bestScore=sc; best=v; }
+    }
+    return best;
+  }catch(e){}
+  return null;
+}
+/* ===== CẤU HÌNH GIỌNG ĐỌC TRỢ LÝ (VOICE_PROVIDER) =====
+   'browser'  = giọng máy của thiết bị qua speechSynthesis — CHỈ LÀ BẢN MẪU/TẠM: code tự chọn
+                giọng vi-VN tự nhiên nhất đang có trên máy (ưu tiên Google / Microsoft Natural /
+                Premium / Enhanced) thay vì giọng mặc định, đọc mềm ở rate 0.95 · pitch 1.05.
+   'elevenlabs' = BẢN PRODUCTION: thay bằng ElevenLabs API với giọng đã duyệt của hệ (giọng clone).
+                API key PHẢI nằm ở backend / kho bí mật — tuyệt đối không nhúng key vào file tĩnh này.
+                Khi đó chỉ cần điền voiceId + endpoint của backend và bỏ nhánh fallback bên dưới. */
+var VOICE_PROVIDER={provider:'browser',rate:0.95,pitch:1.05,elevenlabs:{voiceId:'',model:'eleven_multilingual_v2',endpoint:''}};
+function speakWithBrowser(text,a){
+  var plain=(''+text).replace(/\s+/g,' ');
+  if(assistSound&&'speechSynthesis' in window){
+    try{
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(plain);
+      u.lang=lang==='en'?'en-US':'vi-VN';
+      var v=pickAssistVoice(); if(v)u.voice=v;
+      u.rate=VOICE_PROVIDER.rate; u.pitch=VOICE_PROVIDER.pitch;
+      a.classList.add('talking');
+      var clear=function(){a.classList.remove('talking');};
+      u.onend=clear; u.onerror=clear;
+      speechSynthesis.speak(u);
+      setTimeout(clear,Math.min(14000,1600+plain.length*95));
+      return;
+    }catch(e){}
+  }
+  a.classList.add('talking');
+  setTimeout(function(){a.classList.remove('talking');},Math.min(4500,700+plain.length*45));
+}
+function assistSpeak(text){
+  var a=document.getElementById('assistant'); if(!a)return;
+  if(VOICE_PROVIDER.provider==='elevenlabs'){
+    /* PRODUCTION: POST text tới VOICE_PROVIDER.elevenlabs.endpoint (backend giữ ElevenLabs API key,
+       trả về file audio giọng đã duyệt) rồi phát audio đó tại đây. Bản mẫu chưa có backend và key
+       nên tạm rơi về giọng trình duyệt để trợ lý vẫn đọc được trả lời. */
+    try{ console.info('VOICE_PROVIDER=elevenlabs chưa cấu hình ở bản mẫu — tạm dùng giọng trình duyệt.'); }catch(e){}
+  }
+  speakWithBrowser(text,a);
+}
+function toggleAssistSound(){
+  assistSound=!assistSound;
+  document.getElementById('assistSoundBtn').textContent=assistSound?'🔊':'🔇';
+  if(!assistSound&&'speechSynthesis' in window){ try{speechSynthesis.cancel();}catch(e){} document.getElementById('assistant').classList.remove('talking'); }
+  toast(assistSound?(lang==='en'?'Assistant voice ON':'Đã bật tiếng của NEXI'):(lang==='en'?'Assistant voice OFF':'Đã tắt tiếng của NEXI'));
+}
+function appendMsg(who,text){
+  var box=document.getElementById('assistMsgs');
+  var d=document.createElement('div'); d.className='msg '+who; d.textContent=text;
+  box.appendChild(d); box.scrollTop=box.scrollHeight;
+  return d;
+}
+function botSay(text){ appendMsg('bot',text); assistSpeak(text); }
+function openAssist(){
+  closeBubble();
+  document.getElementById('assistant').classList.add('open');
+  if(!assistGreeted){ assistGreeted=true; botSay(assistStrings().greet); }
+  var inp=document.getElementById('assistText'); if(inp)setTimeout(function(){inp.focus();},80);
+}
+function closeAssist(){ document.getElementById('assistant').classList.remove('open'); }
+function flashPicker(){
+  var p=document.getElementById('assistPicker'); if(!p)return;
+  p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
+  setTimeout(function(){ p.classList.remove('flash'); },2400);
+}
+function openAssistAtPicker(){
+  openAssist();
+  setTimeout(flashPicker,60);
+}
+function assistAvatarClick(){
+  var a=document.getElementById('assistant');
+  if(!a.classList.contains('open')){ openAssist(); }
+  else{ assistSpeak(assistStrings().greet); }
+}
+function closeBubble(){
+  assistBubbleGone=true;
+  var b=document.getElementById('assistBubble'); if(b)b.classList.add('gone');
+}
+function assistRoute(q){
+  var s=assistStrings(), t=' '+(''+q).toLowerCase()+' ';
+  if(t.indexOf('westheimer')>-1)return{txt:s.searchDone,act:'search'};
+  if(t.indexOf('smart import')>-1||t.indexOf('dán link')>-1||t.indexOf('dan link')>-1||t.indexOf('paste')>-1||t.indexOf('zillow')>-1||t.indexOf('link')>-1)return{txt:s.imp};
+  if((t.indexOf('sang')>-1&&t.indexOf('tiệm')>-1)||t.indexOf('salon')>-1||t.indexOf('sang nhượng')>-1||t.indexOf('take over')>-1)return{txt:s.salon};
+  if(t.indexOf('liên hệ')>-1||t.indexOf('lien he')>-1||t.indexOf('gọi')>-1||t.indexOf('nhắn')>-1||t.indexOf('contact')>-1||t.indexOf('call')>-1||t.indexOf('message')>-1||t.indexOf('phone')>-1||t.indexOf('điện thoại')>-1)return{txt:s.contact};
+  if(t.indexOf('đăng tin')>-1||t.indexOf('dang tin')>-1||t.indexOf('đăng bài')>-1||t.indexOf('post')>-1)return{txt:s.post};
+  if(t.indexOf('giá')>-1||t.indexOf('price')>-1||t.indexOf('bao nhiêu')>-1||t.indexOf('how much')>-1)return{txt:s.price};
+  if(t.indexOf('lừa')>-1||t.indexOf('scam')>-1||t.indexOf('an toàn')>-1||t.indexOf('safe')>-1||t.indexOf('xác thực')>-1||t.indexOf('verified')>-1)return{txt:s.safety};
+  if(t.indexOf('chào')>-1||t.indexOf('hello')>-1||t.indexOf(' hey ')>-1||t.indexOf(' hi ')>-1)return{txt:s.hello};
+  if(t.indexOf('phòng')>-1||t.indexOf('nhà')>-1||t.indexOf('thuê')>-1||t.indexOf('mua')>-1||t.indexOf('tìm')>-1||t.indexOf('find')>-1||t.indexOf('rent')>-1||t.indexOf('room')>-1||t.indexOf('house')>-1||t.indexOf('home')>-1)return{txt:s.find};
+  return{txt:s.fallback};
+}
+function assistAsk(q){
+  q=(''+q).trim(); if(!q)return;
+  var a=document.getElementById('assistant');
+  if(!a.classList.contains('open')){ a.classList.add('open'); closeBubble(); assistGreeted=true; }
+  appendMsg('me',q);
+  if(flow){ handleFlowInput(q); return; }
+  var fk=routeFlowStart(q);
+  if(fk){ startFlow(fk); return; }
+  var r=assistRoute(q);
+  var typing=appendMsg('bot',assistStrings().typing); typing.classList.add('typing');
+  setTimeout(function(){
+    typing.remove();
+    if(r.act==='search'){
+      var qi=document.getElementById('q'); if(qi)qi.value='Westheimer';
+      render();
+    }
+    botSay(r.txt);
+  },750);
+}
+function assistSend(e){
+  e.preventDefault();
+  var inp=document.getElementById('assistText');
+  var q=inp.value; inp.value='';
+  assistAsk(q);
+}
+/* ===== NEXI WORK FLOWS — làm việc qua hội thoại (demo kịch bản song ngữ) =====
+   Luồng: khách nói nhu cầu → NEXI hỏi chỗ thiếu → tóm tắt → điền form thật → khách tự kiểm tra & bấm Đăng.
+   Bản thật: thay lớp kịch bản này bằng AI hội thoại ở backend, dùng chung lớp AI §12A. */
+var flow=null;
+function F(vi,en){ return lang==='en'?en:vi; }
+var SKILLS=['Bột (Acrylic)','Dip','Gel / Gel-X','Chân tay nước','Đa năng'];
+function parseMoney(t){ var d=(''+t).replace(/[^0-9]/g,''); return d?parseInt(d,10):NaN; }
+function parseNum(t){ var m=(''+t).match(/\d+(\.\d+)?/); return m?parseFloat(m[0]):NaN; }
+function parseSkill(t){
+  var s=' '+(''+t).toLowerCase()+' ';
+  if(s.indexOf('bột')>-1||s.indexOf(' bot ')>-1||s.indexOf('acrylic')>-1)return SKILLS[0];
+  if(s.indexOf('dip')>-1)return SKILLS[1];
+  if(s.indexOf('gel')>-1)return SKILLS[2];
+  if(s.indexOf('chân')>-1||s.indexOf('chan')>-1||s.indexOf('pedi')>-1||s.indexOf('nước')>-1||s.indexOf('mani')>-1)return SKILLS[3];
+  if(s.indexOf('đa năng')>-1||s.indexOf('da nang')>-1||s.indexOf('tất cả')>-1||s.indexOf('all')>-1)return SKILLS[4];
+  return null;
+}
+function skillMatch(a,b){ if(!a||!b)return true; return a===b||a==='Đa năng'||b==='Đa năng'; }
+function cityFromText(area,zip){
+  var zm={'77042':'Houston','77072':'Houston','77494':'Katy','77479':'Sugar Land','77584':'Pearland','77433':'Cypress'};
+  if(zip&&zm[zip])return zm[zip];
+  var a=(''+area).toLowerCase(), cities=['Katy','Sugar Land','Pearland','Cypress','Houston'];
+  for(var i=0;i<cities.length;i++){ if(a.indexOf(cities[i].toLowerCase())>-1)return cities[i]; }
+  return 'Houston';
+}
+function areaMatch(hay,needle){
+  hay=(''+hay).toLowerCase(); needle=(''+needle||'').toLowerCase().trim();
+  if(!needle)return true;
+  if(hay.indexOf(needle)>-1)return true;
+  var toks=needle.split(/[\s·,\/]+/).filter(function(x){return x.length>=3;});
+  for(var i=0;i<toks.length;i++){ if(hay.indexOf(toks[i])>-1)return true; }
+  return false;
+}
+function rentTypeCode(s){ return s==='room'?'FOR_RENT_ROOM':s==='commercial'?'FOR_RENT_COMMERCIAL':'FOR_RENT_HOUSE'; }
+function mapBuyRent(s){ s=(''+s).toLowerCase(); if(s.indexOf('mua')>-1||s.indexOf('buy')>-1)return 'buy'; if(s.indexOf('thuê')>-1||s.indexOf('thue')>-1||s.indexOf('rent')>-1)return 'rent'; return null; }
+function mapRentType(s){ s=(''+s).toLowerCase(); if(s.indexOf('phòng')>-1||s.indexOf('phong')>-1||s.indexOf('room')>-1)return 'room'; if(s.indexOf('mặt bằng')>-1||s.indexOf('mat bang')>-1||s.indexOf('commercial')>-1||s.indexOf('shop')>-1)return 'commercial'; if(s.indexOf('nhà')>-1||s.indexOf('nha')>-1||s.indexOf('house')>-1||s.indexOf('nguyên căn')>-1)return 'house'; return null; }
+var FLOW_DEFS={
+ sell:{intro:{vi:'Được — mình giúp bạn đăng BÁN NHÀ qua trò chuyện. Trả lời từng câu, thiếu đâu mình hỏi đó. (Gõ "huỷ" bất cứ lúc nào để dừng.)',en:'Sure — I will help you post your home FOR SALE by chat. Answer one question at a time; I will ask for whatever is missing. (Type "cancel" anytime to stop.)'},
+  steps:[
+   {k:'price',parse:'money',qv:'Giá bán bạn muốn là bao nhiêu USD? Gõ số, VD: 465000. Mẹo: bạn cũng có thể dán link, hoặc dán nguyên nội dung tin sẵn có — mình tự đọc và điền luôn.',qe:'What is your asking price in USD? Type a number, e.g. 465000. Tip: you can also paste a link, or the full text of your existing listing — I will read and fill it in.'},
+   {k:'area',parse:'text',qv:'Nhà ở khu vực nào? (VD: Westchase · Westheimer)',qe:'Which area is the home in? (e.g. Westchase · Westheimer)'},
+   {k:'zip',parse:'zip',qv:'Mã ZIP của nhà? (5 số, VD: 77042)',qe:'What is the ZIP code? (5 digits, e.g. 77042)'},
+   {k:'beds',parse:'num',qv:'Nhà có mấy phòng ngủ?',qe:'How many bedrooms?'},
+   {k:'baths',parse:'num',opt:1,qv:'Mấy phòng tắm? (gõ số, hoặc "bỏ qua")',qe:'How many bathrooms? (type a number, or "skip")'},
+   {k:'sqft',parse:'num',opt:1,qv:'Diện tích bao nhiêu sqft? (hoặc "bỏ qua")',qe:'How many sqft? (or "skip")'}
+  ]},
+ rent:{intro:{vi:'Được — mình giúp bạn đăng tin CHO THUÊ qua trò chuyện. (Gõ "huỷ" để dừng.)',en:'Sure — I will help you post your RENTAL by chat. (Type "cancel" to stop.)'},
+  steps:[
+   {k:'subtype',parse:'choice',map:mapRentType,qv:'Bạn cho thuê loại nào — nhà nguyên căn, phòng riêng, hay mặt bằng? Gõ: nhà / phòng / mặt bằng. (Hoặc dán link/nội dung tin sẵn có.)',qe:'What are you renting out — a whole house, a room, or commercial space? Type: house / room / commercial. (Or paste a link / your existing listing text.)'},
+   {k:'price',parse:'money',qv:'Giá thuê mỗi tháng là bao nhiêu USD?',qe:'What is the monthly rent in USD?'},
+   {k:'area',parse:'text',qv:'Nhà/phòng/mặt bằng ở khu vực nào?',qe:'Which area is it in?'},
+   {k:'zip',parse:'zip',qv:'Mã ZIP? (5 số)',qe:'ZIP code? (5 digits)'},
+   {k:'beds',parse:'num',opt:1,skipIf:function(d){return d.subtype==='commercial';},qv:'Có mấy phòng ngủ? (hoặc "bỏ qua")',qe:'How many bedrooms? (or "skip")'},
+   {k:'sqft',parse:'num',opt:1,qv:'Diện tích bao nhiêu sqft? (hoặc "bỏ qua")',qe:'How many sqft? (or "skip")'}
+  ]},
+ wanted:{intro:{vi:'Được — mình tạo tin CẦN MUA / CẦN THUÊ cho bạn qua trò chuyện. Tin này giúp chủ nhà thấy nhu cầu và liên hệ lại với bạn qua nền tảng.',en:'Sure — I will create your WANTED post by chat. It lets owners see your need and contact you back through the platform.'},
+  steps:[
+   {k:'wkind',parse:'choice',map:mapBuyRent,qv:'Bạn cần mua hay cần thuê? Gõ: mua / thuê.',qe:'Do you want to buy or rent? Type: buy / rent.'},
+   {k:'area',parse:'text',qv:'Bạn muốn ở khu vực nào? (VD: Katy · Cinco Ranch)',qe:'Which area do you want? (e.g. Katy · Cinco Ranch)'},
+   {k:'budget',parse:'money',qv:'Ngân sách tối đa của bạn là bao nhiêu USD? (nếu thuê: tính theo tháng)',qe:'What is your max budget in USD? (for renting: per month)'},
+   {k:'beds',parse:'num',qv:'Cần tối thiểu mấy phòng ngủ?',qe:'Minimum bedrooms needed?'},
+   {k:'zip',parse:'zip',opt:1,qv:'Mã ZIP khu vực đó? (hoặc "bỏ qua")',qe:'ZIP of that area? (or "skip")'}
+  ]},
+ findHome:{intro:{vi:'Được — mình TÌM NHÀ theo nhu cầu của bạn và mang tin khớp về ngay trong khung chat này.',en:'Sure — I will FIND homes for you and bring matching listings right into this chat.'},
+  steps:[
+   {k:'wkind',parse:'choice',map:mapBuyRent,qv:'Bạn muốn thuê hay mua? Gõ: thuê / mua.',qe:'Do you want to rent or buy? Type: rent / buy.'},
+   {k:'area',parse:'text',qv:'Bạn muốn tìm ở khu vực / thành phố / ZIP nào?',qe:'Which area / city / ZIP are you looking in?'},
+   {k:'budget',parse:'money',qv:'Ngân sách tối đa (USD)? (thuê: theo tháng)',qe:'Max budget (USD)? (rent: per month)'},
+   {k:'beds',parse:'num',opt:1,qv:'Cần tối thiểu mấy phòng ngủ? (hoặc "bỏ qua")',qe:'Minimum bedrooms? (or "skip")'}
+  ]},
+ salonSell:{intro:{vi:'Được — mình giúp bạn đăng tin SANG TIỆM NAIL qua trò chuyện. Trả lời từng câu, hoặc dán link / nội dung tin sang tiệm sẵn có — mình tự đọc. (Gõ "huỷ" để dừng.)',en:'Sure — I will help you post your SALON TRANSFER by chat. Answer one question at a time, or paste a link / your existing transfer post — I will read it. (Type "cancel" to stop.)'},
+  steps:[
+   {k:'name',parse:'text',qv:'Tên tiệm bạn muốn sang là gì?',qe:'What is the name of the salon you want to transfer?'},
+   {k:'area',parse:'text',qv:'Tiệm ở khu vực nào? (VD: Westheimer)',qe:'Which area is the salon in? (e.g. Westheimer)'},
+   {k:'zip',parse:'zip',opt:1,qv:'Mã ZIP của tiệm? (hoặc "bỏ qua")',qe:'Salon ZIP code? (or "skip")'},
+   {k:'price',parse:'money',qv:'Giá sang tiệm là bao nhiêu USD?',qe:'What is the transfer asking price in USD?'},
+   {k:'rent',parse:'money',qv:'Tiền thuê mặt bằng mỗi tháng là bao nhiêu USD?',qe:'What is the monthly space rent in USD?'},
+   {k:'chairs',parse:'num',qv:'Tiệm có bao nhiêu ghế nail?',qe:'How many pedicure chairs does the salon have?'},
+   {k:'tables',parse:'num',opt:1,qv:'Bao nhiêu bàn làm tay? (hoặc "bỏ qua")',qe:'How many manicure tables? (or "skip")'},
+   {k:'sqft',parse:'num',opt:1,qv:'Diện tích tiệm bao nhiêu sqft? (hoặc "bỏ qua")',qe:'Salon size in sqft? (or "skip")'}
+  ]},
+ salonBuy:{intro:{vi:'Được — mình tìm tiệm đang sang theo khu vực + ngân sách của bạn, mang về ngay trong khung chat.',en:'Sure — I will find salons for transfer by your area + budget and bring them into this chat.'},
+  steps:[
+   {k:'area',parse:'text',qv:'Bạn muốn mua tiệm ở khu vực nào?',qe:'Which area do you want to buy a salon in?'},
+   {k:'budget',parse:'money',qv:'Ngân sách mua tiệm tối đa là bao nhiêu USD?',qe:'What is your max salon budget in USD?'}
+  ]},
+ salonWanted:{intro:{vi:'Mình tạo tin CẦN MUA TIỆM cho bạn — chủ tiệm thấy nhu cầu sẽ liên hệ qua nền tảng.',en:'I will create your SALON WANTED post — salon owners who see it can contact you through the platform.'},
+  steps:[
+   {k:'chairs',parse:'num',opt:1,qv:'Tiệm bạn cần tối thiểu bao nhiêu ghế? (hoặc "bỏ qua")',qe:'Minimum chairs you need? (or "skip")'}
+  ]},
+ jobFind:{intro:{vi:'Được — mình TÌM VIỆC cho bạn theo khu vực + tay nghề, mang tin tuyển khớp về ngay trong khung chat.',en:'Sure — I will FIND JOBS for you by area + skill and bring matching job posts into this chat.'},
+  steps:[
+   {k:'area',parse:'text',qv:'Bạn muốn làm ở khu vực nào? (VD: Westheimer, Katy, Bellaire, Cypress…)',qe:'Which area do you want to work in? (e.g. Westheimer, Katy, Bellaire, Cypress…)'},
+   {k:'skill',parse:'skill',qv:'Tay nghề chính của bạn là gì — bột / dip / gel / chân tay nước / đa năng?',qe:'What is your main skill — acrylic / dip / gel / pedicure-manicure / all-round?'},
+   {k:'exp',parse:'num',qv:'Bạn có mấy năm kinh nghiệm?',qe:'How many years of experience do you have?'},
+   {k:'avail',parse:'text',qv:'Bạn làm được thời gian nào? (VD: full-time, part-time, cuối tuần)',qe:'What is your availability? (e.g. full-time, part-time, weekends)'}
+  ]},
+ techProfile:{intro:{vi:'Mình tạo HỒ SƠ THỢ TÌM VIỆC cho bạn từ cuộc trò chuyện này — điền xong bạn kiểm tra rồi tự bấm Đăng.',en:'I will create your TECH JOB-SEEKER PROFILE from this chat — once filled, you review it and tap Post yourself.'},
+  steps:[
+   {k:'name',parse:'text',qv:'Tên hiển thị trên hồ sơ của bạn? (VD: Lan T. — chỉ cần tên + chữ cái họ, không cần họ tên đầy đủ)',qe:'Display name for your profile? (e.g. Lan T. — first name + last initial is enough)'},
+   {k:'area',parse:'text',qv:'Bạn muốn làm ở khu vực nào?',qe:'Which area do you want to work in?'},
+   {k:'skill',parse:'skill',qv:'Tay nghề chính: bột / dip / gel / chân tay nước / đa năng?',qe:'Main skill — acrylic / dip / gel / pedicure-manicure / all-round?'},
+   {k:'exp',parse:'num',qv:'Mấy năm kinh nghiệm?',qe:'Years of experience?'},
+   {k:'avail',parse:'text',qv:'Thời gian làm được? (VD: full-time, nghỉ Chủ nhật)',qe:'Your availability? (e.g. full-time, Sundays off)'}
+  ]},
+ ownerFind:{intro:{vi:'Được — mình TÌM THỢ đang tìm việc theo tay nghề + khu vực cho tiệm của bạn.',en:'Sure — I will FIND TECHS looking for work, by skill + area, for your salon.'},
+  steps:[
+   {k:'skill',parse:'skill',qv:'Bạn cần thợ tay nghề gì — bột / dip / gel / chân tay nước / đa năng?',qe:'What skill do you need — acrylic / dip / gel / pedicure-manicure / all-round?'},
+   {k:'area',parse:'text',qv:'Tiệm của bạn ở khu vực nào?',qe:'Which area is your salon in?'},
+   {k:'pay',parse:'text',qv:'Bạn đề xuất lương / ăn chia thế nào? (VD: $200/ngày, ăn chia 60/40)',qe:'What pay / split do you offer? (e.g. $200/day, 60/40 split)'}
+  ]},
+ jobPost:{intro:{vi:'Được — mình đăng TIN TUYỂN THỢ cho tiệm của bạn qua trò chuyện.',en:'Sure — I will post your JOB listing by chat.'},
+  steps:[
+   {k:'salon',parse:'text',qv:'Tên tiệm của bạn là gì?',qe:'What is your salon name?'},
+   {k:'skill',parse:'skill',qv:'Cần thợ tay nghề gì — bột / dip / gel / chân tay nước / đa năng?',qe:'What skill are you hiring — acrylic / dip / gel / pedicure-manicure / all-round?'},
+   {k:'area',parse:'text',qv:'Tiệm ở khu vực nào?',qe:'Which area is the salon in?'},
+   {k:'pay',parse:'text',qv:'Lương / ăn chia đề xuất? (VD: $200/ngày bảo đảm hoặc ăn chia 60/40)',qe:'Offered pay / split? (e.g. $200/day guaranteed or 60/40 split)'},
+   {k:'desc',parse:'text',opt:1,qv:'Thêm mô tả ngắn cho tin tuyển? (hoặc "bỏ qua")',qe:'Add a short description for the job post? (or "skip")'}
+  ]}
+};
+function routeFlowStart(q){
+  var t=' '+(''+q).toLowerCase()+' ';
+  if(t.indexOf('sang tiệm')>-1||t.indexOf('sang tiem')>-1||t.indexOf('bán tiệm')>-1||t.indexOf('ban tiem')>-1||t.indexOf('transfer salon')>-1||t.indexOf('sell my salon')>-1||t.indexOf('sell salon')>-1)return 'salonSell';
+  if(t.indexOf('mua tiệm')>-1||t.indexOf('mua tiem')>-1||t.indexOf('buy a salon')>-1||t.indexOf('buy salon')>-1)return 'salonBuy';
+  if(t.indexOf('tìm thợ')>-1||t.indexOf('tim tho')>-1||t.indexOf('tuyển thợ')>-1||t.indexOf('tuyen tho')>-1||t.indexOf('hire')>-1)return 'ownerFind';
+  if(t.indexOf('tìm việc')>-1||t.indexOf('tim viec')>-1||t.indexOf('find a job')>-1||t.indexOf('looking for a job')>-1)return 'jobFind';
+  if(t.indexOf('cần mua')>-1||t.indexOf('can mua')>-1||t.indexOf('cần thuê')>-1||t.indexOf('can thue')>-1)return 'wanted';
+  if(t.indexOf('bán nhà')>-1||t.indexOf('ban nha')>-1||t.indexOf('sell my house')>-1||t.indexOf('sell a house')>-1||t.indexOf('sell my home')>-1)return 'sell';
+  if(t.indexOf('cho thuê')>-1||t.indexOf('cho thue')>-1||t.indexOf('rent out')>-1)return 'rent';
+  if(t.indexOf('tìm nhà')>-1||t.indexOf('tim nha')>-1||t.indexOf('tìm phòng')>-1||t.indexOf('tim phong')>-1||t.indexOf('find a home')>-1||t.indexOf('find a house')>-1||t.indexOf('find a room')>-1)return 'findHome';
+  return null;
+}
+function startFlow(kind,preset){
+  var a=document.getElementById('assistant'); a.classList.add('open'); closeBubble(); assistGreeted=true;
+  flow={kind:kind,i:0,data:preset||{}};
+  botSay(lang==='en'?FLOW_DEFS[kind].intro.en:FLOW_DEFS[kind].intro.vi);
+  setTimeout(askStep,600);
+}
+function askStep(){
+  if(!flow)return;
+  var def=FLOW_DEFS[flow.kind];
+  while(flow.i<def.steps.length){
+    var st=def.steps[flow.i];
+    if(flow.data[st.k]!==undefined&&flow.data[st.k]!==null&&flow.data[st.k]!==''){ flow.i++; continue; }
+    if(st.skipIf&&st.skipIf(flow.data)){ flow.i++; continue; }
+    botSay(lang==='en'?st.qe:st.qv);
+    return;
+  }
+  finishFlow();
+}
+function handleFlowInput(text){
+  var t=(''+text).trim(), low=' '+t.toLowerCase()+' ';
+  if(low.indexOf(' huỷ ')>-1||low.indexOf(' hủy ')>-1||low.indexOf(' cancel ')>-1||low.indexOf(' dừng ')>-1||low.indexOf(' stop ')>-1){
+    flow=null; botSay(F('Đã dừng việc đang làm. Bạn chọn việc khác ở menu bên dưới nhé.','Stopped. Pick another task from the menu below.')); return;
+  }
+  var def=FLOW_DEFS[flow.kind], st=def.steps[flow.i];
+  if(!st){ finishFlow(); return; }
+  if((flow.kind==='sell'||flow.kind==='rent'||flow.kind==='salonSell')&&(t.indexOf('http')>-1||t.length>70)){ flowExtract(t); return; }
+  if(st.opt&&(low.indexOf('bỏ qua')>-1||low.indexOf(' skip ')>-1||t==='-')){ flow.data[st.k]=null; flow.i++; askStep(); return; }
+  var v=null, ok=true;
+  if(st.parse==='money'){ v=parseMoney(t); ok=!isNaN(v)&&v>0; }
+  else if(st.parse==='num'){ v=parseNum(t); ok=!isNaN(v); }
+  else if(st.parse==='zip'){ var m=t.match(/\d{5}/); ok=!!m; v=m?m[0]:null; }
+  else if(st.parse==='skill'){ v=parseSkill(t); ok=!!v; }
+  else if(st.parse==='choice'){ v=st.map?st.map(t):null; ok=!!v; }
+  else { v=t; ok=t.length>=2; }
+  if(!ok){ botSay(F('Mình chưa rõ ý này — bạn trả lời lại giúp mình nhé. ','I did not catch that — please answer once more. ')+(lang==='en'?st.qe:st.qv)); return; }
+  flow.data[st.k]=v; flow.i++; askStep();
+}
+function flowExtract(t){
+  if(flow.kind==='salonSell'){
+    var sd={name:'Tiệm nail (từ tin bạn dán)',price:85000,rent:2600,chairs:10,tables:6,sqft:1600,area:'Westheimer',zip:'77042'};
+    ['name','price','rent','chairs','tables','sqft','area','zip'].forEach(function(k){ if(flow.data[k]==null)flow.data[k]=sd[k]; });
+    flow.data.desc=t.slice(0,300);
+    botSay(F('AI đã đọc nội dung bạn dán và trích xuất: giá sang $85,000 · thuê MB $2,600/tháng · 10 ghế · 6 bàn · 1,600 sqft · Westheimer 77042. (Bản demo dùng dữ liệu mẫu — bản thật AI đọc đúng link/nội dung của bạn.)','AI read what you pasted and extracted: asking $85,000 · rent $2,600/mo · 10 chairs · 6 tables · 1,600 sqft · Westheimer 77042. (Demo uses sample data — live AI reads your real link/content.)'));
+    flow.i=FLOW_DEFS[flow.kind].steps.length; askStep(); return;
+  }
+  var key=detectSourceKey(t), d=IMPORT_DATA[key]||IMPORT_DATA.generic;
+  ['price','beds','baths','sqft','area','zip'].forEach(function(k){ if(flow.data[k]==null&&d[k]!=null)flow.data[k]=d[k]; });
+  flow.data.desc=d.desc;
+  if(flow.kind==='rent'&&flow.data.subtype==null)flow.data.subtype=(d.type==='FOR_RENT_ROOM'?'room':d.type==='FOR_RENT_COMMERCIAL'?'commercial':'house');
+  botSay(F('AI đã đọc link/nội dung bạn dán và điền sẵn: giá '+fmt(d.price)+' · '+d.beds+' phòng ngủ · '+d.baths+' phòng tắm · '+d.sqft.toLocaleString('en-US')+' sqft · '+d.area+' '+d.zip+'. (Bản demo dùng dữ liệu mẫu — bản thật AI đọc đúng link của bạn.)','AI read your link/content and filled in: price '+fmt(d.price)+' · '+d.beds+' bd · '+d.baths+' ba · '+d.sqft.toLocaleString('en-US')+' sqft · '+d.area+' '+d.zip+'. (Demo uses sample data — live AI reads your real link.)'));
+  flow.i=FLOW_DEFS[flow.kind].steps.length; askStep();
+}
+function appendActions(buttons){
+  var box=document.getElementById('assistMsgs');
+  var wrap=document.createElement('div'); wrap.className='msg bot wide';
+  var row=document.createElement('div'); row.className='chat-actions'; row.style.marginTop='0';
+  buttons.forEach(function(b){
+    var btn=document.createElement('button'); btn.type='button'; btn.className='btn small'+(b.ghost?' ghost':''); btn.textContent=b.label;
+    btn.onclick=function(){ wrap.remove(); b.fn(); };
+    row.appendChild(btn);
+  });
+  wrap.appendChild(row); box.appendChild(wrap); box.scrollTop=box.scrollHeight;
+}
+function miniCard(title,meta,price,bts){
+  var c=document.createElement('div'); c.className='mini-card';
+  var b=document.createElement('b'); b.textContent=title; c.appendChild(b);
+  var m=document.createElement('div'); m.className='mc-meta'; m.textContent=meta; c.appendChild(m);
+  if(price){ var p=document.createElement('div'); p.className='mc-price'; p.textContent=price; c.appendChild(p); }
+  if(bts&&bts.length){
+    var row=document.createElement('div'); row.className='chat-actions';
+    bts.forEach(function(x){ var btn=document.createElement('button'); btn.type='button'; btn.className='btn small'+(x.ghost?' ghost':''); btn.textContent=x.label; btn.onclick=x.fn; row.appendChild(btn); });
+    c.appendChild(row);
+  }
+  return c;
+}
+function appendCards(cards){
+  var box=document.getElementById('assistMsgs');
+  var wrap=document.createElement('div'); wrap.className='msg bot wide chat-cards';
+  cards.forEach(function(c){ wrap.appendChild(c); });
+  box.appendChild(wrap); box.scrollTop=box.scrollHeight;
+}
+function contactNote(){ return F('Đã ghi nhận! Trên nền tảng thật, NAILHUB.AI mở khung nhắn tin / gọi ngay trong app để hai bên liên hệ — không hiện số điện thoại cá nhân công khai. (Bản demo: chưa gửi tin thật.)','Noted! On the live platform, NAILHUB.AI opens in-app messaging / calling so both sides connect — personal phone numbers are never shown publicly. (Demo: no real message sent.)'); }
+function reCard(l){
+  var mine=(''+(l.poster||'')).indexOf('Bạn')===0||(''+(l.poster||'')).indexOf('You')===0;
+  return miniCard(typeName(l.type)+' — '+l.area+' · '+(mine?F('TIN CỦA BẠN','YOUR POST'):F('TIN MẪU','SAMPLE')), specsLine(l)+' · '+l.city+', TX '+l.zip, priceLabel(l), [
+    {label:F('Xem tin →','View →'),fn:function(){ openDetail(l.id); }}
+  ]);
+}
+function salonCard(s){
+  return miniCard(s.t+' · '+(s.mine?F('TIN CỦA BẠN','YOUR POST'):F('TIN MẪU','SAMPLE')), (s.chairs?s.chairs+F(' ghế · ',' chairs · '):'')+(s.tables?s.tables+F(' bàn · ',' tables · '):'')+(s.sqft?s.sqft.toLocaleString('en-US')+' sqft · ':'')+s.area, F('Giá sang: ','Asking: ')+s.price+(s.rent?(' · '+F('Thuê MB ','Rent ')+fmt(s.rent)+F('/tháng','/mo')):''), [
+    {label:F('Chi tiết','Details'),ghost:1,fn:function(){ botSay(s.t+'\n'+(s.desc||'')+'\n'+F('Khu vực: ','Area: ')+s.area+' · '+F('Giá sang ','Asking ')+s.price+(s.rent?(' · '+F('thuê mặt bằng ','space rent ')+fmt(s.rent)+F('/tháng.','/month.')):'')); }},
+    {label:F('Liên hệ','Contact'),fn:function(){ botSay(contactNote()); }}
+  ]);
+}
+function jobCard(j){
+  return miniCard(j.salon+' · '+(j.mine?F('TIN CỦA BẠN','YOUR POST'):F('TIN MẪU','SAMPLE')), j.skill+' · '+j.area+' · '+j.city+', TX '+j.zip, F('Lương / ăn chia: ','Pay / split: ')+j.pay, [
+    {label:F('Chi tiết','Details'),ghost:1,fn:function(){ botSay(j.salon+' — '+F('tuyển thợ ','hiring: ')+j.skill+'\n'+(j.desc||'')+'\n'+F('Lương / ăn chia: ','Pay / split: ')+j.pay); }},
+    {label:F('Liên hệ qua nền tảng','Contact in-platform'),fn:function(){ botSay(contactNote()); }}
+  ]);
+}
+function techCard(tc){
+  return miniCard(tc.name+' — '+F('thợ tìm việc','tech looking for work')+' · '+(tc.mine?F('HỒ SƠ CỦA BẠN','YOUR PROFILE'):F('TIN MẪU','SAMPLE')), tc.skill+' · '+(tc.exp!=null?tc.exp+F(' năm kinh nghiệm · ',' yrs experience · '):'')+tc.area+' · '+(tc.avail||''), '', [
+    {label:F('Chi tiết','Details'),ghost:1,fn:function(){ botSay(tc.name+' — '+tc.skill+'\n'+(tc.desc||'')+'\n'+F('Khu vực: ','Area: ')+tc.area+' · '+F('Thời gian: ','Availability: ')+(tc.avail||'')); }},
+    {label:F('Liên hệ qua nền tảng','Contact in-platform'),fn:function(){ botSay(contactNote()); }}
+  ]);
+}
+function flowSummary(kind,d){
+  var L=[];
+  function line(k,v){ if(v!==undefined&&v!==null&&v!=='')L.push(k+': '+v); }
+  if(kind==='sell'){ line(F('Loại tin','Type'),typeName('FOR_SALE')); line(F('Giá bán','Price'),fmt(d.price)); line(F('Khu vực','Area'),d.area); line('ZIP',d.zip); line(F('Phòng ngủ','Beds'),d.beds); line(F('Phòng tắm','Baths'),d.baths); line('Sqft',d.sqft); }
+  else if(kind==='rent'){ line(F('Loại tin','Type'),typeName(rentTypeCode(d.subtype))); line(F('Giá thuê','Rent'),fmt(d.price)+F('/tháng','/mo')); line(F('Khu vực','Area'),d.area); line('ZIP',d.zip); line(F('Phòng ngủ','Beds'),d.beds); line('Sqft',d.sqft); }
+  else if(kind==='wanted'){ line(F('Loại tin','Type'),typeName('WANTED')+(d.wkind==='buy'?F(' · Cần mua',' · To buy'):F(' · Cần thuê',' · To rent'))); line(F('Khu vực','Area'),d.area); line(F('Ngân sách tối đa','Max budget'),fmt(d.budget)); line(F('Phòng ngủ tối thiểu','Min beds'),d.beds); line('ZIP',d.zip); }
+  else if(kind==='salonSell'){ line(F('Tiệm','Salon'),d.name); line(F('Khu vực','Area'),d.area); line(F('Giá sang','Asking'),fmt(d.price)); line(F('Thuê mặt bằng','Space rent'),d.rent?fmt(d.rent)+F('/tháng','/mo'):null); line(F('Ghế','Chairs'),d.chairs); line(F('Bàn','Tables'),d.tables); line('Sqft',d.sqft); }
+  else if(kind==='salonWanted'){ line(F('Loại tin','Type'),F('Cần mua tiệm','Salon wanted')); line(F('Khu vực','Area'),d.area); line(F('Ngân sách tối đa','Max budget'),d.budget?fmt(d.budget):null); line(F('Ghế tối thiểu','Min chairs'),d.chairs); }
+  else if(kind==='techProfile'){ line(F('Hồ sơ thợ','Tech profile'),d.name); line(F('Tay nghề','Skill'),d.skill); line(F('Kinh nghiệm','Experience'),d.exp!=null?d.exp+F(' năm',' yrs'):null); line(F('Khu vực','Area'),d.area); line(F('Thời gian','Availability'),d.avail); }
+  else if(kind==='jobPost'){ line(F('Tiệm','Salon'),d.salon); line(F('Cần thợ','Hiring'),d.skill); line(F('Khu vực','Area'),d.area); line(F('Lương / ăn chia','Pay'),d.pay); }
+  return F('Mình đã gom đủ thông tin:\n','Here is what I collected:\n')+L.join('\n')+F('\nGiờ mình điền vào form cho bạn — bạn kiểm tra lại lần cuối rồi TỰ bấm Đăng nhé (mình không tự đăng thay).','\nNow I will fill the form for you — please review it one last time and tap Post YOURSELF (I never post for you).');
+}
+function confirmFill(kind,d){
+  botSay(flowSummary(kind,d));
+  appendActions([
+    {label:F('✓ Điền vào form — tôi kiểm tra & đăng','✓ Fill the form — I will review & post'),fn:function(){ fillFromFlow(kind,d); }},
+    {label:F('Làm lại','Start over'),ghost:1,fn:function(){ startFlow(kind); }},
+    {label:F('Huỷ','Cancel'),ghost:1,fn:function(){ botSay(F('Đã huỷ. Bạn cần việc khác cứ bấm menu bên dưới.','Cancelled. Pick anything else from the menu below.')); }}
+  ]);
+}
+function finishFlow(){
+  var kind=flow.kind, d=flow.data; flow=null;
+  if(kind==='findHome'){ runFindHome(d); return; }
+  if(kind==='salonBuy'){ runSalonBuy(d); return; }
+  if(kind==='jobFind'){ runJobFind(d); return; }
+  if(kind==='ownerFind'){ runOwnerFind(d); return; }
+  confirmFill(kind,d);
+}
+function fillFromFlow(kind,d){
+  if(kind==='sell')fillRE('FOR_SALE',{price:d.price,pt:'TOTAL',area:d.area,zip:d.zip,beds:d.beds,baths:d.baths,sqft:d.sqft,desc:d.desc});
+  else if(kind==='rent')fillRE(rentTypeCode(d.subtype),{price:d.price,pt:'PER_MONTH',area:d.area,zip:d.zip,beds:d.beds,sqft:d.sqft,desc:d.desc});
+  else if(kind==='wanted')fillRE('WANTED',{price:d.budget,pt:d.wkind==='buy'?'TOTAL':'PER_MONTH',area:d.area,zip:d.zip,beds:d.beds});
+  else if(kind==='salonSell')fillSalon('SANG',d);
+  else if(kind==='salonWanted')fillSalon('CAN_MUA',d);
+  else if(kind==='techProfile')fillJob('TECH',d);
+  else if(kind==='jobPost')fillJob('JOB',d);
+}
+function fillRE(type,d){
+  closeAssist();
+  openPost();
+  postType=type; buildTypePick();
+  var city=cityFromText(d.area,d.zip);
+  var title=(typeName(type)+' — '+(d.area||city)+', '+city).slice(0,120);
+  document.getElementById('pfTitle').value=title;
+  if(d.price)document.getElementById('pfPrice').value=d.price;
+  document.getElementById('pfPriceType').value=d.pt||(type==='FOR_SALE'?'TOTAL':'PER_MONTH');
+  if(d.beds!=null)document.getElementById('pfBeds').value=d.beds;
+  if(d.baths!=null)document.getElementById('pfBaths').value=d.baths;
+  if(d.sqft)document.getElementById('pfSqft').value=d.sqft;
+  document.getElementById('pfCity').value=city;
+  if(d.area)document.getElementById('pfArea').value=d.area;
+  if(d.zip)document.getElementById('pfZip').value=d.zip;
+  var desc=d.desc||'';
+  if(desc.length<30)desc=(F('Tin được tạo qua trợ lý AI NEXI từ hội thoại với người đăng. ','Listing created through the NEXI AI assistant from a chat with the poster. ')+title+'. '+desc).slice(0,600);
+  document.getElementById('pfDesc').value=desc;
+  step=2; showStep();
+  toast(F('NEXI đã điền sẵn form đăng tin — bạn kiểm tra lại, bổ sung ảnh rồi bấm Gửi.','NEXI filled in the posting form — review it, add photos, then Submit.'));
+}
+function fillSalon(mode,d){
+  closeAssist();
+  document.getElementById('sfType').value=mode;
+  if(d.name)document.getElementById('sfName').value=d.name;
+  var pr=d.price||d.budget; if(pr)document.getElementById('sfPrice').value=pr;
+  if(d.rent)document.getElementById('sfRent').value=d.rent;
+  if(d.chairs!=null)document.getElementById('sfChairs').value=d.chairs;
+  if(d.tables!=null)document.getElementById('sfTables').value=d.tables;
+  if(d.sqft)document.getElementById('sfSqft').value=d.sqft;
+  document.getElementById('sfCity').value=cityFromText(d.area,d.zip);
+  if(d.area)document.getElementById('sfArea').value=d.area;
+  if(d.zip)document.getElementById('sfZip').value=d.zip;
+  if(d.desc)document.getElementById('sfDesc').value=d.desc;
+  document.getElementById('salonBack').classList.add('open');
+  toast(F('NEXI đã điền sẵn form tiệm — bạn kiểm tra lại rồi bấm Đăng.','NEXI filled in the salon form — review it, then Post.'));
+}
+var jobMode='JOB';
+function fillJob(mode,d){
+  closeAssist();
+  jobMode=mode;
+  document.getElementById('jobGroupJob').style.display=mode==='JOB'?'block':'none';
+  document.getElementById('jobGroupTech').style.display=mode==='TECH'?'block':'none';
+  document.getElementById('jobFormTitle').textContent=mode==='JOB'?F('Đăng tin tuyển thợ','Post a job listing'):F('Hồ sơ thợ tìm việc','Tech job-seeker profile');
+  document.getElementById('jobSubmitBtn').textContent=mode==='JOB'?F('Đăng tin tuyển thợ →','Post job →'):F('Đăng hồ sơ →','Post profile →');
+  if(mode==='JOB'){
+    if(d.salon)document.getElementById('jfSalon').value=d.salon;
+    if(d.skill)document.getElementById('jfSkill').value=d.skill;
+    if(d.pay)document.getElementById('jfPay').value=d.pay;
+  } else {
+    if(d.name)document.getElementById('tfName').value=d.name;
+    if(d.skill)document.getElementById('tfSkill').value=d.skill;
+    if(d.exp!=null)document.getElementById('tfExp').value=d.exp;
+    if(d.avail)document.getElementById('tfAvail').value=d.avail;
+  }
+  document.getElementById('jbCity').value=cityFromText(d.area,d.zip);
+  if(d.area)document.getElementById('jbArea').value=d.area;
+  if(d.zip)document.getElementById('jbZip').value=d.zip;
+  if(d.desc)document.getElementById('jbDesc').value=d.desc;
+  document.getElementById('jobBack').classList.add('open');
+  toast(F('NEXI đã điền sẵn form — bạn kiểm tra lại rồi bấm Đăng.','NEXI filled in the form — review it, then Post.'));
+}
+function submitSalonForm(){
+  var mode=document.getElementById('sfType').value;
+  var name=document.getElementById('sfName').value.trim();
+  var price=parseFloat(document.getElementById('sfPrice').value)||0;
+  if(name.length<2){ toast(F('Vui lòng nhập tên tiệm.','Please enter the salon name.')); return; }
+  if(!(price>0)){ toast(F('Vui lòng nhập giá sang / ngân sách lớn hơn 0.','Please enter an asking price / budget above 0.')); return; }
+  var area=document.getElementById('sfArea').value.trim();
+  var city=document.getElementById('sfCity').value;
+  var zip=document.getElementById('sfZip').value.trim();
+  var areaFull=(area||city)+(zip?' · '+zip:'');
+  if(mode==='SANG'){
+    SANG_TIEM.unshift({t:'Sang tiệm: '+name,name:name,area:areaFull,city:city,zip:zip,price:fmt(price),priceN:price,rent:parseFloat(document.getElementById('sfRent').value)||0,chairs:parseInt(document.getElementById('sfChairs').value)||0,tables:parseInt(document.getElementById('sfTables').value)||0,sqft:parseInt(document.getElementById('sfSqft').value)||0,desc:document.getElementById('sfDesc').value.trim(),mine:true});
+    toast(F('✓ Đã đăng tin sang tiệm (demo) — tin xuất hiện trong mục Sang tiệm và NEXI tìm được ngay.','✓ Salon transfer posted (demo) — it now appears in Salon Transfers and NEXI can find it.'));
+    appendMsg('bot',F('Đã đăng tin sang tiệm "'+name+'" (demo). Khách hỏi mua tiệm khu vực này, mình sẽ mang tin của bạn ra giới thiệu.','Your salon transfer "'+name+'" is posted (demo). When buyers ask in this area, I will surface your listing.'));
+  } else {
+    SALON_WANTED.push({name:name,area:areaFull,city:city,zip:zip,budget:price,chairs:parseInt(document.getElementById('sfChairs').value)||0,mine:true});
+    toast(F('✓ Đã đăng tin Cần mua tiệm (demo) — chủ tiệm khớp nhu cầu sẽ được báo.','✓ Salon Wanted posted (demo) — matching salon owners will be notified.'));
+    appendMsg('bot',F('Đã tạo tin Cần mua tiệm (demo) với ngân sách '+fmt(price)+'. Có tiệm sang khớp, mình báo bạn ngay.','Salon Wanted created (demo) with budget '+fmt(price)+'. I will notify you when a matching salon is posted.'));
+  }
+  closeModal('salonBack');
+}
+function submitJobForm(){
+  var city=document.getElementById('jbCity').value;
+  var area=document.getElementById('jbArea').value.trim()||city;
+  var zip=document.getElementById('jbZip').value.trim();
+  var desc=document.getElementById('jbDesc').value.trim();
+  if(jobMode==='JOB'){
+    var salon=document.getElementById('jfSalon').value.trim();
+    var pay=document.getElementById('jfPay').value.trim();
+    if(salon.length<2){ toast(F('Vui lòng nhập tên tiệm.','Please enter the salon name.')); return; }
+    if(pay.length<2){ toast(F('Vui lòng nhập lương / ăn chia đề xuất.','Please enter the offered pay / split.')); return; }
+    JOBS.unshift({salon:salon,skill:document.getElementById('jfSkill').value,pay:pay,area:area,city:city,zip:zip,desc:desc,mine:true});
+    toast(F('✓ Đã đăng tin tuyển thợ (demo) — thợ hỏi tìm việc khớp, NEXI sẽ giới thiệu tin của bạn.','✓ Job posted (demo) — NEXI will surface it to matching techs.'));
+    appendMsg('bot',F('Đã đăng tin tuyển thợ cho "'+salon+'" (demo). Thợ khớp tay nghề + khu vực hỏi tìm việc, mình mang tin này ra ngay.','Job posted for "'+salon+'" (demo). Matching techs asking for work will see it right away.'));
+  } else {
+    var nm=document.getElementById('tfName').value.trim();
+    if(nm.length<2){ toast(F('Vui lòng nhập tên hiển thị.','Please enter a display name.')); return; }
+    TECHS.unshift({name:nm,skill:document.getElementById('tfSkill').value,exp:parseInt(document.getElementById('tfExp').value)||0,area:area,city:city,zip:zip,avail:document.getElementById('tfAvail').value.trim(),desc:desc,mine:true});
+    toast(F('✓ Đã đăng hồ sơ thợ tìm việc (demo) — chủ tiệm tìm thợ khớp sẽ thấy hồ sơ của bạn.','✓ Tech profile posted (demo) — matching owners will see your profile.'));
+    appendMsg('bot',F('Đã đăng hồ sơ thợ tìm việc cho '+nm+' (demo). Chủ tiệm tìm thợ khớp tay nghề + khu vực, mình giới thiệu hồ sơ của bạn ngay.','Tech profile posted for '+nm+' (demo). Owners searching by your skill + area will see it.'));
+  }
+  closeModal('jobBack');
+}
+function runFindHome(d){
+  var wantRent=d.wkind!=='buy';
+  var res=LISTINGS.filter(function(l){
+    if(wantRent){ if(l.type!=='FOR_RENT_HOUSE'&&l.type!=='FOR_RENT_ROOM')return false; }
+    else if(l.type!=='FOR_SALE')return false;
+    if(d.budget&&l.pt!=='NEGOTIABLE'&&l.price>d.budget)return false;
+    if(d.beds&&l.beds<d.beds)return false;
+    return areaMatch(l.area+' '+l.city+' '+l.zip,d.area);
+  }).slice(0,4);
+  if(!res.length){
+    botSay(F('Chưa thấy tin nào khớp nhu cầu này trong danh sách hiện tại. Bạn có muốn mình tạo tin Cần '+(d.wkind==='buy'?'mua':'thuê')+' để chủ nhà thấy và liên hệ lại không?','No listings match that need in the current list. Want me to create a Wanted post so owners can contact you back?'));
+    appendActions([
+      {label:F('Tạo tin Cần mua / thuê','Create a Wanted post'),fn:function(){ confirmFill('wanted',{wkind:d.wkind,area:d.area,budget:d.budget,beds:d.beds,zip:d.zip}); }},
+      {label:F('Thôi, cảm ơn','No thanks'),ghost:1,fn:function(){ botSay(F('Ok — bạn cứ xem thêm ở mục Tin đang đăng nhé.','OK — feel free to browse the Live listings section.')); }}
+    ]);
+    return;
+  }
+  botSay(F('Tìm thấy '+res.length+' tin khớp nhu cầu của bạn — bấm "Xem tin" để mở chi tiết:','Found '+res.length+' listing(s) matching your needs — tap "View" for details:'));
+  appendCards(res.map(reCard));
+}
+function runSalonBuy(d){
+  var res=SANG_TIEM.filter(function(s){
+    if(d.budget&&s.priceN>d.budget)return false;
+    return areaMatch(s.area+' '+s.city+' '+s.zip,d.area);
+  }).slice(0,4);
+  if(res.length){ botSay(F('Có '+res.length+' tiệm đang sang khớp khu vực / ngân sách của bạn:','Found '+res.length+' salon(s) for transfer matching your area / budget:')); appendCards(res.map(salonCard)); }
+  else botSay(F('Hiện chưa có tiệm đang sang nào khớp khu vực / ngân sách này trong dữ liệu hiện tại.','No salons for transfer match that area / budget in the current data yet.'));
+  appendActions([
+    {label:F('Tạo tin Cần mua tiệm','Create a salon Wanted post'),fn:function(){ startFlow('salonWanted',{area:d.area,budget:d.budget}); }},
+    {label:F('Xong','Done'),ghost:1,fn:function(){ botSay(F('Ok! Cần gì thêm cứ bấm menu bên dưới.','OK! Anything else, use the menu below.')); }}
+  ]);
+}
+function runJobFind(d){
+  var res=JOBS.filter(function(j){
+    if(!skillMatch(j.skill,d.skill))return false;
+    return areaMatch(j.area+' '+j.city+' '+j.zip,d.area);
+  }).slice(0,4);
+  if(res.length){ botSay(F('Tìm thấy '+res.length+' việc khớp tay nghề + khu vực của bạn — liên hệ luôn qua nền tảng, không hiện số cá nhân:','Found '+res.length+' job(s) matching your skill + area — contact stays in-platform, no personal numbers shown:')); appendCards(res.map(jobCard)); }
+  else botSay(F('Chưa có tin tuyển nào khớp tay nghề + khu vực này trong dữ liệu hiện tại. Bạn tạo hồ sơ thợ tìm việc để chủ tiệm chủ động tìm thấy bạn nhé?','No job posts match that skill + area in the current data yet. Create a tech profile so owners can find you first?'));
+  appendActions([
+    {label:F('Tạo hồ sơ thợ tìm việc','Create my tech profile'),fn:function(){ startFlow('techProfile',{area:d.area,skill:d.skill,exp:d.exp,avail:d.avail}); }},
+    {label:F('Xong','Done'),ghost:1,fn:function(){ botSay(F('Ok! Cần gì thêm cứ bấm menu bên dưới.','OK! Anything else, use the menu below.')); }}
+  ]);
+}
+function runOwnerFind(d){
+  var res=TECHS.filter(function(tc){
+    if(!skillMatch(tc.skill,d.skill))return false;
+    return areaMatch(tc.area+' '+tc.city+' '+tc.zip,d.area);
+  }).slice(0,4);
+  if(res.length){ botSay(F('Có '+res.length+' thợ đang tìm việc khớp tay nghề + khu vực của tiệm bạn — liên hệ qua nền tảng:','Found '+res.length+' tech(s) looking for work matching your skill + area — contact in-platform:')); appendCards(res.map(techCard)); }
+  else botSay(F('Chưa có hồ sơ thợ nào khớp tay nghề + khu vực này trong dữ liệu hiện tại. Bạn đăng tin tuyển thợ để thợ chủ động ứng tuyển nhé?','No tech profiles match that skill + area in the current data yet. Post a job listing so techs can apply to you?'));
+  appendActions([
+    {label:F('Đăng tin tuyển thợ','Post a job listing'),fn:function(){ startFlow('jobPost',{skill:d.skill,area:d.area,pay:d.pay}); }},
+    {label:F('Xong','Done'),ghost:1,fn:function(){ botSay(F('Ok! Cần gì thêm cứ bấm menu bên dưới.','OK! Anything else, use the menu below.')); }}
+  ]);
+}
+/* ===== EVENT WIRING — delegated handlers (data-act) =====
+   Mọi nút bấm / ô chọn / form dùng data-act thay cho onclick/onchange/onsubmit viết inline trong HTML.
+   Lý do: một số bản dựng bọc toàn bộ script này trong một hàm khép kín (closure) — khi đó các hàm
+   khai báo ở đây KHÔNG nằm ở phạm vi toàn cục, nên onclick="tenHam()" viết inline sẽ không tìm thấy
+   hàm để chạy: bấm mà không có gì xảy ra. Ba listener uỷ quyền dưới đây nằm cùng phạm vi với các hàm
+   nên chạy đúng ở mọi bản dựng, kể cả nội dung được render động (thẻ tin, chi tiết tin…). */
+document.addEventListener('click',function(e){
+  var t=(e.target&&e.target.closest)?e.target.closest('[data-act]'):null;
+  if(!t)return;
+  var act=t.getAttribute('data-act'), arg=t.getAttribute('data-arg');
+  if(act==='setLang')setLang(arg);
+  else if(act==='toggleLogin')toggleLogin();
+  else if(act==='openPost')openPost();
+  else if(act==='openPostImport')openPostImport();
+  else if(act==='applyFilters')applyFilters();
+  else if(act==='clearFilters')clearFilters();
+  else if(act==='saveSearch')saveSearch();
+  else if(act==='closeModal')closeModal(arg);
+  else if(act==='doImport')doImport();
+  else if(act==='sampleLink')fillSampleLink(arg);
+  else if(act==='applyRewrite')applyRewrite();
+  else if(act==='hideRewrite')document.getElementById('aiRewriteBox').classList.remove('show');
+  else if(act==='stepPrev')stepNav(-1);
+  else if(act==='stepNext')stepNav(1);
+  else if(act==='submitSalon')submitSalonForm();
+  else if(act==='submitJob')submitJobForm();
+  else if(act==='openAssist')openAssist();
+  else if(act==='closeAssist')closeAssist();
+  else if(act==='closeBubble')closeBubble();
+  else if(act==='openPicker')openAssistAtPicker();
+  else if(act==='toggleSound')toggleAssistSound();
+  else if(act==='avatarClick')assistAvatarClick();
+  else if(act==='toggleFav'){ e.stopPropagation(); toggleFav(parseInt(arg,10)); }
+  else if(act==='openDetail')openDetail(parseInt(arg,10));
+  else if(act==='notifyArea')notifyArea();
+  else if(act==='contactCall')contactAction('call',parseInt(arg,10));
+  else if(act==='contactMsg')contactAction('msg',parseInt(arg,10));
+  else if(act==='report')reportListing(parseInt(arg,10));
+});
+document.addEventListener('change',function(e){
+  var t=e.target; if(!t||!t.getAttribute)return;
+  var act=t.getAttribute('data-act');
+  if(act==='stateChange')onStateChange();
+  else if(act==='cityChange')onCityChange();
+  else if(act==='renderNow')render();
+});
+document.addEventListener('submit',function(e){
+  var t=e.target; if(!t||!t.getAttribute)return;
+  var act=t.getAttribute('data-act');
+  if(act==='doSearch')doSearch(e);
+  else if(act==='assistSend')assistSend(e);
+});
+/* Gắn trực tiếp cho cụm nút trợ lý nổi — lớp bảo đảm thứ hai, không phụ thuộc thuộc tính data-act:
+   nút Đổi trợ lý, avatar, nút tiếng, bong bóng chào, nút ✕ của bong bóng và nút đóng panel.
+   stopPropagation giữ cho mỗi lần chạm chỉ chạy đúng một lần (không lặp qua listener uỷ quyền). */
+(function(){
+  var bind=function(id,fn){ var el=document.getElementById(id); if(el)el.addEventListener('click',function(e){ e.stopPropagation(); fn(); }); };
+  bind('assistPickBtn',openAssistAtPicker);
+  bind('assistAvatar',assistAvatarClick);
+  bind('assistSoundBtn',toggleAssistSound);
+  bind('assistBubble',openAssist);
+  var bx=document.querySelector('#assistBubble .bx'); if(bx)bx.addEventListener('click',function(e){ e.stopPropagation(); closeBubble(); });
+  var hx=document.querySelector('.assist-head .hx'); if(hx)hx.addEventListener('click',function(e){ e.stopPropagation(); closeAssist(); });
+})();
+if('speechSynthesis' in window){ try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=function(){ try{speechSynthesis.getVoices();}catch(e){} }; }catch(e){} }
+updateAssistantLang();
+initMic();
+setTimeout(function(){ if(!assistBubbleGone&&window.innerWidth>640)document.getElementById('assistBubble').classList.add('show'); },1400);
+setTimeout(function(){
+  var a=document.getElementById('assistant'); if(!a||a.classList.contains('open'))return;
+  var av=document.getElementById('assistAvatar'); if(!av)return;
+  av.classList.add('attn'); setTimeout(function(){ av.classList.remove('attn'); },2900);
+},2400);
+buildCityOptions();
+buildChips(); buildTypePick(); render(); renderAI(); if((document.querySelector('meta[name="nexora-lang"]')?.content||new URLSearchParams(location.search).get('lang'))==='en')setLang('en');
+window.addEventListener('message',function(e){var m=e.data;if(m&&m.source==='NEXORA_COMMUNITY'&&m.type==='LANG'&&lang!==m.lang)setLang(m.lang)});
+</script>
+
+<script>
+(function(){
+  var root=document.getElementById('property-workbench');
+  if(!root)return;
+  function sync(){
+    var key=document.documentElement.lang==='en'?'pbEn':'pbVi';
+    root.querySelectorAll('[data-pb-vi]').forEach(function(el){el.textContent=el.dataset[key]||'';});
+  }
+  root.addEventListener('click',function(e){
+    var button=e.target.closest('[data-pb-action]');
+    if(!button)return;
+    e.preventDefault();
+    e.stopPropagation();
+    var action=button.dataset.pbAction;
+    if(action==='ask'){openAssist();return;}
+    if(action==='import'){openPostImport();return;}
+    if(action==='samples'){document.getElementById('typeChips').scrollIntoView({behavior:'smooth',block:'start'});return;}
+    if(['findHome','sell','rent','wanted'].indexOf(action)>-1){startFlow(action);}
+  });
+  new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+  sync();
+})();
+</script>
+<script src="adapter.js?v=20261106-v31-po6"></script></body>
+</html>

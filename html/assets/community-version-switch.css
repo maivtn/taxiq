@@ -4,5 +4,7 @@
 .community-version-button:hover{transform:translateY(-2px);box-shadow:0 5px 0 #bf7f00}
 .community-version-button:active{transform:translateY(1px);box-shadow:0 1px 0 #bf7f00}
 .community-version-button:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.community-version-more{min-height:48px;padding:10px;border:1px solid #ffffff66;border-radius:11px;background:#5c51e8;color:#fff;font:800 12px Inter,Arial,sans-serif;cursor:pointer}
+.community-version-more:focus-visible{outline:3px solid #ffe878;outline-offset:3px}
 @media(max-width:600px){.community-version-switch{right:12px;bottom:calc(88px + env(safe-area-inset-bottom,0px));gap:7px;padding:7px;border-radius:15px}.community-version-badge{min-width:50px;font-size:17px}.community-version-button{padding:11px 13px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){.community-version-button{transition:none}}
