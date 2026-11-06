@@ -1,6 +1,8 @@
 (() => {
   'use strict';
 
+  const initialParams = new URLSearchParams(location.search);
+  const initialMode = initialParams.get('orderMode') || initialParams.get('mode');
   const asset = '../../assets/pos-payment/';
   const catalog = [
     { category: 'Pedicure', items: [['President 7 Star', 499, 70], ['Bitcoin 24k Gold', 99, 75], ['Paris Pearl', 75, 60], ['Milk and Honey', 55, 45], ['Classic Pedicure', 40, 30]] },
@@ -12,11 +14,19 @@
     { category: 'Additional', items: [['Hot Stone Massage Added on', 10, 10], ['Shellac Polish Change Hand', 25, 20]] },
     { category: 'Waxing Services', items: [['Eyebrow Wax', 15, 15], ['Lip Wax', 10, 10]] },
   ];
-  const technicians = ['NEXORA_02', 'KIM', 'JADE', 'LEO', 'PHILIP', 'ANDY'];
+  const technicians = [
+    { name: 'JADE', nextTurn: true },
+    { name: 'ANDY', level: 'Level 1' },
+    { name: 'KIM', level: 'Level 1' },
+    { name: 'LEO' },
+    { name: 'NEXORA_02' },
+    { name: 'PHILIP' },
+  ];
+  const chevron = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   let nextId = 1;
   const line = (name, category, price, status = '', addons = [], custom = false) => ({ id: `line-${nextId++}`, name, category, price, status, addons: addons.map(([name, price]) => ({ name, price })), custom, discount: 0 });
   const state = {
-    mode: new URLSearchParams(location.search).get('mode') === 'checkout' ? 'checkout' : 'edit',
+    mode: initialMode === 'checkout' ? 'checkout' : 'edit',
     groups: [
       { id: 'andy', tech: 'ANDY', lines: [line('Paris Pearl', 'Pedicure', 75)] },
       { id: 'nexora', tech: 'NEXORA_02', lines: [
@@ -24,7 +34,7 @@
         line('Paris Pearl', 'Pedicure', 75, 'Completed', [['Shellac Polish Change Hand', 25], ['Hot Stone Massage Added on', 10]]),
         line('President 7 Star', 'Pedicure', 499, 'In Service'),
         line('Bitcoin 24k Gold', 'Pedicure', 99, 'In Service'),
-        line('test', '', 2, '', [], true),
+        line('test', '', 2, 'In Service', [], true),
       ] },
     ],
     activeGroup: 'andy', category: 'All', search: '', paymentMethod: null, hasPendingChanges: true,
@@ -34,6 +44,7 @@
   const $ = id => document.getElementById(id);
   const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const money = amount => `$${Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const moneyCompact = amount => `$${Number(amount || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
   const allLines = () => state.groups.flatMap(group => group.lines);
   const lineTotal = item => item.price + item.addons.reduce((sum, addon) => sum + addon.price, 0) - item.discount;
   const subtotal = () => allLines().reduce((sum, item) => sum + lineTotal(item), 0);
@@ -55,11 +66,34 @@
     $('service-list').innerHTML = sections;
   }
 
-  function technicianOptions(selected) {
-    return `<option value="">Select technician</option>${technicians.map(tech => `<option value="${escape(tech)}" ${selected === tech ? 'selected' : ''}>${escape(tech)}</option>`).join('')}`;
+  let techMenu = null;
+  function closeTechMenu() {
+    if (!techMenu) return;
+    techMenu.trigger.setAttribute('aria-expanded', 'false');
+    techMenu.element.remove();
+    techMenu = null;
+  }
+  function openTechMenu(trigger, kind, id, selected) {
+    closeTechMenu();
+    const element = document.createElement('div');
+    element.className = 'tech-option-menu';
+    element.setAttribute('role', 'listbox');
+    element.setAttribute('aria-label', 'Technicians');
+    element.innerHTML = technicians.map(technician => `<button type="button" role="option" data-tech-choice="${technician.name}" aria-selected="${technician.name === selected}" class="${technician.name === selected ? 'selected' : ''} ${technician.nextTurn ? 'next-turn' : ''}"><span class="tech-option-top"><strong>${technician.name}</strong>${technician.nextTurn ? '<b>Next turn</b>' : ''}</span><span class="tech-option-meta">${technician.level ? `<em>${technician.level}</em>` : ''}<span>Today's Turns: 0T</span><span class="busy">busy now</span></span></button>`).join('');
+    document.body.appendChild(element);
+    const rect = trigger.getBoundingClientRect();
+    const width = Math.min(300, window.innerWidth - 16);
+    const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8));
+    const above = window.innerHeight - rect.bottom < 330 && rect.top > 340;
+    element.style.left = `${left}px`;
+    element.style.top = `${above ? Math.max(8, rect.top - 324) : rect.bottom + 4}px`;
+    element.style.width = `${width}px`;
+    trigger.setAttribute('aria-expanded', 'true');
+    techMenu = { element, trigger, kind, id };
   }
 
   function renderGroups() {
+    closeTechMenu();
     const serviceCount = allLines().length;
     const addons = allLines().reduce((sum, item) => sum + item.addons.length, 0);
     const techCount = state.groups.filter(group => group.tech && group.lines.length).length;
@@ -73,11 +107,14 @@
       const itemCount = group.lines.reduce((sum, item) => sum + 1 + item.addons.length, 0);
       const rows = group.lines.map(item => {
         const status = item.status ? `<span class="status ${item.status === 'Completed' ? 'completed' : 'in-service'}">${escape(item.status)}</span>` : '';
-        const name = item.custom ? `<div class="custom-inputs"><input aria-label="Custom service name" data-custom-name="${item.id}" value="${escape(item.name)}"><span>$</span><input aria-label="Custom service price" data-custom-price="${item.id}" inputmode="decimal" value="${item.price}"></div>` : `<span class="ticket-line-name">${escape(item.category)} · ${escape(item.name)}</span>${status}`;
-        const change = item.custom ? '' : `<button type="button" class="purple" data-change-service="${item.id}">Change service</button><button type="button" class="purple" data-add-on="${item.id}">+ Add-On</button>`;
-        return `<div class="ticket-line" data-line="${item.id}"><div class="ticket-line-head"><div><span class="main-badge">Main services</span>${name}</div><strong class="ticket-line-price">${money(item.price)}</strong></div><div class="line-actions"><select aria-label="Assign technician to ${escape(item.name)}" data-line-tech="${item.id}">${technicianOptions(group.tech)}</select>${change}<button type="button" class="purple" data-add-custom="${group.id}">+ Custom</button><button type="button" class="yellow" data-discount="${item.id}">${item.discount ? 'Undo discount' : 'Discount'}</button><button type="button" class="danger" data-remove-line="${item.id}">Remove</button></div>${item.addons.map((addon, index) => `<div class="add-on-line"><span>↳ ${escape(addon.name)}${item.discount ? '' : ''}</span><span>${money(addon.price)} <button type="button" data-remove-addon="${item.id}|${index}" aria-label="Remove ${escape(addon.name)}">×</button></span></div>`).join('')}</div>`;
+        const head = item.custom
+          ? `<div class="ticket-line-head"><div><span class="main-badge">Main services</span>${status}</div></div><div class="custom-inputs"><input aria-label="Custom service name" data-custom-name="${item.id}" value="${escape(item.name)}"><span>$</span><input aria-label="Custom service price" data-custom-price="${item.id}" inputmode="decimal" value="${item.price}"></div>`
+          : `<div class="ticket-line-head"><div><span class="main-badge">Main services</span><span class="ticket-line-name">${escape(item.category)} · ${escape(item.name)}</span>${status}</div><strong class="ticket-line-price">${moneyCompact(item.price)}</strong></div>`;
+        const change = `${item.status === 'Completed' ? '' : `<button type="button" class="purple" data-change-service="${item.id}">Change service</button>`}<button type="button" class="purple" data-add-on="${item.id}">+ Add-On</button>`;
+        const techAction = `<button type="button" class="line-tech-trigger" data-line-tech="${item.id}" aria-haspopup="listbox" aria-expanded="false" aria-label="Change technician for ${escape(group.tech || 'this service')}">${group.tech ? 'Change tech' : 'Select technician'}</button>`;
+        return `<div class="ticket-line" data-line="${item.id}">${head}<div class="line-actions">${techAction}${change}<button type="button" class="purple" data-add-custom="${group.id}">+ Custom</button><button type="button" class="yellow" data-discount="${item.id}">${item.discount ? 'Undo discount' : 'Discount'}</button><button type="button" class="danger" data-remove-line="${item.id}">Remove</button></div>${item.addons.map((addon, index) => `<div class="add-on-line"><div><span>↳ ${escape(addon.name)}</span><button type="button" class="addon-discount">Discount</button></div><span>${moneyCompact(addon.price)} <button type="button" data-remove-addon="${item.id}|${index}" aria-label="Remove ${escape(addon.name)}">×</button></span></div>`).join('')}</div>`;
       }).join('');
-      return `<section class="technician-group ${state.activeGroup === group.id ? 'active' : ''}" data-group="${group.id}"><div class="group-heading"><label for="tech-${group.id}">Tech.</label><select id="tech-${group.id}" data-group-tech="${group.id}">${technicianOptions(group.tech)}</select><div class="group-subtotal">${itemCount} item${itemCount === 1 ? '' : 's'}<strong>${money(groupTotal)}</strong></div><button class="remove-group" type="button" data-remove-group="${group.id}" aria-label="Remove technician group">×</button></div><div class="group-body">${rows}<div class="group-actions"><button type="button" data-add-main="${group.id}">＋ Add main service</button><button type="button" data-add-custom="${group.id}">＋ Custom service</button></div></div></section>`;
+      return `<section class="technician-group ${state.activeGroup === group.id ? 'active' : ''}" data-group="${group.id}"><div class="group-heading"><span class="tech-label">Tech.</span><button type="button" class="group-tech-trigger" data-group-tech="${group.id}" aria-haspopup="listbox" aria-expanded="false" aria-label="${group.tech ? `Change technician for ${escape(group.tech)}` : 'Select technician'}"><span>${escape(group.tech || 'Select technician')}</span>${chevron}</button><div class="group-subtotal">${itemCount} item${itemCount === 1 ? '' : 's'}<strong>${money(groupTotal)}</strong></div><button class="remove-group" type="button" data-remove-group="${group.id}" aria-label="Remove technician group">×</button></div><div class="group-body">${rows}<div class="group-actions"><button type="button" data-add-main="${group.id}">＋ Add main service</button><button type="button" data-add-custom="${group.id}">＋ Custom service</button></div></div></section>`;
     }).join('');
   }
 
@@ -134,6 +171,8 @@
     if (state.mode === 'edit') {
       const editButton = $('edit-primary-action');
       editButton.querySelector('span').textContent = state.hasPendingChanges ? 'Assign Services' : 'Checkout';
+      editButton.querySelector('.assign-icon').hidden = !state.hasPendingChanges;
+      editButton.querySelector('.checkout-icon').hidden = state.hasPendingChanges;
       editButton.classList.toggle('checkout-ready', !state.hasPendingChanges);
       editButton.setAttribute('aria-disabled', String(missingTech()));
     } else {
@@ -154,8 +193,11 @@
   function setMode(mode) {
     state.mode = mode;
     if (mode === 'checkout') state.paymentMethod = null;
-    const url = new URL(location.href); url.searchParams.set('mode', mode);
-    history.replaceState({}, '', url);
+    if (mode === 'edit') state.collapsed = false;
+    const url = new URL(location.href);
+    url.searchParams.delete('mode');
+    url.searchParams.set('orderMode', mode);
+    history.pushState({ mode }, '', url);
     render();
     document.querySelector('.ticket-workspace').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -179,7 +221,7 @@
     }
     if (state.replacingLineId) {
       const found = findLine(state.replacingLineId);
-      if (found) { found.item.name = name; found.item.category = category; found.item.price = item[1]; found.item.discount = 0; }
+      if (found) { found.item.name = name; found.item.category = category; found.item.price = item[1]; found.item.custom = false; found.item.discount = 0; }
       state.replacingLineId = null; markPending(); render(); return;
     }
     const group = findGroup(state.activeGroup) || state.groups[0];
@@ -210,6 +252,16 @@
 
   document.addEventListener('click', event => {
     const button = event.target.closest('button');
+    if (button?.dataset.techChoice) {
+      const selection = techMenu;
+      closeTechMenu();
+      if (selection?.kind === 'group') assignGroup(selection.id, button.dataset.techChoice);
+      if (selection?.kind === 'line') assignLine(selection.id, button.dataset.techChoice);
+      return;
+    }
+    if (button?.dataset.groupTech) { const group = findGroup(button.dataset.groupTech); if (group) openTechMenu(button, 'group', group.id, group.tech); return; }
+    if (button?.dataset.lineTech) { const found = findLine(button.dataset.lineTech); if (found) openTechMenu(button, 'line', found.item.id, found.group.tech); return; }
+    closeTechMenu();
     if (!button) return;
     if (button.dataset.category !== undefined) { state.category = button.dataset.category; renderCatalog(); return; }
     if (button.dataset.addService) { const [category, name] = button.dataset.addService.split('|'); addService(category, name); return; }
@@ -247,13 +299,14 @@
   });
   document.addEventListener('change', event => {
     const field = event.target;
-    if (field.dataset.groupTech) assignGroup(field.dataset.groupTech, field.value);
-    if (field.dataset.lineTech) assignLine(field.dataset.lineTech, field.value);
     if (field.dataset.customName) { const found = findLine(field.dataset.customName); if (found) found.item.name = field.value; markPending(); renderPreview(); renderPayment(); renderAction(); }
     if (field.dataset.customPrice) { const found = findLine(field.dataset.customPrice); if (found) found.item.price = Math.max(0, Number(field.value) || 0); markPending(); render(); }
   });
   $('service-search').addEventListener('input', event => { state.search = event.target.value; renderCatalog(); });
   $('tip-values').addEventListener('input', () => { state.tipChoice = null; updateTipSave(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeTechMenu(); });
+  window.addEventListener('resize', closeTechMenu);
+  window.addEventListener('scroll', closeTechMenu);
 
   function updateTipSave() {
     const input = $('tip-values').querySelector('input');
@@ -269,5 +322,17 @@
     updateTipSave();
   }
 
+  const canonicalUrl = new URL(location.href);
+  if (canonicalUrl.searchParams.get('orderMode') !== state.mode || canonicalUrl.searchParams.has('mode')) {
+    canonicalUrl.searchParams.delete('mode');
+    canonicalUrl.searchParams.set('orderMode', state.mode);
+    history.replaceState({ mode: state.mode }, '', canonicalUrl);
+  }
+  window.addEventListener('popstate', () => {
+    state.mode = new URLSearchParams(location.search).get('orderMode') === 'checkout' ? 'checkout' : 'edit';
+    if (state.mode === 'checkout') state.paymentMethod = null;
+    if (state.mode === 'edit') state.collapsed = false;
+    render();
+  });
   render();
 })();
