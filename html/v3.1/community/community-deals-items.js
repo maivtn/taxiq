@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const icon=key=>`/html/assets/icon-oneqr/issue-2040-oneqr-${key}-3d.png`;
+  const icon=key=>`../../icon-oneqr/issue-2040-oneqr-${key}-3d.png`;
   const date=value=>new Date(value+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   const photo=offer=>offer.photo||window.NEXORA_DEALS_DEMO.photos[offer.cat||offer.svc]||'';
   const industry=(id,text)=>window.NEXORA_DEAL_SELECTS.iconFor(id,text);
@@ -36,7 +36,7 @@
       const released=!w.used&&w.rel,expired=isExp(offer),category=CAT(offer.cat);
       const status=w.used?'Used':released?expired?'Expired':'Hold expired':'Available';
       return `<article class="deal-wallet-card" ${i===0?'id="firstW"':''}>${author(offer,category.n)}<div class="deal-wallet-body"><div class="deal-wallet-info"><h4>${esc(offer.title)}</h4><div class="deal-card-tags"><span>${status}</span><span>Expires ${fmtT(expAt(offer))}</span></div><span class="code">${esc(w.code)}</span>${w.used?`<p class="muted">Used ${new Date(w.usedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}${w.saved?' · saved '+money(w.saved):''}</p>`:released?`<p class="muted">${expired?'This coupon has expired.':'The unused spot has returned to the pool.'}</p>${!expired&&left(offer)&&!offer.paused?`<button class="btn" data-claim="${esc(offer.id)}">Claim again</button>`:''}`:`<p class="deal-wallet-pin-label">Live PIN · changes every 30 seconds</p><div class="pinv" data-pin-of="${esc(w.code)}">${pinOf(w.code)}</div><div class="cd"><i data-cd></i></div>${w.holdUntil<expAt(offer)?`<p class="muted">Use before ${fmtT(w.holdUntil)}</p>`:''}`}</div><div class="deal-wallet-qr"><div class="qr" aria-label="QR code ${esc(w.code)}">${qr(w.code+(w.used?'':':'+win()))}</div></div></div>${!w.used&&!released?`<div class="deal-wallet-actions"><button class="btn ghost" data-resave="${i}">Save / send</button><button class="btn ghost" data-demoscan="${i}">Demo: show the cashier</button></div>`:''}</article>`;
-    }).join('')||`<div class="deal-wallet-empty"><img src="/html/assets/icon-oneqr/vlinkpay-wallet-show-wallet.png" alt=""><p>No coupons yet. Tap “Get coupon” in Nearby deals.</p></div>`;
+    }).join('')||`<div class="deal-wallet-empty"><img src="../../icon-oneqr/vlinkpay-wallet-show-wallet.png" alt=""><p>No coupons yet. Tap “Get coupon” in Nearby deals.</p></div>`;
     tickPins();
   }
   function setup(module,state,baseline){

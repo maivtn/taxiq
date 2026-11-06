@@ -287,7 +287,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if (result) render();
       return result;
     }
-    const icon = name => `<img class="jobs-icon" src="/html/assets/icon-oneqr/issue-2040-oneqr-${name}-3d.png" alt="" aria-hidden="true">`;
+    const icon = name => `<img class="jobs-icon" src="../icon-oneqr/issue-2040-oneqr-${name}-3d.png" alt="" aria-hidden="true">`;
     const button = (action, id, label, primary = false, disabled = false) => `<button type="button" class="btn small${primary?' primary':''}" data-jobs-action="${action}" data-jobs-id="${esc(id||'')}"${disabled?' disabled':''}>${esc(label)}</button>`;
     const empty = (title, body = '') => `<div class="panel jobs-empty"><h3>${esc(title)}</h3>${body?`<p>${esc(body)}</p>`:''}</div>`;
     const facts = values => `<dl class="jobs-facts">${values.filter(([,value])=>value!==undefined&&value!==null&&value!=='').map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`;

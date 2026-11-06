@@ -1,0 +1,44 @@
+[
+  {
+    "source": "community-v2",
+    "clone": "community",
+    "files": 75,
+    "matched": 75
+  },
+  {
+    "source": "community-staging",
+    "clone": "community-staging",
+    "files": 19,
+    "matched": 19
+  },
+  {
+    "source": "nexora-welcome",
+    "clone": "nexora-welcome",
+    "files": 34,
+    "matched": 34
+  },
+  {
+    "source": "icon-oneqr",
+    "clone": "icon-oneqr",
+    "files": 215,
+    "matched": 215
+  },
+  {
+    "source": "vendor",
+    "clone": "vendor",
+    "files": 11,
+    "matched": 11
+  },
+  {
+    "source": "icons",
+    "clone": "icons",
+    "files": 59,
+    "matched": 59
+  },
+  {
+    "source": "flaticon-flat",
+    "clone": "flaticon-flat",
+    "files": 216,
+    "matched": 216
+  }
+]

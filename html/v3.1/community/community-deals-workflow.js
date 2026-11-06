@@ -18,7 +18,7 @@
   };
   const ALIASES = {deals:'nearby',dcats:'industry',dmatch:'match',dopen:'opening',dwallet:'wallet',dwish:'saved',dcreate:'create',dmanage:'manage',dredeem:'redeem',dcamp:'campaign'};
   const ART = {map:'issue-2040-oneqr-map-3d.png',percent:'issue-2040-oneqr-percent-3d.png',store:'issue-2040-oneqr-store-3d.png',clock:'issue-2040-oneqr-clock-3d.png',wallet:'vlinkpay-wallet-show-wallet.png',sparkles:'issue-2040-oneqr-sparkles-3d.png',heart:'issue-2040-oneqr-heart-3d.png',plus:'issue-2040-oneqr-ticket-3d.png',ticket:'issue-2040-oneqr-ticket-3d.png',scan:'issue-2040-oneqr-scan-line-3d.png',chart:'issue-2040-oneqr-layout-dashboard-3d.png',tools:'issue-2040-oneqr-settings-3d.png'};
-  const icon = name => `<img src="${new URL('/html/assets/icon-oneqr/'+(ART[name]||ART.ticket),BASE).href}" alt="">`;
+  const icon = name => `<img src="${new URL('../icon-oneqr/'+(ART[name]||ART.ticket),BASE).href}" alt="">`;
 
   function mount(adapter) {
     const feed = document.getElementById('feedView');

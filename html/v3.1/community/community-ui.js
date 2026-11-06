@@ -1,7 +1,7 @@
 /* Shared interaction and icon finishing for the existing Community screens. */
 (() => {
   'use strict';
-  const assetBase = new URL('/html/assets/icon-oneqr/', document.currentScript.src);
+  const assetBase = new URL('../icon-oneqr/', document.currentScript.src);
   const feedAssetBase = new URL('feed-icons/', document.currentScript.src);
   const feedArtwork = {
     'feed-photo':'picture-2659360.png',

@@ -1,0 +1,9 @@
+Icons8 — 3D Fluency
+Source: https://icons8.com/icons/all--style-3d-fluency--technique-3d
+License: https://icons8.com/license
+Retrieved: Oct 27, 2026
+
+Free PNG assets, 94 × 94 pixels. Used under the free-with-attribution option.
+Link to https://icons8.com on every web page using these icons. The shared merchant shell supplies the Icons8 attribution link.
+Assets retain Icons8 ownership; this repository does not relicense them.
+See sources.json for individual source pages and download URLs.

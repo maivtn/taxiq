@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="Tickets">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#F0F4FB"/></linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#CBA8FF"/><stop offset=".45" stop-color="#885EE7"/><stop offset="1" stop-color="#513CB9"/></linearGradient>
+    <linearGradient id="cool" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E6D3FF"/><stop offset=".55" stop-color="#AA80EF"/><stop offset="1" stop-color="#7850CB"/></linearGradient>
+    <linearGradient id="hot" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFA3DE"/><stop offset=".5" stop-color="#CB66E8"/><stop offset="1" stop-color="#7850D8"/></linearGradient>
+    <linearGradient id="light" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFFFF"/><stop offset=".5" stop-color="#D8EBFF"/><stop offset="1" stop-color="#86BBFF"/></linearGradient>
+    <filter id="shadow" x="-45%" y="-45%" width="190%" height="190%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#20325D" flood-opacity=".25"/></filter>
+    <filter id="smallShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#35246C" flood-opacity=".25"/></filter>
+  </defs>
+  <rect x="9" y="9" width="78" height="78" rx="23" fill="url(#base)" stroke="#FFFFFF" stroke-width="1.5"/>
+  <path d="M16 42c3-20 17-29 38-27" stroke="white" stroke-width="3" opacity=".7" fill="none" stroke-linecap="round"/>
+  <g filter="url(#shadow)">
+    <!-- Secondary ticket creates layered dimensional depth -->
+    <path d="M25 26 H70 Q73 26 73 29 V37 Q67 39 67 44 Q67 49 73 51 V63 Q73 66 70 66 H25 Q22 66 22 63 V51 Q28 49 28 44 Q28 39 22 37 V29 Q22 26 25 26Z" fill="url(#cool)" opacity=".63" transform="translate(2,-4) rotate(6 48 44)"/>
+    <!-- Silhouette with side semicircle notches identifies a real ticket -->
+    <path d="M22 34 Q22 31 25 31 H70 Q73 31 73 34 V41 C68 41 65 44 65 48 C65 52 68 55 73 55 V63 Q73 66 70 66 H25 Q22 66 22 63 V55 C27 55 30 52 30 48 C30 44 27 41 22 41 Z" fill="url(#blue)" stroke="#674ABF" stroke-width=".7"/>
+    <path d="M26 34 H68" stroke="#FFFFFF" stroke-width="2.2" opacity=".5" stroke-linecap="round"/>
+    <path d="M57 36 V61" stroke="#F3E9FF" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="3 4" opacity=".83"/>
+    <path d="M34 44 H49 M34 51 H46 M34 58 H49" stroke="white" stroke-width="3" stroke-linecap="round" opacity=".95"/>
+    <circle cx="65" cy="48" r="4.7" fill="url(#hot)" stroke="#F9D8FF" stroke-width="1.2" filter="url(#smallShadow)"/>
+    <path d="M63.1 48l1.3 1.3 2.5-2.7" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

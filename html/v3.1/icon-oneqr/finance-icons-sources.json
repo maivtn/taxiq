@@ -1,0 +1,41 @@
+{
+  "assets": [
+    {
+      "file": "merchant-atm-icons8-3d.png",
+      "name": "ATM",
+      "provider": "Icons8",
+      "style": "3D Fluency",
+      "source": "https://icons8.com/icon/fLmY8w09D1Dq/atm",
+      "download": "https://img.icons8.com/3d-fluency/94/atm.png",
+      "license": "https://icons8.com/license",
+      "usage": "Merchant ATM"
+    },
+    {
+      "file": "program-hub-icons8-3d.png",
+      "name": "Application",
+      "provider": "Icons8",
+      "style": "3D Fluency",
+      "source": "https://icons8.com/icons/set/application-interface--style-3d-fluency",
+      "download": "https://img.icons8.com/3d-fluency/94/application.png",
+      "license": "https://icons8.com/license",
+      "usage": "Program Hub"
+    },
+    {
+      "file": "mobile-atm-payment-10647002.png",
+      "provider": "IconScout",
+      "sourceFile": "../icons/iconscout/payment-10647002.png",
+      "usage": "Mobile ATM"
+    },
+    {
+      "file": "payment-gateway-secure-9506497.png",
+      "provider": "IconScout",
+      "sourceFile": "../icons/iconscout/payment-9506497.png",
+      "usage": "Payment Gateway"
+    },
+    {
+      "file": "industry/remit.png",
+      "sourceFile": "industry/remit.png",
+      "usage": "Exchange Hub"
+    }
+  ]
+}

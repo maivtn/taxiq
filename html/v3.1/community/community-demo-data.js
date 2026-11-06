@@ -9,18 +9,18 @@
   };
   const at = (daysAgo, hour = 10, minute = 0) => new Date(Math.min(new Date(`${date(-daysAgo)}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`).getTime(), Date.now() - 300000)).toISOString();
   const images = {
-    salon: '/html/assets/community-staging/b01d42a22a326284.jpg',
-    blush: '/html/assets/community-staging/0ceedf379b114cef.jpg',
-    bridal: '/html/assets/community-staging/d9eec1576f9a7c06.jpg',
-    blue: '/html/assets/community-staging/a063fabd5fc4a64e.jpg',
-    floral: '/html/assets/community-staging/970211a12ea5b9ec.png',
-    workshop: '/html/assets/community-staging/6b8147d2de80d807.png',
-    reception: '/html/assets/nexora-welcome/industry-nail.jpg',
-    restaurant: '/html/assets/nexora-welcome/industry-restaurant.jpg',
-    spa: '/html/assets/nexora-welcome/industry-spa.jpg',
-    barber: '/html/assets/nexora-welcome/industry-hair.jpg',
-    retail: '/html/assets/nexora-welcome/industry-retail.jpg',
-    cafe: '/html/assets/nexora-welcome/industry-food.jpg',
+    salon: '../community-staging/b01d42a22a326284.jpg',
+    blush: '../community-staging/0ceedf379b114cef.jpg',
+    bridal: '../community-staging/d9eec1576f9a7c06.jpg',
+    blue: '../community-staging/a063fabd5fc4a64e.jpg',
+    floral: '../community-staging/970211a12ea5b9ec.png',
+    workshop: '../community-staging/6b8147d2de80d807.png',
+    reception: '../nexora-welcome/industry-nail.jpg',
+    restaurant: '../nexora-welcome/industry-restaurant.jpg',
+    spa: '../nexora-welcome/industry-spa.jpg',
+    barber: '../nexora-welcome/industry-hair.jpg',
+    retail: '../nexora-welcome/industry-retail.jpg',
+    cafe: '../nexora-welcome/industry-food.jpg',
     // Product photos used only in fictional market listings. Original source pages:
     // https://www.greiner-gmbh.de/hairline/produkte/wartestuehle/wartestuhl-35.html
     marketChair:'market-photos/waiting-chair.jpg',
