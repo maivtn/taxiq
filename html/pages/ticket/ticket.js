@@ -231,10 +231,15 @@
     $('add-services-list').innerHTML = `<h3>${escape(group.category.toUpperCase())}</h3>${items.map(item => {
       const key = `${state.addServicesCategoryIndex}:${item.index}`;
       const quantity = state.addServicesQuantities[key] || 0;
-      return `<div class="add-services-item"><div><strong>${escape(item.name)}</strong><span>${money(item.price)} <small>${item.duration} min</small></span></div><div class="add-services-stepper"><button type="button" data-modal-quantity="${key}" data-delta="-1" aria-label="Decrease quantity: ${escape(item.name)}" ${quantity ? '' : 'disabled'}>−</button><output>${quantity}</output><button type="button" data-modal-quantity="${key}" data-delta="1" aria-label="Increase quantity: ${escape(item.name)}">+</button></div></div>`;
+      return `<div class="add-services-item ${quantity ? 'selected' : ''}" data-modal-item="${key}" role="button" tabindex="0" aria-label="${escape(item.name)}"><div><strong>${escape(item.name)}</strong><span>${money(item.price)} <small>${item.duration} min</small></span></div><div class="add-services-stepper"><button type="button" data-modal-quantity="${key}" data-delta="-1" aria-label="Decrease quantity: ${escape(item.name)}" ${quantity ? '' : 'disabled'}>−</button><output>${quantity}</output><button type="button" data-modal-quantity="${key}" data-delta="1" aria-label="Increase quantity: ${escape(item.name)}">+</button></div></div>`;
     }).join('')}`;
     const selected = Object.values(state.addServicesQuantities).reduce((sum, quantity) => sum + quantity, 0);
     $('add-services-selected').textContent = selected ? `${selected} selected` : '';
+  }
+
+  function changeAddServicesQuantity(key, delta) {
+    state.addServicesQuantities[key] = Math.max(0, (state.addServicesQuantities[key] || 0) + delta);
+    renderAddServices();
   }
 
   function openAddServices(groupId, targetLineId = null) {
@@ -403,12 +408,14 @@
     if (button?.dataset.groupTech) { const group = findGroup(button.dataset.groupTech); if (group) openTechMenu(button, 'group', group.id, group.tech); return; }
     if (button?.dataset.lineTech) { const found = findLine(button.dataset.lineTech); if (found) openTechMenu(button, 'line', found.item.id, found.group.tech); return; }
     closeTechMenu();
+    const modalItem = event.target.closest('[data-modal-item]');
+    if (modalItem && !button?.dataset.modalQuantity) { changeAddServicesQuantity(modalItem.dataset.modalItem, 1); return; }
     if (!button) return;
     if (button.dataset.category !== undefined) { state.category = button.dataset.category; renderCatalog(); return; }
     if (button.dataset.addService) { const [category, name] = button.dataset.addService.split('|'); addService(category, name); return; }
     if (button.dataset.addMain) { openAddServices(button.dataset.addMain); return; }
     if (button.dataset.modalCategory !== undefined) { state.addServicesCategoryIndex = Number(button.dataset.modalCategory); renderAddServices(); return; }
-    if (button.dataset.modalQuantity) { const key = button.dataset.modalQuantity; state.addServicesQuantities[key] = Math.max(0, (state.addServicesQuantities[key] || 0) + Number(button.dataset.delta)); renderAddServices(); return; }
+    if (button.dataset.modalQuantity) { changeAddServicesQuantity(button.dataset.modalQuantity, Number(button.dataset.delta)); return; }
     if (button.id === 'close-add-services') { $('add-services-dialog').close(); return; }
     if (button.id === 'save-add-services') { saveAddServices(); return; }
     if (button.dataset.changeCategory !== undefined) { state.changeServiceCategoryIndex = Number(button.dataset.changeCategory); renderChangeServices(); return; }
@@ -465,7 +472,16 @@
   $('change-service-search').addEventListener('input', event => { state.changeServiceSearch = event.target.value; renderChangeServices(); });
   $('discount-values').addEventListener('input', event => { if (event.target.id === 'discount-custom-value') { const value = Number(event.target.value); state.discountValue = event.target.value === '' || !Number.isFinite(value) || value < 0 ? null : value; $('save-discount').disabled = state.discountValue === null; } });
   $('tip-values').addEventListener('input', () => { state.tipChoice = null; updateTipSave(); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeTechMenu(); });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeTechMenu();
+    const modalItem = event.target.closest('[data-modal-item]');
+    if (event.target === modalItem && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      const key = modalItem.dataset.modalItem;
+      changeAddServicesQuantity(key, 1);
+      document.querySelector(`[data-modal-item="${key}"]`)?.focus();
+    }
+  });
   window.addEventListener('resize', closeTechMenu);
   window.addEventListener('scroll', closeTechMenu);
 
