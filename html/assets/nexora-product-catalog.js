@@ -10,19 +10,23 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "OneQR",
-            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=one-qr"
+            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=one-qr",
+            "icon": "qr"
           },
           {
             "label": "Accept tips",
-            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=tip"
+            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=tip",
+            "icon": "coins"
           },
           {
             "label": "Receive payments",
-            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment"
+            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment",
+            "icon": "income"
           },
           {
             "label": "Check-in",
-            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=check-in"
+            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=check-in",
+            "icon": "arrival"
           }
         ]
       },
@@ -31,11 +35,13 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Referral Link",
-            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=referral"
+            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=referral",
+            "icon": "network"
           },
           {
             "label": "Staff Invite QR",
-            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=staff-invite"
+            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=staff-invite",
+            "icon": "staff"
           }
         ]
       }
@@ -67,11 +73,13 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Receive payments",
-            "url": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
+            "url": "https://nexoratouch.com/dashboard/reports?tab=receive_payments",
+            "icon": "income"
           },
           {
             "label": "Income by period",
-            "url": "payment-income-period.html"
+            "url": "payment-income-period.html",
+            "icon": "chart"
           }
         ]
       },
@@ -80,23 +88,28 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Tip overview",
-            "url": "https://nexoratouch.com/dashboard/tips?tab=overview"
+            "url": "https://nexoratouch.com/dashboard/tips?tab=overview",
+            "icon": "coins"
           },
           {
             "label": "Tip list",
-            "url": "https://nexoratouch.com/dashboard/reports?tab=tips"
+            "url": "https://nexoratouch.com/dashboard/reports?tab=tips",
+            "icon": "list"
           },
           {
             "label": "Payroll / payouts",
-            "url": "https://nexoratouch.com/dashboard/tips?tab=payouts"
+            "url": "https://nexoratouch.com/dashboard/tips?tab=payouts",
+            "icon": "staff"
           },
           {
             "label": "Direct Savings",
-            "url": "https://nexoratouch.com/dashboard/tips?tab=savings"
+            "url": "https://nexoratouch.com/dashboard/tips?tab=savings",
+            "icon": "savings"
           },
           {
             "label": "Payout history by staff member",
-            "url": "staff-payout-history.html"
+            "url": "staff-payout-history.html",
+            "icon": "clock"
           }
         ]
       },
@@ -105,15 +118,18 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Payment activity",
-            "url": "https://nexoratouch.com/dashboard/reports?tab=direct_payments"
+            "url": "https://nexoratouch.com/dashboard/reports?tab=direct_payments",
+            "icon": "wallet"
           },
           {
             "label": "Card transaction history (proposed)",
-            "url": "pos-technician-report.html?tab=card"
+            "url": "pos-technician-report.html?tab=card",
+            "icon": "card"
           },
           {
             "label": "Card terminal reconciliation (proposed)",
-            "linkPending": true
+            "linkPending": true,
+            "icon": "shield"
           }
         ]
       },
@@ -122,7 +138,8 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Category management",
-            "url": "https://nexoratouch.com/dashboard/category-management"
+            "url": "https://nexoratouch.com/dashboard/category-management",
+            "icon": "settings"
           }
         ]
       }
@@ -415,23 +432,27 @@ window.NEXORA_PRODUCT_CATALOG = {
               {
                 "label": "Issue digital card",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/issue-digital",
-                "newTab": true
+                "newTab": true,
+                "icon": "gift"
               },
               {
                 "label": "Membership card",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/issue-digital?type=membership",
-                "newTab": true
+                "newTab": true,
+                "icon": "membership"
               },
               {
                 "label": "Quick online setup",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/quick-create-card?type=0",
-                "newTab": true
+                "newTab": true,
+                "icon": "design"
               },
               {
                 "label": "Advanced E-Gift setup",
                 "description": "This flow requires business verification (KYB).",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/sell-egift-form?type=0",
-                "newTab": true
+                "newTab": true,
+                "icon": "design"
               }
             ]
           },
@@ -441,12 +462,14 @@ window.NEXORA_PRODUCT_CATALOG = {
               {
                 "label": "Manage issued cards",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management?tab=all&pageSize=10",
-                "newTab": true
+                "newTab": true,
+                "icon": "files"
               },
               {
                 "label": "Accept card payment",
                 "url": "https://merchant.vlinkpay.com/payment-process/payment-gift-card",
-                "newTab": true
+                "newTab": true,
+                "icon": "card"
               }
             ]
           },
@@ -456,22 +479,26 @@ window.NEXORA_PRODUCT_CATALOG = {
               {
                 "label": "Membership program",
                 "url": "https://merchant.vlinkpay.com/settings/benefits-setup",
-                "newTab": true
+                "newTab": true,
+                "icon": "membership"
               },
               {
                 "label": "Membership report",
                 "url": "https://merchant.vlinkpay.com/settings/membership-report",
-                "newTab": true
+                "newTab": true,
+                "icon": "chart"
               },
               {
                 "label": "Card payment history",
                 "url": "https://merchant.vlinkpay.com/reports/card-transaction-history",
-                "newTab": true
+                "newTab": true,
+                "icon": "clock"
               },
               {
                 "label": "Expiring cards",
                 "url": "https://merchant.vlinkpay.com/reports/expiring-cards",
-                "newTab": true
+                "newTab": true,
+                "icon": "calendar"
               }
             ]
           }
@@ -508,11 +535,13 @@ window.NEXORA_PRODUCT_CATALOG = {
             "items": [
               {
                 "label": "Appointments",
-                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=today"
+                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=today",
+                "icon": "calendar"
               },
               {
                 "label": "Calendar",
-                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=calendar"
+                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=calendar",
+                "icon": "calendar"
               }
             ]
           },
@@ -521,11 +550,13 @@ window.NEXORA_PRODUCT_CATALOG = {
             "items": [
               {
                 "label": "Customers",
-                "url": "#pos-voice-customers"
+                "url": "#pos-voice-customers",
+                "icon": "users"
               },
               {
                 "label": "Call Log",
-                "url": "#pos-call-log"
+                "url": "#pos-call-log",
+                "icon": "phone"
               }
             ]
           },
@@ -534,15 +565,18 @@ window.NEXORA_PRODUCT_CATALOG = {
             "items": [
               {
                 "label": "Plans",
-                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=plans"
+                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=plans",
+                "icon": "membership"
               },
               {
                 "label": "AI Receptionist Settings",
-                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=settings"
+                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=settings",
+                "icon": "settings"
               },
               {
                 "label": "AI Voice setup guide",
-                "url": "https://nexoratouch.com/dashboard/ai-hub/setup-guide"
+                "url": "https://nexoratouch.com/dashboard/ai-hub/setup-guide",
+                "icon": "help"
               }
             ]
           }
@@ -580,19 +614,23 @@ window.NEXORA_PRODUCT_CATALOG = {
             "items": [
               {
                 "label": "POS promotions",
-                "url": "https://nexoratouch.com/dashboard/pos/promotions"
+                "url": "https://nexoratouch.com/dashboard/pos/promotions",
+                "icon": "tag"
               },
               {
                 "label": "Reviews",
-                "url": "https://nexoratouch.com/dashboard/reviews"
+                "url": "https://nexoratouch.com/dashboard/reviews",
+                "icon": "star"
               },
               {
                 "label": "Customers",
-                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=customers"
+                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=customers",
+                "icon": "users"
               },
               {
                 "label": "Analytics",
-                "url": "https://nexoratouch.com/dashboard/analytics"
+                "url": "https://nexoratouch.com/dashboard/analytics",
+                "icon": "chart"
               }
             ]
           },
@@ -602,15 +640,18 @@ window.NEXORA_PRODUCT_CATALOG = {
               {
                 "label": "Campaigns",
                 "url": "https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10",
-                "newTab": true
+                "newTab": true,
+                "icon": "marketing"
               },
               {
                 "label": "Prize wheel demo",
-                "demo": "wheel"
+                "demo": "wheel",
+                "icon": "wheel"
               },
               {
                 "label": "AI Ads",
-                "url": "https://merchant.vlinkpay.com/marketing-tools"
+                "url": "https://merchant.vlinkpay.com/marketing-tools",
+                "icon": "marketing"
               }
             ]
           }
@@ -644,7 +685,8 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "View reviews",
-            "url": "https://nexoratouch.com/dashboard/reviews"
+            "url": "https://nexoratouch.com/dashboard/reviews",
+            "icon": "star"
           }
         ]
       }
@@ -677,23 +719,27 @@ window.NEXORA_PRODUCT_CATALOG = {
           {
             "label": "Issue digital card",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/issue-digital",
-            "newTab": true
+            "newTab": true,
+            "icon": "gift"
           },
           {
             "label": "Membership card",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/issue-digital?type=membership",
-            "newTab": true
+            "newTab": true,
+            "icon": "membership"
           },
           {
             "label": "Quick online setup",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/quick-create-card?type=0",
-            "newTab": true
+            "newTab": true,
+            "icon": "design"
           },
           {
             "label": "Advanced E-Gift setup",
             "description": "This flow requires business verification (KYB).",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/sell-egift-form?type=0",
-            "newTab": true
+            "newTab": true,
+            "icon": "design"
           }
         ]
       },
@@ -703,12 +749,14 @@ window.NEXORA_PRODUCT_CATALOG = {
           {
             "label": "Manage issued cards",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management?tab=all&pageSize=10",
-            "newTab": true
+            "newTab": true,
+            "icon": "files"
           },
           {
             "label": "Accept card payment",
             "url": "https://merchant.vlinkpay.com/payment-process/payment-gift-card",
-            "newTab": true
+            "newTab": true,
+            "icon": "card"
           }
         ]
       },
@@ -718,22 +766,26 @@ window.NEXORA_PRODUCT_CATALOG = {
           {
             "label": "Membership program",
             "url": "https://merchant.vlinkpay.com/settings/benefits-setup",
-            "newTab": true
+            "newTab": true,
+            "icon": "membership"
           },
           {
             "label": "Membership report",
             "url": "https://merchant.vlinkpay.com/settings/membership-report",
-            "newTab": true
+            "newTab": true,
+            "icon": "chart"
           },
           {
             "label": "Card payment history",
             "url": "https://merchant.vlinkpay.com/reports/card-transaction-history",
-            "newTab": true
+            "newTab": true,
+            "icon": "clock"
           },
           {
             "label": "Expiring cards",
             "url": "https://merchant.vlinkpay.com/reports/expiring-cards",
-            "newTab": true
+            "newTab": true,
+            "icon": "calendar"
           }
         ]
       }
@@ -765,7 +817,8 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "View analytics",
-            "url": "https://nexoratouch.com/dashboard/analytics"
+            "url": "https://nexoratouch.com/dashboard/analytics",
+            "icon": "chart"
           }
         ]
       }
@@ -797,19 +850,23 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Feed",
-            "url": "https://nexoratouch.com/dashboard/community"
+            "url": "https://nexoratouch.com/dashboard/community",
+            "icon": "newspaper"
           },
           {
             "label": "Groups & Market",
-            "url": "https://nexoratouch.com/dashboard/community?tab=groups"
+            "url": "https://nexoratouch.com/dashboard/community?tab=groups",
+            "icon": "users"
           },
           {
             "label": "Jobs",
-            "url": "https://nexoratouch.com/dashboard/community?tab=jobs"
+            "url": "https://nexoratouch.com/dashboard/community?tab=jobs",
+            "icon": "briefcase"
           },
           {
             "label": "Extra shifts",
-            "url": "https://nexoratouch.com/dashboard/community?tab=shift"
+            "url": "https://nexoratouch.com/dashboard/community?tab=shift",
+            "icon": "clock"
           }
         ]
       },
@@ -818,7 +875,8 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Messages, group chats & calls",
-            "url": "https://nexoratouch.com/dashboard/community?tab=connect"
+            "url": "https://nexoratouch.com/dashboard/community?tab=connect",
+            "icon": "message"
           }
         ]
       }
@@ -852,19 +910,23 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Business overview",
-            "url": "tax-iq-business.html"
+            "url": "tax-iq-business.html",
+            "icon": "storefront"
           },
           {
             "label": "Business income",
-            "unavailable": true
+            "unavailable": true,
+            "icon": "income"
           },
           {
             "label": "Operating expenses",
-            "unavailable": true
+            "unavailable": true,
+            "icon": "expense"
           },
           {
             "label": "Receipts",
-            "url": "tax-iq-receipts.html"
+            "url": "tax-iq-receipts.html",
+            "icon": "receipt"
           }
         ]
       },
@@ -873,19 +935,23 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Personal overview",
-            "unavailable": true
+            "unavailable": true,
+            "icon": "user"
           },
           {
             "label": "Personal income",
-            "unavailable": true
+            "unavailable": true,
+            "icon": "income"
           },
           {
             "label": "Personal expenses",
-            "unavailable": true
+            "unavailable": true,
+            "icon": "expense"
           },
           {
             "label": "Personal receipts",
-            "unavailable": true
+            "unavailable": true,
+            "icon": "receipt"
           }
         ]
       }
@@ -908,15 +974,18 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Try the prize wheel",
-            "demo": "wheel"
+            "demo": "wheel",
+            "icon": "wheel"
           },
           {
             "label": "Create a wheel campaign",
-            "url": "products/spin-wheel/create.html"
+            "url": "products/spin-wheel/create.html",
+            "icon": "wheel"
           },
           {
             "label": "Campaigns",
-            "url": "https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10"
+            "url": "https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10",
+            "icon": "marketing"
           }
         ]
       }

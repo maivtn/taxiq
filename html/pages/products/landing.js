@@ -148,7 +148,16 @@
     'ai-marketing':['users','edit','message','chart'],
     'spin-wheel':['wheel','gift','sliders','play']
   };
+  const sceneIconNames = {
+    'si-pos':['arrival','queue','chart'], 'one-qr':['list','qr','usercheck'],
+    'payments-payouts':['income','coins','staff'], 'ai-hub':['headset','marketing','user'],
+    reviews:['user','message','star'], 'gift-card-center':['gift','network','qr'],
+    analytics:['chart','qr','user'], community:['storefront','briefcase','users'],
+    'tax-iq':['income','expense','receipt'], 'ai-voice-sms':['phone','calendar','sms'],
+    'ai-marketing':['users','marketing','team'], 'spin-wheel':['wheel','gift','rewards']
+  };
   const lineIcon = kind => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${iconPaths[kind] || iconPaths.sparkle}</svg>`;
+  const contentIcon = (kind, size = 36) => window.NEXORA_ICONS.content(kind, {size, lazy:true}) || lineIcon(kind);
   const directionPaths = {
     right:'<path d="M4 12h15m-6-6 6 6-6 6"/>',
     left:'<path d="M20 12H5m6-6-6 6 6 6"/>',
@@ -395,7 +404,7 @@
     const [title, copy] = scenes[sceneIndex];
     all('[data-scene-title]').forEach(node => node.textContent = title);
     all('[data-scene-copy]').forEach(node => node.textContent = copy);
-    document.querySelector('.display-icon').innerHTML = lineIcon((featureIconNames[data.slug] || [])[sceneIndex] || 'sparkle');
+    document.querySelector('.display-icon').innerHTML = contentIcon((sceneIconNames[data.slug] || [])[sceneIndex] || 'sparkle', 40);
     all('.scenario-button').forEach((button, index) => {
       button.setAttribute('aria-selected', index === sceneIndex ? 'true' : 'false');
       button.tabIndex = index === sceneIndex ? 0 : -1;
@@ -527,7 +536,7 @@
 
     const scenes = data.scenes[lang] || data.scenes.en;
     document.querySelector('.scenario-list').innerHTML = scenes.map(([title], index) =>
-      `<button class="scenario-button" type="button" role="tab" aria-selected="${index === sceneIndex}" data-scene="${index}"><span><strong>${escapeHTML(title)}</strong></span><span aria-hidden="true">${directionIcon('right')}</span></button>`
+      `<button class="scenario-button" type="button" role="tab" aria-selected="${index === sceneIndex}" data-scene="${index}"><span class="scenario-art" aria-hidden="true">${contentIcon((sceneIconNames[data.slug] || [])[index] || 'sparkle', 32)}</span><span class="scenario-label"><strong>${escapeHTML(title)}</strong></span><span aria-hidden="true">${directionIcon('right')}</span></button>`
     ).join('');
     all('.scenario-button').forEach(button => button.addEventListener('click', () => {
       sceneIndex = Number(button.dataset.scene);
@@ -556,7 +565,7 @@
     ).join('');
     document.getElementById('feature-grid').innerHTML = features.map(([title, desc], index) => {
       const icon = (featureIconNames[data.slug] || [])[index] || 'sparkle';
-      return `<article class="feature-card" id="feature-${String(index + 1).padStart(2,'0')}"><div class="feature-card-head"><span class="feature-icon" aria-hidden="true">${lineIcon(icon)}</span></div><h3>${escapeHTML(title)}</h3><p>${escapeHTML(desc)}</p></article>`;
+      return `<article class="feature-card" id="feature-${String(index + 1).padStart(2,'0')}"><div class="feature-card-head"><span class="feature-icon" aria-hidden="true">${contentIcon(icon, 42)}</span></div><h3>${escapeHTML(title)}</h3><p>${escapeHTML(desc)}</p></article>`;
     }).join('');
 
     const steps = data.path[lang] || data.path.en;

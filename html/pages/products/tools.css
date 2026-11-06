@@ -67,3 +67,31 @@ body { overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
+
+.nexora-content-icon { display:block; flex-shrink:0; object-fit:contain; }
+.hero h1, .heading h1 { display:flex; align-items:center; gap:13px; }
+.tool-title-art { filter:drop-shadow(0 4px 4px #14264a22); }
+.step > .tool-step-art, .card-head > .tool-step-art { position:relative; display:flex; align-items:center; justify-content:center; flex:0 0 44px; width:44px; height:44px; background:#f3f0ff; border-radius:12px; }
+.tool-step-index { position:absolute; right:-4px; bottom:-3px; display:flex; align-items:center; justify-content:center; width:18px; height:18px; border:2px solid #fff; border-radius:50%; background:#6652d6; color:#fff; font-size:9px; line-height:1; }
+.tabs a span svg { width:18px; height:18px; }
+.tool-icon-action { display:inline-flex; align-items:center; justify-content:center; gap:7px; }
+.tool-icon-action::before { content:""; display:block; flex:0 0 16px; width:16px; height:16px; background:currentColor; mask:var(--tool-action-icon) center / contain no-repeat; -webkit-mask:var(--tool-action-icon) center / contain no-repeat; }
+.metric { position:relative; }
+.metric > small { display:block; padding-right:34px; }
+.tool-metric-art { position:absolute; top:14px; right:13px; }
+.draft-card small { display:flex; align-items:center; gap:7px; }
+.prize-index { position:relative; flex:0 0 32px; width:32px; height:32px; font-size:0; background:transparent; }
+.prize-index::after { content:attr(data-prize-number); position:absolute; right:-2px; bottom:-3px; display:flex; align-items:center; justify-content:center; width:14px; height:14px; border:1px solid #fff; border-radius:50%; background:#ede9ff; color:#584bb5; font-size:8px; }
+.preview-prizes > span { display:flex; align-items:center; gap:5px; }
+.preview-prizes > span .tool-prize-art { width:22px; height:22px; }
+@media(max-width:600px) {
+ .hero h1, .heading h1 { gap:10px; }
+ .tool-title-art { width:38px; height:38px; }
+ .step > .tool-step-art, .card-head > .tool-step-art { flex-basis:38px; width:38px; height:38px; }
+ .tool-step-art > .nexora-content-icon { width:30px; height:30px; }
+ .tool-metric-art { width:26px; height:26px; top:11px; right:10px; }
+ .metric > small { padding-right:28px; }
+ .prize-index { flex-basis:26px; width:26px; height:28px; }
+ .prize-index .tool-prize-art { width:22px; height:22px; }
+ .preview-prizes > span { gap:4px; }
+}

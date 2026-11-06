@@ -47,11 +47,8 @@
     updateURL(next, true); filterCards();
   }
   function reset() { search.value = ''; category.value = 'all'; saveFilters(); search.focus(); }
-  var iconFiles = { arrival:'user-round', ticket:'ticket', queue:'layout-list', card:'credit-card', done:'circle-check', calendar:'calendar-days', estimate:'receipt', clock:'clock', customer:'user-round', gift:'gift', star:'star', spark:'sparkles', wallet:'wallet', list:'list', team:'users-round', chart:'layout-dashboard', settings:'settings', phone:'phone' };
   function actionIcon(kind) {
-    var image = document.createElement('img'); image.src = '../assets/icon-oneqr/issue-2040-oneqr-' + (iconFiles[kind] || 'list') + '-3d.png';
-    image.width = 32; image.height = 32; image.alt = ''; image.setAttribute('aria-hidden', 'true'); image.loading = 'lazy';
-    return image;
+    return window.NEXORA_ICONS.contentNode(kind || 'tools', { size:36, lazy:true });
   }
   function link(item, index, pos, workflow) {
     var demo = item.demo === 'wheel';
@@ -66,6 +63,8 @@
       var top = document.createElement('span'); top.className = 'pos-action-top'; top.appendChild(actionIcon(item.icon));
       if (workflow) { var step = document.createElement('span'); step.className = 'pos-action-step'; step.textContent = String(index + 1); step.setAttribute('aria-hidden', 'true'); top.appendChild(step); }
       node.appendChild(top);
+    } else {
+      var artwork = document.createElement('span'); artwork.className = 'detail-link-icon'; artwork.appendChild(actionIcon(item.icon)); node.appendChild(artwork);
     }
     var copy = document.createElement('span'); copy.className = 'detail-link-copy'; copy.textContent = item.label + (unavailable && !item.linkPending ? ' · unavailable' : ''); node.appendChild(copy);
     if (item.description) { var description = document.createElement('small'); description.textContent = item.description; copy.appendChild(description); }
@@ -96,6 +95,7 @@
       panel.innerHTML = '<div><h3>Auto-updating service menu</h3><p>Design preview: each salon has its own menu. Edit services, prices and durations in Salon Settings → Services; the customer menu opens the salon’s Nexora data.</p><small>Bitcoin Nail Bar is the sample salon in this design</small></div><div class="menu-sync-actions"><a href="../menu/menu.html">View customer menu ↗</a><a href="pos-salon-settings.html?section=services">Manage services ↗</a></div>';
       var salon = window.NEXORA_ACTIVE_SALON;
       if (salon && typeof salon.name === 'string' && salon.name.trim()) panel.querySelector('small').textContent = salon.name.trim();
+      panel.querySelector('h3').prepend(window.NEXORA_ICONS.contentNode('list', { size:26 }));
       host.appendChild(panel);
     }
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
@@ -113,6 +113,7 @@
     if (!product) { if (focus && lastModule) document.querySelector('[data-module="' + lastModule + '"]')?.focus(); return; }
     lastModule = product.key;
     document.getElementById('detail-title').textContent = product.title;
+    document.getElementById('detail-title').prepend(window.NEXORA_ICONS.contentNode(product.iconKey, { size:42 }));
     document.getElementById('detail-description').textContent = product.description;
     document.getElementById('detail-status').textContent = product.status;
     document.getElementById('detail-status').classList.toggle('pending', product.availability === 'preview');
@@ -140,7 +141,7 @@
   cards.forEach(function (card) {
     var key = card.dataset.module;
     var cardIcon = card.querySelector('.card-icon');
-    if (!cardIcon.querySelector('img')) cardIcon.innerHTML = window.NEXORA_ICONS.image(key, {size: 48});
+    cardIcon.replaceChildren(window.NEXORA_ICONS.contentNode(key, {size: 52}));
     card.addEventListener('click', function () {
       moduleOpens[key] = openCount(key) + 1;
       try { localStorage.setItem(usageKey, JSON.stringify(moduleOpens)); } catch (_) {}

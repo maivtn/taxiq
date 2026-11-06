@@ -56,6 +56,8 @@
 .wheel-dialog .wheel-prize-icon img, .wheel-dialog .wheel-label-icon img { width:26px; height:26px; object-fit:contain; }
 .wheel-dialog :focus-visible { outline:3px solid #8e7be8; outline-offset:3px; }
 .wheel-dialog-head h2, .wheel-dialog-head p, .wheel-dialog-foot p, .wheel-preview h3 { overflow-wrap:anywhere; }
+.wheel-dialog-head h2 { display:flex; align-items:center; gap:10px; }
+.wheel-dialog .nexora-content-icon { display:block; object-fit:contain; flex-shrink:0; }
 @media(max-width:600px) {
  .wheel-dialog { width:calc(100vw - 16px); max-height:calc(100dvh - 16px); border-radius:14px; }
  .wheel-dialog-head { padding:15px 12px; }

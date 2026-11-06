@@ -31,7 +31,7 @@
     @media(max-width:850px){.layout{grid-template-columns:1fr}.preview{position:static}.hero{min-height:250px}.hero:before{background:linear-gradient(90deg,#142a51fa,#152d55a8)}}
     @media(max-width:600px){.shell{padding:20px 14px 45px}.top-inner{padding:11px 14px}.top-back{font-size:10px}.hero-copy{padding:25px 20px}.notice,.panel-head{align-items:start;flex-direction:column}.tabs{grid-template-columns:1fr;gap:7px}.tabs a{min-height:45px}.fields,.metric-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{padding:17px}.preview-image{margin:-17px -17px 15px}.draft-card{grid-template-columns:1fr}.compare-row{grid-template-columns:1fr 60px;gap:7px}.compare-label{grid-column:1/-1}}
   </style>
-  <link rel="stylesheet" href="../tools.css?v=20261106-po-dashboard">
+  <link rel="stylesheet" href="../tools.css?v=20261106-content-icons">
 </head>
 <body>
   <header class="top"><div class="top-inner"><a class="brand" href="../../nexora-home.html"><img src="../../assets/nexora-logo-light.png" alt=""><span>NEXORA TOUCH</span></a><a class="top-back" href="../../dashboard.html?module=pos&amp;group=3">← Back to SI POS</a></div></header>
@@ -44,7 +44,8 @@
     <section class="panel" id="manage" data-panel="manage" aria-labelledby="manage-title" hidden><div class="panel-head"><div><small>TRACK</small><h2 id="manage-title">Manage campaigns</h2><p>View drafts saved on this device, reopen them to edit or duplicate them for a new program.</p></div><a class="button" href="#create">+ Create campaign</a></div><p class="status" id="manage-status" role="status">Drafts are saved privately in this browser.</p><div class="draft-list" id="draft-list"></div><div class="formula"><strong>Draft status</strong><p>These items have not been sent or activated. Running campaigns and live results require synchronization with the salon NEXORA account.</p></div></section>
     <section class="panel" id="performance" data-panel="performance" aria-labelledby="performance-title" hidden><div class="panel-head"><div><small>EVALUATE</small><h2 id="performance-title">Which campaigns perform well?</h2><p>Compare the share of reached guests who book. All numbers below are illustrative examples.</p></div><span class="pill">Sample data</span></div><div class="metric-grid"><div class="metric"><small>GUESTS REACHED · SAMPLE</small><strong>350</strong><p>Three illustrative programs below.</p></div><div class="metric"><small>GUEST BOOKINGS · SAMPLE</small><strong>34</strong><p>Bookings attributed to the campaign.</p></div><div class="metric"><small>BOOKING RATE · SAMPLE</small><strong>9.7%</strong><p>34 bookings / 350 guests reached.</p></div></div><div class="card compare"><div class="compare-head"><h3>Compare booking rates</h3><small>Higher = more bookings per guest reached</small></div><div class="compare-row"><div class="compare-label"><strong>Invite returning guests</strong><small>SMS · 18 bookings / 120 guests</small></div><div class="bar" aria-hidden="true"><i style="width:100%"></i></div><b>15%</b></div><div class="compare-row"><div class="compare-label"><strong>Weekend offer</strong><small>SMS · 12 bookings / 150 guests</small></div><div class="bar" aria-hidden="true"><i style="width:53.3%"></i></div><b>8%</b></div><div class="compare-row"><div class="compare-label"><strong>New service</strong><small>Offer · 4 bookings / 80 guests</small></div><div class="bar" aria-hidden="true"><i style="width:33.3%"></i></div><b>5%</b></div></div><div class="card table-wrap"><table class="results-table"><caption style="text-align:left;font-size:14px;font-weight:850;margin-bottom:9px">Comparison table · sample data</caption><thead><tr><th>Campaign</th><th>Type</th><th>Reached</th><th>Bookings</th><th>Booking rate</th></tr></thead><tbody><tr><td>Invite returning guests</td><td>SMS</td><td>120</td><td>18</td><td>15%</td></tr><tr><td>Weekend offer</td><td>SMS</td><td>150</td><td>12</td><td>8%</td></tr><tr><td>New service</td><td>Offer</td><td>80</td><td>4</td><td>5%</td></tr></tbody></table></div><div class="formula"><strong>How to evaluate live data</strong><p>Booking rate = bookings attributed to the campaign ÷ guests reached. Evaluating profitability also requires campaign costs and actual revenue from those bookings. Local drafts do not generate performance data.</p></div></section>
   </main>
-  <script src="../tools.js?v=20261106-po-dashboard"></script>
+  <script src="../../../assets/nexora-icons.js?v=20261106-content-icons"></script>
+  <script src="../tools.js?v=20261106-content-icons"></script>
   <script>
   (() => {
     const key = 'nexora-marketing-drafts-v1';
@@ -97,12 +98,14 @@
         const card = document.createElement('article'); card.className = 'draft-card';
         const copy = document.createElement('div');
         const tag = document.createElement('small'); tag.textContent = 'DRAFT · ' + choiceLabel('campaign-type', item.type, 'Campaign');
+        tag.prepend(window.NEXORA_ICONS.contentNode(item.type === 'Spin Wheel' ? 'wheel' : item.type === 'SMS' ? 'sms' : 'tag', {size:24}));
         const title = document.createElement('h3'); title.textContent = item.name;
         const desc = document.createElement('p'); desc.textContent = choiceLabel('campaign-goal', item.goal, 'No goal selected') + ' · ' + (item.audience || 'No audience selected') + (item.start ? ' · From ' + window.NEXORA_PO_TOOLS.date(item.start) : '');
         copy.append(tag,title,desc);
         const actions = document.createElement('div'); actions.className = 'draft-actions';
         const editButton = document.createElement('button'); editButton.type = 'button'; editButton.textContent = 'Edit'; editButton.addEventListener('click',() => edit(item));
         const copyButton = document.createElement('button'); copyButton.type = 'button'; copyButton.textContent = 'Duplicate'; copyButton.addEventListener('click',() => { const clone = {...item,id:String(Date.now())+'-'+Math.random().toString(36).slice(2,8),name:item.name+' (copy)',updatedAt:new Date().toISOString()}; drafts.push(clone); const stored = save(); drawDrafts(); $('manage-status').textContent = stored ? 'Draft duplicated in this browser.' : 'Draft duplicated for this session; the browser does not allow persistent storage.'; });
+        window.NEXORA_PO_TOOLS.decorateAction(editButton, 'edit'); window.NEXORA_PO_TOOLS.decorateAction(copyButton, 'copy');
         actions.append(editButton,copyButton); card.append(copy,actions); list.append(card);
       });
     }

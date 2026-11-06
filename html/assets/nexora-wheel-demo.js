@@ -4,14 +4,11 @@
   var base = new URL('.', document.currentScript.src);
   var dialog, disc, result, spin, opener, timer, rotation = 0, busy = false;
   var prizes = [
-    ['10% off', 'percent'], ['$5 reward', 'ticket'], ['Hand care', 'hand-coins'], ['5% off', 'percent'],
-    ['Small gift', 'gift'], ['Nail polish', 'paintbrush'], ['Next-visit offer', 'calendar-days'], ['Good luck', 'sparkles']
+    ['10% off', 'percent'], ['$5 reward', 'income'], ['Hand care', 'hand-care'], ['5% off', 'percent'],
+    ['Small gift', 'gift'], ['Nail polish', 'nail-polish'], ['Next-visit offer', 'calendar'], ['Good luck', 'sparkle']
   ];
   function icon(kind) {
-    var img = document.createElement('img');
-    img.src = new URL('icon-oneqr/issue-2040-oneqr-' + kind + '-3d.png', base).href;
-    img.alt = ''; img.setAttribute('aria-hidden', 'true');
-    return img;
+    return window.NEXORA_ICONS.contentNode(kind, {size:28});
   }
   function draw() {
     disc.replaceChildren();
@@ -36,6 +33,7 @@
       '<div class="wheel-preview"><small>ON-SCREEN EXPERIENCE · PREVIEW</small><h3 id="wheel-preview-name">Spin today, see you next time</h3><div class="wheel-frame"><span class="wheel-pointer" aria-hidden="true"></span><div class="wheel-disc" role="img"></div></div><p class="wheel-result" role="status" aria-live="polite">Press Spin to see a result</p><button class="button wheel-spin-button" type="button">Spin</button></div></div>' +
       '<div class="wheel-dialog-foot"><p>This spin is a preview. The NEXORA creation tool saves local drafts and does not issue real rewards.</p><a class="button">Create a campaign in NEXORA →</a></div>';
     dialog.querySelector('.wheel-dialog-foot a').href = new URL('../pages/products/spin-wheel/create.html', base).href;
+    dialog.querySelector('h2').prepend(window.NEXORA_ICONS.contentNode('wheel', {size:36}));
     disc = dialog.querySelector('.wheel-disc'); result = dialog.querySelector('.wheel-result'); spin = dialog.querySelector('.wheel-spin-button');
     prizes.forEach(function (prize, index) {
       var label = document.createElement('label'); label.className = 'wheel-prize-field' + (index === 7 ? ' no-prize' : '');

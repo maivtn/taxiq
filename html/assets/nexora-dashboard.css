@@ -190,3 +190,19 @@
   .nexora-dashboard .detail-marketing-grid > :last-child { flex-basis:100%; }
 }
 @media (max-width:360px) { .nexora-dashboard .pos-action { flex-basis:100%; min-height:135px; } }
+
+/* One content-artwork family across the directory and its functional cards. */
+.nexora-dashboard .nexora-content-icon { display:block; object-fit:contain; flex-shrink:0; }
+.nexora-dashboard .card-icon { border:0; border-radius:0; background:transparent; box-shadow:none; }
+.nexora-dashboard .card-icon .nexora-content-icon { width:52px; height:52px; filter:drop-shadow(0 4px 4px #25365a13); }
+.nexora-dashboard .detail-head h2 { display:flex; align-items:center; gap:12px; }
+.nexora-dashboard .detail-link-icon { display:flex; align-items:center; justify-content:center; flex:0 0 42px; width:42px; height:42px; }
+.nexora-dashboard .detail-link-copy { flex:1; }
+.nexora-dashboard .detail-link.unavailable .detail-link-icon { opacity:.55; }
+.nexora-dashboard .menu-sync-panel h3 { display:flex; align-items:center; gap:8px; }
+@media(max-width:767px) {
+ .nexora-dashboard .detail-head h2 > .nexora-content-icon { width:34px; height:34px; }
+ .nexora-dashboard .detail-link-icon { flex-basis:34px; width:34px; height:34px; }
+ .nexora-dashboard .detail-link-icon > .nexora-content-icon { width:30px; height:30px; }
+ .nexora-dashboard .card-icon .nexora-content-icon { width:46px; height:46px; }
+}
