@@ -18,7 +18,7 @@
   const state = {
     mode: new URLSearchParams(location.search).get('mode') === 'checkout' ? 'checkout' : 'edit',
     groups: [
-      { id: 'unassigned', tech: '', lines: [line('Paris Pearl', 'Pedicure', 75)] },
+      { id: 'andy', tech: 'ANDY', lines: [line('Paris Pearl', 'Pedicure', 75)] },
       { id: 'nexora', tech: 'NEXORA_02', lines: [
         line('President 7 Star', 'Pedicure', 499, 'Completed', [['Hot Stone Massage Added on', 10]]),
         line('Paris Pearl', 'Pedicure', 75, 'Completed', [['Shellac Polish Change Hand', 25], ['Hot Stone Massage Added on', 10]]),
@@ -27,7 +27,7 @@
         line('test', '', 2, '', [], true),
       ] },
     ],
-    activeGroup: 'unassigned', category: 'All', search: '', paymentMethod: null,
+    activeGroup: 'andy', category: 'All', search: '', paymentMethod: null, hasPendingChanges: true,
     receipt: 'No Receipt', tip: 0, tipType: 'amount', tipChoice: null,
     discountAll: false, showMore: false, collapsed: false, replacingLineId: null, addonTargetLineId: null, pendingRemoveLineId: null,
   };
@@ -60,29 +60,33 @@
   }
 
   function renderGroups() {
-    const serviceCount = allLines().filter(item => !item.custom).length;
-    const customCount = allLines().filter(item => item.custom).length;
+    const serviceCount = allLines().length;
     const addons = allLines().reduce((sum, item) => sum + item.addons.length, 0);
     const techCount = state.groups.filter(group => group.tech && group.lines.length).length;
-    $('service-count').textContent = `${techCount} tech · ${serviceCount} services${customCount ? ` · ${customCount} custom` : ''}${addons ? ` · ${addons} add-ons` : ''}`;
+    $('service-count').textContent = `${techCount} tech${techCount === 1 ? '' : 's'} · ${serviceCount} services${addons ? ` · ${addons} add-ons` : ''}`;
     $('technician-groups').hidden = state.collapsed;
     $('add-technician').hidden = state.collapsed;
     $('collapse-ticket').textContent = state.collapsed ? '⌄' : '⌃';
     $('collapse-ticket').setAttribute('aria-expanded', String(!state.collapsed));
     $('technician-groups').innerHTML = state.groups.map(group => {
       const groupTotal = group.lines.reduce((sum, item) => sum + lineTotal(item), 0);
+      const itemCount = group.lines.reduce((sum, item) => sum + 1 + item.addons.length, 0);
       const rows = group.lines.map(item => {
         const status = item.status ? `<span class="status ${item.status === 'Completed' ? 'completed' : 'in-service'}">${escape(item.status)}</span>` : '';
         const name = item.custom ? `<div class="custom-inputs"><input aria-label="Custom service name" data-custom-name="${item.id}" value="${escape(item.name)}"><span>$</span><input aria-label="Custom service price" data-custom-price="${item.id}" inputmode="decimal" value="${item.price}"></div>` : `<span class="ticket-line-name">${escape(item.category)} · ${escape(item.name)}</span>${status}`;
         const change = item.custom ? '' : `<button type="button" class="purple" data-change-service="${item.id}">Change service</button><button type="button" class="purple" data-add-on="${item.id}">+ Add-On</button>`;
         return `<div class="ticket-line" data-line="${item.id}"><div class="ticket-line-head"><div><span class="main-badge">Main services</span>${name}</div><strong class="ticket-line-price">${money(item.price)}</strong></div><div class="line-actions"><select aria-label="Assign technician to ${escape(item.name)}" data-line-tech="${item.id}">${technicianOptions(group.tech)}</select>${change}<button type="button" class="purple" data-add-custom="${group.id}">+ Custom</button><button type="button" class="yellow" data-discount="${item.id}">${item.discount ? 'Undo discount' : 'Discount'}</button><button type="button" class="danger" data-remove-line="${item.id}">Remove</button></div>${item.addons.map((addon, index) => `<div class="add-on-line"><span>↳ ${escape(addon.name)}${item.discount ? '' : ''}</span><span>${money(addon.price)} <button type="button" data-remove-addon="${item.id}|${index}" aria-label="Remove ${escape(addon.name)}">×</button></span></div>`).join('')}</div>`;
       }).join('');
-      return `<section class="technician-group ${state.activeGroup === group.id ? 'active' : ''}" data-group="${group.id}"><div class="group-heading"><label for="tech-${group.id}">Tech.</label><select id="tech-${group.id}" data-group-tech="${group.id}">${technicianOptions(group.tech)}</select><div class="group-subtotal">${group.lines.length} items<strong>${money(groupTotal)}</strong></div><button class="remove-group" type="button" data-remove-group="${group.id}" aria-label="Remove technician group">×</button></div><div class="group-body">${rows}<div class="group-actions"><button type="button" data-add-main="${group.id}">＋ Add main service</button><button type="button" data-add-custom="${group.id}">＋ Custom service</button></div></div></section>`;
+      return `<section class="technician-group ${state.activeGroup === group.id ? 'active' : ''}" data-group="${group.id}"><div class="group-heading"><label for="tech-${group.id}">Tech.</label><select id="tech-${group.id}" data-group-tech="${group.id}">${technicianOptions(group.tech)}</select><div class="group-subtotal">${itemCount} item${itemCount === 1 ? '' : 's'}<strong>${money(groupTotal)}</strong></div><button class="remove-group" type="button" data-remove-group="${group.id}" aria-label="Remove technician group">×</button></div><div class="group-body">${rows}<div class="group-actions"><button type="button" data-add-main="${group.id}">＋ Add main service</button><button type="button" data-add-custom="${group.id}">＋ Custom service</button></div></div></section>`;
     }).join('');
   }
 
   function previewSections() {
-    return state.groups.filter(group => group.lines.length).map(group => `<div class="preview-group"><div class="preview-group-heading"><span>${group.tech ? `Tech. ${escape(group.tech)}` : 'Technician needed'}</span><span>${money(group.lines.reduce((sum, item) => sum + lineTotal(item), 0))}</span></div>${group.lines.map(item => `<div class="preview-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price - item.discount)}</strong></div>${item.addons.map(addon => `<div class="preview-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price)}</strong></div>`).join('')}`).join('')}</div>`).join('');
+    return state.groups.filter(group => group.lines.length).map(group => {
+      const itemCount = group.lines.reduce((sum, item) => sum + 1 + item.addons.length, 0);
+      const groupTotal = group.lines.reduce((sum, item) => sum + lineTotal(item), 0);
+      return `<div class="preview-group"><div class="preview-group-heading"><span>${group.tech ? `Tech. ${escape(group.tech)}` : 'Technician needed'}</span><small>${itemCount} item${itemCount === 1 ? '' : 's'} &nbsp;·&nbsp; ${money(groupTotal)}</small></div>${group.lines.map(item => `<div class="preview-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price - item.discount)}</strong></div>${item.addons.map(addon => `<div class="preview-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price)}</strong></div>`).join('')}`).join('')}</div>`;
+    }).join('');
   }
 
   function renderPreview() {
@@ -125,10 +129,13 @@
 
   function renderAction() {
     const button = $('checkout-button');
+    $('preview-actions').hidden = state.mode !== 'edit';
+    $('action-area').hidden = state.mode !== 'checkout';
     if (state.mode === 'edit') {
-      button.textContent = `Checkout · ${money(subtotal())}`;
-      button.disabled = !allLines().length;
-      button.setAttribute('aria-disabled', String(missingTech()));
+      const editButton = $('edit-primary-action');
+      editButton.querySelector('span').textContent = state.hasPendingChanges ? 'Assign Services' : 'Checkout';
+      editButton.classList.toggle('checkout-ready', !state.hasPendingChanges);
+      editButton.setAttribute('aria-disabled', String(missingTech()));
     } else {
       button.textContent = `Pay · ${money(total())}`;
       button.disabled = !state.paymentMethod || missingTech() || !allLines().length;
@@ -152,6 +159,14 @@
     document.querySelector('.ticket-workspace').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function renderPrintPreview() {
+    const groups = state.groups.filter(group => group.lines.length);
+    const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date()).replace(' at ', ' ');
+    $('print-pages').innerHTML = groups.map((group, index) => `<article class="print-page"><div class="print-title">Ticket #1</div><div class="print-date">${escape(date)}</div><div class="print-customer">Customer: <strong>Mai test Upload Image 1</strong></div><div class="print-tech">${escape(group.tech || 'Technician needed')}</div>${group.lines.map(item => `<div class="print-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price - item.discount)}</strong></div>${item.addons.map(addon => `<div class="print-item print-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price)}</strong></div>`).join('')}`).join('')}${group.tech === 'NEXORA_02' ? '<div class="print-note"><strong>NOTE</strong><p><b>Pedicure · President 7 Star:</b> Client requested a shorter finish</p></div>' : ''}<div class="print-page-number">${index + 1} / ${groups.length}</div></article>`).join('');
+  }
+
+  function markPending() { state.hasPendingChanges = true; }
+
   function addService(category, name) {
     const source = catalog.find(group => group.category === category);
     const item = source?.items.find(item => item[0] === name);
@@ -159,26 +174,26 @@
     if (state.addonTargetLineId) {
       const found = findLine(state.addonTargetLineId);
       if (found) found.item.addons.push({ name, price: item[1] });
-      state.addonTargetLineId = null; render(); return;
+      state.addonTargetLineId = null; markPending(); render(); return;
     }
     if (state.replacingLineId) {
       const found = findLine(state.replacingLineId);
       if (found) { found.item.name = name; found.item.category = category; found.item.price = item[1]; found.item.discount = 0; }
-      state.replacingLineId = null; render(); return;
+      state.replacingLineId = null; markPending(); render(); return;
     }
     const group = findGroup(state.activeGroup) || state.groups[0];
-    group.lines.push(line(name, category, item[1]));
+    group.lines.push(line(name, category, item[1])); markPending();
     render();
   }
   function addCustom(groupId) {
     const group = findGroup(groupId); if (!group) return;
     const item = line('', '', 0, '', [], true);
-    group.lines.push(item); state.activeGroup = groupId; render();
+    group.lines.push(item); state.activeGroup = groupId; markPending(); render();
     document.querySelector(`[data-custom-name="${item.id}"]`)?.focus();
   }
   function assignGroup(groupId, tech) {
     const group = findGroup(groupId); if (!group) return;
-    group.tech = tech; state.activeGroup = groupId; render();
+    group.tech = tech; state.activeGroup = groupId; markPending(); render();
   }
   function assignLine(id, tech) {
     const found = findLine(id); if (!found) return;
@@ -187,7 +202,7 @@
     group.lines = group.lines.filter(line => line.id !== id);
     let target = state.groups.find(group => group.tech === tech);
     if (!target) { target = { id: `group-${nextId++}`, tech, lines: [] }; state.groups.push(target); }
-    target.lines.push(item); state.activeGroup = target.id;
+    target.lines.push(item); state.activeGroup = target.id; markPending();
     if (!group.lines.length && group.id !== 'unassigned') state.groups = state.groups.filter(existing => existing.id !== group.id);
     render();
   }
@@ -199,9 +214,9 @@
     if (button.dataset.addService) { const [category, name] = button.dataset.addService.split('|'); addService(category, name); return; }
     if (button.dataset.addMain) { state.activeGroup = button.dataset.addMain; renderCatalog(); $('service-search').focus(); return; }
     if (button.dataset.addCustom) { addCustom(button.dataset.addCustom); return; }
-    if (button.dataset.removeLine) { const found = findLine(button.dataset.removeLine); if (found) found.group.lines = found.group.lines.filter(line => line.id !== found.item.id); render(); return; }
-    if (button.dataset.removeGroup) { state.groups = state.groups.filter(group => group.id !== button.dataset.removeGroup); if (!state.groups.length) state.groups.push({ id: `group-${nextId++}`, tech: '', lines: [] }); state.activeGroup = state.groups[0].id; render(); return; }
-    if (button.dataset.removeAddon) { const [id, index] = button.dataset.removeAddon.split('|'); const found = findLine(id); if (found) found.item.addons.splice(Number(index), 1); render(); return; }
+    if (button.dataset.removeLine) { const found = findLine(button.dataset.removeLine); if (found) found.group.lines = found.group.lines.filter(line => line.id !== found.item.id); markPending(); render(); return; }
+    if (button.dataset.removeGroup) { state.groups = state.groups.filter(group => group.id !== button.dataset.removeGroup); if (!state.groups.length) state.groups.push({ id: `group-${nextId++}`, tech: '', lines: [] }); state.activeGroup = state.groups[0].id; markPending(); render(); return; }
+    if (button.dataset.removeAddon) { const [id, index] = button.dataset.removeAddon.split('|'); const found = findLine(id); if (found) found.item.addons.splice(Number(index), 1); markPending(); render(); return; }
     if (button.dataset.paymentRemoveLine) { state.pendingRemoveLineId = button.dataset.paymentRemoveLine; renderPayment(); return; }
     if (button.dataset.confirmPaymentRemove) { const found = findLine(button.dataset.confirmPaymentRemove); if (found) found.group.lines = found.group.lines.filter(line => line.id !== found.item.id); state.pendingRemoveLineId = null; render(); return; }
     if (button.dataset.cancelPaymentRemove) { state.pendingRemoveLineId = null; renderPayment(); return; }
@@ -213,16 +228,19 @@
     if (button.dataset.receipt) { state.receipt = button.dataset.receipt; renderPayment(); return; }
     if (button.dataset.tipType) { state.tipType = button.dataset.tipType; state.tipChoice = null; renderTipValues(); return; }
     if (button.dataset.tipValue) { state.tipChoice = Number(button.dataset.tipValue); renderTipValues(); return; }
-    if (button.id === 'add-technician') { const group = { id: `group-${nextId++}`, tech: '', lines: [] }; state.groups.push(group); state.activeGroup = group.id; render(); document.querySelector(`[data-group-tech="${group.id}"]`)?.focus(); return; }
+    if (button.id === 'add-technician') { const group = { id: `group-${nextId++}`, tech: '', lines: [] }; state.groups.push(group); state.activeGroup = group.id; markPending(); render(); document.querySelector(`[data-group-tech="${group.id}"]`)?.focus(); return; }
     if (button.id === 'collapse-ticket') { state.collapsed = !state.collapsed; renderGroups(); return; }
     if (button.id === 'back-button') { if (state.mode === 'checkout') setMode('edit'); return; }
-    if (button.id === 'checkout-button') { if (state.mode === 'edit') { if (missingTech()) { state.collapsed = false; renderGroups(); const group = state.groups.find(group => !group.tech && group.lines.length); document.querySelector(`[data-group-tech="${group.id}"]`)?.focus(); } else setMode('checkout'); } else if (!button.disabled) { $('confirm-method').textContent = `Payment method: ${methods.find(method => method[0] === state.paymentMethod)?.[1] || 'Other'}`; $('confirm-total').textContent = money(total()); $('confirm-dialog').showModal(); } return; }
+    if (button.id === 'edit-primary-action') { if (missingTech()) { state.collapsed = false; renderGroups(); const group = state.groups.find(group => !group.tech && group.lines.length); document.querySelector(`[data-group-tech="${group.id}"]`)?.focus(); } else if (state.hasPendingChanges) { state.hasPendingChanges = false; renderAction(); } else setMode('checkout'); return; }
+    if (button.id === 'checkout-button') { if (!button.disabled) { $('confirm-method').textContent = `Payment method: ${methods.find(method => method[0] === state.paymentMethod)?.[1] || 'Other'}`; $('confirm-total').textContent = money(total()); $('confirm-dialog').showModal(); } return; }
     if (button.id === 'add-tip') { state.tipType = 'amount'; state.tipChoice = state.tip || null; renderTipValues(); $('tip-dialog').showModal(); return; }
     if (button.id === 'close-tip') { $('tip-dialog').close(); return; }
     if (button.id === 'hand-to-customer') { const facing = $('tip-dialog').classList.toggle('customer-facing'); button.textContent = facing ? 'Back to staff' : 'Hand to customer'; $('customer-tip-title').hidden = !facing; return; }
     if (button.id === 'save-tip') { const input = $('tip-values').querySelector('input'); const value = input?.value ? Number(input.value) : state.tipChoice; if (!Number.isFinite(value) || value < 0) return; state.tip = state.tipType === 'percent' ? Math.round(subtotal() * value) / 100 : value; $('tip-dialog').close(); render(); return; }
     if (button.id === 'remove-tip') { state.tip = 0; $('tip-dialog').close(); render(); return; }
-    if (button.id === 'print-ticket') { window.print(); return; }
+    if (button.id === 'print-ticket') { renderPrintPreview(); $('print-dialog').showModal(); return; }
+    if (button.classList.contains('close-print')) { $('print-dialog').close(); return; }
+    if (button.id === 'print-now') { window.print(); return; }
     if (button.id === 'confirm-pay') { $('confirm-dialog').close(); return; }
     if (button.classList.contains('close-confirm')) { $('confirm-dialog').close(); return; }
   });
@@ -230,8 +248,8 @@
     const field = event.target;
     if (field.dataset.groupTech) assignGroup(field.dataset.groupTech, field.value);
     if (field.dataset.lineTech) assignLine(field.dataset.lineTech, field.value);
-    if (field.dataset.customName) { const found = findLine(field.dataset.customName); if (found) found.item.name = field.value; renderPreview(); renderPayment(); }
-    if (field.dataset.customPrice) { const found = findLine(field.dataset.customPrice); if (found) found.item.price = Math.max(0, Number(field.value) || 0); render(); }
+    if (field.dataset.customName) { const found = findLine(field.dataset.customName); if (found) found.item.name = field.value; markPending(); renderPreview(); renderPayment(); renderAction(); }
+    if (field.dataset.customPrice) { const found = findLine(field.dataset.customPrice); if (found) found.item.price = Math.max(0, Number(field.value) || 0); markPending(); render(); }
   });
   $('service-search').addEventListener('input', event => { state.search = event.target.value; renderCatalog(); });
   $('tip-values').addEventListener('input', () => { state.tipChoice = null; updateTipSave(); });
