@@ -1,0 +1,230 @@
+/* Visual layer for public pages reached from Home. PO markup and handlers stay intact. */
+.public-menu-page {
+  --public-ink: #1b2c4a;
+  --public-muted: #40536f;
+  --public-line: #d9e2ee;
+  --public-primary: #6250cf;
+  -webkit-text-size-adjust: 100%;
+}
+.public-menu-page :where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid var(--public-primary);
+  outline-offset: 3px;
+}
+.public-menu-page :where(h1, h2, h3) { text-wrap: balance; }
+.public-menu-page :where(p, li, dd, a, button) { overflow-wrap: break-word; }
+.public-menu-page :where(button, a, input, select, textarea) { touch-action: manipulation; }
+
+/* Product introductions: retain the hero and all controls without a fixed empty stage. */
+.public-product-page .hero { min-height: 0; }
+.public-product-page .hero-content { min-height: 430px; padding-block: 48px 36px; }
+.public-product-page .hero-copy { min-width: 0; }
+.public-product-page .hero h1 { font-size: clamp(38px, 5.4vw, 76px); }
+.public-product-page .hero-bottom { height: auto; min-height: 76px; gap: 18px; padding-block: 14px; }
+.public-product-page .hero-controls { gap: 6px; }
+.public-product-page .hero-controls button { min-width: 44px; min-height: 44px; }
+.public-product-page .hero-controls button svg,
+.public-product-page .ecosystem-spotlight-toggle svg { pointer-events: none; }
+.public-product-page .hero-dots button { width: 44px; min-width: 44px; min-height: 44px; }
+.public-product-page .hero-scroll { line-height: 1.5; white-space: normal; }
+.public-product-page .hero-slide-caption strong,
+.public-product-page .hero-slide-caption strong span:last-child { white-space: normal; overflow: visible; text-overflow: clip; }
+.public-product-page .intro { padding-block: 48px; }
+.public-product-page .intro h2 { margin-top: 10px; }
+.public-product-page .section-pad { padding-block: 56px; }
+.public-product-page .product-story { padding-bottom: 48px; }
+.public-product-page .story-grid { gap: 14px; }
+.public-product-page .story-card { padding: 22px; }
+.public-product-page .features .feature-card { padding: 22px; }
+.public-product-page .scenario-button { min-height: 76px; }
+.public-product-page .scenario-button > .scenario-label { overflow-wrap: break-word; }
+.public-product-page .faq summary { min-height: 44px; align-items: center; line-height: 1.5; }
+.public-product-page .faq details { padding-block: 12px; }
+.public-product-page .product-footer-bottom nav { gap: 8px 20px; }
+.public-product-page .product-footer-bottom nav a { display: inline-flex; align-items: center; min-height: 36px; line-height: 1.5; }
+.public-product-page .hub-grid { gap: 18px; }
+.public-product-page .hub-card { border-radius: 18px; box-shadow: 0 8px 24px #1729480b; }
+.public-product-page .hub-card-body { padding: 20px; }
+.public-product-page .hub-card-body > span { color: var(--public-muted); line-height: 1.65; }
+
+/* Resolve the PO video poster beside this stylesheet, independent of page depth. */
+.public-product-page .video-placeholder::before { background-image: linear-gradient(0deg,#071531f2,#1022475e 70%),var(--public-video-poster); }
+.public-product-page .video-placeholder[style*="ai-marketing-audience-v2.png"] { --public-video-poster:url("ai-marketing-audience-v2.png"); }
+.public-product-page .video-placeholder[style*="spin-wheel-digital-guest.jpg"] { --public-video-poster:url("spin-wheel-digital-guest.jpg"); }
+.public-product-page .video-placeholder[style*="salon-gift.jpg"] { --public-video-poster:url("salon-gift.jpg"); }
+.public-product-page .video-placeholder[style*="one-qr-salon-scan-v4.png"] { --public-video-poster:url("one-qr-salon-scan-v4.png"); }
+.public-product-page .video-placeholder[style*="salon-finance.jpg"] { --public-video-poster:url("salon-finance.jpg"); }
+.public-product-page .video-placeholder[style*="si-pos-operations-hub.jpg"] { --public-video-poster:url("si-pos-operations-hub.jpg"); }
+.public-product-page .video-placeholder[style*="salon-tax-v2.jpg"] { --public-video-poster:url("salon-tax-v2.jpg"); }
+.public-product-page .video-placeholder[style*="salon-reception.jpg"] { --public-video-poster:url("salon-reception.jpg"); }
+.public-product-page .video-placeholder[style*="ai-voice-call-reception.jpg"] { --public-video-poster:url("ai-voice-call-reception.jpg"); }
+.public-product-page .video-placeholder[style*="community-feed.jpg"] { --public-video-poster:url("community-feed.jpg"); }
+.public-product-page .video-placeholder[style*="salon-analytics-v2.jpg"] { --public-video-poster:url("salon-analytics-v2.jpg"); }
+.public-product-page .video-placeholder[style*="salon-reviews-v2.jpg"] { --public-video-poster:url("salon-reviews-v2.jpg"); }
+
+/* About and Founder keep their existing light and dark sections. */
+.public-about-page .site-language a,
+.public-about-page .site-nav-links a,
+.public-about-page .site-nav .nav-visit { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; }
+.public-about-page .hero-nexora-touch .hero-inner { gap: 28px; }
+.public-about-page .section { margin-top: 24px; }
+.public-about-page [data-story-previous],
+.public-about-page [data-story-next] { min-width: 44px; min-height: 44px; }
+.public-about-page .button { min-height: 44px; line-height: 1.45; }
+.public-founder-page .founder-language a,
+.public-founder-page .founder-back-home { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; }
+.public-founder-page .founder-page-section { padding: 28px; }
+.public-founder-page .founder-page-section p { max-width: 90ch; }
+.public-founder-page .founder-brand-link { display: inline-flex; align-items: center; min-height: 44px; line-height: 1.5; }
+.public-founder-page .founder-product-links a { display: flex; align-items: center; min-height: 44px; }
+
+/* Events are information previews in the PO, without live registration. */
+.public-event-page .event-home,
+.public-event-page .event-types a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; }
+.public-event-page .event-breadcrumb { flex-wrap: wrap; row-gap: 4px; font-size: 12px; }
+.public-event-page .event-breadcrumb a { display: inline-flex; align-items: center; min-height: 36px; }
+.public-event-page .event-card { padding: 24px; border-radius: 18px; }
+.public-event-page .event-card h2 { font-size: 19px; }
+.public-event-page .event-card p { color: var(--public-muted); font-size: 14px; line-height: 1.65; }
+.public-event-page .event-empty { padding: 28px 18px; gap: 10px; }
+.public-event-page .event-empty strong { font-size: 15px; }
+.public-event-page .event-empty small { color: #52627e; font-size: 13px; line-height: 1.6; }
+.public-event-page .event-empty > span { font-size: 0; background: #f0edff; }
+.public-event-page .event-empty > span::before {
+  content: "";
+  width: 32px;
+  height: 32px;
+  background: center / contain no-repeat url("../../assets/icon-oneqr/issue-2040-oneqr-calendar-days-3d.png");
+}
+.public-event-page .event-facts div { padding-block: 14px; font-size: 13px; line-height: 1.5; }
+.public-event-page .event-facts dt { color: #52627e; }
+.public-event-page .event-foot { color: #52627e; font-size: 12px; }
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .public-product-page .hero-content { min-height: 360px; padding-block: 36px 28px; }
+  .public-product-page .hero-copy { max-width: 650px; }
+  .public-product-page .hero h1 { font-size: clamp(40px, 6vw, 58px); }
+  .public-product-page .hero-bottom { flex-wrap: wrap; gap: 12px 20px; }
+  .public-product-page .voice-hero-status { position: relative; inset: auto; width: calc(100% - 48px); margin: 0 auto 20px; }
+  .public-product-page .intro { gap: 22px; padding-block: 36px; }
+  .public-product-page .section-pad { padding-block: 44px; }
+  .public-product-page .scenario-list { align-items: stretch; }
+  .public-product-page .scenario-button { min-height: 100px; }
+  .public-product-page .hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .public-about-page .hero-nexora-touch .hero-inner { gap: 24px; padding: 30px; }
+  .public-about-page .site-nav-links { gap: 12px; }
+  .public-founder-page .founder-page-hero { grid-template-columns: 160px minmax(0, 1fr); gap: 26px; padding: 28px; }
+  .public-founder-page .founder-page-hero .founder-portrait { width: 160px; }
+  .public-founder-page .founder-principle-card { padding: 18px; }
+}
+
+@media (max-width: 600px) {
+  .public-menu-page { scroll-padding-top: 110px; }
+  .public-product-page .top-inner { gap: 8px 12px; padding-top: 8px; }
+  .public-product-page .top .top-inner > nav { gap: 12px; }
+  .public-product-page .top .top-inner > nav a { min-height: 44px; font-size: 12px; }
+  .public-product-page .top select { min-height: 44px; max-width: 130px; padding-inline-end: 44px; font-size: 12px; }
+  .public-product-page .hero-content { min-height: 0; padding-block: 30px 24px; }
+  .public-product-page .hero h1 { font-size: clamp(34px, 10vw, 44px); line-height: 1.08; margin-bottom: 14px; }
+  .public-product-page .hero-lead { margin-bottom: 12px; font-size: 22px; line-height: 1.3; }
+  .public-product-page .hero-deck { margin-bottom: 0; font-size: 15px; line-height: 1.65; }
+  .public-product-page .hero-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+  .public-product-page .hero-actions .button { width: 100%; min-width: 0; min-height: 50px; gap: 8px; padding: 10px 12px; line-height: 1.45; }
+  .public-product-page .hero-actions .button > span:first-child { min-width: 0; }
+  .public-product-page .hero-actions .direction-icon { flex-shrink: 0; }
+  .public-product-page .hero-bottom { display: flex; flex-wrap: wrap; align-items: center; min-height: 0; gap: 8px; padding-block: 12px; }
+  .public-product-page .hero-slide-caption { flex: 1 1 100%; min-width: 0; }
+  .public-product-page .hero-controls { justify-content: flex-start; gap: 8px; width: auto; }
+  .public-product-page .hero-dots { gap: 2px; }
+  .public-product-page .hero-dots button { width: 44px; }
+  .public-product-page .hero-scroll { margin-inline-start: auto; }
+  .public-product-page .voice-hero-status { position: relative; inset: auto; width: calc(100% - 32px); margin: 0 auto 16px; padding: 14px 16px; }
+  .public-product-page .voice-hero-state span { font-size: 12px; line-height: 1.5; }
+  .public-product-page .hero.oneqr-menu-active { display: flex; flex-direction: column; min-height: 0; }
+  .public-product-page .hero.oneqr-menu-active .hero-content { order: 1; padding-block: 24px; }
+  .public-product-page .hero.oneqr-menu-active .hero-bottom { order: 2; }
+  .public-product-page .hero.oneqr-menu-active .oneqr-hero-demo { position: relative; inset: auto; order: 0; width: min(290px, calc(100% - 48px)); margin: 20px auto 0; transform: none; }
+  .public-product-page .oneqr-demo-options button { min-height: 40px; padding: 7px 9px; }
+  .public-product-page .oneqr-demo-options span { font-size: 11px; line-height: 1.4; }
+  .public-product-page .oneqr-demo-response { font-size: 11px; line-height: 1.5; }
+  .public-product-page .intro { gap: 18px; padding-block: 32px; }
+  .public-product-page .intro-body > p { font-size: 16px; line-height: 1.65; }
+  .public-product-page .intro-rule { padding-top: 14px; }
+  .public-product-page .section-pad { padding-block: 36px; }
+  .public-product-page .section-head { gap: 14px; margin-bottom: 22px; }
+  .public-product-page .section-head h2,
+  .public-product-page .journey h2,
+  .public-product-page .connections h2,
+  .public-product-page .faq h2 { font-size: clamp(27px, 7.6vw, 32px); line-height: 1.18; }
+  .public-product-page .product-story { padding-bottom: 32px; }
+  .public-product-page .story-grid { gap: 10px; }
+  .public-product-page .story-card { padding: 18px; }
+  .public-product-page .story-card p { font-size: 14px; }
+  .public-product-page .features .feature-card { padding: 18px; border-radius: 16px; }
+  .public-product-page .features .feature-card-head { margin-bottom: 12px; }
+  .public-product-page .features .feature-card p { font-size: 14px; line-height: 1.65; }
+  .public-product-page .features .feature-toc a { min-height: 44px; }
+  .public-product-page .scenario-button { min-height: 64px; padding: 12px 14px; }
+  .public-product-page .display-body { padding: 20px; }
+  .public-product-page .display-body h3 { font-size: 25px; }
+  .public-product-page .journey-layout,
+  .public-product-page .connection-layout,
+  .public-product-page .faq-layout { gap: 24px; }
+  .public-product-page .journey-step { padding: 16px; }
+  .public-product-page .journey-step span { margin-bottom: 12px; }
+  .public-product-page .faq summary { font-size: 14px; }
+  .public-product-page .faq details p { margin-inline-end: 0; font-size: 14px; }
+  .public-product-page .hub-intro { padding-top: 8px; }
+  .public-product-page .hub-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .public-product-page .hub-card { display: grid; grid-template-columns: 92px minmax(0, 1fr); }
+  .public-product-page .hub-card > img { width: 100%; height: 100%; min-height: 0; object-fit: cover; }
+  .public-product-page .hub-card-body { min-width: 0; padding: 16px; }
+  .public-product-page .hub-card-body > span { font-size: 14px; }
+  .public-product-page .product-footer-bottom nav a { min-height: 44px; }
+
+  .public-about-page .site-header-inner { padding-top: 8px; }
+  .public-about-page .site-nav-links { margin-top: 6px; padding-block: 0; gap: 8px; }
+  .public-about-page .site-nav-links a { font-size: 12px; white-space: normal; text-align: center; line-height: 1.35; }
+  .public-about-page .site-language a { min-width: 30px; }
+  .public-about-page .hero-nexora-touch .hero-inner { padding: 20px; gap: 20px; }
+  .public-about-page .hero-nexora-touch h1 { font-size: clamp(28px, 7.7vw, 34px); line-height: 1.14; }
+  .public-about-page .hero-nexora-touch .hero-summary { font-size: 15px; line-height: 1.6; }
+  .public-about-page .hero-logo-card-nexora-touch { padding: 12px; gap: 8px; }
+  .public-about-page .hero-logo-card-nexora-touch > img { height: 42px; max-height: 42px; }
+  .public-about-page .hero-product-shot { height: 160px; }
+  .public-about-page .section { margin-top: 18px; padding: 20px; }
+  .public-about-page .founder { gap: 18px; }
+  .public-about-page .founder-social-links a { width: 44px; height: 44px; }
+
+  .public-founder-page .founder-page-header-inner { padding: 8px 14px; gap: 8px; }
+  .public-founder-page .founder-page-header-inner > a:first-child { padding: 6px; }
+  .public-founder-page .founder-page-header img { width: 112px; }
+  .public-founder-page .founder-page-header-actions { gap: 6px; }
+  .public-founder-page .founder-page-header .founder-back-home { padding: 6px 8px; font-size: 11px; }
+  .public-founder-page main { padding: 16px 14px 40px; }
+  .public-founder-page .founder-page-hero { padding: 20px; gap: 18px; }
+  .public-founder-page .founder-page-hero .founder-portrait { width: 112px; }
+  .public-founder-page .founder-page-hero h1 { font-size: 30px; }
+  .public-founder-page .founder-page-intro { font-size: 15px; line-height: 1.6; }
+  .public-founder-page .founder-page-social { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
+  .public-founder-page .founder-page-social .founder-network-link { min-width: 0; width: 100%; min-height: 44px; }
+  .public-founder-page .founder-page-section { margin-top: 16px; padding: 20px; }
+  .public-founder-page .founder-story { font-size: 15px; line-height: 1.7; }
+  .public-founder-page .founder-principle-card { padding: 16px; }
+  .public-founder-page .founder-principle-card p,
+  .public-founder-page .founder-principle-card li { font-size: 14px; }
+
+  .public-event-page .event-header { gap: 12px; min-height: 68px; padding: 10px 16px; }
+  .public-event-page .event-logo img { width: 136px; }
+  .public-event-page .event-main { padding-top: 20px; padding-bottom: 40px; }
+  .public-event-page .event-breadcrumb { margin-bottom: 16px; }
+  .public-event-page .event-hero { padding: 26px 22px; }
+  .public-event-page .event-hero p { font-size: 15px; }
+  .public-event-page .event-hero small { margin-top: 18px; font-size: 11px; }
+  .public-event-page .event-types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-block: 16px; }
+  .public-event-page .event-types a { padding: 8px; line-height: 1.4; text-align: center; }
+  .public-event-page .event-card { padding: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-menu-page { scroll-behavior: auto; }
+}
