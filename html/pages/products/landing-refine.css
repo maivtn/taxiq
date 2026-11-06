@@ -269,3 +269,25 @@ a:hover .direction-icon,a:focus-visible .direction-icon,button:hover .direction-
  .scenario-art > .nexora-content-icon { width:26px; height:26px; }
  .display-icon > .nexora-content-icon { width:34px; height:34px; }
 }
+
+/* Product artwork matches the semantic icons already used on Home and Dashboard. */
+.ecosystem-node-art,
+.ecosystem-product-icon,
+.ecosystem-center-icon { position:relative; }
+.ecosystem-art-image { display:block; width:36px; height:36px; object-fit:contain; pointer-events:none; }
+.ecosystem-art-image.is-secondary { position:absolute; right:-2px; bottom:-1px; width:17px; height:17px; padding:1px; border-radius:5px; background:#fff; }
+.ecosystem-center-icon { width:48px; height:48px; padding:5px; border:1px solid #ffffff66; border-radius:14px; background:#ffffffeb; }
+.ecosystem-center-icon .ecosystem-art-image { width:38px; height:38px; }
+.ecosystem-center-icon .ecosystem-art-image.is-secondary { width:19px; height:19px; }
+.ecosystem-visual .ecosystem-product { min-height:44px; }
+.ecosystem-visual .ecosystem-product-icon { width:30px; height:30px; background:transparent; }
+.ecosystem-product-icon .ecosystem-art-image { width:27px; height:27px; }
+.ecosystem-product-icon .ecosystem-art-image.is-secondary { width:13px; height:13px; }
+@media(max-width:600px){
+  .ecosystem-node-art .ecosystem-art-image{width:28px;height:28px}
+  .ecosystem-node-art .ecosystem-art-image.is-secondary{width:14px;height:14px}
+  .ecosystem-center-icon{width:38px;height:38px;padding:4px;border-radius:11px}
+  .ecosystem-center-icon .ecosystem-art-image{width:30px;height:30px}
+  .ecosystem-center-icon .ecosystem-art-image.is-secondary{width:16px;height:16px}
+  .connections-ai-hub .ecosystem-products{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

@@ -203,6 +203,57 @@
   const ecosystemVisual = document.querySelector('.ecosystem-visual');
   const ecosystemNodes = ecosystemMap ? all('.ecosystem-node') : [];
   const ecosystemProducts = ecosystemVisual ? all('.ecosystem-product') : [];
+  const ecosystemIconFiles = {
+    'si-pos': 'icons/3d-fluency/pos.png',
+    'one-qr': 'icon-oneqr/issue-2040-oneqr-qr-code-3d.png',
+    'payments-payouts': 'icons/3d-fluency/payments.png',
+    'ai-hub': 'icon-oneqr/issue-2040-oneqr-bot-3d.png',
+    reviews: 'icon-oneqr/issue-2040-oneqr-star-3d.png',
+    'gift-card-center': 'gift-card-center/icon-gift-card.png',
+    analytics: 'icons/3d-fluency/analytics.png',
+    community: 'icon-oneqr/issue-2040-oneqr-users-round-3d.png',
+    'tax-iq': 'icons/3d-fluency/taxiq.png',
+    'ai-voice-sms': 'icon-oneqr/issue-2040-oneqr-phone-3d.png',
+    'ai-marketing': 'icon-oneqr/issue-2040-oneqr-megaphone-3d.png',
+    'spin-wheel': 'icons/iconscout/prize-wheel-10862879.webp'
+  };
+  const artworkBase = new URL('../../assets/', document.currentScript?.src || new URL('../landing.js', document.baseURI));
+  function decorateEcosystemIcon(node, slug) {
+    if (!node || !ecosystemIconFiles[slug]) return;
+    const image = document.createElement('img');
+    image.className = 'ecosystem-art-image';
+    image.src = new URL(ecosystemIconFiles[slug], artworkBase).href;
+    image.alt = '';
+    image.setAttribute('aria-hidden', 'true');
+    image.draggable = false;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.width = image.height = 36;
+    node.dataset.ecosystemIcon = slug;
+    node.setAttribute('aria-hidden', 'true');
+    node.replaceChildren(image);
+    if (slug === 'ai-voice-sms') {
+      const message = image.cloneNode();
+      message.classList.add('is-secondary');
+      message.src = new URL('icon-oneqr/issue-2040-oneqr-message-circle-3d.png', artworkBase).href;
+      node.append(message);
+    }
+  }
+  if (ecosystemMap) {
+    decorateEcosystemIcon(ecosystemMap.querySelector('.ecosystem-center-icon'), data.slug);
+    ecosystemNodes.forEach(node => decorateEcosystemIcon(node.querySelector('.ecosystem-node-art'), node.getAttribute('href').split('/')[1]));
+    ecosystemProducts.forEach(node => decorateEcosystemIcon(node.querySelector('.ecosystem-product-icon'), node.classList.contains('is-current') ? data.slug : node.getAttribute('href').split('/')[1]));
+    const credits = document.querySelector('.product-footer-bottom nav');
+    if (credits && !credits.querySelector('[data-icon-credit]')) {
+      const credit = document.createElement('a');
+      credit.href = 'https://icons8.com';
+      credit.target = '_blank';
+      credit.rel = 'noopener noreferrer';
+      credit.dataset.iconCredit = 'icons8';
+      credit.textContent = 'Icons8';
+      credits.append(credit);
+    }
+  }
   const ecosystemSlugs = ecosystemMap ? [data.slug, ...ecosystemNodes.map(node => node.getAttribute('href').split('/')[1])] : [];
   let ecosystemIndex = 0;
   let ecosystemVisible = false;

@@ -1,0 +1,69 @@
+.product-video-trigger {
+  position: relative;
+  isolation: isolate;
+  cursor: pointer;
+  padding: 0;
+  text-align: start;
+  color: #fff;
+  background: #14254a;
+}
+.product-video-trigger::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg,#071531e8,transparent 72%);
+  pointer-events: none;
+}
+.product-video-trigger > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .2s;
+}
+.product-video-trigger .video-placeholder-mark {
+  position: absolute;
+  z-index: 1;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%,-50%);
+  width: 64px;
+  height: 64px;
+  margin: 0;
+  background: #17264ac9;
+  box-shadow: 0 8px 24px #0004;
+}
+.product-video-trigger .video-placeholder-mark svg { width: 30px; height: 30px; }
+.product-video-trigger > strong {
+  position: absolute;
+  z-index: 1;
+  inset-inline: 24px;
+  bottom: 22px;
+  font: 800 clamp(21px,2.4vw,30px)/1.2 Manrope,Arial,sans-serif;
+}
+.product-video-trigger:hover > img { transform: scale(1.025); }
+.product-video-trigger:focus-visible { outline: 3px solid #6250cf; outline-offset: 4px; }
+.product-video-swal-popup {
+  max-width: calc(100vw - 24px);
+  border-radius: 8px;
+  color: #1b2c4a;
+  font-family: 'DM Sans',Arial,sans-serif;
+}
+.product-video-swal-title {
+  padding-inline: 36px;
+  color: #1b2c4a;
+  font-size: 18px;
+  font-weight: 850;
+  line-height: 24px;
+}
+.product-video-swal-close { min-width: 44px; min-height: 44px; color: #40536f; }
+.product-video-swal-html { margin: 0; }
+.product-video-modal-frame { width: 100%; aspect-ratio: 16 / 9; background: #0b1220; }
+.product-video-modal-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+@media (max-width: 600px) {
+  .product-video-trigger .video-placeholder-mark { width: 54px; height: 54px; }
+  .product-video-trigger > strong { inset-inline: 18px; bottom: 16px; font-size: 21px; }
+  .product-video-swal-title { padding-inline: 30px; font-size: 16px; line-height: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-video-trigger > img { transition: none; }
+}
