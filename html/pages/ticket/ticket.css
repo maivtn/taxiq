@@ -169,14 +169,16 @@ body:not(.checkout-mode) #collapse-ticket{display:none}
 .add-services-footer button:hover{background:#4946ce}
 .custom-inputs{width:100%;margin-top:0}
 .ticket-line-name{margin-left:0}
-.custom-inputs input:first-child{flex:1;min-width:0}
-.custom-inputs input:last-child{width:76px}
+.custom-inputs>input{flex:1;min-width:0}
 .custom-addon{display:flex;align-items:flex-start}
 .custom-addon>div{flex:1;min-width:0}
 .custom-addon-inputs{display:flex;align-items:center;gap:5px;width:100%}
 .custom-addon-inputs input{height:31px;min-width:0;padding:0 7px;border:1px solid #dce4f1;border-radius:6px;background:#fff;font-size:11px}
-.custom-addon-inputs input:first-of-type{flex:1}
-.custom-addon-inputs input:last-of-type{width:73px;text-align:right}
+.custom-addon-inputs>input{flex:1}
+.money-input{display:flex;align-items:center;flex:0 0 86px;width:86px;height:33px;border:1px solid #dce4f1;border-radius:6px;background:#fff;color:#53617c}
+.money-input>span{flex:none;padding-left:9px;font-size:11px}
+.custom-inputs .money-input input,.custom-addon-inputs .money-input input{flex:1;width:100%;min-width:0;height:100%;padding:0 8px 0 3px;border:0;background:transparent;text-align:right;font-size:11px;outline:0}
+.money-input:focus-within{outline:2px solid #4648d8;outline-offset:2px}
 .custom-addon>span{flex:none}
 .addon-discount:disabled{opacity:.5;cursor:not-allowed}
 .service-action-dialog{width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 32px);padding:0;border:1px solid #dce4f1;border-radius:14px;background:#fff;color:#152033;box-shadow:0 22px 60px #101b3540}
