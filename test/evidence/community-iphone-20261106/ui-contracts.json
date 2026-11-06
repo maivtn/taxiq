@@ -1,0 +1,61 @@
+{
+  "engine": "WebKit",
+  "version": "26.5",
+  "viewport": {
+    "width": 375,
+    "height": 667
+  },
+  "results": [
+    {
+      "name": "one shared shell header",
+      "role": "owner",
+      "route": "shop",
+      "pass": false,
+      "actualInnerHeaderVisible": true,
+      "screenshot": "duplicate-header-shop-owner-375x667.png"
+    },
+    {
+      "name": "one shared shell header",
+      "role": "owner",
+      "route": "reels",
+      "pass": false,
+      "actualInnerHeaderVisible": true,
+      "screenshot": "duplicate-header-reels-owner-375x667.png"
+    },
+    {
+      "name": "one shared shell header",
+      "role": "owner",
+      "route": "live",
+      "pass": false,
+      "actualInnerHeaderVisible": true,
+      "screenshot": "duplicate-header-live-owner-375x667.png"
+    },
+    {
+      "name": "one shared shell header",
+      "role": "owner",
+      "route": "news",
+      "pass": false,
+      "actualInnerHeaderVisible": true,
+      "screenshot": "duplicate-header-news-owner-375x667.png"
+    },
+    {
+      "name": "US display date format",
+      "role": "owner",
+      "route": "news",
+      "pass": false,
+      "actual": "11/6/2026",
+      "expected": "MMM D, YYYY",
+      "screenshot": "news-date-owner-375x667.png"
+    },
+    {
+      "name": "US display date format",
+      "role": "staff",
+      "route": "news",
+      "pass": false,
+      "actual": "11/6/2026",
+      "expected": "MMM D, YYYY",
+      "screenshot": "news-date-staff-375x667.png"
+    }
+  ],
+  "pass": false
+}

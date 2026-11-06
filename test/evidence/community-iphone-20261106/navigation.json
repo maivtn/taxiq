@@ -1,0 +1,4086 @@
+{
+  "browser": "WebKit",
+  "version": "26.5",
+  "emulated": true,
+  "physicalIPhone": false,
+  "fingerprint": {
+    "head": "3a51a3594da74c144f65adbcf9f05b67a67a1b81",
+    "diffHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "endFingerprint": {
+    "head": "3a51a3594da74c144f65adbcf9f05b67a67a1b81",
+    "diffHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "results": [
+    {
+      "name": "screen feed",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "feed-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "feed-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "feed-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen groups",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "groups-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "groups-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "groups-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen market",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "market-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "market-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "market-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen pages",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "pages-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "pages-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "pages-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen deals",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "deals-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "deals-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "deals-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen jobs",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "jobs-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "jobs-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "jobs-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen shift",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "shift-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "shift-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "shift-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen blog",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "blog-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "blog-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "blog-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen connect",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "connect-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "connect-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "connect-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen chatgroups",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "chatgroups-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "chatgroups-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "chatgroups-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen calls",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "calls-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "calls-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "calls-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen privacy",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "privacy-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "privacy-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "privacy-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen food",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "food-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1171
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "food-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 951
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "food-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 863
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen realestate",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "realestate-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 7019
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "realestate-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 6757
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "realestate-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 6180
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen shop",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "shop-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1545
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "shop-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1368
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "shop-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1197
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen transfer",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "transfer-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "transfer-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "transfer-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen reels",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "reels-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "reels-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "reels-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen live",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "live-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "live-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "live-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen news",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "news-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "news-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "news-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen wallet",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "wallet-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "community-extra-pane",
+              "max": 133
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "wallet-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "wallet-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen wheel",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "wheel-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1456
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "wheel-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1229
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "wheel-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1087
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen meet",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "meet-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "meet-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "meet-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen account",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "account-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            },
+            {
+              "tag": "SECTION",
+              "class": "community-extra-pane",
+              "max": 430
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "account-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            },
+            {
+              "tag": "SECTION",
+              "class": "community-extra-pane",
+              "max": 253
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "account-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            },
+            {
+              "tag": "SECTION",
+              "class": "community-extra-pane",
+              "max": 113
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen assistant",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "assistant-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "assistant-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "assistant-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen notifications",
+      "role": "owner",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "notifications-owner-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 664
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "notifications-owner-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 487
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "notifications-owner-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav",
+              "max": 399
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "More tap food",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap realestate",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap shop",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap transfer",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap reels",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap live",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap news",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap wallet",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap wheel",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap meet",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap account",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap assistant",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap notifications",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "version switch two ways",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "mobile footer six routes",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "profile validation submit and reload",
+      "role": "owner",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "rotation preserves a profile draft",
+      "role": "owner",
+      "pass": true,
+      "screenshot": "account-owner-667x375-draft.png"
+    },
+    {
+      "name": "screen feed",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "feed-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "feed-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "feed-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen groups",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "groups-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "groups-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "groups-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen market",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "market-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "market-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "market-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen pages",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "pages-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "pages-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "pages-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen deals",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "deals-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "deals-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "deals-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen jobs",
+      "role": "staff",
+      "pass": false,
+      "error": "{\"overflow\":false,\"broken\":[\"http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png\"]}",
+      "screenshot": "screen-jobs-staff-failure.png"
+    },
+    {
+      "name": "screen shift",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "shift-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "shift-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "shift-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen blog",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "blog-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "blog-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "blog-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen connect",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "connect-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "connect-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "connect-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen chatgroups",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "chatgroups-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "chatgroups-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "chatgroups-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen calls",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "calls-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "calls-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "calls-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen privacy",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "privacy-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "privacy-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "privacy-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen food",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "food-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1171
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "food-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 951
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "food-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 863
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen realestate",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "realestate-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 7019
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "realestate-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 6757
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "realestate-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 6180
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen shop",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "shop-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1545
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "shop-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1368
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "shop-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1197
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen transfer",
+      "role": "staff",
+      "pass": false,
+      "error": "{\"overflow\":false,\"broken\":[\"http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png\"]}",
+      "screenshot": "screen-transfer-staff-failure.png"
+    },
+    {
+      "name": "screen reels",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "reels-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "reels-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "reels-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen live",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "live-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "live-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "live-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen news",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "news-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "news-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "news-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 262
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen wallet",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "wallet-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "community-extra-pane",
+              "max": 133
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "wallet-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "wallet-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen wheel",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "wheel-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1456
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "wheel-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1229
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "wheel-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            },
+            {
+              "tag": "SECTION",
+              "class": "",
+              "max": 1087
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen meet",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "meet-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "meet-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "meet-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen account",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "account-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            },
+            {
+              "tag": "SECTION",
+              "class": "community-extra-pane",
+              "max": 430
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "account-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            },
+            {
+              "tag": "SECTION",
+              "class": "community-extra-pane",
+              "max": 253
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "account-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            },
+            {
+              "tag": "SECTION",
+              "class": "community-extra-pane",
+              "max": 165
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen assistant",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "assistant-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "assistant-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "assistant-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "screen notifications",
+      "role": "staff",
+      "pass": true,
+      "viewports": [
+        {
+          "width": 375,
+          "height": 667,
+          "screenshot": "notifications-staff-375x667-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 324
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "screenshot": "notifications-staff-390x844-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 147
+            }
+          ]
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "screenshot": "notifications-staff-430x932-initial.png",
+          "scrollAreas": [
+            {
+              "tag": "NAV",
+              "class": "sidebar-nav staff-sidebar-nav",
+              "max": 59
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "More tap food",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap realestate",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap shop",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap transfer",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap reels",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap live",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap news",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap wallet",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap wheel",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap meet",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap account",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap assistant",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "More tap notifications",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "version switch two ways",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "mobile footer six routes",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "profile validation submit and reload",
+      "role": "staff",
+      "pass": true,
+      "viewport": "375x667"
+    },
+    {
+      "name": "rotation preserves a profile draft",
+      "role": "staff",
+      "pass": true,
+      "screenshot": "account-staff-667x375-draft.png"
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    {
+      "role": "owner",
+      "route": "deals",
+      "width": 375,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "q",
+          "font": "12px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "sort",
+          "font": "12px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "deals",
+      "width": 390,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "q",
+          "font": "12px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "deals",
+      "width": 430,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "q",
+          "font": "12px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "jobs",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 311,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "jobs",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 326,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "jobs",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        },
+        {
+          "text": "View tech profile",
+          "width": 157,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "privacy",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "Share profile",
+          "width": 153,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "privacy",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "Share profile",
+          "width": 161,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "privacy",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "Share profile",
+          "width": 181,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "realestate",
+      "width": 375,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "SELECT",
+          "id": "qState",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qCity",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qArea",
+          "font": "14.88px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMin",
+          "font": "14.72px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMax",
+          "font": "14.72px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "realestate",
+      "width": 390,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "SELECT",
+          "id": "qState",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qCity",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qArea",
+          "font": "14.88px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMin",
+          "font": "14.72px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMax",
+          "font": "14.72px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "realestate",
+      "width": 430,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "SELECT",
+          "id": "qState",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qCity",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qArea",
+          "font": "14.88px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMin",
+          "font": "14.72px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMax",
+          "font": "14.72px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "shop",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "Create storefront",
+          "width": 163,
+          "height": 40
+        },
+        {
+          "text": "Add new",
+          "width": 108,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "shop",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "Create storefront",
+          "width": 163,
+          "height": 40
+        },
+        {
+          "text": "Add new",
+          "width": 108,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "shop",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "Create storefront",
+          "width": 163,
+          "height": 40
+        },
+        {
+          "text": "Add new",
+          "width": 108,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "reels",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "Create Reel",
+          "width": 103,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "reels",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "Create Reel",
+          "width": 103,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "reels",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "Create Reel",
+          "width": 103,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "live",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "🔴 Go live in Feed",
+          "width": 109,
+          "height": 33
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "live",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "🔴 Go live in Feed",
+          "width": 109,
+          "height": 33
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "live",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "🔴 Go live in Feed",
+          "width": 109,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "owner",
+      "route": "news",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "Write a sample article",
+          "width": 153,
+          "height": 36
+        }
+      ],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "15px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "news",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "Write a sample article",
+          "width": 153,
+          "height": 36
+        }
+      ],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "15px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "news",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "Write a sample article",
+          "width": 153,
+          "height": 36
+        }
+      ],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "15px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "account",
+      "width": 375,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "account",
+      "width": 390,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "account",
+      "width": 430,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "assistant",
+      "width": 375,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "assistant",
+      "width": 390,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "route": "assistant",
+      "width": 430,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "deals",
+      "width": 375,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "q",
+          "font": "12px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "deals",
+      "width": 390,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "q",
+          "font": "12px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "deals",
+      "width": 430,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "q",
+          "font": "12px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "privacy",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "Share profile",
+          "width": 153,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "privacy",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "Share profile",
+          "width": 161,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "privacy",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "Share profile",
+          "width": 181,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "realestate",
+      "width": 375,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "SELECT",
+          "id": "qState",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qCity",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qArea",
+          "font": "14.88px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMin",
+          "font": "14.72px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMax",
+          "font": "14.72px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "realestate",
+      "width": 390,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "SELECT",
+          "id": "qState",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qCity",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qArea",
+          "font": "14.88px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMin",
+          "font": "14.72px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMax",
+          "font": "14.72px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "realestate",
+      "width": 430,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "SELECT",
+          "id": "qState",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qCity",
+          "font": "14.88px"
+        },
+        {
+          "tag": "SELECT",
+          "id": "qArea",
+          "font": "14.88px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMin",
+          "font": "14.72px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMax",
+          "font": "14.72px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "shop",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "Create storefront",
+          "width": 163,
+          "height": 40
+        },
+        {
+          "text": "Add new",
+          "width": 108,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "shop",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "Create storefront",
+          "width": 163,
+          "height": 40
+        },
+        {
+          "text": "Add new",
+          "width": 108,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "shop",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "Create storefront",
+          "width": 163,
+          "height": 40
+        },
+        {
+          "text": "Add new",
+          "width": 108,
+          "height": 40
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "reels",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "Create Reel",
+          "width": 103,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "reels",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "Create Reel",
+          "width": 103,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "reels",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "Create Reel",
+          "width": 103,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "live",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "🔴 Go live in Feed",
+          "width": 109,
+          "height": 33
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "live",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "🔴 Go live in Feed",
+          "width": 109,
+          "height": 33
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "live",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "🔴 Go live in Feed",
+          "width": 109,
+          "height": 36
+        }
+      ],
+      "smallInputs": []
+    },
+    {
+      "role": "staff",
+      "route": "news",
+      "width": 375,
+      "smallPrimary": [
+        {
+          "text": "Write a sample article",
+          "width": 153,
+          "height": 36
+        }
+      ],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "15px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "news",
+      "width": 390,
+      "smallPrimary": [
+        {
+          "text": "Write a sample article",
+          "width": 153,
+          "height": 36
+        }
+      ],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "15px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "news",
+      "width": 430,
+      "smallPrimary": [
+        {
+          "text": "Write a sample article",
+          "width": 153,
+          "height": 36
+        }
+      ],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "15px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "account",
+      "width": 375,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "account",
+      "width": 390,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "account",
+      "width": 430,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "assistant",
+      "width": 375,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "assistant",
+      "width": 390,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    },
+    {
+      "role": "staff",
+      "route": "assistant",
+      "width": 430,
+      "smallPrimary": [],
+      "smallInputs": [
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "font": "11px"
+        }
+      ]
+    }
+  ],
+  "responses": [
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/d29c9e580198d4c3.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/dbaf5871be9452a3.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/4eb726179a183298.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/300cfdfefbac9fd0.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/5cecfe52c32c201a.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/dbaf5871be9452a3.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/d29c9e580198d4c3.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/dbaf5871be9452a3.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/4eb726179a183298.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/300cfdfefbac9fd0.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/5cecfe52c32c201a.jpg",
+      "status": 404
+    },
+    {
+      "role": "owner",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/dbaf5871be9452a3.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/dbaf5871be9452a3.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/d29c9e580198d4c3.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/4eb726179a183298.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/300cfdfefbac9fd0.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/5cecfe52c32c201a.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/dbaf5871be9452a3.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/d29c9e580198d4c3.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/dbaf5871be9452a3.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/4eb726179a183298.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/300cfdfefbac9fd0.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/5cecfe52c32c201a.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/media/dbaf5871be9452a3.jpg",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    },
+    {
+      "role": "staff",
+      "url": "http://127.0.0.1:5503/html/v3.1/icon-oneqr/issue-2040-oneqr-CalendarDays-3d.png",
+      "status": 404
+    }
+  ],
+  "pass": false,
+  "limits": [
+    "No physical iPhone",
+    "No native iOS keyboard or inertial-scroll verification",
+    "Local HTML prototype; no production API/payment/media verification"
+  ]
+}

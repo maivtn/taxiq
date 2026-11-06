@@ -1,0 +1,129 @@
+{
+  "engine": "WebKit",
+  "version": "26.5",
+  "viewport": {
+    "width": 375,
+    "height": 667
+  },
+  "backgrounds": [
+    {
+      "route": "food",
+      "images": []
+    },
+    {
+      "route": "realestate",
+      "images": []
+    },
+    {
+      "route": "shop",
+      "images": []
+    },
+    {
+      "route": "news",
+      "images": []
+    }
+  ],
+  "media": {
+    "dbErrors": [
+      {
+        "phase": "request",
+        "name": "UnknownError",
+        "message": "Error preparing Blob/File data to be stored in object store",
+        "valueType": "File"
+      },
+      {
+        "phase": "abort",
+        "name": "UnknownError",
+        "message": "Error preparing Blob/File data to be stored in object store"
+      }
+    ],
+    "toast": "Could not save video.",
+    "editorOpen": true,
+    "files": [
+      {
+        "name": "nail-weekend.mp4",
+        "size": 117778,
+        "type": "video/mp4"
+      }
+    ]
+  },
+  "storageControl": [
+    {
+      "label": "file",
+      "pass": false,
+      "name": "UnknownError",
+      "message": "Error preparing Blob/File data to be stored in object store"
+    },
+    {
+      "label": "blob",
+      "pass": false,
+      "name": "UnknownError",
+      "message": "Error preparing Blob/File data to be stored in object store"
+    }
+  ],
+  "realestate": {
+    "before": {
+      "x": 34,
+      "y": -856.140625,
+      "width": 307,
+      "height": 48.796875
+    },
+    "host": {
+      "y": 116,
+      "height": 465,
+      "display": "block",
+      "position": "static",
+      "overflow": "auto",
+      "scrollTop": 375,
+      "scrollHeight": 7484,
+      "clientHeight": 465
+    },
+    "modal": {
+      "y": -259,
+      "height": 465,
+      "display": "flex",
+      "position": "fixed",
+      "overflow": "auto",
+      "scrollTop": 1519,
+      "scrollHeight": 1985,
+      "clientHeight": 465
+    },
+    "title": {
+      "y": -856.140625,
+      "height": 48.796875,
+      "display": "inline-block",
+      "position": "static",
+      "overflow": "visible",
+      "scrollTop": 0,
+      "scrollHeight": 47,
+      "clientHeight": 47
+    },
+    "stage2": {
+      "y": -883.953125,
+      "height": 980.921875,
+      "display": "block",
+      "position": "static",
+      "overflow": "visible",
+      "scrollTop": 0,
+      "scrollHeight": 981,
+      "clientHeight": 981
+    },
+    "priceOptions": [
+      {
+        "value": "PER_MONTH",
+        "text": "/ tháng (thuê)",
+        "selected": true
+      },
+      {
+        "value": "TOTAL",
+        "text": "Tổng giá (bán)",
+        "selected": false
+      },
+      {
+        "value": "NEGOTIABLE",
+        "text": "Thương lượng",
+        "selected": false
+      }
+    ]
+  }
+}

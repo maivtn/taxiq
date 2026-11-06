@@ -1,0 +1,105 @@
+{
+  "browser": "visible WebKit iPhone",
+  "role": "staff",
+  "rows": [
+    {
+      "tab": "feed",
+      "width": 375,
+      "height": 667,
+      "contentEqual": true,
+      "imagesEqual": true,
+      "layoutEqual": true,
+      "shellChromeEqual": true,
+      "v2BrokenImages": [],
+      "v31BrokenImages": [],
+      "overflow": false
+    },
+    {
+      "tab": "groups",
+      "width": 375,
+      "height": 667,
+      "contentEqual": true,
+      "imagesEqual": true,
+      "layoutEqual": true,
+      "shellChromeEqual": true,
+      "v2BrokenImages": [],
+      "v31BrokenImages": [],
+      "overflow": false
+    },
+    {
+      "tab": "market",
+      "width": 375,
+      "height": 667,
+      "contentEqual": true,
+      "imagesEqual": true,
+      "layoutEqual": true,
+      "shellChromeEqual": true,
+      "v2BrokenImages": [],
+      "v31BrokenImages": [],
+      "overflow": false
+    },
+    {
+      "tab": "pages",
+      "width": 375,
+      "height": 667,
+      "contentEqual": true,
+      "imagesEqual": true,
+      "layoutEqual": true,
+      "shellChromeEqual": true,
+      "v2BrokenImages": [],
+      "v31BrokenImages": [],
+      "overflow": false
+    },
+    {
+      "tab": "deals",
+      "width": 375,
+      "height": 667,
+      "contentEqual": true,
+      "imagesEqual": true,
+      "layoutEqual": true,
+      "shellChromeEqual": true,
+      "v2BrokenImages": [],
+      "v31BrokenImages": [],
+      "overflow": false
+    },
+    {
+      "tab": "shift",
+      "width": 375,
+      "height": 667,
+      "contentEqual": true,
+      "imagesEqual": true,
+      "layoutEqual": true,
+      "shellChromeEqual": true,
+      "v2BrokenImages": [],
+      "v31BrokenImages": [],
+      "overflow": false
+    },
+    {
+      "tab": "blog",
+      "width": 375,
+      "height": 667,
+      "contentEqual": true,
+      "imagesEqual": true,
+      "layoutEqual": true,
+      "shellChromeEqual": true,
+      "v2BrokenImages": [],
+      "v31BrokenImages": [],
+      "overflow": false
+    },
+    {
+      "tab": "connect",
+      "width": 375,
+      "height": 667,
+      "contentEqual": true,
+      "imagesEqual": true,
+      "layoutEqual": true,
+      "shellChromeEqual": true,
+      "v2BrokenImages": [],
+      "v31BrokenImages": [],
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "versionSwitchCheckedInThisRun": false,
+  "pass": true
+}

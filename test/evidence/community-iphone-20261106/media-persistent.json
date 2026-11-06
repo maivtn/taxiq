@@ -1,0 +1,33 @@
+{
+  "engine": "WebKit",
+  "version": "26.5",
+  "profile": "persistent isolated profile in tmp",
+  "viewport": {
+    "width": 375,
+    "height": 667
+  },
+  "pass": true,
+  "state": {
+    "toast": "",
+    "videos": [
+      {
+        "src": "blob:http://127.0.0.1:5503/034fdf75-d4ea-457a-b56f-5178b0a9aea4",
+        "readyState": 1,
+        "videoWidth": 640
+      },
+      {
+        "src": "http://127.0.0.1:5503/html/v3.1/community/modules/hub-tools/media/e82ec27ae33377ad.mp4",
+        "readyState": 4,
+        "videoWidth": 960
+      },
+      {
+        "src": "",
+        "readyState": 0,
+        "videoWidth": 0
+      }
+    ],
+    "editorOpen": false,
+    "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/26.5 Mobile/15A372 Safari/604.1"
+  },
+  "errors": []
+}

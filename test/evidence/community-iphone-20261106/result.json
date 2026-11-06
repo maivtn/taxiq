@@ -1,0 +1,208 @@
+{
+  "status": "FAIL",
+  "testedCommit": "3a51a3594da74c144f65adbcf9f05b67a67a1b81",
+  "branch": "main",
+  "url": "http://127.0.0.1:5503/html/v3.1/community.html",
+  "workflow": "ui-responsive-tester",
+  "browser": "WebKit 26.5, visible, iPhone touch emulation",
+  "roles": [
+    "owner prototype",
+    "staff prototype"
+  ],
+  "portraitCssViewports": [
+    [
+      375,
+      667
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ]
+  ],
+  "landscapeScope": "667x375 profile draft preservation only",
+  "sourceFingerprint": {
+    "head": "3a51a3594da74c144f65adbcf9f05b67a67a1b81",
+    "diffHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "sourceFingerprintAfter": {
+    "head": "3a51a3594da74c144f65adbcf9f05b67a67a1b81",
+    "diffHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "productionSourceChanged": false,
+  "suites": [
+    {
+      "name": "navigation",
+      "checks": 84,
+      "pass": 82,
+      "fail": 2
+    },
+    {
+      "name": "flows",
+      "checks": 26,
+      "pass": 24,
+      "fail": 2
+    },
+    {
+      "name": "extra-flows",
+      "checks": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    {
+      "name": "ui-contracts",
+      "checks": 6,
+      "pass": 0,
+      "fail": 6
+    },
+    {
+      "name": "parity-owner",
+      "checks": 8,
+      "pass": 8,
+      "fail": 0
+    },
+    {
+      "name": "parity-staff",
+      "checks": 8,
+      "pass": 8,
+      "fail": 0
+    }
+  ],
+  "totals": {
+    "checks": 139,
+    "pass": 129,
+    "fail": 10
+  },
+  "pageErrors": [],
+  "findings": [
+    {
+      "id": "IP-01",
+      "severity": "high",
+      "routes": [
+        "meet"
+      ],
+      "role": "owner",
+      "viewport": "375x667",
+      "steps": [
+        "Open NEXORA Meet",
+        "Open Schedule",
+        "Enter a valid title, date and time",
+        "Tap Save & create invite link"
+      ],
+      "expected": "Primary action remains readable and tappable",
+      "actual": "Floating version switch overlaps the submit button and intercepts taps",
+      "evidence": [
+        "failure-Meet-schedule-and-shared-notification-detail.png"
+      ],
+      "source": "html/assets/community-version-switch.css"
+    },
+    {
+      "id": "IP-02",
+      "severity": "high",
+      "routes": [
+        "realestate"
+      ],
+      "role": "owner",
+      "viewport": "375x667",
+      "steps": [
+        "Open Real Estate",
+        "Tap Post a Listing",
+        "Tap Continue",
+        "Focus the listing title in step 2"
+      ],
+      "expected": "Step 2 fields remain inside the scrollable modal",
+      "actual": "Nested scrolling moves the fixed modal and title above the visible area; title cannot be filled",
+      "evidence": [
+        "failure-Real-Estate-listing-wizard-and-saved-photo.png"
+      ],
+      "source": "html/v3.1/community/community-native.js",
+      "diagnostic": "Native host scrollTop=375, fixed modal y=-259, title y=-856 in a 667px viewport"
+    },
+    {
+      "id": "IP-03",
+      "severity": "medium",
+      "routes": [
+        "jobs",
+        "transfer"
+      ],
+      "role": "staff",
+      "viewport": "375x667",
+      "steps": [
+        "Open staff Community Jobs or Salon transfers",
+        "Inspect My availability icon"
+      ],
+      "expected": "Calendar icon loads",
+      "actual": "Requests issue-2040-oneqr-CalendarDays-3d.png; existing file is issue-2040-oneqr-calendar-days-3d.png",
+      "evidence": [
+        "screen-jobs-staff-failure.png",
+        "screen-transfer-staff-failure.png"
+      ],
+      "source": "html/v3.1/community/community-jobs-expansion.js:36"
+    },
+    {
+      "id": "IP-04",
+      "severity": "medium",
+      "routes": [
+        "shop",
+        "reels",
+        "live",
+        "news"
+      ],
+      "role": "owner",
+      "viewport": "375x667",
+      "steps": [
+        "Open any listed module on iPhone"
+      ],
+      "expected": "Use the existing Nexora shell header",
+      "actual": "A second logo/menu/notification bar is rendered inside the module",
+      "evidence": [
+        "duplicate-header-shop-owner-375x667.png",
+        "duplicate-header-reels-owner-375x667.png",
+        "duplicate-header-live-owner-375x667.png",
+        "duplicate-header-news-owner-375x667.png"
+      ],
+      "source": "html/v3.1/community/modules/hub-tools/adapter.js"
+    },
+    {
+      "id": "IP-05",
+      "severity": "low",
+      "routes": [
+        "news"
+      ],
+      "role": "owner and staff",
+      "viewport": "375x667",
+      "steps": [
+        "Create an English article",
+        "Reload News",
+        "Read the article date"
+      ],
+      "expected": "Nov 6, 2026 (MMM D, YYYY)",
+      "actual": "11/6/2026",
+      "evidence": [
+        "news-date-owner-375x667.png",
+        "news-date-staff-375x667.png"
+      ],
+      "source": "html/v3.1/community/modules/hub-tools/index.html"
+    }
+  ],
+  "mediaRetest": {
+    "ephemeralContext": "Blob/File IndexedDB writes fail with UnknownError in the automation environment",
+    "persistentContext": "Reel created successfully, video metadata loaded, and retained after reload",
+    "productFinding": false
+  },
+  "limits": [
+    "Emulation; no physical iPhone tested",
+    "Native iOS keyboard, inertial touch scrolling and notch safe areas not verified",
+    "Files provided through automation; native iOS chooser not verified",
+    "No real camera, microphone, broadcast or vendor group-media integration tested",
+    "Local HTML demo only; no deployed API/payment persistence proof"
+  ],
+  "additionalObservations": {
+    "networkErrors": 68,
+    "note": "Initial relative media requests can occur before native DOM URL rewriting; visible final images were checked separately. The confirmed broken icon is IP-03.",
+    "smallControlsAndInputs": "Detailed metrics are in navigation.json warnings; actual iOS keyboard zoom was not verified."
+  }
+}

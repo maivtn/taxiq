@@ -1,0 +1,58 @@
+{
+  "engine": "WebKit",
+  "version": "26.5",
+  "emulated": true,
+  "results": [
+    {
+      "name": "news-create-and-reload",
+      "role": "owner",
+      "viewport": "375x667",
+      "pass": true,
+      "screenshot": "news-create-and-reload-owner-375x667.png"
+    },
+    {
+      "name": "live-room-create-and-reload",
+      "role": "owner",
+      "viewport": "375x667",
+      "pass": true,
+      "screenshot": "live-room-create-and-reload-owner-375x667.png"
+    },
+    {
+      "name": "wheel-spin-and-result",
+      "role": "owner",
+      "viewport": "375x667",
+      "pass": true,
+      "screenshot": "wheel-spin-and-result-owner-375x667.png"
+    },
+    {
+      "name": "news-create-and-reload",
+      "role": "staff",
+      "viewport": "375x667",
+      "pass": true,
+      "screenshot": "news-create-and-reload-staff-375x667.png"
+    },
+    {
+      "name": "live-room-create-and-reload",
+      "role": "staff",
+      "viewport": "375x667",
+      "pass": true,
+      "screenshot": "live-room-create-and-reload-staff-375x667.png"
+    },
+    {
+      "name": "wheel-spin-and-result",
+      "role": "staff",
+      "viewport": "375x667",
+      "pass": true,
+      "screenshot": "wheel-spin-and-result-staff-375x667.png"
+    },
+    {
+      "name": "availability-validation-save-reload",
+      "role": "staff",
+      "viewport": "375x667",
+      "pass": true,
+      "screenshot": "availability-validation-save-reload-staff-375x667.png"
+    }
+  ],
+  "errors": [],
+  "pass": true
+}

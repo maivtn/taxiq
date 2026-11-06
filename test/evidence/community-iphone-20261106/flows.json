@@ -1,0 +1,132 @@
+{
+  "results": [
+    {
+      "name": "responsive food",
+      "pass": true
+    },
+    {
+      "name": "responsive realestate",
+      "pass": true
+    },
+    {
+      "name": "responsive shop",
+      "pass": true
+    },
+    {
+      "name": "responsive reels",
+      "pass": true
+    },
+    {
+      "name": "responsive live",
+      "pass": true
+    },
+    {
+      "name": "responsive news",
+      "pass": true
+    },
+    {
+      "name": "responsive wallet",
+      "pass": true
+    },
+    {
+      "name": "responsive wheel",
+      "pass": true
+    },
+    {
+      "name": "responsive meet",
+      "pass": true
+    },
+    {
+      "name": "responsive account",
+      "pass": true
+    },
+    {
+      "name": "responsive assistant",
+      "pass": true
+    },
+    {
+      "name": "responsive notifications",
+      "pass": true
+    },
+    {
+      "name": "More menu and return to Feed",
+      "pass": true
+    },
+    {
+      "name": "cancel stale lazy navigation",
+      "pass": true
+    },
+    {
+      "name": "Food review uses the common point wallet",
+      "pass": true
+    },
+    {
+      "name": "storefront setup and product persistence",
+      "pass": true
+    },
+    {
+      "name": "staff trade-service form and Jobs permissions",
+      "pass": true
+    },
+    {
+      "name": "salon transfer uses the existing Jobs engine",
+      "pass": true
+    },
+    {
+      "name": "Meet schedule and shared notification detail",
+      "pass": false,
+      "error": "locator.tap: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#community-staging,#community-hub').locator('.community-extra-pane').locator('#meetScheduleForm').locator('button[type=\"submit\"]')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"submit\" class=\"btn btn-blue\">…</button>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <a class=\"community-version-button\" href=\"http://127.0.0.1:5503/html/pages/community.html?tab=feed\">Switch to v2 →</a> from <nav id=\"communityVersionSwitch\" aria-label=\"Community versions\" class=\"community-version-switch\">…</nav> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <a class=\"community-version-button\" href=\"http://127.0.0.1:5503/html/pages/community.html?tab=feed\">Switch to v2 →</a> from <nav id=\"communityVersionSwitch\" aria-label=\"Community versions\" class=\"community-version-switch\">…</nav> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    22 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <a class=\"community-version-button\" href=\"http://127.0.0.1:5503/html/pages/community.html?tab=feed\">Switch to v2 →</a> from <nav id=\"communityVersionSwitch\" aria-label=\"Community versions\" class=\"community-version-switch\">…</nav> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+      "screenshot": "failure-Meet-schedule-and-shared-notification-detail.png"
+    },
+    {
+      "name": "Privacy and Profile share one NEXORA ID",
+      "pass": true
+    },
+    {
+      "name": "Real Estate listing wizard and saved photo",
+      "pass": false,
+      "error": "locator.fill: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#community-staging,#community-hub').locator('.community-extra-pane').locator('#pfDesc')\u001b[22m\n\u001b[2m    - locator resolved to <textarea id=\"pfDesc\" placeholder=\"Description\"></textarea>\u001b[22m\n\u001b[2m    - fill(\"A spacious rental room in Houston with parking and nearby local shops.\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    24 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying fill action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+      "screenshot": "failure-Real-Estate-listing-wizard-and-saved-photo.png"
+    },
+    {
+      "name": "Reels video creation and persisted preview",
+      "pass": true
+    },
+    {
+      "name": "default staff identity matches the existing Community frame",
+      "pass": true
+    },
+    {
+      "name": "leaving Meet does not stop another hosts recording",
+      "pass": true
+    },
+    {
+      "name": "legacy contacts keep four-key search and their existing thread",
+      "pass": true
+    },
+    {
+      "name": "original Jobs and Connect samples are preserved",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "engine": "WebKit",
+  "version": "26.5",
+  "viewports": [
+    [
+      375,
+      667
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ]
+  ],
+  "isMobile": true,
+  "persistentProfile": true,
+  "pass": false
+}

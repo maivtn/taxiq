@@ -1,12 +1,16 @@
 /* Manual visible-browser coverage for the PO additions, after baseline parity. */
-const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const {chromium,webkit,devices}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const fs=require('node:fs'),path=require('node:path');
-const output='/tmp/community-v31-additions-evidence';fs.mkdirSync(output,{recursive:true});
+const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-v31-additions-evidence';fs.mkdirSync(output,{recursive:true});
+const iphone=process.env.COMMUNITY_TEST_ENGINE==='webkit';
+const viewports=iphone?[[375,667],[390,844],[430,932]]:[[1440,1000],[834,1112],[390,844]];
+const contextOptions=iphone?{...devices['iPhone 8'],viewport:{width:375,height:667},reducedMotion:'reduce',locale:'en-US'}:{viewport:{width:1440,height:1000},reducedMotion:'reduce',locale:'en-US'};
 const origin=process.env.COMMUNITY_TEST_ORIGIN||'http://127.0.0.1:5503';
 const labels={food:'Food & Restaurants',realestate:'Real Estate',shop:'My storefront',reels:'Reels',live:'Livestream',news:'News & Blog',wallet:'NEXORA Points',wheel:'Lucky Wheel',meet:'NEXORA Meet',account:'Profile',assistant:'AI assistant',notifications:'Notifications'};
 const results=[],errors=[];
+let evidencePage;
 function check(value,message){if(!value)throw Error(message);}
-async function record(name,task){if(process.env.COMMUNITY_CHECK_FILTER&&!new RegExp(process.env.COMMUNITY_CHECK_FILTER).test(name))return;try{await task();results.push({name,pass:true});console.log('PASS '+name);}catch(error){results.push({name,pass:false,error:error.message});console.log('FAIL '+name+': '+error.message);}fs.writeFileSync(path.join(output,'results.json'),JSON.stringify({results,errors},null,2));}
+async function record(name,task){if(process.env.COMMUNITY_CHECK_FILTER&&!new RegExp(process.env.COMMUNITY_CHECK_FILTER).test(name))return;try{await task();results.push({name,pass:true});console.log('PASS '+name);}catch(error){const row={name,pass:false,error:error.message};if(iphone&&evidencePage){row.screenshot='failure-'+name.replace(/[^a-z0-9]+/gi,'-')+'.png';await evidencePage.screenshot({path:path.join(output,row.screenshot),animations:'disabled'}).catch(()=>{});}results.push(row);console.log('FAIL '+name+': '+error.message);}fs.writeFileSync(path.join(output,'results.json'),JSON.stringify({results,errors},null,2));}
 async function ready(page){await page.waitForFunction(()=>document.querySelector('#community-staging,#community-hub')?.communityHub,{timeout:20000});}
 async function open(page,route,query=''){
   await page.goto(origin+'/html/v3.1/community.html?tab='+route+query,{waitUntil:'networkidle'});await ready(page);
@@ -15,17 +19,19 @@ async function open(page,route,query=''){
 function hub(page){return page.locator('#community-staging,#community-hub');}
 function extra(page){return hub(page).locator('.community-extra-pane');}
 async function baseFeed(page){
-  await hub(page).locator('.top .tab[data-view="feed"]').click();
+  await hub(page).locator((iphone?'.mobile-nav':'.top')+' .tab[data-view="feed"]')[iphone?'tap':'click']();
   await page.waitForFunction(()=>{const root=document.querySelector('#community-staging,#community-hub').shadowRoot;return !root.getElementById('communityPane').hidden&&root.querySelector('.community-extra-pane').hidden;});
 }
 (async()=>{
-  const endpoint=JSON.parse(fs.readFileSync('/tmp/community-v31-visible-browser-v2.json')).endpoint;
-  const browser=await chromium.connect(endpoint),context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce',locale:'en-US'});
+  let browser,context;
+  if(iphone&&process.env.COMMUNITY_TEST_PROFILE){context=await webkit.launchPersistentContext(process.env.COMMUNITY_TEST_PROFILE,{headless:false,...contextOptions});browser=context.browser();}
+  else{browser=iphone?await webkit.launch({headless:false}):await chromium.connect(JSON.parse(fs.readFileSync('/tmp/community-v31-visible-browser-v2.json')).endpoint);context=await browser.newContext(contextOptions);}
+  context.setDefaultTimeout(12000);
   await context.addInitScript(()=>{localStorage.setItem('nexora-community-tour-desktop-v1','1');localStorage.setItem('nexora-community-tour-mobile-v1','1');});
-  const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
+  const page=await context.newPage();evidencePage=page;page.on('pageerror',error=>errors.push(error.message));
   for(const [route,label] of Object.entries(labels))await record('responsive '+route,async()=>{
     await open(page,route);
-    for(const [width,height] of [[1440,1000],[834,1112],[390,844]]){
+    for(const [width,height] of viewports){
       await page.bringToFront();await page.setViewportSize({width,height});await page.waitForTimeout(100);
       const state=await page.evaluate(()=>{
         const root=document.getElementById('community-staging').shadowRoot,pane=root.querySelector('.community-extra-pane');
@@ -36,12 +42,12 @@ async function baseFeed(page){
       check(state.visible&&!state.error&&!state.overflow&&!state.broken.length,JSON.stringify(state));
       await page.screenshot({path:path.join(output,route+'-'+width+'.png'),animations:'disabled'});
     }
-    await page.setViewportSize({width:1440,height:1000});
+    await page.setViewportSize(contextOptions.viewport);
   });
   await record('More menu and return to Feed',async()=>{
-    await open(page,'feed');await page.locator('.community-version-more').click();
+    await open(page,'feed');await page.locator('.community-version-more')[iphone?'tap':'click']();
     await hub(page).locator('#ecosystemMenu:not([hidden])').waitFor();
-    await hub(page).locator('[data-community-extra="food"]').click();
+    await hub(page).locator('[data-community-extra="food"]')[iphone?'tap':'click']();
     await extra(page).locator('#review-open').waitFor();await baseFeed(page);
     await page.goBack();await extra(page).locator('#review-open').waitFor();
     await page.goBack();await page.waitForFunction(()=>!document.getElementById('community-staging').shadowRoot.getElementById('communityPane').hidden);
@@ -49,35 +55,35 @@ async function baseFeed(page){
   await record('cancel stale lazy navigation',async()=>{
     const slow=await context.newPage();await open(slow,'feed');
     await slow.route('**/modules/realestate/index.html*',async route=>{await new Promise(resolve=>setTimeout(resolve,700));await route.continue();});
-    await slow.locator('.community-version-more').click();await hub(slow).locator('[data-community-extra="realestate"]').click();
+    await slow.locator('.community-version-more')[iphone?'tap':'click']();await hub(slow).locator('[data-community-extra="realestate"]')[iphone?'tap':'click']();
     await baseFeed(slow);await slow.waitForTimeout(1400);
     check(new URL(slow.url()).searchParams.get('tab')==='feed','Stale module changed the Feed route');
     await slow.close();
   });
   await record('Food review uses the common point wallet',async()=>{
-    await open(page,'food');await extra(page).locator('#review-open').evaluate(button=>button.scrollIntoView({block:'center'}));await extra(page).locator('#review-open').click();
+    await open(page,'food');await extra(page).locator('#review-open').evaluate(button=>button.scrollIntoView({block:'center'}));await extra(page).locator('#review-open')[iphone?'tap':'click']();
     await extra(page).locator('#r-place').fill('QA Cafe');await extra(page).locator('#r-text').fill('A local prototype review for the Community demo.');
-    await extra(page).locator('#review-submit').click();await extra(page).getByText('QA Cafe',{exact:true}).waitFor();
+    await extra(page).locator('#review-submit')[iphone?'tap':'click']();await extra(page).getByText('QA Cafe',{exact:true}).waitFor();
     await open(page,'wallet');check(await extra(page).locator('.platform-balance').innerText()==='50','Food points missing from the common wallet');
     await baseFeed(page);
   });
   await record('storefront setup and product persistence',async()=>{
-    await open(page,'shop');await extra(page).locator('[data-action="edit-shop"]').first().click();
+    await open(page,'shop');await extra(page).locator('[data-action="edit-shop"]').first()[iphone?'tap':'click']();
     const form=extra(page).locator('#shop-form');await form.locator('[name="name"]').fill('QA Storefront');await form.locator('[name="about"]').fill('Products and services for a local prototype storefront.');
-    await form.locator('[name="email"]').fill('qa-store@example.com');await form.locator('button[type="submit"]').click();
-    await extra(page).locator('[data-action="shop-add-product"]').first().click();const item=extra(page).locator('#item-form');
+    await form.locator('[name="email"]').fill('qa-store@example.com');await form.locator('button[type="submit"]')[iphone?'tap':'click']();
+    await extra(page).locator('[data-action="shop-add-product"]').first()[iphone?'tap':'click']();const item=extra(page).locator('#item-form');
     await item.locator('[name="title"]').fill('QA Nail Kit');await item.locator('[name="price"]').fill('25');await item.locator('[name="description"]').fill('A product used only to check the local storefront flow.');
-    await item.locator('button[type="submit"]').click();await extra(page).getByText('QA Nail Kit',{exact:true}).first().waitFor();
+    await item.locator('button[type="submit"]')[iphone?'tap':'click']();await extra(page).getByText('QA Nail Kit',{exact:true}).first().waitFor();
     await open(page,'shop');await extra(page).getByText('QA Nail Kit',{exact:true}).first().waitFor();
     const other=await context.newPage();await open(other,'shop','&member=QA%20Other');check(!(await extra(other).innerText()).includes('QA Nail Kit'),'Another account can see the private storefront');await other.close();
   });
   await record('staff trade-service form and Jobs permissions',async()=>{
     await page.goto(origin+'/html/v3.1/staff-community.html?role=tech&account=personal&member=QA%20Tech&tab=jobs',{waitUntil:'networkidle'});await ready(page);
     const frame=page.frames().find(frame=>frame.url().includes('nexora-community-prototype.html'));check(frame,'Jobs frame missing');
-    await frame.locator('[data-jobs-tab="services"]').click();await frame.locator('[data-jobs-extra="new-service-request"]').click();
+    await frame.locator('[data-jobs-tab="services"]')[iphone?'tap':'click']();await frame.locator('[data-jobs-extra="new-service-request"]')[iphone?'tap':'click']();
     const form=frame.locator('#jobsExtraForm');await form.locator('[name="title"]').fill('QA electrical service');await form.locator('[name="city"]').fill('Houston');
     await form.locator('[name="preferredTime"]').fill('2026-11-10T10:00');await form.locator('[name="description"]').fill('A prototype request for an electrical trade service.');
-    await form.locator('button[type="submit"]').click();await frame.getByText('QA electrical service',{exact:true}).first().waitFor();
+    await form.locator('button[type="submit"]')[iphone?'tap':'click']();await frame.getByText('QA electrical service',{exact:true}).first().waitFor();
     const data=await frame.evaluate(()=>JSON.parse(localStorage.getItem('nexora-community-templates-v1')).jobs.find(row=>row.title==='QA electrical service'));
     check(data.kind==='service-request'&&data.nxId&&data.owner==='QA Tech','Trade service record did not keep its subtype, owner and NEXORA ID');
     const hiring=frame.locator('#jobsView [data-template="hiring"]');
@@ -86,19 +92,19 @@ async function baseFeed(page){
   });
   await record('salon transfer uses the existing Jobs engine',async()=>{
     await open(page,'transfer');const frame=page.frames().find(frame=>frame.url().includes('nexora-community-prototype.html'));
-    await frame.locator('[data-jobs-extra="new-transfer"]').click();const form=frame.locator('#jobsExtraForm');
+    await frame.locator('[data-jobs-extra="new-transfer"]')[iphone?'tap':'click']();const form=frame.locator('#jobsExtraForm');
     await form.locator('[name="title"]').fill('QA salon transfer');await form.locator('[name="city"]').fill('Houston');await form.locator('[name="description"]').fill('A local salon transfer listing for prototype verification.');
-    await form.locator('button[type="submit"]').click();await frame.getByText('QA salon transfer',{exact:true}).first().waitFor();
+    await form.locator('button[type="submit"]')[iphone?'tap':'click']();await frame.getByText('QA salon transfer',{exact:true}).first().waitFor();
   });
   await record('Meet schedule and shared notification detail',async()=>{
-    await open(page,'meet');await extra(page).locator('[data-meet-action="screen"][data-meet-id="schedule"]').click();
+    await open(page,'meet');await extra(page).locator('[data-meet-action="screen"][data-meet-id="schedule"]')[iphone?'tap':'click']();
     const form=extra(page).locator('#meetScheduleForm');await form.locator('[name="title"]').fill('QA Community meeting');await form.locator('[name="date"]').fill('2026-11-10');
-    await form.locator('[name="time"]').fill('19:00');await form.locator('[name="timezone"]').selectOption('America/Chicago');await form.locator('button[type="submit"]').click();
+    await form.locator('[name="time"]').fill('19:00');await form.locator('[name="timezone"]').selectOption('America/Chicago');await form.locator('button[type="submit"]')[iphone?'tap':'click']();
     await extra(page).getByText('QA Community meeting',{exact:true}).first().waitFor();
     const meetingTime=await extra(page).locator('.meetcard').filter({hasText:'QA Community meeting'}).locator('.when').innerText();
     check(meetingTime.includes('Nov 10, 2026')&&meetingTime.includes('7:00'),'Meeting time does not use the selected time zone');
     await page.evaluate(()=>{const shared=window.NEXORA_COMMUNITY_SHARED,row=shared.read().meetings.find(row=>row.title==='QA Community meeting');shared.notify(row.title,'meet',{meetingId:row.id});});
-    await open(page,'notifications');await extra(page).getByText('QA Community meeting',{exact:true}).first().click();
+    await open(page,'notifications');await extra(page).getByText('QA Community meeting',{exact:true}).first()[iphone?'tap':'click']();
     await page.waitForFunction(()=>new URL(location.href).searchParams.get('tab')==='meet');
   });
   await record('Privacy and Profile share one NEXORA ID',async()=>{
@@ -109,21 +115,21 @@ async function baseFeed(page){
     check(await frame.locator('#profileQr').getAttribute('data-connect-profile').then(url=>url.includes('/html/v3.1/community.html')),'Profile QR points to a different Community version');
   });
   await record('Real Estate listing wizard and saved photo',async()=>{
-    await open(page,'realestate');await extra(page).locator('[data-act="openPost"]').first().click();
-    await extra(page).locator('#nextBtn').click();
+    await open(page,'realestate');await extra(page).locator('[data-act="openPost"]').first()[iphone?'tap':'click']();
+    await extra(page).locator('#nextBtn')[iphone?'tap':'click']();
     await extra(page).locator('#pfTitle').fill('QA Houston rental room');await extra(page).locator('#pfPrice').fill('900');await extra(page).locator('#pfZip').fill('77042');
-    await extra(page).locator('#nextBtn').click();
+    await extra(page).locator('#nextBtn')[iphone?'tap':'click']();
     await extra(page).locator('#pfPhotos').setInputFiles(path.resolve(__dirname,'../../../html/v3.1/nexora-welcome/industry-nail.jpg'));
     await extra(page).locator('#pfDesc').fill('A spacious rental room in Houston with parking and nearby local shops.');
-    await extra(page).locator('#nextBtn').click();await extra(page).locator('#nextBtn').click();
+    await extra(page).locator('#nextBtn')[iphone?'tap':'click']();await extra(page).locator('#nextBtn')[iphone?'tap':'click']();
     await page.waitForFunction(()=>JSON.parse(localStorage.getItem('nexora-v31:realestate-records')||'[]').some(row=>row.title==='QA Houston rental room'&&row.photos?.length===1&&row.nxId));
     await open(page,'realestate');check(await extra(page).locator('img').count()>0,'Listing photo did not persist');
   });
   await record('Reels video creation and persisted preview',async()=>{
-    await open(page,'reels');await extra(page).locator('[data-feed-kind="reel"]').click();
+    await open(page,'reels');await extra(page).locator('[data-feed-kind="reel"]')[iphone?'tap':'click']();
     const form=extra(page).locator('#feed-form');await form.locator('[name="body"]').fill('QA reel for the local Community prototype.');
     await form.locator('input[type="file"][name="media"]').setInputFiles(path.resolve(__dirname,'../../../html/v3.1/community/page-videos/nail-weekend.mp4'));
-    await form.locator('button[type="submit"]').last().click();
+    await form.locator('button[type="submit"]').last()[iphone?'tap':'click']();
     await extra(page).locator('video[data-reel-view]').waitFor();await open(page,'reels');await extra(page).locator('video[data-reel-view]').waitFor();
   });
   await record('default staff identity matches the existing Community frame',async()=>{
@@ -159,7 +165,7 @@ async function baseFeed(page){
   await record('original Jobs and Connect samples are preserved',async()=>{
     const samples=[];
     for(const version of ['pages','v3.1']){
-      const isolated=await browser.newContext({viewport:{width:1440,height:1000},locale:'en-US'}),sample=await isolated.newPage();
+      const isolated=await browser.newContext(contextOptions),sample=await isolated.newPage();
       await isolated.addInitScript(()=>{localStorage.setItem('nexora-community-tour-desktop-v1','1');localStorage.setItem('nexora-community-tour-mobile-v1','1');});
       await sample.goto(origin+'/html/'+version+'/community.html?tab=jobs',{waitUntil:'networkidle'});await ready(sample);
       const jobs=sample.frames().find(frame=>frame.url().includes('nexora-community-prototype.html'));await jobs.locator('#jobsView').waitFor();
@@ -179,5 +185,5 @@ async function baseFeed(page){
     check(samples[0].calls.length>0&&samples[0].kim&&samples[0].sally&&samples[0].pos,'Original samples were not loaded');
     check(JSON.stringify(samples[0])===JSON.stringify(samples[1]),'v3.1 changed original sample records: '+JSON.stringify(samples));
   });
-  const summary={results,errors,pass:results.every(result=>result.pass)&&!errors.length};fs.writeFileSync(path.join(output,'results.json'),JSON.stringify(summary,null,2));console.log(JSON.stringify({checks:results.length,pass:summary.pass,errors}));process.exit(summary.pass?0:2);
+  const summary={results,errors,engine:iphone?'WebKit':'Chromium',version:browser.version(),viewports,isMobile:iphone,persistentProfile:Boolean(iphone&&process.env.COMMUNITY_TEST_PROFILE),pass:results.every(result=>result.pass)&&!errors.length};fs.writeFileSync(path.join(output,'results.json'),JSON.stringify(summary,null,2));console.log(JSON.stringify({checks:results.length,pass:summary.pass,errors}));if(iphone)await browser.close();process.exit(summary.pass?0:2);
 })().catch(error=>{console.error(error);process.exit(1);});
