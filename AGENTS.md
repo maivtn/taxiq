@@ -53,6 +53,12 @@
 - Quy tắc này áp dụng cho cả test tự động và thao tác test UI trên trình duyệt. Vẫn được đọc mã nguồn và rà soát diff để thực hiện thay đổi.
 - Khi chưa được yêu cầu test, ghi rõ “Chưa chạy test — chờ yêu cầu của người dùng”; không khẳng định các luồng đã chạy đúng hoặc test đã đạt.
 
+## Kiểm thử trình duyệt không gián đoạn công việc
+
+- Khi test bằng Chrome hoặc trình duyệt khác, ưu tiên chế độ headless; nếu cần giao diện thì chạy nền, không đưa cửa sổ lên trên cùng hoặc chiếm focus của ứng dụng người dùng đang làm việc.
+- Không gọi `bringToFront`, kích hoạt ứng dụng hoặc dùng thao tác tương đương để đưa cửa sổ/tab test ra foreground. Quy tắc này áp dụng cả khi mở trình duyệt, điều hướng, chụp ảnh và chuyển tab trong suốt quá trình test.
+- Nếu công cụ test tự đưa trình duyệt ra foreground và không thể chạy nền, chuyển sang công cụ/chế độ khác hỗ trợ chạy nền. Chỉ đưa trình duyệt lên foreground khi người dùng yêu cầu rõ ràng.
+
 ## Tổ chức kiểm thử JavaScript
 
 - Tất cả file kiểm thử JavaScript (`*.test.js`, `*.test.mjs`, `*.test.cjs`) phải đặt trong thư mục `tests/` ở gốc dự án; test mới cũng phải tuân thủ quy tắc này.
