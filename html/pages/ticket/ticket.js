@@ -216,6 +216,38 @@
     document.querySelector('.ticket-workspace').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function clearTicketData() {
+    state.groups = [];
+    state.activeGroup = null;
+    state.category = 'All';
+    state.search = '';
+    state.hasPendingChanges = false;
+    state.paymentMethod = null;
+    state.receipt = 'No Receipt';
+    state.tip = 0;
+    state.tipType = 'amount';
+    state.tipChoice = null;
+    state.discountAll = false;
+    state.showMore = false;
+    state.collapsed = false;
+    state.replacingLineId = null;
+    state.addonTargetLineId = null;
+    state.pendingRemoveLineId = null;
+    state.addServicesGroupId = null;
+    state.addServicesTargetLineId = null;
+    state.addServicesSearch = '';
+    state.addServicesQuantities = {};
+    state.changeServiceId = null;
+    state.changeServiceSearch = '';
+    state.discountTarget = null;
+    state.discountValue = null;
+    $('service-search').value = '';
+    document.querySelector('.note-card textarea').value = '';
+    document.querySelector('.reward-card input').value = '';
+    if (state.mode === 'checkout') setMode('edit');
+    else render();
+  }
+
   function renderPrintPreview() {
     const groups = state.groups.filter(group => visibleLines(group).length);
     const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date()).replace(' at ', ' ');
@@ -447,6 +479,7 @@
     if (button.dataset.tipValue) { state.tipChoice = Number(button.dataset.tipValue); renderTipValues(); return; }
     if (button.id === 'add-technician') { const group = { id: `group-${nextId++}`, tech: '', lines: [] }; state.groups.push(group); state.activeGroup = group.id; markPending(); render(); document.querySelector(`[data-group-tech="${group.id}"]`)?.focus(); return; }
     if (button.id === 'collapse-ticket') { state.collapsed = !state.collapsed; renderGroups(); return; }
+    if (button.id === 'clear-data') { clearTicketData(); return; }
     if (button.id === 'back-button') { if (state.mode === 'checkout') setMode('edit'); return; }
     if (button.id === 'edit-primary-action') { if (missingTech()) { state.collapsed = false; renderGroups(); const group = state.groups.find(group => !group.tech && group.lines.some(filled)); document.querySelector(`[data-line-tech="${group.lines.find(filled).id}"]`)?.focus(); } else if (state.hasPendingChanges) { state.hasPendingChanges = false; renderAction(); } else setMode('checkout'); return; }
     if (button.id === 'checkout-button') { if (!button.disabled) { $('confirm-method').textContent = `Payment method: ${[...methods, ...extraMethods].find(method => method[0] === state.paymentMethod)?.[1] || 'Other'}`; $('confirm-total').textContent = money(total()); $('confirm-dialog').showModal(); } return; }

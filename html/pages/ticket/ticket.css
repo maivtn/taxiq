@@ -246,3 +246,6 @@ body:not(.checkout-mode) #collapse-ticket{display:none}
 .add-services-technician{font-size:14px}
 .discount-types button,.discount-values button,.discount-reason input,.change-service-list button{font-size:13px}
 @media(max-width:650px){.payment-methods button,.payment-extra button{font-size:14px}}
+.workspace-heading{flex-wrap:wrap}
+.clear-data-button{margin-left:auto;min-height:44px;padding:0 15px;border:1px solid #f2c5cd;border-radius:8px;background:#fff6f7;color:#b84358;font-size:13px;font-weight:800}
+.clear-data-button:hover{background:#ffeaee}
