@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <base href="../">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Staff &amp; Recruitment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-icons.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261030-shared-header-v47">
+  <style>
+    :root{--nexora-canvas:#f7f9fc;--nexora-surface:#fff;--nexora-surface-muted:#f3f6fa;--nexora-border:#dde5ef;--nexora-text:#0b1220;--nexora-muted:#4d5870;--nexora-subtle:#7a8296;--nexora-sidebar:#081f49;--nexora-brand:#4648d8;--nexora-electric:#2b59ff;--nexora-violet:#8e4df8;--nexora-card-shadow:0 2px 8px rgba(15,23,42,.08);--nexora-soft-shadow:0 8px 24px rgba(15,23,42,.06)}
+  </style>
+  <link rel="stylesheet" href="v3/community-shell.css?v=20261106-v31">
+  <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <main class="content community-content" aria-label="Community content"><div id="community-staging" aria-label="Nexora Community"></div></main>
+    </div>
+  </div>
+  <script>
+    {const params=new URLSearchParams(location.search);if(!params.has('tab')){params.set('tab','jobs');history.replaceState(null,'',location.pathname+'?'+params);}if(params.get('account')==='personal'||['staff','tech'].includes(params.get('role')))location.replace(new URL('community.html?'+params,location.href));}
+    if(new URLSearchParams(location.search).get('role')==='tech')location.replace(new URL('staff-community.html'+location.search+location.hash,location.href).href);
+    window.NEXORA_SHELL={activePage:'pos',activeNavKey:'pos-settings',isCommunity:true,activeTab:'jobs',onNavigate:function(tab){if(window.navigateCommunityHub)window.navigateCommunityHub(tab);}};
+  </script>
+  <script src="../assets/nexora-icons.js"></script>
+  <script src="../assets/nexora-shell-nav.js?v=20261029-sidebar-group-labels"></script>
+  <script src="../assets/nexora-shell.js?v=20261030-header-nine-dots-v48"></script>
+  <script src="../assets/vendor/lucide.min.js"></script>
+  <script>if(window.lucide)window.lucide.createIcons();</script>
+  <script src="v3/community/community-shared.js?v=20261106-v31"></script>
+  <script src="v3/community/community-native.js?v=20261106-v31"></script>
+  <script src="v3/community/community-platform.js?v=20261106-v31"></script>
+  <script src="v3/community-integration.js?v=20261106-v31"></script>
+</body>
+</html>

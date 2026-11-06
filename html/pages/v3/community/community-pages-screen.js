@@ -41,7 +41,7 @@
     if(!view&&!edit&&!back&&!returnToPage)return;
     if(back||returnToPage){event.preventDefault();event.stopImmediatePropagation();navigate(back?.dataset.pageScreenBack==='list'?'':activeId);return;}
     const id=view?.dataset.openPage||edit?.dataset.editPage,page=api.getPage(id);
-    if(!page||(edit&&page.owner!==api.member))return;
+    if(!page||(edit&&!api.canManage(page)))return;
     event.preventDefault();event.stopImmediatePropagation();navigate(String(id),edit?'edit':'view');
   },true);
   window.addEventListener('message',event=>{
@@ -53,7 +53,7 @@
   if(activeId){
     const page=api.getPage(activeId);
     if(!page){navigate('','view',true);return;}
-    if(query.get('pageMode')==='edit'&&page.owner===api.member)api.edit(page);
+    if(query.get('pageMode')==='edit'&&api.canManage(page))api.edit(page);
     else api.open(page,query.get('pageTab')||'posts');
   }
 })();

@@ -18,12 +18,10 @@
     dayhire:'calendar-clock', page:'building-2', group:'users-round', messages:'message-circle', calls:'phone', privacy:'settings-2'
   };
   function makeArtwork(name,nav=false) {
-    const image=document.createElement('img');
-    image.className='community-nav-art';
-    image.src=nav?new URL(name+(name==='feed'?'.webp':'.svg'),navBase).href:feedArtwork[name]?new URL(feedArtwork[name],feedAssetBase).href:new URL('issue-2040-oneqr-'+name+'-3d.png',assetBase).href;
-    image.alt='';image.setAttribute('aria-hidden','true');image.draggable=false;
-    image.width=image.height=28;
-    return image;
+    const names={feed:'LayoutList',groups:'UsersRound',pages:'Building2',deals:'Ticket',jobs:'Briefcase',calendar:'CalendarDays',blog:'BookOpen',messages:'MessageCircle',calls:'Phone',settings:'Settings2','feed-photo':'Camera','feed-sale':'Tag','feed-job':'Briefcase','feed-poll':'ListChecks','feed-tip':'Lightbulb','feed-ask':'MessageCircleQuestion','feed-event':'CalendarDays','feed-blog':'BookOpen'};
+    const key=names[name]||name.split('-').map(part=>part[0].toUpperCase()+part.slice(1)).join('');
+    const definition=window.lucide?.icons[key]||window.lucide?.icons.Circle;
+    return definition?window.lucide.createElement(definition,{width:28,height:28,class:'community-nav-art','aria-hidden':'true',focusable:'false'}):document.createElement('span');
   }
   const navArtwork={feed:'feed',market:'groups',groups:'groups',pages:'pages',deals:'deals',jobs:'jobs',daywork:'calendar',blog:'blog',connect:'messages',messages:'messages',calls:'calls',privacy:'settings'};
   const navBase=new URL('nav-icons/',document.currentScript.src);

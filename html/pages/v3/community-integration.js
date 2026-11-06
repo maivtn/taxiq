@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community/community-hub.js?v=20261106-community-v3-baseline',document.currentScript.src);
+  var componentURL=new URL('community/community-hub.js?v=20261106-v31',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -12,10 +12,10 @@
   var current = '';
   var detailOpen = false;
   var ready = false;
-  var routes = ['feed', 'groups', 'market', 'pages', 'deals', 'jobs', 'shift', 'blog', 'connect', 'chatgroups', 'calls', 'privacy'];
+  var routes = ['feed', 'groups', 'market', 'pages', 'deals', 'jobs', 'shift', 'blog', 'connect', 'chatgroups', 'calls', 'privacy', 'realestate', 'food', 'shop', 'transfer', 'reels', 'live', 'news', 'wallet', 'wheel', 'meet', 'account', 'assistant'];
   var aliases = {mkt:'market', fanpage:'pages', daywork:'shift', shifts:'shift', profile:'jobs', 'jobs-my-posts':'jobs', 'jobs-applied':'jobs', 'shift-payments':'shift', learning:'feed', events:'feed', dcats:'deals', dmatch:'deals', dopen:'deals', dlast:'deals', dlastt:'deals', dlastb:'deals', dcamp:'deals', dwallet:'deals', dcreate:'deals', dmanage:'deals', dredeem:'deals', dwish:'deals'};
 
-  var contextKeys=['dealTab','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId'];
+  var contextKeys=['dealTab','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','postId','post','commentId','comment','threadId','thread','pageId','pageMode','pageTab','pageScope','listingId','meetingId','meetView','recordId','wheelTab'];
   function routeContext(){var query=new URLSearchParams(location.search),result={};for(var key of contextKeys)if(query.has(key))result[key]=query.get(key);return result;}
   function route(value) {
     value = aliases[value] || value;
@@ -23,7 +23,7 @@
   }
   function sidebar(value) {
     if (value === 'market') return 'groups';
-    return ['chatgroups', 'calls', 'privacy'].indexOf(value) >= 0 ? 'connect' : value;
+    return ['chatgroups', 'calls', 'privacy'].indexOf(value) >= 0 ? 'connect' : ['feed','groups','pages','deals','jobs','shift','blog','connect'].includes(value)?value:'feed';
   }
   function send(type, values) {
     if(hub){if(type==='nexora-community-navigate')hub.navigate(values.route,values.context);if(type==='nexora-community-language')hub.setLanguage(values.language);if(type==='nexora-community-close-detail')hub.closeDetail();}
@@ -51,23 +51,24 @@
     return true;
   }
 
+  document.addEventListener('click',function(event){var link=event.target.closest('a[href]');if(link&&/staff-profile\.html/.test(link.getAttribute('href'))){event.preventDefault();show('account',false,false);}},true);
   window.navigateCommunityHub = function (value) { return show(value, false, false); };
   window.activateCommunityTab = window.navigateCommunityHub;
   if (window.NEXORA_SHELL) {
     window.NEXORA_SHELL.isCommunity = true;
     window.NEXORA_SHELL.onNavigate = window.navigateCommunityHub;
   }
-  function communityLanguage(){return 'en';}
-  localStorage.setItem('nexora-v3:nexora-community-language','en');
+  function communityLanguage(){return localStorage.getItem('nexora-v3:nexora-community-language')==='vi'?'vi':'en';}
+  localStorage.setItem('nexora-v3:nexora-community-language',communityLanguage());
   function syncLanguageControl(){
     var select=document.querySelector('.sidebar-account-language select');
     if(!select)return;
-    select.querySelector('option[value="vi"]')?.remove();
+    if(!select.querySelector('option[value="vi"]'))select.add(new Option('Tiếng Việt','vi'));
     select.value=communityLanguage();
   }
   document.addEventListener('change',function(event){
     if(!event.target.matches('.sidebar-account-language select'))return;
-    var language='en';event.target.value='en';
+    var language=event.target.value==='vi'?'vi':'en';
     localStorage.setItem('nexora-v3:nexora-community-language',language);
     if(ready)send('nexora-community-language',{language:language});
   });
@@ -105,7 +106,7 @@
       send('nexora-community-navigate', {route:current,context:routeContext()});
     }
     if(data.type==='nexora-community-context'){var url=new URL(location.href),ctx=data.context||{};if(ctx.closeDetail){clearContextOnBack=detailOpen||detailBackPending;for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);}else{var keys=Object.hasOwn(ctx,'dealTab')?['dealTab']:Object.hasOwn(ctx,'jobsTab')?['jobsTab','jobId','profileRequired']:Object.hasOwn(ctx,'shiftTab')?['shiftTab','shiftId','assignmentId','settlementId','invitationId']:contextKeys;for(var key of keys){if(ctx[key])url.searchParams.set(key,ctx[key]);else url.searchParams.delete(key);}}history.replaceState(history.state,'',url);}
-    if(data.type==='nexora-community-pos')location.href='/html/pages/pos-recruitment.html';
+    if(data.type==='nexora-community-pos')location.href=new URL('pos-recruitment.html?tab=jobs',location.href).href;
     if (data.type === 'nexora-community-route' && ready) show(data.route, true, Boolean(data.replace));
     if(data.type==='nexora-feed-post-close'){clearPostOnBack=true;if(!detailOpen&&!detailBackPending)clearPostLink();}
     if (data.type === 'nexora-community-detail') {
@@ -155,16 +156,14 @@
     var params=new URLSearchParams(location.search);
     params.set('tab',current);
     if (window.NEXORA_SHELL && window.NEXORA_SHELL.activePage === 'staff') {
-      var name = window.NEXORA_SHELL.profileName || document.querySelector('.staff-profile-name')?.textContent;
-      if (name&&!params.has('member')) params.set('member', name.trim());params.set('role','staff');params.set('account',window.NEXORA_SHELL.salonLinked===false?'personal':'business');
+      var name = window.NEXORA_COMMUNITY_SHARED?.member || window.NEXORA_SHELL.profileName;
+      if (name&&!params.has('member')) params.set('member', name.trim());params.set('role','staff');if(!params.has('account'))params.set('account',window.NEXORA_SHELL.salonLinked===false?'personal':'business');
     }
     function mount(){return window.NEXORA_COMMUNITY_HUB.mount(frame,{params:params,notify:receiveHubEvent});}
     var load=window.NEXORA_COMMUNITY_HUB?Promise.resolve():new Promise(function(resolve,reject){var script=document.createElement('script');script.src=componentURL.href;script.onload=resolve;script.onerror=reject;document.head.append(script);});
     load.then(mount).then(function(api){hub=api;ready=true;send('nexora-community-language',{language:communityLanguage()});send('nexora-community-navigate',{route:current,context:routeContext()});}).catch(function(error){
-      console.error('Community native shell could not load; using the standalone preview.',error);
-      fallbackFrame=document.createElement('iframe');fallbackFrame.title=frame.getAttribute('aria-label')||'NEXORA Community';fallbackFrame.style.cssText='display:block;width:100%;height:100%;border:0';
-      var source=new URL('nexora-community-complete.html',componentURL);params.set('tab',current);params.set('embedded','1');params.set('v','20261029-community-tour-actions-v21');source.search=params.toString();
-      (frame.shadowRoot||frame).replaceChildren(fallbackFrame);fallbackFrame.src=source.href;
+      console.error('Community native shell could not load.',error);
+      var errorPanel=document.createElement('section');errorPanel.className='community-load-error';errorPanel.innerHTML='<p role="alert">Something went wrong. Please try again.</p><button type="button">Try again</button>';errorPanel.querySelector('button').addEventListener('click',function(){location.reload();});frame.replaceChildren(errorPanel);
     });
   }
   recordInitialRoute();

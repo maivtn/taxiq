@@ -1,173 +1,103 @@
-/* Native Community navigation; PO content documents remain isolated peers. */
+/* Community v3.1: one shell, native isolated regions and shared identity/points. */
 (() => {
   'use strict';
-  const BASE_URL=new URL('./',document.currentScript.src);
-  async function read(url){const response=await fetch(url);if(!response.ok)throw new Error('Unable to load Community: '+response.status+' '+url);return response.text();}
-  function scopedCSS(css,url){
-    return css.replace(/(?<![\w.-])body\.embedded/g,':host').replace(/:root\b|(?<![\w.-])(?:body|html)(?![\w-])/g,':host')
-      .replace(/@media\s*\(\s*(max|min)-width\s*:\s*(\d+)px\s*\)/g,'@container community ($1-width: $2px)')
-      .replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,quote,value)=>/^(?:data:|https?:|#)/.test(value)?all:'url("'+new URL(value,url).href+'")');
-  }
+  const BASE=new URL('./',document.currentScript.src), VERSION='20261106-v31';
+  const LABELS={en:{feed:'Feed',groups:'Groups & Market',market:'Buy & sell',pages:'Pages',deals:'Deals & Coupons',jobs:'Jobs',shift:'Extra shifts',blog:'Blog',connect:'Messages & Calls',reels:'Reels',live:'Livestream',news:'News & Blog',shop:'My storefront',transfer:'Salon transfers',realestate:'Real Estate',food:'Food & Restaurants',wallet:'NEXORA Points',wheel:'Lucky Wheel',meet:'NEXORA Meet',account:'Profile',assistant:'AI assistant',more:'More',back:'Back',notifications:'Notifications',empty:'No new notifications.',retry:'Try again',error:'Something went wrong. Please try again.',loading:'Loading…',search:'Search Nexora members — nickname, NX-ID, phone, email'},vi:{feed:'Bảng tin',groups:'Nhóm & Chợ',market:'Mua bán',pages:'Trang / Fanpage',deals:'Ưu đãi & Mã giảm giá',jobs:'Việc làm',shift:'Ca làm thêm',blog:'Blog',connect:'Tin nhắn & Cuộc gọi',reels:'Reels',live:'Livestream',news:'Tin tức & Blog',shop:'Gian hàng của tôi',transfer:'Sang nhượng tiệm',realestate:'Địa ốc',food:'Nhà hàng món ngon',wallet:'Ví điểm NEXORA',wheel:'Vòng quay may mắn',meet:'NEXORA Meet',account:'Hồ sơ',assistant:'Trợ lý AI',more:'Thêm',back:'Quay lại',notifications:'Thông báo',empty:'Chưa có thông báo mới.',retry:'Thử lại',error:'Đã có lỗi xảy ra. Vui lòng thử lại.',loading:'Đang tải…',search:'Tìm người — nickname, NX-ID, số điện thoại, email'}};
+  const ICONS={feed:'LayoutList',groups:'UsersRound',market:'ShoppingBag',pages:'Building2',deals:'Ticket',jobs:'Briefcase',shift:'CalendarDays',blog:'BookOpen',connect:'MessageCircle',reels:'Clapperboard',live:'Video',news:'Newspaper',shop:'Store',transfer:'Store',realestate:'House',food:'Utensils',wallet:'WalletCards',wheel:'CircleDot',meet:'Video',account:'UserRound',assistant:'Sparkles',more:'Grid2X2',back:'ArrowLeft',notifications:'Bell'};
+  const CORE=new Set(['feed','groups','market','pages','deals','jobs','shift','blog','transfer']);
+  const TOOLS=new Set(['shop','reels','live','news']);
+  const ALIASES={daywork:'shift',shifts:'shift',messages:'connect',home:'feed',fanpage:'pages',profile:'jobs',chatgroups:'connect',calls:'connect',privacy:'connect'};
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const icon=name=>{const definition=window.lucide?.icons[name];return definition?window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true',focusable:'false'}).outerHTML:'';};
   async function mount(host,options={}){
     if(host.communityHub)return host.communityHub;
-    const url=new URL('nexora-community-complete.html?v=20261106-community-form-lucide-v60',BASE_URL);
-    const parsed=new DOMParser().parseFromString(await read(url),'text/html');
-    const styles=await Promise.all([...parsed.head.querySelectorAll('style,link[rel="stylesheet"]')].map(async node=>{const source=node.tagName==='STYLE'?url:new URL(node.getAttribute('href'),url);return scopedCSS(node.tagName==='STYLE'?node.textContent:await read(source),source);}));
-    parsed.body.querySelectorAll('script').forEach(node=>node.remove());
-    parsed.body.querySelectorAll('[src],[href],[data-src]').forEach(node=>{for(const attribute of ['src','href','data-src']){const value=node.getAttribute(attribute);if(value&&!value.startsWith('#'))node.setAttribute(attribute,new URL(value,url).href);}});
-    const root=host.attachShadow({mode:'open'});
-    const style=document.createElement('style');
-    style.textContent=styles.join('\n')+`\n:host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host .tour-card,:host .tour-card.menu-step{top:auto;}}`;
-    root.append(style,...parsed.body.childNodes);
-    host.communityHub=start(root,{...options,native:true});
-    return host.communityHub;
+    const params=options.params||new URLSearchParams(location.search), root=host.attachShadow({mode:'open'});
+    const style=document.createElement('style');style.textContent=await window.NEXORA_NATIVE.read(new URL('community-shell-v31.css?v='+VERSION,BASE).href);root.append(style);
+    let language=localStorage.getItem('nexora-v3:nexora-community-language')||'en';if(!LABELS[language])language='en';
+    let route='',rawRoute='',context={},detail=false,more=false,notifications=false,accountOpen=false,generation=0,coreCommand=false;
+    const modules=new Map(),panes=new Map();
+    const shell=document.createElement('div');shell.className='community-native-shell';root.append(shell);
+    shell.innerHTML='<header class="hub-header"><div class="hub-heading"><button class="hub-icon" data-hub-back></button><h1>Community</h1></div><div class="hub-actions"><button class="hub-icon" data-hub-notifications></button><button class="hub-points" data-hub-route="wallet"></button><button class="hub-icon" data-hub-route="assistant"></button><select class="hub-language" aria-label="Language"><option value="en">English</option><option value="vi">Tiếng Việt</option></select><button class="hub-icon" data-hub-route="account"></button><button class="hub-icon" data-hub-more></button></div></header><nav class="hub-top-tabs"></nav><section class="hub-menu" hidden></section><section class="hub-notifications" hidden></section><aside class="hub-account-drawer" hidden></aside><main class="hub-stage"></main><nav class="hub-bottom-tabs"></nav>';
+    const stage=root.querySelector('.hub-stage'),labels=()=>LABELS[language];
+    function notify(data){options.notify?.(data);}
+    function button(key,compact=false){return '<button type="button" class="hub-nav-item'+(route===key?' active':'')+'" '+(key==='more'?'data-hub-more':'data-hub-route="'+key+'"')+' aria-label="'+esc(labels()[key])+'"'+(route===key?' aria-current="page"':'')+'>'+icon(ICONS[key])+'<span>'+esc(labels()[key])+'</span></button>';}
+    function navigation(){
+      shell.lang=language;root.querySelector('h1').textContent=route==='feed'?'Community':labels()[route]||'Community';
+      root.querySelector('[data-hub-back]').innerHTML=icon('ArrowLeft');root.querySelector('[data-hub-back]').setAttribute('aria-label',labels().back);
+      root.querySelector('[data-hub-notifications]').innerHTML=icon('Bell');root.querySelector('[data-hub-notifications]').setAttribute('aria-label',labels().notifications);
+      for(const key of ['assistant','account']){const node=root.querySelector('[data-hub-route="'+key+'"]');node.innerHTML=icon(ICONS[key]);node.setAttribute('aria-label',labels()[key]);}
+      const wallet=window.NEXORA_COMMUNITY_SHARED.wallet();root.querySelector('.hub-points').innerHTML=icon('WalletCards')+'<span>'+wallet.balance.toLocaleString('en-US')+'</span>';
+      root.querySelector('.hub-points').setAttribute('aria-label',labels().wallet);
+      const moreButton=root.querySelector('.hub-actions [data-hub-more]');moreButton.innerHTML=icon('Grid2X2');moreButton.setAttribute('aria-label',labels().more);moreButton.setAttribute('aria-expanded',String(more));
+      const identity=window.NEXORA_COMMUNITY_SHARED.me(),drawer=root.querySelector('.hub-account-drawer');drawer.hidden=!accountOpen;drawer.innerHTML='<div class="hub-account-heading"><strong>'+esc(identity.name)+'</strong><button type="button" class="hub-icon" data-hub-close-account aria-label="'+esc(language==='vi'?'Đóng':'Close')+'">'+icon('X')+'</button></div><p>@'+esc(identity.nickname)+'</p><p>'+esc(identity.id)+'</p><nav><a class="hub-nav-item" href="/html/pages/dashboard.html">'+icon('LayoutDashboard')+'Dashboard</a><a class="hub-nav-item" href="/html/pages/frame-personal.html">'+icon('Briefcase')+'My Workspace</a>'+button('account')+button('wallet')+button('wheel')+'<button type="button" class="hub-nav-item" data-hub-route="privacy">'+icon('Shield')+'Privacy &amp; NEXORA ID</button></nav>';
+      root.querySelector('.hub-language').value=language;
+      root.querySelector('.hub-top-tabs').innerHTML=['feed','groups','jobs','shift','connect'].map(key=>button(key)).join('');
+      root.querySelector('.hub-bottom-tabs').innerHTML=['feed','groups','jobs','connect','more'].map(key=>button(key,true)).join('');
+      root.querySelector('.hub-menu').innerHTML=['feed','groups','pages','deals','jobs','reels','live','news','connect','shop','transfer','realestate','food','shift','blog','wallet','wheel','meet','account'].map(key=>button(key)).join('');
+      root.querySelector('.hub-menu').hidden=!more;renderNotifications();
+    }
+    function renderNotifications(){
+      const shared=window.NEXORA_COMMUNITY_SHARED,rows=shared.read().notifications.filter(row=>row.recipient===shared.member),unread=rows.filter(row=>!row.read).length;
+      const bell=root.querySelector('[data-hub-notifications]');bell.querySelector('b')?.remove();if(unread)bell.insertAdjacentHTML('beforeend','<b class="hub-badge">'+unread+'</b>');
+      const panel=root.querySelector('.hub-notifications');panel.hidden=!notifications;
+      panel.innerHTML='<h2>'+esc(labels().notifications)+'</h2>'+(rows.length?rows.map(row=>'<button type="button" data-hub-notification="'+esc(row.id)+'" class="'+(row.read?'':'unread')+'"><strong>'+esc(row.title)+'</strong><time>'+esc(new Date(row.time).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))+'</time></button>').join(''):'<p>'+esc(labels().empty)+'</p>');
+    }
+    function setDetail(open){detail=!!open;shell.classList.toggle('hub-detail-open',detail);notify({type:'nexora-community-detail',open:detail});}
+    function moduleURL(file,key){const url=new URL(file,BASE);for(const [name,value] of params)url.searchParams.set(name,value);for(const [name,value] of Object.entries(context))if(value!=null)url.searchParams.set(name,value);url.searchParams.set('embedded','1');url.searchParams.set('lang',language);url.searchParams.set('rev',VERSION);if(key==='core'){url.searchParams.set('view',route==='shift'?'daywork':route==='transfer'?'jobs':route);url.searchParams.set('tab',route);}if(key==='tools')url.searchParams.set('section',route);return url;}
+    async function ensure(key,file){
+      if(modules.has(key))return modules.get(key);
+      const pane=document.createElement('section');pane.className='hub-pane';pane.hidden=true;stage.append(pane);panes.set(key,pane);
+      const task=window.NEXORA_NATIVE.mount(pane,moduleURL(file,key),{onMessage:(data,source)=>receive(data,source),navigate:url=>location.assign(url)}).catch(error=>{modules.delete(key);pane.remove();panes.delete(key);throw error;});modules.set(key,task);return task;
+    }
+    async function receive(data,source){
+      if(!data||typeof data!=='object')return;
+      if(data.type==='nexora-modal-state'||data.type==='nexora-connect-dialog'||data.type==='nexora-connect-detail'){setDetail(data.open);return;}
+      if(data.type==='nexora-community-contact'){await show('connect');const api=await modules.get('connect');api.send({type:'nexora-open-contact',contact:data.contact});return;}
+      if(data.type==='nexora-open-community-group'){await show('chatgroups');const api=await modules.get('connect');api.send(data);return;}
+      if(data.type==='nexora-connect-community-context'){const value=data.context||{};await show(value.view==='daywork'?'shift':value.view||'feed',value);return;}
+      if(data.type==='nexora-community-route'){await show(data.route,data.context||{});return;}
+      if(data.type==='nexora-prototype-view'){if(coreCommand)return;const next=data.view==='daywork'?'shift':data.view;if(CORE.has(next)&&next!==route){route=next;rawRoute=next;navigation();notify({type:'nexora-community-route',route:next});}return;}
+      if(data.type==='nexora-connect-section'){if(route==='connect'){rawRoute=({groups:'chatgroups',calls:'calls',privacy:'privacy'}[data.section]||'connect');notify({type:'nexora-community-route',route:rawRoute});}return;}
+      if(data.type==='nexora-connect-back-community'){show('feed');return;}
+      if(data.type==='nexora-community-page-state'||data.type==='nexora-community-page-navigate'||data.type==='nexora-community-context'||data.type==='nexora-community-pos'||data.type==='nexora-feed-post-close'||data.type==='nexora-community-history-back'){notify(data);return;}
+    }
+    async function show(next,nextContext={},fromHost=false){
+      const requested=next;next=ALIASES[next]||next;if(!LABELS[language][next])next='feed';
+      if(next!==route)for(const [key,pane] of panes)if(!pane.hidden)modules.get(key)?.then(api=>api.window.NEXORA_COMMUNITY_MODULE?.deactivate?.());
+      rawRoute=requested;route=next;context=nextContext||{};const ownGeneration=++generation;
+      more=false;notifications=false;accountOpen=false;setDetail(false);navigation();
+      for(const pane of panes.values())pane.hidden=true;
+      root.querySelector('.hub-platform')?.remove();root.querySelector('.hub-load-error')?.remove();
+      try{
+        let key,api;
+        if(CORE.has(route)){key='core';coreCommand=true;try{api=await ensure(key,'nexora-community-prototype.html');api.send({type:'nexora-language',language});api.send({type:'nexora-open-view',view:route==='shift'?'daywork':route==='transfer'?'jobs':route});api.send({type:'nexora-community-context',context:route==='transfer'?{...context,jobsTab:'transfer'}:context});}finally{coreCommand=false;}}
+        else if(route==='connect'){key='connect';api=await ensure(key,'nexora-privacy-qr-layout.html');api.send({type:'nexora-language',language});api.send({type:'nexora-open-section',section:({chatgroups:'groups',calls:'calls',privacy:'privacy'}[requested]||'messages')});}
+        else if(TOOLS.has(route)){key='tools';api=await ensure(key,'modules/hub-tools/index.html');api.window.NEXORA_COMMUNITY_MODULE?.setLanguage(language);api.window.NEXORA_COMMUNITY_MODULE?.navigate(route);}
+        else if(['food','realestate','meet','wheel'].includes(route)){key=route;api=await ensure(key,'modules/'+route+'/index.html');api.window.NEXORA_COMMUNITY_MODULE?.setLanguage(language);api.window.NEXORA_COMMUNITY_MODULE?.navigate?.(route,context);}
+        else {const panel=document.createElement('section');panel.className='hub-platform';stage.append(panel);window.NEXORA_COMMUNITY_PLATFORM.mount(panel,{route,language,context,navigate:show,setDetail});}
+        if(ownGeneration!==generation)return;
+        if(key)panes.get(key).hidden=false;
+        stage.scrollTop=0;
+        if(!fromHost){notify({type:'nexora-community-route',route:requested==='transfer'?'transfer':route==='connect'?requested:route});if(Object.keys(context).length)notify({type:'nexora-community-context',context});}
+      }catch(error){if(ownGeneration!==generation)return;const node=document.createElement('div');node.className='hub-load-error';node.innerHTML='<p role="alert">'+esc(labels().error)+'</p><button type="button" data-hub-retry>'+esc(labels().retry)+'</button>';stage.append(node);console.error('Community region',route,error);}
+    }
+    async function setLanguage(next){language=LABELS[next]?next:'en';localStorage.setItem('nexora-v3:nexora-community-language',language);navigation();for(const task of modules.values()){const api=await task;api.send({type:'nexora-language',language});api.window.NEXORA_COMMUNITY_MODULE?.setLanguage(language);}if(!CORE.has(route)&&route!=='connect'&&!TOOLS.has(route)&&!['food','realestate','meet','wheel'].includes(route))show(route,context,true);}
+    root.addEventListener('click',event=>{
+      const target=event.target.closest('button');if(!target)return;
+      if(target.hasAttribute('data-hub-close-account')){accountOpen=false;setDetail(false);navigation();return;}
+      if(target.closest('.hub-actions')&&target.dataset.hubRoute==='account'){accountOpen=!accountOpen;more=false;notifications=false;setDetail(accountOpen);navigation();return;}
+      if(target.hasAttribute('data-hub-more')){more=!more;notifications=false;navigation();return;}
+      if(target.hasAttribute('data-hub-notifications')){notifications=!notifications;more=false;navigation();return;}
+      if(target.hasAttribute('data-hub-back')){notify({type:'nexora-community-history-back'});return;}
+      if(target.hasAttribute('data-hub-retry')){show(rawRoute,context,true);return;}
+      if(target.dataset.hubRoute){show(target.dataset.hubRoute);return;}
+      if(target.dataset.hubNotification){const shared=window.NEXORA_COMMUNITY_SHARED,row=shared.read().notifications.find(item=>item.id===target.dataset.hubNotification&&item.recipient===shared.member);if(row){shared.change(data=>{data.notifications.find(item=>item.id===row.id).read=true;});show(row.route,row.context);}}
+    });
+    root.querySelector('.hub-language').addEventListener('change',event=>setLanguage(event.target.value));
+    root.addEventListener('keydown',event=>{if(event.key==='Escape'){more=false;notifications=false;accountOpen=false;setDetail(false);navigation();}});
+    window.addEventListener('nexora-community-shared-changed',navigation);
+    const api={navigate:(next,ctx)=>show(next,ctx,true),setLanguage,closeDetail:async()=>{if(accountOpen){accountOpen=false;navigation();setDetail(false);return;}if(route==='connect')(await modules.get('connect'))?.send({type:'nexora-back'});else if(CORE.has(route))(await modules.get('core'))?.send({type:'nexora-close-modal'});else root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());setDetail(false);}};
+    host.communityHub=api;await show(params.get('tab')||'feed',Object.fromEntries(params),true);return api;
   }
-  function start(root,context={}){
-
-      const isCompact=()=>context.native?root.host.clientWidth<=800:matchMedia('(max-width:800px)').matches;
-      const nativeApp=root.querySelector('.app');
-      const artwork={feed:'feed.webp',market:'groups.svg',groups:'groups.svg',pages:'pages.svg',deals:'deals.svg',jobs:'jobs.svg',daywork:'calendar.svg',blog:'blog.svg',connect:'messages.svg'};
-      root.querySelectorAll('.tab[data-view]').forEach(button=>{const file=artwork[button.dataset.view],previous=button.querySelector('svg');if(!file||!previous)return;const image=document.createElement('img');image.className='community-nav-art';image.src=new URL('nav-icons/'+file,BASE_URL).href;image.alt='';image.setAttribute('aria-hidden','true');image.width=image.height=28;image.draggable=false;previous.replaceWith(image);});
-
-      const community=root.getElementById('communityPane'),connect=root.getElementById('connectPane');
-      const messageOrigin=location.protocol==='file:'?'*':location.origin;
-      const sendToFrame=(frame,data)=>frame.contentWindow.postMessage(data,messageOrigin);
-      const tabs=[...root.querySelectorAll('.tab')];
-      const notificationsButton=root.getElementById('notificationsButton'),notificationsMenu=root.getElementById('notificationsMenu');
-      const languageButton=root.getElementById('languageButton'),languageMenu=root.getElementById('languageMenu');
-      const translations={
-        vi:{subtitle:'Chia sẻ, hỏi đáp và giao thương cùng cộng đồng',notifications:'Thông báo',newMessage:'Tin nhắn đầu tiên mới',messagePreview:'Mai Nguyễn hỏi về ghế màu trắng',view:'Xem',noNotifications:'Chưa có thông báo mới.',language:'Ngôn ngữ',back:'← Quay lại',feed:'Bảng tin',market:'Nhóm & Chợ',groups:'Nhóm',buySell:'Mua bán',pages:'Fanpage',jobs:'Việc làm',jobsGroup:'VIỆC LÀM',daywork:'Ca làm thêm',deals:'Deal & Coupon',mobileDeals:'Deal',dealsGroup:'DEAL & COUPON',nearbyDeals:'Deal gần bạn',connectGroup:'KẾT NỐI',connect:'Tin nhắn & Cuộc gọi',mobileConnect:'Tin nhắn & Gọi',workspace:'Không gian làm việc',community:'Cộng đồng',businessSetting:'Cài đặt doanh nghiệp',businessVerification:'Xác minh doanh nghiệp',certifications:'Chứng nhận của tôi',sidebarLanguage:'Ngôn ngữ: Tiếng Việt',home:'Trang chủ',dashboard:'Tổng quan',payments:'Thanh toán & Chi trả',reviews:'Đánh giá',giftCards:'Trung tâm thẻ quà tặng',analytics:'Phân tích',settings:'Cài đặt',news:'Tin tức & Thư viện',support:'Hỗ trợ',noPlan:'Chưa có gói',manage:'Quản lý',signout:'Đăng xuất',collapse:'Thu gọn menu',search:'Tìm nhân viên, đánh giá hoặc mẹo...',account:'Tài khoản',ecosystem:'Ứng dụng NEXORA'},
-        en:{subtitle:'Share, ask and trade with people in your trade',notifications:'Notifications',newMessage:'New message request',messagePreview:'Mai Nguyễn asked about the white chairs',view:'View',noNotifications:'No new notifications.',language:'Language',back:'← Back',feed:'Feed',market:'Groups & Market',groups:'Groups',buySell:'Buy & sell',pages:'Pages',jobs:'Jobs',jobsGroup:'JOBS',daywork:'Extra shifts',deals:'Deal & Coupon',mobileDeals:'Deal',dealsGroup:'DEAL & COUPON',nearbyDeals:'Nearby deals',connectGroup:'CONNECT',connect:'Messages & Calls',mobileConnect:'Messages',workspace:'Workspace',community:'Community',businessSetting:'Setting',businessVerification:'Business Verification',certifications:'My Certifications',sidebarLanguage:'Language: English',home:'Home',dashboard:'Dashboard',payments:'Payments & Payouts',reviews:'Reviews',giftCards:'Gift Card Center',analytics:'Analytics',settings:'Settings',news:'News & Library',support:'Support',noPlan:'No Plan yet',manage:'Manage',signout:'Sign out',collapse:'Collapse menu',search:'Search staff, reviews, or tips...',account:'Account menu',ecosystem:'NEXORA apps'}
-      };
-      let language='en';localStorage.setItem('nexora-v3:nexora-community-language','en');
-      const ecosystemButton=root.getElementById('ecosystemButton'),ecosystemMenu=root.getElementById('ecosystemMenu'),app=root.querySelector('.app');
-      function closeMenus(){notificationsMenu.hidden=true;languageMenu.hidden=true;ecosystemMenu.hidden=true;root.querySelectorAll('.tab-sub-toggle').forEach(toggle=>{toggle.setAttribute('aria-expanded','false');root.getElementById(toggle.getAttribute('aria-controls')).hidden=true;});notificationsButton.setAttribute('aria-expanded','false');languageButton.setAttribute('aria-expanded','false');ecosystemButton.setAttribute('aria-expanded','false');}
-      function applyLanguage(){const labels=translations[language];(root.host||document.documentElement).lang=language;if(!context.native)document.title='NEXORA Community';community.title=language==='vi'?'Bảng tin, Nhóm, Chợ, Fanpage, Ưu đãi, Việc làm và Blog':'Feed, Groups, Market, Pages, Deals, Jobs and Blog';connect.title=language==='vi'?'Tin nhắn, cuộc gọi, nhóm chat và cài đặt':'Messages, calls, group chats and settings';root.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=labels[el.dataset.i18n]||el.textContent;});root.getElementById('languageCode').textContent=language.toUpperCase();for(const [id,label] of [['notificationsButton',labels.notifications],['messagesButton',labels.connect],['languageButton',labels.language],['accountButton',labels.account],['ecosystemButton',labels.ecosystem],['sidebarToggle',labels.collapse]]){const el=root.getElementById(id);el.setAttribute('aria-label',label);el.title=label;}const search=root.getElementById('globalSearch');search.placeholder=labels.search;search.setAttribute('aria-label',labels.search);notificationsMenu.setAttribute('aria-label',labels.notifications);languageMenu.setAttribute('aria-label',labels.language);ecosystemMenu.setAttribute('aria-label',labels.ecosystem);root.querySelector('[aria-controls="marketSubmenu"]').setAttribute('aria-label',language==='vi'?'Mở các mục Nhóm & Chợ':'Open Groups & Market sections');root.querySelector('[aria-controls="jobsSubmenu"]').setAttribute('aria-label',language==='vi'?'Mở các mục Việc làm':'Open Jobs sections');root.querySelector('[role="radiogroup"]').setAttribute('aria-label',language==='vi'?'Ngôn ngữ giao diện':'Interface language');root.querySelector('.workspace').setAttribute('aria-label',language==='vi'?'Nội dung Community':'Community content');root.querySelector('.sidebar').setAttribute('aria-label',language==='vi'?'Không gian làm việc':'Workspace');root.querySelector('.tabs').setAttribute('aria-label',language==='vi'?'Các mục Community':'Community sections');root.querySelector('.mobile-nav').setAttribute('aria-label',language==='vi'?'Điều hướng Community':'Community navigation');root.querySelector('[data-language="vi"]')?.remove();root.querySelectorAll('[data-language]').forEach(el=>el.setAttribute('aria-checked',String(el.dataset.language===language)));if(communityLoaded)sendToFrame(community,{type:'nexora-language',language});if(connectLoaded)sendToFrame(connect,{type:'nexora-language',language});updateMobileHeading();updateTourCopy();}
-      const params=context.params||new URLSearchParams(location.search);
-      const initialRoute=params.get('tab')||params.get('view')||'feed';const initialContext={profile:['jobsTab','profile'],'jobs-my-posts':['jobsTab','myPosts'],'jobs-applied':['jobsTab','applied'],'shift-payments':['shiftTab','payments']}[initialRoute];if(initialContext&&!params.has(initialContext[0]))params.set(initialContext[0],initialContext[1]);
-      const viewForRoute=route=>({profile:'jobs','jobs-my-posts':'jobs','jobs-applied':'jobs','shift-payments':'daywork',mkt:'market',shift:'daywork',shifts:'daywork',chatgroups:'connect',calls:'connect',privacy:'connect'}[route]||route);
-      const sectionForRoute=route=>({chatgroups:'groups',calls:'calls',privacy:'privacy'}[route]||'messages');
-      const hosted=Boolean(context.native)||window.parent!==window;
-      const notifyHost=data=>{
-        if(context.notify){context.notify(data);return;}
-        if(hosted){window.parent.postMessage(data,messageOrigin);return;}
-        if(!['nexora-community-page-navigate','nexora-community-page-state'].includes(data.type))return;
-        const url=new URL(location.href);url.searchParams.set('view','pages');url.searchParams.set('tab','pages');
-        if(data.type!=='nexora-community-page-state')for(const key of ['post','postId','comment','commentId','thread','threadId','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);
-        for(const key of ['pageId','pageMode','pageTab','pageScope']){if(data[key])url.searchParams.set(key,data[key]);else url.searchParams.delete(key);}
-        if(data.type==='nexora-community-page-state')history.replaceState(history.state,'',url);
-        else if(data.replace)location.replace(url);else location.assign(url);
-      };
-      const currentRoute=()=>view==='connect'?({groups:'chatgroups',calls:'calls',privacy:'privacy'}[connectSection]||'connect'):view==='daywork'?'shift':view;
-      const notifyHostRoute=replace=>notifyHost({type:'nexora-community-route',route:currentRoute(),replace});
-      let lastHostDetail=false,pendingContact=null,pendingGroup=null,pendingRequest=false,pendingContext=null;
-      function notifyHostDetail(force=false){const open=view==='connect'?(connectDetailOpen||connectDialogOpen):communityModalOpen;if(force||open!==lastHostDetail){lastHostDetail=open;notifyHost({type:'nexora-community-detail',open});}}
-      let view=viewForRoute(initialRoute);
-      if(!['feed','groups','market','pages','jobs','daywork','deals','blog','connect'].includes(view))view='feed';
-      let communityLoaded=false,connectLoaded=false,connectSection=sectionForRoute(initialRoute),pendingCommunityView=view==='connect'?null:view;
-      let connectDetailOpen=false,connectDialogOpen=false,communityModalOpen=false;
-      function updateDetailState(){const detailOpen=view==='connect'?(connectDetailOpen||connectDialogOpen):communityModalOpen;app.classList.toggle('detail-open',detailOpen);root.querySelector('.mobile-nav').hidden=detailOpen;}
-      function notifyRequest(){let pending=true;try{const saved=JSON.parse(localStorage.getItem('nexora-v3:nexora-connect-preview-v2'));if(saved&&saved.request)pending=saved.request==='pending';}catch{}root.getElementById('requestBadge').hidden=!pending;root.getElementById('notificationItem').hidden=!pending;root.getElementById('notificationEmpty').hidden=pending;}
-      function updateMobileHeading(){const heading=root.querySelector('.community-heading h1');const name=({feed:translations[language].community,groups:translations[language].groups,market:translations[language].groups,pages:translations[language].pages,jobs:translations[language].jobs,daywork:translations[language].daywork,deals:translations[language].deals,blog:'Blog',connect:translations[language].mobileConnect})[view]||translations[language].community;heading.textContent=isCompact()?name:translations[language].community;}
-      function setView(next,push=true,fromChild=false){if(push&&params.get('pageId')&&next==='pages'&&view==='pages'&&!fromChild){notifyHost({type:'nexora-community-page-navigate',pageScope:params.get('pageScope')||'discover'});return;}if(next!=='pages'){if(params.get('pageId')&&communityLoaded)sendToFrame(community,{type:'nexora-page-screen-deactivate'});for(const key of ['pageId','pageMode','pageTab'])params.delete(key);}closeMenus();app.classList.remove('nav-open');if(communityModalOpen&&view!==next){communityModalOpen=false;root.querySelector('.mobile-nav').hidden=false;}view=next;const isConnect=next==='connect';ensurePane(isConnect?connect:community);if(!isConnect)connectDetailOpen=false;community.hidden=isConnect;connect.hidden=!isConnect;tabs.forEach(tab=>{const active=tab.dataset.view===(tab.classList.contains('mobile-tab')?({groups:'market',daywork:'jobs'}[next]||next):({groups:'market',daywork:'jobs'}[next]||next));tab.classList.toggle('active',active);tab.setAttribute('aria-current',active?'page':'false');tab.hidden=tab.classList.contains('mobile-tab')&&active;});root.querySelector('.mobile-nav').style.setProperty('--community-nav-count',String(tabs.filter(tab=>tab.classList.contains('mobile-tab')&&!tab.hidden).length||1));root.querySelectorAll('[data-side-view]').forEach(el=>el.classList.toggle('active',el.dataset.sideView===(['groups'].includes(next)?'market':next)));root.querySelectorAll('[data-top-sub-view]').forEach(el=>{const active=el.dataset.topSubView===next;el.classList.toggle('active',active);el.setAttribute('aria-current',active?'page':'false');});if(!isConnect&&!fromChild){pendingCommunityView=next;if(communityLoaded)sendToFrame(community,{type:'nexora-open-view',view:next});}if(isConnect&&connectLoaded)sendToFrame(connect,{type:'nexora-open-section',section:connectSection});if(push&&!context.native&&location.protocol!=='file:')(()=>{const url=new URL(location.href);url.searchParams.set('view',next);url.searchParams.set('tab',currentRoute());history.replaceState(null,'',url);})();updateDetailState();updateMobileHeading();notifyHostRoute(!push);notifyHostDetail();}
-      const tourSteps=[
-        {view:'feed',label:{vi:'Bảng tin',en:'Feed'},copy:{vi:'Xem tin mới và đăng chia sẻ, ảnh, câu hỏi hoặc mẹo nghề.',en:'See new posts and share updates, photos, questions, or tips.'}},
-        {view:'market',label:{vi:'Nhóm & Chợ',en:'Groups & Market'},copy:{vi:'Vào nhóm để trao đổi; ở Mua bán, đăng Cần bán hoặc Cần mua miễn phí và nhắn tin trực tiếp.',en:'Join groups to talk. In Buy & sell, post items for sale or wanted for free, then message directly.'}},
-        {view:'deals',label:{vi:'Deal & Coupon',en:'Deals & Coupons'},copy:{vi:'Xem ưu đãi gần bạn, lấy mã và kiểm tra hạn dùng ngay trong mục này.',en:'Find nearby offers, get a code, and check its expiry here.'}},
-        {view:'jobs',label:{vi:'Việc làm',en:'Jobs'},copy:{vi:'Đăng tuyển hoặc tìm việc dài hạn. Muốn làm trong ngày, mở Ca làm thêm từ mục Việc làm.',en:'Hire or find ongoing work. Open Extra shifts in Jobs for same-day work.'}},
-        {view:'connect',label:{vi:'Tin nhắn & Gọi',en:'Messages & Calls'},copy:{vi:'Tìm người, nhắn tin, xem yêu cầu tin nhắn đầu tiên và gọi thoại hoặc video.',en:'Find people, message them, review first-message requests, or place voice and video calls.'}},
-        {view:'feed',menu:true,label:{vi:'Các mục khác',en:'More sections'},copy:{vi:'Menu ứng dụng còn có Fanpage, Blog và Ca làm thêm. Bạn luôn có thể mở lại AI Tour ở đây hoặc cạnh tên Community.',en:'The app menu also has Pages, Blog, and Extra shifts. Reopen AI Tour here or beside the Community heading.'}}
-      ];
-      const tourCard=root.getElementById('tourCard');
-      const tourState={active:false,index:0,playing:false,timer:0,startedAt:0,remaining:5200,origin:'feed'};
-      const tourSeenKey=()=>isCompact()?'nexora-v3:nexora-community-tour-mobile-v1':'nexora-v3:nexora-community-tour-desktop-v1';
-      const tourTarget=()=>{const target=root.querySelector(tourSteps[tourState.index].menu?'#startTour':isCompact()?`.mobile-nav [data-view="${tourSteps[tourState.index].view}"]`:`.top .tabs [data-view="${tourSteps[tourState.index].view}"]`);return target?.closest('[hidden]')?root.querySelector('.community-heading'):target;};
-      function clearTourTimer(){if(tourState.timer)clearTimeout(tourState.timer);tourState.timer=0;}
-      function tourLabels(){return language==='vi'?{back:'Trước',pause:'Tạm dừng',resume:'Tiếp tục',skip:'Bỏ qua',next:'Tiếp',finish:'Xong',launch:'Mở AI Tour'}:{back:'Back',pause:'Pause',resume:'Resume',skip:'Skip',next:'Next',finish:'Done',launch:'Open AI Tour'};}
-      const tourIcons={back:'m12 19-7-7 7-7M5 12h14',pause:'M10 4H6v16h4ZM18 4h-4v16h4Z',play:'m8 5 11 7-11 7Z',skip:'M19 5v14M5 4l10 8-10 8Z',next:'m12 5 7 7-7 7M5 12h14',check:'m20 6-11 11-5-5'};
-      function setTourButton(id,label,icon){const button=root.getElementById(id);button.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${tourIcons[icon]}"/></svg><span></span>`;button.lastElementChild.textContent=label;button.dataset.tourIcon=icon;}
-      function updateTourCopy(){const labels=tourLabels(),step=tourSteps[tourState.index];root.getElementById('startTour').setAttribute('aria-label',labels.launch);root.getElementById('menuStartTour').textContent='✦ AI Tour';if(!tourState.active)return;root.getElementById('tourTitle').textContent=step.label[language];root.getElementById('tourDescription').textContent=step.copy[language];setTourButton('tourBack',labels.back,'back');root.getElementById('tourBack').disabled=tourState.index===0;setTourButton('tourPause',tourState.playing?labels.pause:labels.resume,tourState.playing?'pause':'play');setTourButton('tourSkip',labels.skip,'skip');const last=tourState.index===tourSteps.length-1;setTourButton('tourNext',last?labels.finish:labels.next,last?'check':'next');}
-      function scheduleTour(){clearTourTimer();if(!tourState.active||!tourState.playing)return;tourState.startedAt=Date.now();tourState.timer=setTimeout(()=>{if(tourState.index===tourSteps.length-1)stopTour(true);else showTourStep(tourState.index+1);},tourState.remaining);}
-      function showTourStep(index){if(!tourState.active)return;clearTourTimer();tourState.index=index;tourState.remaining=5200;root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));const step=tourSteps[index];tourCard.classList.toggle('menu-step',Boolean(step.menu));if(step.menu){setView('feed',false);}else setView(step.view,false);tourTarget()?.classList.add('tour-target');tourCard.hidden=false;tourCard.classList.remove('is-playing','is-paused');void tourCard.offsetWidth;if(tourState.playing)tourCard.classList.add('is-playing');updateTourCopy();scheduleTour();}
-      function startTour(){if(tourState.active)stopTour(false);tourState.origin=view;tourState.active=true;tourState.playing=!matchMedia('(prefers-reduced-motion:reduce)').matches;localStorage.setItem(tourSeenKey(),'1');showTourStep(0);}
-      function stopTour(restore){if(!tourState.active)return;clearTourTimer();tourState.active=false;tourCard.hidden=true;tourCard.classList.remove('is-playing','is-paused');root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));closeMenus();if(restore){setView(tourState.origin,false);root.getElementById('startTour').focus({preventScroll:true});}}
-      root.getElementById('startTour').addEventListener('click',startTour);
-      root.getElementById('menuStartTour').addEventListener('click',startTour);
-      root.getElementById('tourBack').addEventListener('click',()=>{if(tourState.index>0)showTourStep(tourState.index-1);});
-      root.getElementById('tourNext').addEventListener('click',()=>{if(tourState.index===tourSteps.length-1)stopTour(true);else showTourStep(tourState.index+1);});
-      root.getElementById('tourSkip').addEventListener('click',()=>stopTour(true));
-      root.getElementById('tourPause').addEventListener('click',()=>{if(tourState.playing){tourState.remaining=Math.max(100, tourState.remaining-(Date.now()-tourState.startedAt));tourState.playing=false;clearTourTimer();tourCard.classList.add('is-paused');}else{tourState.playing=true;tourCard.classList.remove('is-paused');if(!tourCard.classList.contains('is-playing'))tourCard.classList.add('is-playing');scheduleTour();}updateTourCopy();});
-      root.addEventListener('click',event=>{if(tourState.active&&!event.target.closest('#tourCard,#startTour,#menuStartTour'))stopTour(false);},true);
-      tabs.forEach(tab=>tab.addEventListener('click',()=>{if(tab.dataset.view==='connect')connectSection='messages';setView(tab.dataset.view);}));
-      root.querySelectorAll('[data-top-sub-view]').forEach(el=>el.addEventListener('click',()=>setView(el.dataset.topSubView)));
-      root.querySelectorAll('.tab-sub-toggle').forEach(toggle=>toggle.addEventListener('click',()=>{const menu=root.getElementById(toggle.getAttribute('aria-controls')),open=menu.hidden;closeMenus();menu.hidden=!open;toggle.setAttribute('aria-expanded',String(open));}));
-      root.getElementById('communityBack').addEventListener('click',()=>{stopTour(false);closeMenus();if(hosted)notifyHost({type:'nexora-community-history-back'});else if(history.length>1&&document.referrer)history.back();else setView('feed',false);});
-      root.getElementById('languageBack').addEventListener('click',()=>{closeMenus();languageButton.focus();});
-      root.querySelectorAll('[data-side-view],[data-quick-view]').forEach(el=>el.addEventListener('click',()=>setView(el.dataset.sideView||el.dataset.quickView)));
-      root.getElementById('sidebarToggle').addEventListener('click',()=>{if(isCompact()){app.classList.toggle('nav-open');}else{app.classList.toggle('sidebar-collapsed');}root.getElementById('sidebarToggle').setAttribute('aria-expanded',String(app.classList.contains('nav-open')||!app.classList.contains('sidebar-collapsed')));});
-      root.getElementById('messagesButton').addEventListener('click',()=>{connectSection='messages';setView('connect');});
-      root.getElementById('accountButton').addEventListener('click',()=>{connectSection='privacy';setView('connect');});
-      root.getElementById('globalSearch').addEventListener('keydown',event=>{if(event.key==='Enter'&&event.currentTarget.value.trim()){connectSection='messages';setView('connect');const query=event.currentTarget.value.trim();const fill=()=>{const input=connect.contentDocument?.getElementById('memberQuery');if(input){input.value=query;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();}};if(connectLoaded)fill();else connect.addEventListener('load',fill,{once:true});}});
-      community.addEventListener('load',()=>{sendToFrame(community,{type:'nexora-language',language});});
-      connect.addEventListener('load',()=>{if(!connect.hasAttribute('src')||connect.contentDocument?.location.href==='about:blank')return;connectLoaded=true;sendToFrame(connect,{type:'nexora-language',language});notifyRequest();if(view==='connect'){sendToFrame(connect,{type:'nexora-open-section',section:connectSection});if(pendingContact){sendToFrame(connect,{type:'nexora-open-contact',contact:pendingContact});pendingContact=null;}if(pendingGroup){sendToFrame(connect,{type:'nexora-open-community-group',group:pendingGroup});pendingGroup=null;}if(pendingRequest){sendToFrame(connect,{type:'nexora-open-request'});pendingRequest=false;}}});
-      window.addEventListener('message',event=>{
-        if(event.source!==community.contentWindow||(location.protocol!=='file:'&&event.origin!==location.origin)||event.data?.type!=='nexora-prototype-ready')return;
-        communityLoaded=true;sendToFrame(community,{type:'nexora-language',language});
-        if(view!=='connect'){pendingCommunityView=view;sendToFrame(community,{type:'nexora-open-view',view});if(pendingContext){sendToFrame(community,{type:'nexora-community-context',context:pendingContext});pendingContext=null;}}
-      });
-      window.addEventListener('message',event=>{if(event.source!==community.contentWindow&&event.source!==connect.contentWindow)return;if(location.protocol!=='file:'&&event.origin!==location.origin)return;if(event.source===community.contentWindow&&event.data?.type==='nexora-modal-state'){communityModalOpen=Boolean(event.data.open);root.querySelector('.mobile-nav').hidden=communityModalOpen&&view!=='connect';updateDetailState();notifyHostDetail();}if(communityLoaded&&!community.hidden&&event.source===community.contentWindow&&event.data?.type==='nexora-prototype-view'){const next=event.data.view;if(!['feed','groups','market','pages','jobs','daywork','deals','blog'].includes(next))return;if(pendingCommunityView){if(next!==pendingCommunityView)return;pendingCommunityView=null;}if(view!==next)setView(next,true,true);}if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-back-community'){setView('feed');return;}if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-section'){connectSection=event.data.section;if(view==='connect')notifyHostRoute(false);}if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-dialog'){connectDialogOpen=Boolean(event.data.open);notifyHostDetail(!connectDialogOpen);updateDetailState();}if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-detail'){connectDetailOpen=Boolean(event.data.open);notifyHostDetail(Boolean(event.data.force));updateDetailState();}notifyRequest();});
-      window.addEventListener('message',event=>{
-        if(location.protocol!=='file:'&&event.origin!==location.origin)return;
-        if(event.source===community.contentWindow&&event.data?.type==='nexora-feed-post-close'){notifyHost({type:'nexora-feed-post-close'});return;}
-        if(event.source===community.contentWindow&&['nexora-community-page-navigate','nexora-community-page-state'].includes(event.data?.type)){if(event.data.type==='nexora-community-page-state')for(const key of ['pageId','pageMode','pageTab','pageScope']){if(event.data[key])params.set(key,event.data[key]);else params.delete(key);}notifyHost(event.data);return;}
-        if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-community-context'){const data=event.data.context;if(data?.view==='daywork'&&typeof data.shiftId==='string'){pendingContext={view:'daywork',shiftId:data.shiftId};setView('daywork');if(communityLoaded){sendToFrame(community,{type:'nexora-community-context',context:pendingContext});pendingContext=null;}}return;}
-        if(event.source===community.contentWindow&&event.data?.type==='nexora-community-context'){notifyHost(event.data);return;}
-        if(event.source===community.contentWindow&&event.data?.type==='nexora-community-pos'){notifyHost(event.data);return;}
-        if(event.source===community.contentWindow&&event.data?.type==='nexora-open-community-group'){pendingGroup=event.data.group;connectSection='groups';setView('connect');if(connectLoaded){sendToFrame(connect,{type:'nexora-open-community-group',group:pendingGroup});pendingGroup=null;}return;}
-        if(event.source===community.contentWindow&&event.data?.type==='nexora-community-contact'){
-          pendingContact=event.data.contact;connectSection='messages';setView('connect');
-          if(connectLoaded){sendToFrame(connect,{type:'nexora-open-contact',contact:pendingContact});pendingContact=null;}
-          return;
-        }
-        if(context.native||event.source!==window.parent)return;
-        receiveHost(event.data);
-      });
-      window.addEventListener('storage',notifyRequest);
-      notificationsButton.addEventListener('click',()=>{const open=notificationsMenu.hidden;closeMenus();notificationsMenu.hidden=!open;notificationsButton.setAttribute('aria-expanded',String(open));});
-      languageButton.addEventListener('click',()=>{const open=languageMenu.hidden;closeMenus();languageMenu.hidden=!open;languageButton.setAttribute('aria-expanded',String(open));});
-      ecosystemButton.addEventListener('click',()=>{const open=ecosystemMenu.hidden;closeMenus();ecosystemMenu.hidden=!open;ecosystemButton.setAttribute('aria-expanded',String(open));});
-      root.querySelector('[data-language="vi"]')?.remove();root.querySelectorAll('[data-language]').forEach(el=>el.addEventListener('click',()=>{language='en';localStorage.setItem('nexora-v3:nexora-community-language',language);applyLanguage();updateDetailState();closeMenus();}));
-      root.addEventListener('click',event=>{if(!event.target.closest('#notificationsButton,#notificationsMenu,#languageButton,#languageMenu,#ecosystemButton,#ecosystemMenu,.tab-group,#tourCard'))closeMenus();if(app.classList.contains('nav-open')&&!event.target.closest('.sidebar,#sidebarToggle'))app.classList.remove('nav-open');});
-      root.addEventListener('keydown',event=>{if(event.key==='Escape'){if(tourState.active){stopTour(true);return;}closeMenus();app.classList.remove('nav-open');}});
-      root.getElementById('viewNotification').addEventListener('click',()=>{pendingRequest=true;connectSection='messages';setView('connect');if(connectLoaded){sendToFrame(connect,{type:'nexora-open-request'});pendingRequest=false;}});
-      window.addEventListener('resize',()=>{updateMobileHeading();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}});
-
-      function syncPaneGutter(){const frame=view==='connect'?connect:community;const element=frame.contentDocument?.documentElement;if(element)nativeApp.style.setProperty('--community-scrollbar-width',Math.max(0,frame.clientWidth-element.clientWidth)+'px');}
-      function ensurePane(frame){if(!frame.hasAttribute('src'))frame.src=(frame===community?communitySource:connectSource).href;requestAnimationFrame(syncPaneGutter);}
-      function receiveHost(data){
-        if(data?.type==='nexora-community-language'){
-          language='en';localStorage.setItem('nexora-v3:nexora-community-language',language);applyLanguage();updateDetailState();
-        }
-        if(data?.type==='nexora-community-navigate'){
-          stopTour(false);const next=viewForRoute(data.route),section=sectionForRoute(data.route);
-          if(data.context)pendingContext=data.context;if(next===view&&(next!=='connect'||section===connectSection)){if(communityLoaded&&pendingContext){sendToFrame(community,{type:'nexora-community-context',context:pendingContext});pendingContext=null;}return;}
-          connectSection=section;setView(next,false);if(communityLoaded&&pendingContext&&next!=='connect'){sendToFrame(community,{type:'nexora-community-context',context:pendingContext});pendingContext=null;}
-        }
-        if(data?.type==='nexora-community-close-detail'){
-          if(view==='connect')sendToFrame(connect,{type:'nexora-back'});
-          else sendToFrame(community,{type:'nexora-close-modal'});
-        }
-      }
-      for(const frame of [community,connect])frame.addEventListener('load',()=>{const element=frame.contentDocument?.documentElement;if(element&&window.ResizeObserver)new ResizeObserver(syncPaneGutter).observe(element);syncPaneGutter();});
-      if(context.native&&window.ResizeObserver)new ResizeObserver(()=>{updateMobileHeading();syncPaneGutter();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}}).observe(root.host);
-      const communitySource=new URL(community.dataset.src,BASE_URL);
-      for(const key of ['dealTab','member','role','account','post','postId','comment','commentId','thread','threadId','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','pageId','pageMode','pageTab','pageScope'])if(params.get(key))communitySource.searchParams.set(key,params.get(key));
-      const connectSource=new URL(connect.dataset.src,BASE_URL);
-      connectSource.searchParams.set('section',connectSection);for(const key of ['member','role','account'])if(params.get(key))connectSource.searchParams.set(key,params.get(key));
-      ensurePane(view==='connect'?connect:community);
-      applyLanguage();notifyRequest();setView(view,false);notifyHost({type:'nexora-community-ready'});if(!localStorage.getItem(tourSeenKey()))setTimeout(()=>{if(!tourState.active&&!communityModalOpen)startTour();},800);
-      return {navigate:(route,routeContext)=>receiveHost({type:'nexora-community-navigate',route,context:routeContext}),setLanguage:language=>receiveHost({type:'nexora-community-language',language}),closeDetail:()=>receiveHost({type:'nexora-community-close-detail'})};
-  }
-  window.NEXORA_COMMUNITY_HUB={mount,start};
-  if(document.getElementById('communityPane')&&document.getElementById('connectPane'))start(document);
+  window.NEXORA_COMMUNITY_HUB={mount};
 })();

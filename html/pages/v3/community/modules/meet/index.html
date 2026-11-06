@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXORA Meet — Họp nhóm trong NEXORA Community · Prototype</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; }
+  body { background:#0b0e14 radial-gradient(1100px 600px at 75% -10%, #1b2b4a 0%, #0b0e14 55%); color:#e8ecf3; min-height:100vh; padding:28px 18px 60px; }
+  .wrap { max-width:1180px; margin:0 auto; display:flex; gap:34px; align-items:flex-start; justify-content:center; flex-wrap:wrap; }
+  .head { width:100%; text-align:center; margin-bottom:6px; }
+  .head h1 { font-size:24px; letter-spacing:.4px; }
+  .head h1 b { color:#4da3ff; }
+  .head p { color:#93a1b5; font-size:14px; margin-top:6px; }
+  /* ---------- PHONE ---------- */
+  .phone { width:392px; height:848px; background:#000; border-radius:52px; padding:11px; box-shadow:0 34px 80px rgba(0,0,0,.65), 0 0 0 2px #2a2f3a; flex:0 0 auto; }
+  .screen { position:relative; width:100%; height:100%; border-radius:42px; overflow:hidden; background:#14171c; display:flex; flex-direction:column; }
+  .notch { position:absolute; top:9px; left:50%; transform:translateX(-50%); width:112px; height:26px; background:#000; border-radius:14px; z-index:60; }
+  .statusbar { display:flex; justify-content:space-between; padding:12px 26px 4px; font-size:13px; font-weight:600; color:#fff; z-index:55; position:relative; }
+  .page { display:none; flex:1; flex-direction:column; min-height:0; }
+  .page.on { display:flex; }
+  /* ---------- generic ---------- */
+  .appbar { display:flex; align-items:center; gap:10px; padding:10px 16px; }
+  .appbar .back { font-size:20px; color:#cfd8e3; cursor:pointer; }
+  .appbar .ttl { font-size:16px; font-weight:700; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .appbar .sub { font-size:11.5px; color:#8b96a5; font-weight:400; }
+  .ava { border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; flex:0 0 auto; }
+  .btn { border:none; cursor:pointer; border-radius:12px; font-weight:700; font-size:14.5px; padding:12px 10px; }
+  .btn-blue { background:#2d8cff; color:#fff; }
+  .btn-ghost { background:#23272f; color:#dbe4f0; border:1px solid #333a45; }
+  .tabs { display:flex; gap:8px; padding:4px 16px 10px; }
+  .tab { padding:7px 13px; border-radius:999px; background:#23272f; color:#aeb9c8; font-size:13px; font-weight:600; cursor:pointer; }
+  .tab.on { background:#2d8cff; color:#fff; }
+  .scroll { flex:1; overflow-y:auto; padding:2px 16px 14px; }
+  .scroll::-webkit-scrollbar { width:0; }
+  /* group page */
+  .meetcard { background:linear-gradient(135deg,#173a63,#12283f); border:1px solid #2d5a8a; border-radius:16px; padding:14px; }
+  .meetcard .when { color:#7db8ff; font-size:12.5px; font-weight:700; letter-spacing:.3px; }
+  .meetcard h3 { font-size:16.5px; margin:5px 0 3px; }
+  .meetcard .host { color:#a9bcd2; font-size:12.5px; }
+  .meetcard .row { display:flex; gap:8px; margin-top:12px; }
+  .meetcard .row .btn { flex:1; padding:10px; }
+  .duo { display:flex; gap:10px; margin-top:12px; }
+  .duo .btn { flex:1; }
+  .sec { font-size:12px; font-weight:700; color:#7f8b9c; letter-spacing:.6px; margin:18px 0 9px; text-transform:uppercase; }
+  .bubble { max-width:82%; padding:9px 12px; border-radius:16px; font-size:13.5px; line-height:1.45; margin-bottom:8px; }
+  .bubble.them { background:#23272f; color:#e6ecf4; border-bottom-left-radius:5px; }
+  .bubble .who { font-size:11px; color:#7db8ff; font-weight:700; margin-bottom:2px; }
+  .filechip { display:flex; align-items:center; gap:10px; background:#1b2129; border:1px solid #39424f; border-radius:12px; padding:9px 11px; margin-top:7px; cursor:pointer; }
+  .filechip .ic { width:34px; height:34px; border-radius:9px; background:#b3392e; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; }
+  .filechip .fn { font-size:13px; font-weight:600; }
+  .filechip .fs { font-size:11px; color:#8b96a5; }
+  .inputbar { display:flex; align-items:center; gap:9px; padding:10px 14px 20px; border-top:1px solid #262c35; }
+  .plusbtn { width:36px; height:36px; border-radius:50%; background:#2d8cff; color:#fff; font-size:21px; border:none; cursor:pointer; line-height:1; }
+  .fakeinput { flex:1; background:#23272f; border-radius:999px; padding:10px 14px; color:#7f8b9c; font-size:13.5px; }
+  /* form */
+  .field { margin-bottom:13px; }
+  .field label { display:block; font-size:12px; color:#8b96a5; font-weight:700; margin-bottom:5px; letter-spacing:.3px; }
+  .field .val { background:#1e232b; border:1px solid #333a45; border-radius:11px; padding:11px 13px; font-size:14.5px; display:flex; justify-content:space-between; align-items:center; }
+  .linkbox { background:#12283f; border:1px dashed #2d5a8a; border-radius:11px; padding:11px 13px; display:flex; align-items:center; gap:8px; font-size:13px; color:#7db8ff; }
+  .linkbox button { margin-left:auto; background:#2d8cff; color:#fff; border:none; border-radius:8px; padding:6px 11px; font-weight:700; font-size:12px; cursor:pointer; }
+  .trow { display:flex; align-items:center; justify-content:space-between; padding:11px 2px; border-bottom:1px solid #232932; font-size:14px; }
+  .tgl { width:46px; height:27px; border-radius:999px; background:#3a424e; position:relative; cursor:pointer; flex:0 0 auto; }
+  .tgl::after { content:''; position:absolute; top:3px; left:3px; width:21px; height:21px; border-radius:50%; background:#fff; transition:.15s; }
+  .tgl.on { background:#2d8cff; } .tgl.on::after { left:22px; }
+  /* meeting */
+  .meet-top { display:flex; align-items:center; gap:8px; padding:8px 14px; }
+  .meet-top .mt { flex:1; min-width:0; }
+  .meet-top .mt b { font-size:14.5px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .meet-top .mt span { font-size:11.5px; color:#9fb0c3; }
+  .recpill { display:flex; align-items:center; gap:6px; background:rgba(214,48,49,.16); border:1px solid #d63031; color:#ff7675; font-size:11.5px; font-weight:800; padding:5px 9px; border-radius:999px; white-space:nowrap; }
+  .recdot { width:8px; height:8px; border-radius:50%; background:#ff3b30; animation:blink 1.1s infinite; }
+  @keyframes blink { 50% { opacity:.25; } }
+  .grid { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:7px; padding:8px 10px; min-height:0; }
+  .tile { position:relative; border-radius:16px; overflow:hidden; background:#20242b; }
+  .tile .face { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .tile .nm { position:absolute; left:9px; bottom:8px; font-size:12px; font-weight:600; background:rgba(0,0,0,.45); padding:3px 8px; border-radius:7px; display:flex; gap:5px; align-items:center; }
+  .tile.speaking { box-shadow:0 0 0 2.5px #23a559 inset; }
+  .mic-off { color:#ff7675; font-size:11px; }
+  .ctrls { display:flex; justify-content:space-between; align-items:flex-start; gap:1px; margin:4px 10px 22px; padding:10px 9px 8px; background:rgba(32,33,36,.94); border:1px solid rgba(255,255,255,.09); border-radius:32px; box-shadow:0 14px 34px rgba(0,0,0,.5); backdrop-filter:blur(14px); }
+  .ctl { display:flex; flex-direction:column; align-items:center; gap:4px; width:47px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .ctl .ic { width:43px; height:43px; border-radius:50%; background:#3c4043; color:#e8eaed; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+  .ctl .ic svg { width:22px; height:22px; fill:currentColor; display:block; }
+  .ctl span { font-size:9.5px; font-weight:600; color:#bdc1c6; text-align:center; line-height:1.15; letter-spacing:.1px; white-space:nowrap; }
+  .ctl .ic svg.i-off { display:none; }
+  .ctl.off .ic svg.i-on { display:none; }
+  .ctl.off .ic svg.i-off { display:block; }
+  .ctl.off .ic { background:#ea4335; color:#fff; }
+  .ctl.off span { color:#f28b82; }
+  .ctl.share .ic { background:#188038; color:#fff; }
+  .ctl.rec-on .ic { background:#5f2120; box-shadow:inset 0 0 0 1.5px #ea4335; color:#f28b82; }
+  .ctl.rec-on .ic svg { animation:blink 1.1s infinite; }
+  .ctl.rec-on { width:53px; }
+  .ctl.end { width:58px; }
+  .ctl.end .ic { background:#ea4335; color:#fff; width:56px; height:43px; border-radius:999px; }
+  .ctl.end span { color:#f28b82; }
+  .spk { display:inline-flex; gap:2px; align-items:flex-end; height:10px; }
+  .spk i { width:3px; background:#23a559; border-radius:2px; display:block; animation:eq 0.9s infinite ease-in-out; }
+  .spk i:nth-child(1){ height:5px; } .spk i:nth-child(2){ height:10px; animation-delay:.2s; } .spk i:nth-child(3){ height:7px; animation-delay:.4s; }
+  @keyframes eq { 50% { transform:scaleY(.45); } }
+  .micoff-badge { display:inline-flex; width:17px; height:17px; border-radius:50%; background:#ea4335; color:#fff; align-items:center; justify-content:center; vertical-align:-3px; }
+  .micoff-badge svg { width:11px; height:11px; fill:#fff; display:block; }
+  /* share screen */
+  .sharewrap { flex:1; display:flex; flex-direction:column; padding:6px 10px; min-height:0; }
+  .sharebanner { display:flex; align-items:center; gap:7px; background:#173a26; border:1px solid #23a559; color:#7be2a8; font-size:12.5px; font-weight:700; border-radius:10px; padding:8px 11px; margin-bottom:8px; }
+  .sharedoc { flex:1; background:linear-gradient(160deg,#f4f6f9,#dfe6ee); border-radius:14px; padding:16px; color:#20303f; overflow:hidden; }
+  .sharedoc h4 { font-size:16px; margin-bottom:3px; }
+  .sharedoc .sd-sub { font-size:11.5px; color:#5a6b7d; margin-bottom:12px; }
+  .sd-row { display:flex; justify-content:space-between; padding:8px 2px; border-bottom:1px solid #ccd6e0; font-size:13px; }
+  .sd-bar { height:9px; border-radius:5px; background:#b9c9da; margin:5px 0 11px; }
+  .filmstrip { display:flex; gap:7px; margin-top:8px; }
+  .filmstrip .tile { height:74px; flex:1; }
+  .stopshare { margin:10px 16px 0; background:transparent; border:1.5px solid #e02e24; color:#ff7675; }
+  /* 1-1 call */
+  .callwrap { flex:1; display:flex; flex-direction:column; align-items:center; padding-top:44px; background:radial-gradient(300px 300px at 50% 26%, #274b73 0%, #14171c 70%); }
+  .callwrap .big { width:128px; height:128px; font-size:44px; box-shadow:0 14px 40px rgba(0,0,0,.5); }
+  .callwrap h3 { font-size:23px; margin-top:18px; }
+  .callwrap .st { color:#9fd0a8; font-size:13.5px; margin-top:5px; }
+  .callgrid { display:grid; grid-template-columns:repeat(3,86px); gap:18px 12px; margin-top:42px; }
+  .callgrid .ctl { width:86px; }
+  .callgrid .ctl .ic { width:62px; height:62px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.14); backdrop-filter:blur(10px); color:#fff; }
+  .callgrid .ctl .ic svg { width:27px; height:27px; }
+  .callgrid .ctl span { font-size:11px; color:#e8ecf3; font-weight:500; white-space:normal; }
+  .callgrid .ctl.off .ic { background:#ea4335; border-color:#ea4335; }
+  .callend .ic { width:70px !important; height:70px !important; border-radius:50% !important; background:#ea4335 !important; color:#fff; display:flex; align-items:center; justify-content:center; }
+  .callend .ic svg { width:32px; height:32px; fill:#fff; }
+  .newbadge { background:#23a559; color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:6px; letter-spacing:.4px; }
+  /* records */
+  .reccard { display:flex; gap:12px; background:#1e232b; border:1px solid #2e3540; border-radius:15px; padding:11px; margin-bottom:11px; }
+  .thumb { width:104px; height:66px; border-radius:10px; background:linear-gradient(140deg,#274b73,#12283f); display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; flex:0 0 auto; position:relative; }
+  .thumb .dur { position:absolute; right:5px; bottom:5px; background:rgba(0,0,0,.65); font-size:10px; padding:2px 6px; border-radius:5px; }
+  .reccard h4 { font-size:14.5px; margin-bottom:3px; }
+  .reccard .meta { font-size:11.5px; color:#8b96a5; line-height:1.5; }
+  .reccard .acts { display:flex; gap:6px; margin-top:7px; }
+  .reccard .acts button { background:#2b3038; color:#dbe4f0; border:1px solid #3a424e; border-radius:8px; padding:5px 10px; font-size:11.5px; font-weight:700; cursor:pointer; }
+  .meet-tools { display:flex; align-items:center; gap:7px; padding:2px 14px 9px; }
+  .reactchip { width:37px; height:37px; border-radius:50%; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:17px; cursor:pointer; backdrop-filter:blur(8px); }
+  .reactchip.hand { font-size:15px; }
+  .chatbtn { margin-left:auto; display:flex; align-items:center; gap:7px; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.12); color:#e8ecf3; border-radius:999px; padding:9px 14px; font-size:13px; font-weight:700; cursor:pointer; }
+  .chatbtn .bdg { background:#ea4335; color:#fff; font-size:10.5px; font-weight:800; min-width:19px; height:19px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 5px; }
+  .chatbtn svg { width:19px; height:19px; fill:#e8ecf3; }
+  .msgreactions { display:flex; gap:6px; margin:-2px 0 9px 4px; }
+  .msgreactions span { background:#23272f; border:1px solid #333a45; border-radius:999px; padding:3px 9px; font-size:12px; }
+  .imgmsg { width:190px; height:118px; border-radius:12px; background:linear-gradient(140deg,#7c4a12,#b3392e 55%,#274b73); display:flex; align-items:flex-end; padding:8px 10px; font-size:11px; color:#fff; margin-top:6px; }
+  .vidmsg { width:190px; height:118px; border-radius:12px; background:linear-gradient(140deg,#12283f,#0b0e14); display:flex; align-items:center; justify-content:center; margin-top:6px; position:relative; }
+  .vidmsg .play { width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.92); color:#12283f; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .vidmsg .dur { position:absolute; right:7px; bottom:7px; background:rgba(0,0,0,.7); color:#fff; font-size:10.5px; padding:2px 7px; border-radius:5px; }
+  .attachrow { display:flex; gap:8px; padding:9px 14px 0; }
+  .attachrow .ab { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:#1e232b; border:1px solid #333a45; color:#cfd8e3; border-radius:10px; padding:8px 4px; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .joinpreview { margin:4px 16px 0; height:300px; border-radius:20px; background:radial-gradient(300px 240px at 50% 32%, #274b73 0%, #191d24 72%); display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .joinpreview .selfnm { position:absolute; left:12px; bottom:10px; background:rgba(0,0,0,.5); padding:4px 10px; border-radius:7px; font-size:12px; font-weight:600; }
+  .joinpreview .camoff { position:absolute; right:12px; top:10px; background:rgba(0,0,0,.5); padding:4px 9px; border-radius:7px; font-size:11px; color:#f28b82; font-weight:700; }
+  .permbox { border-radius:13px; padding:11px 13px; font-size:12.5px; line-height:1.75; margin-bottom:10px; }
+  .permbox.can { background:#14261a; border:1px solid #235c36; color:#a7d7b5; }
+  .permbox.cant { background:#2a1717; border:1px solid #5c2b2b; color:#e5a9a9; }
+  .permbox b { display:block; font-size:12px; letter-spacing:.4px; margin-bottom:2px; }
+  .shareout { display:flex; align-items:center; gap:6px; margin-top:11px; flex-wrap:wrap; }
+  .shareout .lbl { font-size:11.5px; color:#a9bcd2; font-weight:700; }
+  .sochip { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:#dbe4f0; border-radius:999px; padding:5px 10px 5px 6px; font-size:11.5px; font-weight:700; cursor:pointer; }
+  .sochip .dot { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10.5px; color:#fff; font-weight:800; flex:0 0 auto; }
+  .sharepanel { background:#1b2129; border:1px solid #2e3540; border-radius:14px; padding:12px; }
+  .sharepanel .grp { font-size:11px; color:#8b96a5; font-weight:800; letter-spacing:.4px; margin:1px 0 8px; }
+  .sharepanel .chips { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
+  .sharepanel .chips:last-child { margin-bottom:2px; }
+  .pickcard { background:#1e232b; border:1.5px solid #333a45; border-radius:15px; padding:12px; margin-bottom:11px; cursor:pointer; }
+  .pickcard.sel { border-color:#23a559; }
+  .pickprev { height:84px; border-radius:10px; margin-bottom:9px; display:flex; align-items:center; justify-content:center; font-size:26px; }
+  .pickcard b { font-size:14.5px; display:block; margin-bottom:2px; }
+  .pickcard span { font-size:12px; color:#8b96a5; line-height:1.45; display:block; }
+  .avaedit { position:absolute; right:12px; bottom:10px; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.28); color:#fff; border-radius:999px; padding:6px 11px; font-size:11.5px; font-weight:700; cursor:pointer; }
+  .tochips { display:flex; gap:7px; padding:10px 14px 0; flex-wrap:wrap; align-items:center; }
+  .tochips .tl { font-size:11.5px; color:#8b96a5; font-weight:800; }
+  .tochip { padding:6px 12px; border-radius:999px; background:#23272f; border:1px solid #333a45; color:#aeb9c8; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .tochip.on { background:#14406e; border-color:#2d8cff; color:#cfe6ff; }
+  .tochip.priv.on { background:#3a2a12; border-color:#e0a539; color:#ffd98a; }
+  .privtag { display:inline-block; background:#3a2a12; color:#ffd98a; border:1px solid #e0a539; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; margin-bottom:4px; letter-spacing:.3px; }
+  .handpill { display:flex; align-items:center; gap:7px; margin:0 14px 8px; background:#3a2a12; border:1px solid #e0a539; color:#ffd98a; font-size:12.5px; font-weight:700; border-radius:10px; padding:7px 11px; }
+  .tzrow { display:flex; align-items:center; gap:10px; padding:11px 12px; background:#1e232b; border:1px solid #2e3540; border-radius:12px; margin-bottom:8px; cursor:pointer; }
+  .tzrow.sel { border-color:#2d8cff; background:#14263d; }
+  .tzrow .tz { flex:1; min-width:0; }
+  .tzrow .tz b { font-size:14px; display:block; }
+  .tzrow .tz span { font-size:11.5px; color:#8b96a5; }
+  .tzrow .gmt { font-size:12px; font-weight:800; color:#7db8ff; white-space:nowrap; }
+  .tzrow .ck { color:#2d8cff; font-weight:900; }
+  .reactchip.on { background:#3a2a12; border-color:#e0a539; }
+  .handpill .mini { margin-left:auto; display:flex; gap:6px; flex:none; }
+  .handpill .mini button { border:none; border-radius:8px; padding:5px 10px; font-size:11.5px; font-weight:800; cursor:pointer; }
+  .handpill .mini .speak { background:#16a34a; color:#fff; }
+  .handpill .mini .lower { background:#2a313c; color:#cfd8e3; border:1px solid #454f5c; }
+  #myhand { display:none; }
+  .capbar { margin:2px 14px 4px; background:rgba(10,14,20,.88); border:1px solid #2e3540; border-radius:12px; padding:9px 12px; }
+  .capbar .orig { font-size:12.5px; color:#aeb9c8; line-height:1.45; }
+  .capbar .orig b { color:#fff; }
+  .capbar .tran { font-size:14px; color:#fff; font-weight:700; line-height:1.5; margin-top:3px; }
+  .capbar .tag { display:inline-block; background:#14406e; color:#7db8ff; font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; margin-right:6px; vertical-align:1px; }
+  .sumcard { background:#1e232b; border:1px solid #2e3540; border-radius:14px; padding:13px; margin-bottom:11px; }
+  .sumcard h4 { font-size:13px; letter-spacing:.5px; color:#7db8ff; margin-bottom:8px; }
+  .sumcard li { font-size:13.5px; line-height:1.55; margin-left:17px; margin-bottom:5px; color:#e6ecf3; }
+  .taskrow { display:flex; gap:9px; align-items:flex-start; padding:8px 0; border-bottom:1px solid #2a3038; font-size:13.5px; line-height:1.5; }
+  .taskrow:last-child { border-bottom:none; }
+  .taskrow .own { color:#7db8ff; font-weight:700; white-space:nowrap; }
+  .talkbar { display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:6px; color:#aeb9c8; }
+  .talkbar .tr { flex:1; height:8px; background:#23272f; border-radius:5px; overflow:hidden; }
+  .talkbar .fl { height:100%; background:#2d8cff; border-radius:5px; }
+  .recbanner { display:flex; gap:8px; align-items:flex-start; margin:2px 14px 10px; background:rgba(255,77,79,.13); border:1px solid rgba(255,77,79,.55); color:#ffc9cb; font-size:12.5px; font-weight:600; border-radius:11px; padding:9px 11px; line-height:1.5; }
+  .viewbar { display:flex; gap:7px; align-items:center; flex-wrap:wrap; margin:0 14px 10px; }
+  .viewbar .hint { margin-left:auto; font-size:11.5px; color:#8b96a5; }
+  .pagedots { text-align:center; color:#454f5c; font-size:14px; letter-spacing:4px; margin:10px 0 2px; }
+  .pagedots b { color:#2d8cff; }
+  .bgprev { height:228px; border-radius:18px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; margin:2px 16px 0; }
+  .bgprev .who-tag { position:absolute; left:12px; bottom:10px; background:rgba(0,0,0,.5); padding:4px 10px; border-radius:7px; font-size:12px; font-weight:600; }
+  .bgprev .fx-tag { position:absolute; right:12px; top:10px; background:rgba(0,0,0,.5); padding:4px 9px; border-radius:7px; font-size:11px; color:#7be2a8; font-weight:700; }
+  .bggrid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px; }
+  .bgopt { border-radius:13px; overflow:hidden; border:2px solid #2e3540; cursor:pointer; background:#1e232b; }
+  .bgopt.sel { border-color:#2d8cff; }
+  .bgopt .pv { height:62px; display:flex; align-items:center; justify-content:center; font-size:21px; }
+  .bgopt .bl { font-size:11px; font-weight:700; text-align:center; padding:6px 2px 7px; color:#cfd8e3; }
+  .langchips { display:flex; flex-wrap:wrap; gap:7px; }
+  .waitrow { display:flex; align-items:center; gap:11px; background:#1e232b; border:1px solid #2e3540; border-radius:14px; padding:11px; margin-bottom:10px; }
+  .waitrow .nm { flex:1; min-width:0; }
+  .waitrow .nm b { font-size:14.5px; display:block; }
+  .waitrow .nm span { font-size:11.5px; color:#8b96a5; }
+  .admit { background:#188038; color:#fff; border:none; border-radius:9px; padding:8px 12px; font-size:12.5px; font-weight:800; cursor:pointer; }
+  .deny { background:transparent; color:#f28b82; border:1px solid #5a2b2b; border-radius:9px; padding:8px 11px; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .locknote { display:flex; gap:8px; background:#1b2129; border-radius:11px; padding:10px 12px; font-size:12px; color:#9fb0c3; line-height:1.5; }
+  /* admin */
+  .prow { display:flex; align-items:center; gap:11px; padding:11px 2px; border-bottom:1px solid #232932; }
+  .prow .nm { flex:1; min-width:0; }
+  .prow .nm b { font-size:14.5px; display:block; }
+  .role { font-size:10px; font-weight:800; padding:2.5px 7px; border-radius:6px; letter-spacing:.3px; }
+  .role.host { background:#6c3fd4; color:#fff; } .role.admin { background:#2d5a8a; color:#bcd9ff; } .role.mem { background:#2b3038; color:#9fb0c3; }
+  .mini { background:#2b3038; border:1px solid #3a424e; color:#dbe4f0; border-radius:9px; padding:6px 9px; font-size:11.5px; font-weight:700; cursor:pointer; }
+  .mini.red { color:#ff7675; border-color:#5a2b2b; }
+  .prow { flex-wrap:wrap; }
+  .pacts { display:flex; gap:6px; width:100%; justify-content:flex-end; margin-top:3px; flex-wrap:wrap; }
+  /* tour caption */
+  .tourbar { position:absolute; left:12px; right:12px; bottom:14px; background:rgba(10,14,22,.94); border:1px solid #2d8cff; border-radius:14px; padding:11px 13px; z-index:70; display:none; }
+  .tourbar.on { display:block; }
+  .tourbar .tt { color:#7db8ff; font-size:11px; font-weight:800; letter-spacing:.6px; margin-bottom:4px; display:flex; justify-content:space-between; }
+  .tourbar .tx { font-size:13px; line-height:1.5; }
+  .tourbar .tb { display:flex; gap:8px; margin-top:9px; }
+  .tourbar .tb button { flex:1; padding:8px; border-radius:9px; border:none; font-weight:700; cursor:pointer; }
+  .tourbar .next { background:#2d8cff; color:#fff; } .tourbar .close { background:#2b3038; color:#cfd8e3; }
+  /* ---------- RAIL ---------- */
+  .rail { width:400px; max-width:94vw; background:rgba(18,22,30,.85); border:1px solid #26303f; border-radius:20px; padding:20px; backdrop-filter:blur(6px); }
+  .rail h2 { font-size:16px; margin-bottom:4px; }
+  .rail .hint { color:#8b96a5; font-size:12.5px; margin-bottom:14px; line-height:1.5; }
+  .sbtn { display:flex; gap:11px; width:100%; text-align:left; background:#171c25; border:1px solid #28303d; color:#dbe4f0; border-radius:13px; padding:11px 13px; margin-bottom:8px; cursor:pointer; align-items:flex-start; }
+  .sbtn.on { border-color:#2d8cff; background:#14263d; }
+  .sbtn .n { width:24px; height:24px; border-radius:8px; background:#2d8cff; color:#fff; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; margin-top:1px; }
+  .sbtn b { font-size:13.5px; display:block; }
+  .sbtn span { font-size:12px; color:#8b96a5; line-height:1.45; display:block; margin-top:2px; }
+  .rail .rowb { display:flex; gap:9px; margin-top:13px; }
+  .rail .rowb button { flex:1; padding:11px; border-radius:11px; border:none; font-weight:800; cursor:pointer; font-size:13.5px; }
+  .tourbtn { background:linear-gradient(135deg,#6c3fd4,#2d8cff); color:#fff; }
+  .langbtn { background:#232a35; color:#dbe4f0; border:1px solid #333d4b !important; }
+  .foot { width:100%; text-align:center; color:#5f6d80; font-size:12px; margin-top:18px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>NEXORA <b>Meet</b> · <span data-vi="Họp nhóm trong NEXORA Community" data-en="Group meetings inside NEXORA Community">Họp nhóm trong NEXORA Community</span></h1>
+    <p data-vi="Prototype để CEO duyệt bố cục trước khi viết spec cho Dev · Bấm các nút trong điện thoại hoặc chọn màn hình bên phải" data-en="Prototype for CEO layout approval before the Dev spec · Tap buttons in the phone or pick a screen on the right">Prototype để CEO duyệt bố cục trước khi viết spec cho Dev · Bấm các nút trong điện thoại hoặc chọn màn hình bên phải</p>
+  </div>
+
+  <div class="phone"><div class="screen">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>5G&nbsp;&nbsp;▰▰▰</span></div>
+
+    <!-- 1 · GROUP -->
+    <div class="page" id="pg-group">
+      <div class="appbar"><span class="back">‹</span><div class="ava" style="width:38px;height:38px;font-size:14px;background:linear-gradient(135deg,#6c3fd4,#2d8cff)">CT</div><div class="ttl"><span data-vi="Chủ tiệm Việt tại Mỹ" data-en="Vietnamese Salon Owners in the US">Chủ tiệm Việt tại Mỹ</span><div class="sub" data-vi="1.248 thành viên · Nhóm công khai" data-en="1,248 members · Public group">1.248 thành viên · Nhóm công khai</div></div><span style="font-size:19px">⋯</span></div>
+      <div class="tabs"><div class="tab" data-vi="Thảo luận" data-en="Discussion">Thảo luận</div><div class="tab on" data-vi="Họp nhóm" data-en="Meetings">Họp nhóm</div><div class="tab" onclick="go('records')" data-vi="Bản ghi" data-en="Recordings">Bản ghi</div></div>
+      <div class="scroll">
+        <div class="meetcard">
+          <div class="when" data-vi="BUỔI HỌP SẮP TỚI · THỨ SÁU 19:00" data-en="UPCOMING · FRIDAY 7:00 PM">BUỔI HỌP SẮP TỚI · THỨ SÁU 19:00</div>
+          <h3 data-vi="Đào tạo Gel-X — buổi 3" data-en="Gel-X Training — session 3">Đào tạo Gel-X — buổi 3</h3>
+          <div class="host" data-vi="Chủ trì: Kayla · 60 phút · Đã gửi link mời cho 24 người" data-en="Host: Kayla · 60 min · Invite link sent to 24 people">Chủ trì: Kayla · 60 phút · Đã gửi link mời cho 24 người</div>
+          <div class="host" style="margin-top:2px"><span data-vi="Phản hồi lời mời:" data-en="RSVP:">Phản hồi lời mời:</span> <b style="color:#7be2a8">18</b> <span data-vi="sẽ tham gia" data-en="going">sẽ tham gia</span> · <b style="color:#ffd98a">3</b> <span data-vi="có thể" data-en="maybe">có thể</span> · 3 <span data-vi="chưa trả lời" data-en="no reply yet">chưa trả lời</span></div>
+          <div class="row"><button class="btn btn-blue" onclick="go('meet')" data-vi="Tham gia họp" data-en="Join meeting">Tham gia họp</button><button class="btn btn-ghost" onclick="go('schedule')" data-vi="Sao chép link" data-en="Copy link">Sao chép link</button></div>
+          <div class="shareout"><span class="lbl" data-vi="Đẩy phòng họp ra:" data-en="Share the room out:">Đẩy phòng họp ra:</span><span class="sochip"><span class="dot" style="background:#1877f2">f</span>Facebook</span><span class="sochip"><span class="dot" style="background:#ff0000">▶</span>YouTube</span><span class="sochip"><span class="dot" style="background:#000;border:1px solid #444">♪</span>TikTok</span><span class="sochip" onclick="go('schedule')"><span class="dot" style="background:#6c3fd4">+</span><span data-vi="Kênh khác…" data-en="More channels…">Kênh khác…</span></span></div>
+        </div>
+        <div class="duo"><button class="btn btn-blue" onclick="go('meet')">📹 <span data-vi="Họp ngay" data-en="Meet now">Họp ngay</span></button><button class="btn btn-ghost" onclick="go('schedule')">🗓 <span data-vi="Lên lịch họp" data-en="Schedule">Lên lịch họp</span></button></div>
+        <div class="sec" data-vi="Trong nhóm chat" data-en="In the group chat">Trong nhóm chat</div>
+        <div class="bubble them"><div class="who">Kayla · Admin</div><span data-vi="Tối thứ Sáu mình họp đào tạo Gel-X nhé mọi người. Ai chưa có file bảng giá thì xem ở đây 👇" data-en="Gel-X training this Friday evening, everyone. Price list file is right here 👇">Tối thứ Sáu mình họp đào tạo Gel-X nhé mọi người. Ai chưa có file bảng giá thì xem ở đây 👇</span>
+          <div class="filechip"><div class="ic">PDF</div><div><div class="fn">Bang-gia-GelX-2026.pdf</div><div class="fs">PDF · <span data-vi="Bấm để mở / tải" data-en="Tap to open / download">Bấm để mở / tải</span></div></div></div>
+        </div>
+        <div class="bubble them"><div class="who">Philip</div><span data-vi="Mình sẽ share màn hình phần POS trong buổi họp luôn." data-en="I'll share my screen for the POS part during the meeting.">Mình sẽ share màn hình phần POS trong buổi họp luôn.</span></div>
+      </div>
+      <div class="inputbar"><button class="plusbtn" title="Share">+</button><div class="fakeinput" data-vi="Nhắn tin… (+ để gửi file / share)" data-en="Message… (+ to send a file / share)">Nhắn tin… (+ để gửi file / share)</div><span style="font-size:19px">🎙</span></div>
+    </div>
+
+    <!-- 2 · SCHEDULE -->
+    <div class="page" id="pg-schedule">
+      <div class="appbar"><span class="back" onclick="go('group')">‹</span><div class="ttl" data-vi="Lên lịch họp" data-en="Schedule a meeting">Lên lịch họp</div></div>
+      <div class="scroll">
+        <div class="field"><label data-vi="TÊN BUỔI HỌP (TITLE)" data-en="MEETING TITLE">TÊN BUỔI HỌP (TITLE)</label><div class="val"><span data-vi="Đào tạo Gel-X — buổi 3" data-en="Gel-X Training — session 3">Đào tạo Gel-X — buổi 3</span></div></div>
+        <div class="field"><label data-vi="MÔ TẢ / NỘI DUNG BUỔI HỌP" data-en="DESCRIPTION / AGENDA">MÔ TẢ / NỘI DUNG BUỔI HỌP</label><div class="val"><span style="line-height:1.45" data-vi="Buổi 3: chọn size móng, gắn móng & hơ đèn. Học viên mang theo bộ kit Gel-X." data-en="Session 3: sizing tips, applying & curing. Please bring your Gel-X kit.">Buổi 3: chọn size móng, gắn móng & hơ đèn. Học viên mang theo bộ kit Gel-X.</span><span style="color:#7db8ff;font-weight:700" data-vi="Sửa" data-en="Edit">Sửa</span></div></div>
+        <div class="field"><label data-vi="NGÀY" data-en="DATE">NGÀY</label><div class="val"><span data-vi="Thứ Sáu, 06/11/2026" data-en="Friday, Nov 6, 2026">Thứ Sáu, 06/11/2026</span><span>›</span></div></div>
+        <div class="field"><label data-vi="GIỜ BẮT ĐẦU" data-en="START TIME">GIỜ BẮT ĐẦU</label><div class="val"><span>19:00</span><span>›</span></div></div>
+        <div class="field"><label data-vi="THỜI LƯỢNG BUỔI HỌP (HỌP BAO LÂU)" data-en="DURATION (HOW LONG)">THỜI LƯỢNG BUỔI HỌP (HỌP BAO LÂU)</label>
+          <div style="display:flex;gap:7px;flex-wrap:wrap"><span class="tochip">30 <span data-vi="phút" data-en="min">phút</span></span><span class="tochip">45 <span data-vi="phút" data-en="min">phút</span></span><span class="tochip on">1 <span data-vi="giờ" data-en="hour">giờ</span></span><span class="tochip">1 <span data-vi="giờ" data-en="h">giờ</span> 30</span><span class="tochip">2 <span data-vi="giờ" data-en="hours">giờ</span></span><span class="tochip">3 <span data-vi="giờ" data-en="hours">giờ</span></span></div>
+          <div style="font-size:12px;color:#8b96a5;margin-top:7px" data-vi="→ Giờ kết thúc: 20:00 (tự tính theo giờ bắt đầu + thời lượng)" data-en="→ Ends at 8:00 PM (auto-calculated from start + duration)">→ Giờ kết thúc: 20:00 (tự tính theo giờ bắt đầu + thời lượng)</div></div>
+        <div class="field"><label data-vi="MÚI GIỜ (CHỌN TRONG DANH SÁCH TOÀN CẦU)" data-en="TIME ZONE (FULL GLOBAL LIST)">MÚI GIỜ (CHỌN TRONG DANH SÁCH TOÀN CẦU)</label><div class="val" onclick="go('tz')" style="cursor:pointer"><span>(GMT-6) America/Chicago · Houston</span><span>›</span></div>
+          <div style="font-size:12px;color:#8b96a5;margin-top:7px;line-height:1.5" data-vi="Tự quy đổi cho người nhận: khách ở Việt Nam thấy 08:00 sáng Thứ Bảy (giờ VN) · khách ở Dubai thấy 05:00 sáng Thứ Bảy — mỗi người thấy theo múi giờ của họ." data-en="Auto-converted for invitees: Vietnam sees Sat 8:00 AM ICT · Dubai sees Sat 5:00 AM — everyone sees their own zone.">Tự quy đổi cho người nhận: khách ở Việt Nam thấy 08:00 sáng Thứ Bảy (giờ VN) · khách ở Dubai thấy 05:00 sáng Thứ Bảy — mỗi người thấy theo múi giờ của họ.</div></div>
+        <div class="field"><label data-vi="LẶP LẠI" data-en="REPEAT">LẶP LẠI</label><div class="val"><span data-vi="Không lặp lại" data-en="Does not repeat">Không lặp lại</span><span>›</span></div></div>
+        <div class="field"><label data-vi="LINK THAM GIA — GỬI CHO NGƯỜI ĐƯỢC MỜI" data-en="JOIN LINK — SEND TO INVITEES">LINK THAM GIA — GỬI CHO NGƯỜI ĐƯỢC MỜI</label>
+          <div class="linkbox">🔗 nexoratouch.com/meet/gelx-83kd <button data-vi="Sao chép" data-en="Copy">Sao chép</button></div></div>
+        <div class="sec" data-vi="Gửi lời mời (kèm link join)" data-en="Send invitations (with the join link)">Gửi lời mời (kèm link join)</div>
+        <div class="field"><div class="val"><span>✉️ Email — <span data-vi="nhập danh sách email người được mời" data-en="enter invitee emails">nhập danh sách email người được mời</span></span><span style="color:#7db8ff;font-weight:700" data-vi="Gửi" data-en="Send">Gửi</span></div></div>
+        <div class="field"><div class="val"><span>💬 SMS — <span data-vi="nhập số điện thoại, gửi link qua tin nhắn" data-en="enter phone numbers, link by text">nhập số điện thoại, gửi link qua tin nhắn</span></span><span style="color:#7db8ff;font-weight:700" data-vi="Gửi" data-en="Send">Gửi</span></div></div>
+        <div class="field"><div class="val"><span>🗓 <span data-vi="Thêm vào lịch của khách (Google / Apple Calendar)" data-en="Add to guests' calendar (Google / Apple)">Thêm vào lịch của khách (Google / Apple Calendar)</span></span><span>›</span></div></div>
+        <div class="sec" data-vi="Đẩy phòng họp ra ngoài" data-en="Share the room out">Đẩy phòng họp ra ngoài</div>
+        <div class="sharepanel">
+          <div class="grp" data-vi="MẠNG XÃ HỘI — ĐĂNG BÀI KÈM LINK JOIN" data-en="SOCIAL — POST WITH THE JOIN LINK">MẠNG XÃ HỘI — ĐĂNG BÀI KÈM LINK JOIN</div>
+          <div class="chips"><span class="sochip"><span class="dot" style="background:#1877f2">f</span>Facebook</span><span class="sochip"><span class="dot" style="background:#ff0000">▶</span>YouTube</span><span class="sochip"><span class="dot" style="background:#000;border:1px solid #444">♪</span>TikTok</span><span class="sochip"><span class="dot" style="background:#0068ff">Z</span>Zalo</span></div>
+          <div class="grp" data-vi="TRONG HỆ SINH THÁI VLINKPAY" data-en="INSIDE THE VLINKPAY ECOSYSTEM">TRONG HỆ SINH THÁI VLINKPAY</div>
+          <div class="chips"><span class="sochip"><span class="dot" style="background:#2d8cff">N</span>NEXORA Community</span><span class="sochip"><span class="dot" style="background:#b3392e">N</span>NAILHUB.AI Blog</span><span class="sochip"><span class="dot" style="background:#e07b39">F</span>Food Community</span><span class="sochip"><span class="dot" style="background:#f0a500">C</span>CRYPTOMAP360</span></div>
+          <div style="font-size:11.5px;color:#8b96a5;line-height:1.5" data-vi="Mỗi kênh đăng 1 bài có link join — người xem bấm vào là tới màn hình nhập tên vào phòng." data-en="Each channel posts once with the join link — viewers tap through to the enter-name join screen.">Mỗi kênh đăng 1 bài có link join — người xem bấm vào là tới màn hình nhập tên vào phòng.</div>
+        </div>
+        <div class="trow" style="margin-top:6px"><span data-vi="Đặt mã phòng (passcode) cho khách ngoài" data-en="Require a passcode for outside guests">Đặt mã phòng (passcode) cho khách ngoài</span><div class="tgl"></div></div>
+        <div class="field"><label data-vi="ĐỒNG CHỦ TRÌ (CO-HOST) — NHẬN QUYỀN KHI VÀO PHÒNG" data-en="CO-HOSTS — GET RIGHTS ON ENTRY">ĐỒNG CHỦ TRÌ (CO-HOST) — NHẬN QUYỀN KHI VÀO PHÒNG</label><div class="val"><span>Kayla · <span data-vi="Admin nhóm" data-en="Group admin">Admin nhóm</span></span><span style="color:#7db8ff;font-weight:700" data-vi="+ Thêm" data-en="+ Add">+ Thêm</span></div></div>
+        <div class="field"><label data-vi="NGƯỜI ĐƯỢC MỜI" data-en="INVITEES">NGƯỜI ĐƯỢC MỜI</label><div class="val"><span data-vi="24 thành viên nhóm · khách ngoài qua link phải nhập tên" data-en="24 group members · link guests enter a name">24 thành viên nhóm · khách ngoài qua link phải nhập tên</span><span>›</span></div></div>
+        <div class="trow"><span data-vi="Phòng chờ (Admin duyệt mới vào)" data-en="Waiting room (host admits)">Phòng chờ (Admin duyệt mới vào)</span><div class="tgl on"></div></div>
+        <div class="trow"><span data-vi="Đồng chủ trì được duyệt phòng chờ + tắt mic người khác" data-en="Co-hosts can admit + mute others">Đồng chủ trì được duyệt phòng chờ + tắt mic người khác</span><div class="tgl on"></div></div>
+        <div class="trow"><span data-vi="Thành viên được chia sẻ màn hình" data-en="Members can share their screen">Thành viên được chia sẻ màn hình</span><div class="tgl on"></div></div>
+        <div class="trow"><span data-vi="Chỉ Host + Đồng chủ trì được ghi hình" data-en="Only host + co-hosts can record">Chỉ Host + Đồng chủ trì được ghi hình</span><div class="tgl on"></div></div>
+        <div class="trow"><span data-vi="Chỉ thành viên nhóm mới join được" data-en="Group members only">Chỉ thành viên nhóm mới join được</span><div class="tgl"></div></div>
+        <div class="trow"><span data-vi="Cho phép ghi hình buổi họp" data-en="Allow recording">Cho phép ghi hình buổi họp</span><div class="tgl on"></div></div>
+        <div class="trow" style="border-bottom:none"><span data-vi="Nhắc họp trước 15 phút" data-en="Remind 15 min before">Nhắc họp trước 15 phút</span><div class="tgl on"></div></div>
+        <button class="btn btn-blue" style="width:100%;margin-top:16px" onclick="go('group')" data-vi="Tạo lịch họp & gửi lời mời" data-en="Create & send invites">Tạo lịch họp & gửi lời mời</button>
+      </div>
+    </div>
+
+    <!-- 3 · MEETING -->
+    <div class="page" id="pg-meet">
+      <div class="meet-top"><div class="mt"><b data-vi="Đào tạo Gel-X — buổi 3" data-en="Gel-X Training — session 3">Đào tạo Gel-X — buổi 3</b><span>24:16 · 4 <span data-vi="người" data-en="people">người</span></span></div><div class="recpill"><span class="recdot"></span><span data-vi="Đang ghi" data-en="Recording">Đang ghi</span> 12:03</div></div>
+      <div class="recbanner"><span class="recdot" style="margin-top:4px;flex:none"></span><span data-vi="Buổi họp này ĐANG ĐƯỢC GHI HÌNH — thông báo này hiện với TẤT CẢ mọi người trong phòng. Ai vào giữa chừng cũng thấy thông báo trước khi vào." data-en="This meeting IS BEING RECORDED — this notice shows to EVERYONE in the room. Anyone joining mid-meeting sees it before entering.">Buổi họp này ĐANG ĐƯỢC GHI HÌNH — thông báo này hiện với TẤT CẢ mọi người trong phòng. Ai vào giữa chừng cũng thấy thông báo trước khi vào.</span></div>
+      <div class="viewbar"><span style="font-size:11.5px;color:#8b96a5;font-weight:800" data-vi="BỐ CỤC:" data-en="LAYOUT:">BỐ CỤC:</span><span class="tochip on">▦ <span data-vi="Lưới đều" data-en="Gallery grid">Lưới đều</span></span><span class="tochip">▣ <span data-vi="Người nói lớn" data-en="Big speaker">Người nói lớn</span></span><span class="tochip">≣ <span data-vi="Danh sách" data-en="List">Danh sách</span></span><span class="hint" data-vi="Vuốt ⇄ đổi trang" data-en="Swipe ⇄ for pages">Vuốt ⇄ đổi trang</span></div>
+      <div class="grid">
+        <div class="tile"><div class="face" style="background:radial-gradient(200px 160px at 50% 30%,#3f6212,#1a2407)"><div class="ava" style="width:64px;height:64px;font-size:24px;background:linear-gradient(135deg,#84cc16,#3f6212)">B</div></div><div class="nm">Brian (<span data-vi="Bạn" data-en="You">Bạn</span>)</div></div>
+        <div class="tile speaking" onclick="go('profile')" style="cursor:pointer"><div class="face" style="background:radial-gradient(200px 160px at 50% 30%,#6d28d9,#2a1150)"><div class="ava" style="width:64px;height:64px;font-size:24px;background:linear-gradient(135deg,#a78bfa,#6d28d9)">K</div></div><div class="nm">Kayla · <span data-vi="Chủ trì" data-en="Host">Chủ trì</span> <span class="spk"><i></i><i></i><i></i></span></div></div>
+        <div class="tile"><div class="face" style="background:radial-gradient(200px 160px at 50% 30%,#0e7490,#0b2530)"><div class="ava" style="width:64px;height:64px;font-size:24px;background:linear-gradient(135deg,#22d3ee,#0e7490)">P</div></div><div class="nm">Philip</div></div>
+        <div class="tile"><div class="face" style="background:radial-gradient(200px 160px at 50% 30%,#9d2449,#33091a)"><div class="ava" style="width:64px;height:64px;font-size:24px;background:linear-gradient(135deg,#fb7185,#9d2449)">T</div></div><div class="nm">Trang <span class="micoff-badge"><svg viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-8.17 6.17c-.71.33-1.5.52-2.31.52-2.48 0-4.52-1.8-4.93-4.15L2.4 14.73A11.9 11.9 0 0 0 10 21.68V23h4v-1.32c.57-.08 1.12-.24 1.65-.46L19.73 25 22 22.73 3.27 4 1 6.27l6 6V12c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.47.22-.94.42-1.47.59z" transform="scale(0.86) translate(1.5,-1)"/></svg></span></div></div>
+      </div>
+      <div class="capbar"><div class="orig"><b>Kayla (EN):</b> Please review the new Gel-X price list before Friday.</div><div class="tran"><span class="tag">🌐 DỊCH TRỰC TIẾP → VI</span><span data-vi="Nhờ mọi người xem bảng giá Gel-X mới trước thứ Sáu nhé." data-en="Please review the new Gel-X price list before Friday.">Nhờ mọi người xem bảng giá Gel-X mới trước thứ Sáu nhé.</span></div><div style="font-size:11px;color:#8b96a5;margin-top:5px" data-vi="Phụ đề dịch theo NGÔN NGỮ CỦA BẠN (bạn chọn Tiếng Việt) — người khác chọn tiếng Anh thì thấy bản tiếng Anh." data-en="Captions are translated into YOUR language (you picked Vietnamese) — others who picked English see English.">Phụ đề dịch theo NGÔN NGỮ CỦA BẠN (bạn chọn Tiếng Việt) — người khác chọn tiếng Anh thì thấy bản tiếng Anh.</div></div>
+      <div class="pagedots"><b>●</b> ○ ○ <span style="letter-spacing:0;font-size:11.5px;color:#8b96a5" data-vi="— vuốt ngang xem tiếp người tham gia khi phòng đông" data-en="— swipe sideways for more participants in big rooms">— vuốt ngang xem tiếp người tham gia khi phòng đông</span></div>
+      <div class="handpill">✋ <span data-vi="Trang đang giơ tay phát biểu (hàng chờ giơ tay)" data-en="Trang has a hand raised (hand queue)">Trang đang giơ tay phát biểu (hàng chờ giơ tay)</span><span class="mini"><button class="speak" data-vi="Cho nói" data-en="Let speak">Cho nói</button><button class="lower" data-vi="Hạ tay" data-en="Lower hand">Hạ tay</button></span></div>
+      <div class="handpill" id="myhand" style="border-color:#2d8cff;background:#14263d;color:#cfe6ff">✋ <span data-vi="Bạn đang giơ tay — Chủ trì sẽ thấy bạn trong hàng chờ. Bấm nút ✋ lần nữa để HẠ TAY." data-en="Your hand is up — the host sees you in the queue. Tap ✋ again to LOWER your hand.">Bạn đang giơ tay — Chủ trì sẽ thấy bạn trong hàng chờ. Bấm nút ✋ lần nữa để HẠ TAY.</span></div>
+      <div class="meet-tools">
+        <div class="reactchip" title="Thích">👍</div>
+        <div class="reactchip" title="Tim">❤️</div>
+        <div class="reactchip" title="Vỗ tay">👏</div>
+        <div class="reactchip" title="Ăn mừng">🎉</div>
+        <div class="reactchip hand" id="handchip" title="Giơ tay / Hạ tay" onclick="toggleHand(this)">✋</div>
+        <button class="chatbtn" onclick="go('chat')"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span data-vi="Chat" data-en="Chat">Chat</span><span class="bdg">2</span></button>
+      </div>
+      <div class="ctrls">
+        <div class="ctl" data-toggle><div class="ic"><svg class="i-on" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15a.996.996 0 0 0-.98-.85C5.49 11 5 11.45 5 12c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92 0-.55-.49-1-1.09-1z"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.17.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l6 6c-.1-.27-.15-.56-.17-.83zM4.27 3 3 4.27l6 6V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.48 0-4.52-1.8-4.93-4.15-.04-.25-.28-.45-.54-.44-.57.02-1.03.48-1.03 1.05 0 3.52 2.59 6.42 5.98 6.91V21h2v-2.07c.57-.08 1.12-.24 1.65-.46L19.73 21 21 19.73l-9-9L4.27 3z"/></svg></div><span data-vi="Tắt mic" data-en="Mute">Tắt mic</span></div>
+        <div class="ctl" data-toggle><div class="ic"><svg class="i-on" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2 2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/></svg></div><span data-vi="Video" data-en="Video">Video</span></div>
+        <div class="ctl share" onclick="go('sharepick')"><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM12 6l4 4h-2.5v4h-3v-4H8l4-4z"/></svg></div><span data-vi="Chia sẻ" data-en="Share">Chia sẻ</span></div>
+        <div class="ctl rec-on"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg></div><span data-vi="Đang ghi" data-en="Recording">Đang ghi</span></div>
+        <div class="ctl" onclick="go('admin')"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 12c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm6 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm6 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg></div><span data-vi="Thêm" data-en="More">Thêm</span></div>
+        <div class="ctl end" onclick="go('records')"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.22.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C2.25 9.71 4.55 8.36 7.04 7.58 8.65 7.08 10.32 7 12 7s3.35.08 4.96.58c2.49.78 4.79 2.13 6.75 4.09.39.39.39 1.02 0 1.41l-2.3 2.3c-.18.18-.43.29-.71.29-.27 0-.52-.1-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.23 9.25 13.6 9 12 9z"/></svg></div><span data-vi="Kết thúc" data-en="End">Kết thúc</span></div>
+      </div>
+    </div>
+
+    <!-- 4 · SHARE -->
+    <div class="page" id="pg-share">
+      <div class="meet-top"><div class="mt"><b data-vi="Đào tạo Gel-X — buổi 3" data-en="Gel-X Training — session 3">Đào tạo Gel-X — buổi 3</b><span>31:02 · 4 <span data-vi="người" data-en="people">người</span></span></div><div class="recpill"><span class="recdot"></span><span data-vi="Đang ghi" data-en="Recording">Đang ghi</span> 18:47</div></div>
+      <div class="sharewrap">
+        <div class="sharebanner">🖥 <span data-vi="Kayla đang chia sẻ màn hình" data-en="Kayla is sharing their screen">Kayla đang chia sẻ màn hình</span></div>
+        <div class="sharedoc">
+          <h4 data-vi="Kayla đang thuyết trình — Slide: Bảng giá Gel-X 2026" data-en="Kayla presenting — Slide: Gel-X 2026 price list">Kayla đang thuyết trình — Slide: Bảng giá Gel-X 2026</h4>
+          <div class="sd-sub" data-vi="Slide chiếm màn hình chính · video mọi người thu nhỏ bên dưới · Slide 3 / 12 · ‹ › chuyển slide" data-en="Slides take the main screen · videos shrink below · Slide 3 / 12 · ‹ › to move">Slide chiếm màn hình chính · video mọi người thu nhỏ bên dưới · Slide 3 / 12 · ‹ › chuyển slide</div>
+          <div class="sd-bar" style="width:62%"></div>
+          <div class="sd-row"><span data-vi="Bước 1 · Kiểm tra móng tự nhiên" data-en="Step 1 · Check the natural nail">Bước 1 · Kiểm tra móng tự nhiên</span><span>✓</span></div>
+          <div class="sd-row"><span data-vi="Bước 2 · Chọn size móng Gel-X" data-en="Step 2 · Size the Gel-X tips">Bước 2 · Chọn size móng Gel-X</span><span>✓</span></div>
+          <div class="sd-row"><span data-vi="Bước 3 · Gắn móng & hơ đèn" data-en="Step 3 · Apply tips & cure">Bước 3 · Gắn móng & hơ đèn</span><span>•</span></div>
+          <div class="sd-bar" style="width:84%"></div>
+          <div class="sd-bar" style="width:47%"></div>
+        </div>
+        <div class="filmstrip">
+          <div class="tile"><div class="face" style="background:#233246"><div class="ava" style="width:36px;height:36px;font-size:15px;background:linear-gradient(135deg,#84cc16,#3f6212)">B</div></div><div class="nm" style="font-size:10px">Brian</div></div>
+          <div class="tile"><div class="face" style="background:#2c2140"><div class="ava" style="width:36px;height:36px;font-size:15px;background:linear-gradient(135deg,#22d3ee,#0e7490)">P</div></div><div class="nm" style="font-size:10px">Philip</div></div>
+          <div class="tile"><div class="face" style="background:#38202c"><div class="ava" style="width:36px;height:36px;font-size:15px;background:linear-gradient(135deg,#fb7185,#9d2449)">T</div></div><div class="nm" style="font-size:10px">Trang <span class="micoff-badge"><svg viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zM4.27 3 3 4.27l6 6V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.48 0-4.52-1.8-4.93-4.15-.04-.25-.28-.45-.54-.44-.57.02-1.03.48-1.03 1.05 0 3.52 2.59 6.42 5.98 6.91V21h2v-2.07c.57-.08 1.12-.24 1.65-.46L19.73 21 21 19.73 4.27 3z"/></svg></span></div></div>
+        </div>
+      </div>
+      <button class="btn stopshare" onclick="go('meet')" data-vi="Dừng chia sẻ" data-en="Stop sharing">Dừng chia sẻ</button>
+      <div class="ctrls">
+        <div class="ctl" data-toggle><div class="ic"><svg class="i-on" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15a.996.996 0 0 0-.98-.85C5.49 11 5 11.45 5 12c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92 0-.55-.49-1-1.09-1z"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.17.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l6 6c-.1-.27-.15-.56-.17-.83zM4.27 3 3 4.27l6 6V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.48 0-4.52-1.8-4.93-4.15-.04-.25-.28-.45-.54-.44-.57.02-1.03.48-1.03 1.05 0 3.52 2.59 6.42 5.98 6.91V21h2v-2.07c.57-.08 1.12-.24 1.65-.46L19.73 21 21 19.73l-9-9L4.27 3z"/></svg></div><span data-vi="Tắt mic" data-en="Mute">Tắt mic</span></div>
+        <div class="ctl" data-toggle><div class="ic"><svg class="i-on" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2 2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/></svg></div><span data-vi="Video" data-en="Video">Video</span></div>
+        <div class="ctl share"><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM12 6l4 4h-2.5v4h-3v-4H8l4-4z"/></svg></div><span data-vi="Đang share" data-en="Sharing">Đang share</span></div>
+        <div class="ctl rec-on"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg></div><span data-vi="Đang ghi" data-en="Recording">Đang ghi</span></div>
+        <div class="ctl end" onclick="go('records')"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.22.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C2.25 9.71 4.55 8.36 7.04 7.58 8.65 7.08 10.32 7 12 7s3.35.08 4.96.58c2.49.78 4.79 2.13 6.75 4.09.39.39.39 1.02 0 1.41l-2.3 2.3c-.18.18-.43.29-.71.29-.27 0-.52-.1-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.23 9.25 13.6 9 12 9z"/></svg></div><span data-vi="Kết thúc" data-en="End">Kết thúc</span></div>
+      </div>
+    </div>
+
+    <!-- 5 · 1-1 CALL -->
+    <div class="page" id="pg-call11">
+      <div class="callwrap">
+        <div class="ava big" style="background:linear-gradient(135deg,#a78bfa,#6d28d9)">K</div>
+        <h3>Kayla</h3>
+        <div class="st">● <span data-vi="Đang gọi · 08:42 · Cuộc gọi 1-1" data-en="On call · 08:42 · 1-to-1 call">Đang gọi · 08:42 · Cuộc gọi 1-1</span></div>
+        <div class="callgrid">
+          <div class="ctl" data-toggle><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></div><span data-vi="Loa ngoài" data-en="Speaker">Loa ngoài</span></div>
+          <div class="ctl" data-toggle><div class="ic"><svg class="i-on" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15a.996.996 0 0 0-.98-.85C5.49 11 5 11.45 5 12c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92 0-.55-.49-1-1.09-1z"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.17.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l6 6c-.1-.27-.15-.56-.17-.83zM4.27 3 3 4.27l6 6V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.48 0-4.52-1.8-4.93-4.15-.04-.25-.28-.45-.54-.44-.57.02-1.03.48-1.03 1.05 0 3.52 2.59 6.42 5.98 6.91V21h2v-2.07c.57-.08 1.12-.24 1.65-.46L19.73 21 21 19.73l-9-9L4.27 3z"/></svg></div><span data-vi="Tắt mic" data-en="Mute">Tắt mic</span></div>
+          <div class="ctl"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM4 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM4 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" transform="scale(0.92) translate(1,1)"/></svg></div><span data-vi="Bàn phím" data-en="Keypad">Bàn phím</span></div>
+          <div class="ctl" data-toggle><div class="ic"><svg class="i-on" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2 2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/></svg></div><span data-vi="Video" data-en="Video">Video</span></div>
+          <div class="ctl share" onclick="go('sharepick')"><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM12 6l4 4h-2.5v4h-3v-4H8l4-4z"/></svg></div><span><span data-vi="Chia sẻ màn hình" data-en="Share screen">Chia sẻ màn hình</span> <span class="newbadge" data-vi="MỚI" data-en="NEW">MỚI</span></span></div>
+          <div class="ctl"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 12c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm6 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm6 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg></div><span data-vi="Thêm" data-en="More">Thêm</span></div>
+        </div>
+        <div class="ctl callend" style="margin-top:40px;width:86px"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.22.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.996.996 0 0 1 0-1.41C2.25 9.71 4.55 8.36 7.04 7.58 8.65 7.08 10.32 7 12 7s3.35.08 4.96.58c2.49.78 4.79 2.13 6.75 4.09.39.39.39 1.02 0 1.41l-2.3 2.3c-.18.18-.43.29-.71.29-.27 0-.52-.1-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.23 9.25 13.6 9 12 9z"/></svg></div></div>
+        <div style="color:#7f8b9c;font-size:12px;margin-top:16px;padding:0 30px;text-align:center" data-vi="Gọi 1-1 cũng share được: cả hai phía đều bấm Chia sẻ được (Ticket 04)" data-en="1-to-1 calls share too: either side can tap Share (Ticket 04)">Gọi 1-1 cũng share được: cả hai phía đều bấm Chia sẻ được (Ticket 04)</div>
+      </div>
+    </div>
+
+    <!-- 5F · TIME ZONE PICKER -->
+    <div class="page" id="pg-tz">
+      <div class="appbar"><span class="back" onclick="go('schedule')">‹</span><div class="ttl"><span data-vi="Chọn múi giờ" data-en="Choose a time zone">Chọn múi giờ</span><div class="sub" data-vi="Danh sách toàn cầu (chuẩn IANA)" data-en="Full global list (IANA standard)">Danh sách toàn cầu (chuẩn IANA)</div></div></div>
+      <div style="padding:2px 16px 10px"><div class="fakeinput" style="display:flex;gap:8px;align-items:center">🔎 <span data-vi="Tìm thành phố / múi giờ… (vd: Việt Nam, Dubai)" data-en="Search city / zone… (e.g. Vietnam, Dubai)">Tìm thành phố / múi giờ… (vd: Việt Nam, Dubai)</span></div></div>
+      <div class="scroll">
+        <div class="tzrow"><div class="tz"><b data-vi="Tự động theo thiết bị" data-en="Automatic (device)">Tự động theo thiết bị</b><span>America/Chicago</span></div><span class="gmt">GMT-6</span></div>
+        <div class="sec" data-vi="Việt Nam & Đông Nam Á" data-en="Vietnam & Southeast Asia">Việt Nam & Đông Nam Á</div>
+        <div class="tzrow"><div class="tz"><b data-vi="Hồ Chí Minh / Hà Nội — Việt Nam" data-en="Ho Chi Minh / Hanoi — Vietnam">Hồ Chí Minh / Hà Nội — Việt Nam</b><span>Asia/Ho_Chi_Minh</span></div><span class="gmt">GMT+7</span></div>
+        <div class="tzrow"><div class="tz"><b>Bangkok — Thái Lan</b><span>Asia/Bangkok</span></div><span class="gmt">GMT+7</span></div>
+        <div class="tzrow"><div class="tz"><b>Singapore</b><span>Asia/Singapore</span></div><span class="gmt">GMT+8</span></div>
+        <div class="sec" data-vi="Hoa Kỳ" data-en="United States">Hoa Kỳ</div>
+        <div class="tzrow sel"><div class="tz"><b>Houston / Chicago</b><span>America/Chicago</span></div><span class="gmt">GMT-6</span><span class="ck">✓</span></div>
+        <div class="tzrow"><div class="tz"><b>New York</b><span>America/New_York</span></div><span class="gmt">GMT-5</span></div>
+        <div class="tzrow"><div class="tz"><b>Los Angeles</b><span>America/Los_Angeles</span></div><span class="gmt">GMT-8</span></div>
+        <div class="sec" data-vi="Trung Đông" data-en="Middle East">Trung Đông</div>
+        <div class="tzrow"><div class="tz"><b>Dubai — UAE</b><span>Asia/Dubai</span></div><span class="gmt">GMT+4</span></div>
+        <div class="tzrow"><div class="tz"><b>Riyadh — Saudi Arabia</b><span>Asia/Riyadh</span></div><span class="gmt">GMT+3</span></div>
+        <div class="tzrow"><div class="tz"><b>Doha — Qatar</b><span>Asia/Qatar</span></div><span class="gmt">GMT+3</span></div>
+        <div class="sec" data-vi="Châu Âu & châu Á khác" data-en="Europe & more of Asia">Châu Âu & châu Á khác</div>
+        <div class="tzrow"><div class="tz"><b>London</b><span>Europe/London</span></div><span class="gmt">GMT+0</span></div>
+        <div class="tzrow"><div class="tz"><b>Paris / Berlin</b><span>Europe/Paris</span></div><span class="gmt">GMT+1</span></div>
+        <div class="tzrow"><div class="tz"><b data-vi="Tokyo — Nhật" data-en="Tokyo — Japan">Tokyo — Nhật</b><span>Asia/Tokyo</span></div><span class="gmt">GMT+9</span></div>
+        <div class="tzrow"><div class="tz"><b data-vi="Seoul — Hàn Quốc" data-en="Seoul — Korea">Seoul — Hàn Quốc</b><span>Asia/Seoul</span></div><span class="gmt">GMT+9</span></div>
+        <div class="locknote">🌍 <span data-vi="Bản chạy thật dùng toàn bộ danh sách múi giờ chuẩn IANA (khoảng 400 múi giờ, có tìm kiếm) — Việt Nam, Trung Đông, châu Âu, châu Á đều đủ. Giờ họp lưu bằng UTC, mỗi người xem theo múi giờ của mình nên không ai bị lệch giờ." data-en="Production uses the full IANA zone list (~400 zones, searchable) — Vietnam, the Middle East, Europe, Asia all included. Times are stored in UTC and shown in each viewer's own zone, so nobody is off by an hour.">Bản chạy thật dùng toàn bộ danh sách múi giờ chuẩn IANA (khoảng 400 múi giờ, có tìm kiếm) — Việt Nam, Trung Đông, châu Âu, châu Á đều đủ. Giờ họp lưu bằng UTC, mỗi người xem theo múi giờ của mình nên không ai bị lệch giờ.</span></div>
+      </div>
+    </div>
+
+    <!-- 5B · JOIN BY LINK -->
+    <div class="page" id="pg-join">
+      <div class="appbar"><span class="back" onclick="go('schedule')">‹</span><div class="ttl" data-vi="Vào phòng họp" data-en="Join the meeting">Vào phòng họp</div></div>
+      <div class="joinpreview"><div class="ava" style="width:96px;height:96px;font-size:36px;background:linear-gradient(135deg,#84cc16,#3f6212)">B</div><div class="camoff" data-vi="Camera đang tắt" data-en="Camera off">Camera đang tắt</div><div class="selfnm">Brian Nguyen</div><button class="avaedit">📷 <span data-vi="Đổi ảnh đại diện" data-en="Change photo">Đổi ảnh đại diện</span></button></div>
+      <div class="scroll" style="padding-top:14px">
+        <div style="text-align:center;margin-bottom:13px"><b style="font-size:16.5px" data-vi="Đào tạo Gel-X — buổi 3" data-en="Gel-X Training — session 3">Đào tạo Gel-X — buổi 3</b><div style="color:#8b96a5;font-size:12.5px;margin-top:3px" data-vi="Chủ trì: Kayla · Thứ Sáu 19:00 · Nhóm: Chủ tiệm Việt tại Mỹ" data-en="Host: Kayla · Friday 7:00 PM · Group: Vietnamese Salon Owners in the US">Chủ trì: Kayla · Thứ Sáu 19:00 · Nhóm: Chủ tiệm Việt tại Mỹ</div></div>
+        <div class="field"><label data-vi="NGÔN NGỮ HIỂN THỊ" data-en="DISPLAY LANGUAGE">NGÔN NGỮ HIỂN THỊ</label><div class="langchips"><span class="tochip on">Tiếng Việt</span><span class="tochip">English</span><span class="tochip">Español</span><span class="tochip">中文</span><span class="tochip">한국어</span><span class="tochip">العربية</span></div></div>
+        <div class="field"><label data-vi="TÊN HIỂN THỊ CỦA BẠN (NGƯỜI KHÁC THẤY TÊN NÀY)" data-en="YOUR DISPLAY NAME (OTHERS SEE THIS)">TÊN HIỂN THỊ CỦA BẠN (NGƯỜI KHÁC THẤY TÊN NÀY)</label><div class="val"><span>Brian Nguyen</span><span style="color:#7db8ff;font-weight:700" data-vi="Sửa" data-en="Edit">Sửa</span></div></div>
+        <div class="locknote" style="margin-bottom:12px">🔗 <span data-vi="Vào bằng link mời: khách chưa có tài khoản chỉ cần nhập tên là vào (qua phòng chờ nếu Host bật). Có tài khoản thì tên tự điền từ hồ sơ." data-en="Joining by invite link: guests without an account just enter a name (via the waiting room if the host enabled it). Signed-in users get their profile name prefilled.">Vào bằng link mời: khách chưa có tài khoản chỉ cần nhập tên là vào (qua phòng chờ nếu Host bật). Có tài khoản thì tên tự điền từ hồ sơ. Tắt camera: mọi người thấy ẢNH ĐẠI DIỆN + tên của bạn.</span></div>
+        <div class="trow"><span data-vi="Tắt mic khi vào phòng" data-en="Mute my mic on entry">Tắt mic khi vào phòng</span><div class="tgl on"></div></div>
+        <div class="trow"><span data-vi="Tắt camera khi vào phòng" data-en="Turn my camera off on entry">Tắt camera khi vào phòng</span><div class="tgl on"></div></div>
+        <div class="trow" style="border-bottom:none"><span data-vi="Hình nền ảo (Virtual Background)" data-en="Virtual background">Hình nền ảo (Virtual Background)</span><span onclick="go('bg')" style="color:#7db8ff;font-weight:700;cursor:pointer"><span data-vi="Văn phòng" data-en="Office">Văn phòng</span> ›</span></div>
+        <button class="btn btn-blue" style="width:100%;margin-top:15px" onclick="go('meet')" data-vi="Vào phòng họp" data-en="Join meeting">Vào phòng họp</button>
+        <div class="locknote" style="margin-top:11px;border-color:rgba(255,77,79,.5);background:rgba(255,77,79,.10);color:#ffc9cb">🔴 <span data-vi="Nếu phòng ĐANG GHI HÌNH: bạn thấy thông báo này trước khi vào — bấm Vào phòng họp nghĩa là đồng ý bị ghi hình." data-en="If the room IS RECORDING: you see this notice before entering — tapping Join means you consent to being recorded.">Nếu phòng ĐANG GHI HÌNH: bạn thấy thông báo này trước khi vào — bấm Vào phòng họp nghĩa là đồng ý bị ghi hình.</span></div>
+      </div>
+    </div>
+
+    <!-- 5C · IN-MEETING CHAT -->
+    <div class="page" id="pg-chat">
+      <div class="appbar"><span class="back" onclick="go('meet')">‹</span><div class="ttl"><span data-vi="Chat trong phòng họp" data-en="In-meeting chat">Chat trong phòng họp</span><div class="sub" data-vi="Đào tạo Gel-X — buổi 3 · 4 người đang họp" data-en="Gel-X Training — session 3 · 4 in the meeting">Đào tạo Gel-X — buổi 3 · 4 người đang họp</div></div><span class="recpill"><span class="recdot"></span><span data-vi="Đang ghi" data-en="Recording">Đang ghi</span></span></div>
+      <div class="scroll">
+        <div class="bubble them"><div class="who">Kayla · <span data-vi="Đồng chủ trì" data-en="Co-host">Đồng chủ trì</span></div><span data-vi="Mình gửi hình mẫu bộ Gel-X mới + video gắn móng cho mọi người xem trước 👇" data-en="Sending a photo of the new Gel-X set + the application video for everyone 👇">Mình gửi hình mẫu bộ Gel-X mới + video gắn móng cho mọi người xem trước 👇</span>
+          <div class="imgmsg"><span data-vi="📷 Ảnh: Bộ móng Gel-X mẫu" data-en="📷 Photo: Gel-X sample set">📷 Ảnh: Bộ móng Gel-X mẫu</span></div>
+          <div class="vidmsg"><div class="play">▶</div><span class="dur">0:42</span></div>
+        </div>
+        <div class="msgreactions"><span>❤️ 3</span><span>👏 2</span><span>✋ <span data-vi="Trang giơ tay" data-en="Trang raised a hand">Trang giơ tay</span></span></div>
+        <div class="bubble them"><div class="who">Philip</div><span data-vi="Nhận được rồi. File bảng giá mình để ở đây luôn:" data-en="Got it. Dropping the price list file here too:">Nhận được rồi. File bảng giá mình để ở đây luôn:</span>
+          <div class="filechip"><div class="ic">PDF</div><div><div class="fn">Bang-gia-GelX-2026.pdf</div><div class="fs">PDF · <span data-vi="Bấm để mở / tải" data-en="Tap to open / download">Bấm để mở / tải</span></div></div></div>
+        </div>
+        <div class="bubble" style="background:#14406e;color:#eaf3ff;align-self:flex-end;border-bottom-right-radius:5px"><span data-vi="Cảm ơn Kayla, hình rõ lắm 👍" data-en="Thanks Kayla, the photo is super clear 👍">Cảm ơn Kayla, hình rõ lắm 👍</span></div>
+        <div class="bubble them" style="border:1px solid #e0a539"><span class="privtag" data-vi="🔒 RIÊNG TƯ · CHỈ BẠN VÀ KAYLA THẤY" data-en="🔒 PRIVATE · ONLY YOU AND KAYLA">🔒 RIÊNG TƯ · CHỈ BẠN VÀ KAYLA THẤY</span><div class="who">Kayla · <span data-vi="nhắn riêng cho bạn" data-en="private message to you">nhắn riêng cho bạn</span></div><span data-vi="Xong buổi này bạn ở lại 5 phút, mình bàn phần lương thợ mới nhé." data-en="Stay 5 minutes after this session — we'll go over the new-tech pay part.">Xong buổi này bạn ở lại 5 phút, mình bàn phần lương thợ mới nhé.</span></div>
+        <div class="locknote">💬 <span data-vi="Chat này chỉ có trong buổi họp; họp xong, nội dung chat + file đính kèm được lưu vào mục Bản ghi của nhóm để xem lại." data-en="This chat lives with the meeting; afterwards the chat + attachments are saved into the group's Recordings to review.">Chat này chỉ có trong buổi họp; họp xong, nội dung chat + file đính kèm được lưu vào mục Bản ghi của nhóm để xem lại.</span></div>
+      </div>
+      <div class="tochips"><span class="tl" data-vi="GỬI TỚI:" data-en="SEND TO:">GỬI TỚI:</span><span class="tochip on">🌐 <span data-vi="Everyone (cả phòng thấy)" data-en="Everyone (whole room)">Everyone (cả phòng thấy)</span></span><span class="tochip priv">🔒 Kayla</span><span class="tochip priv">🔒 Philip</span><span class="tochip priv">🔒 Trang</span></div>
+      <div class="attachrow"><button class="ab">🖼 <span data-vi="Ảnh" data-en="Photo">Ảnh</span></button><button class="ab">🎬 <span data-vi="Video" data-en="Video">Video</span></button><button class="ab">📎 <span data-vi="File" data-en="File">File</span></button><button class="ab">😊 <span data-vi="Biểu cảm" data-en="Emoji">Biểu cảm</span></button></div>
+      <div class="inputbar"><button class="plusbtn" title="Đính kèm">+</button><div class="fakeinput" data-vi="Nhắn cho mọi người trong phòng…" data-en="Message everyone in the meeting…">Nhắn cho mọi người trong phòng…</div><span style="font-size:19px">🎙</span></div>
+    </div>
+
+    <!-- 5D · SHARE PICKER -->
+    <div class="page" id="pg-sharepick">
+      <div class="appbar"><span class="back" onclick="go('meet')">‹</span><div class="ttl"><span data-vi="Chia sẻ màn hình" data-en="Share your screen">Chia sẻ màn hình</span><div class="sub" data-vi="Chọn đúng nội dung muốn cho mọi người thấy" data-en="Pick exactly what everyone will see">Chọn đúng nội dung muốn cho mọi người thấy</div></div></div>
+      <div class="scroll">
+        <div class="pickcard sel" onclick="go('share')"><div class="pickprev" style="background:linear-gradient(140deg,#274b73,#12283f)">🖥</div><b data-vi="Toàn bộ màn hình" data-en="Entire screen">Toàn bộ màn hình</b><span data-vi="Mọi thứ trên màn hình của bạn — chuyển app là mọi người thấy hết." data-en="Everything on your screen — switching apps shows it all.">Mọi thứ trên màn hình của bạn — chuyển app là mọi người thấy hết.</span></div>
+        <div class="pickcard" onclick="go('share')"><div class="pickprev" style="background:linear-gradient(140deg,#173a26,#0d2016)">🪟</div><b data-vi="Một cửa sổ / ứng dụng" data-en="One window / app">Một cửa sổ / ứng dụng</b><span data-vi="Chỉ 1 cửa sổ (ví dụ ứng dụng POS) — các cửa sổ khác không lộ ra." data-en="Just one window (e.g. the POS app) — other windows stay hidden.">Chỉ 1 cửa sổ (ví dụ ứng dụng POS) — các cửa sổ khác không lộ ra.</span></div>
+        <div class="pickcard" onclick="go('share')"><div class="pickprev" style="background:linear-gradient(140deg,#3a2a12,#241a08)">🌐</div><b data-vi="Một tab trình duyệt" data-en="One browser tab">Một tab trình duyệt</b><span data-vi="Chỉ 1 tab (ví dụ nailhub.ai) — an toàn nhất khi trình chiếu web." data-en="Just one tab (e.g. nailhub.ai) — safest for showing the web.">Chỉ 1 tab (ví dụ nailhub.ai) — an toàn nhất khi trình chiếu web.</span></div>
+        <div class="trow"><span data-vi="Chia sẻ cả âm thanh của nội dung" data-en="Also share content audio">Chia sẻ cả âm thanh của nội dung</span><div class="tgl on"></div></div>
+        <div class="locknote">🔒 <span data-vi="Chỉ nội dung bạn đã chọn mới hiện với mọi người. Thông báo riêng tư trên máy bạn không nằm trong cửa sổ/tab đã chọn thì không lộ." data-en="Only the content you picked is shown. Private notifications outside the chosen window/tab are not exposed.">Chỉ nội dung bạn đã chọn mới hiện với mọi người. Thông báo riêng tư trên máy bạn không nằm trong cửa sổ/tab đã chọn thì không lộ.</span></div>
+      </div>
+    </div>
+
+    <!-- 5E · WAITING ROOM -->
+    <div class="page" id="pg-wait">
+      <div class="appbar"><span class="back" onclick="go('admin')">‹</span><div class="ttl"><span data-vi="Phòng chờ" data-en="Waiting room">Phòng chờ</span><div class="sub" data-vi="Chỉ Host + Đồng chủ trì thấy và duyệt" data-en="Only the host + co-hosts see and admit">Chỉ Host + Đồng chủ trì thấy và duyệt</div></div></div>
+      <div class="scroll">
+        <div class="sec" data-vi="Đang chờ duyệt (2)" data-en="Waiting for admission (2)">Đang chờ duyệt (2)</div>
+        <div class="waitrow"><div class="ava" style="width:42px;height:42px;background:linear-gradient(135deg,#e07b39,#9d4e12)">H</div><div class="nm"><b>Hương Trần</b><span data-vi="Khách qua link · ngoài nhóm · chờ 1 phút" data-en="Link guest · not a member · waiting 1 min">Khách qua link · ngoài nhóm · chờ 1 phút</span></div><button class="admit" onclick="go('meet')" data-vi="Cho vào" data-en="Admit">Cho vào</button><button class="deny" data-vi="Từ chối" data-en="Deny">Từ chối</button></div>
+        <div class="waitrow"><div class="ava" style="width:42px;height:42px;background:linear-gradient(135deg,#22d3ee,#0e7490)">D</div><div class="nm"><b>David Le</b><span data-vi="Khách qua link · từ bài đăng Facebook · chờ 3 phút" data-en="Link guest · from the Facebook post · waiting 3 min">Khách qua link · từ bài đăng Facebook · chờ 3 phút</span></div><button class="admit" onclick="go('meet')" data-vi="Cho vào" data-en="Admit">Cho vào</button><button class="deny" data-vi="Từ chối" data-en="Deny">Từ chối</button></div>
+        <button class="btn btn-blue" style="width:100%" onclick="go('meet')" data-vi="Cho tất cả vào phòng" data-en="Admit everyone">Cho tất cả vào phòng</button>
+        <div class="locknote" style="margin-top:12px">🛡 <span data-vi="Người bấm link luôn dừng ở phòng chờ (nếu Host bật) — Host/Đồng chủ trì thấy TÊN HIỂN THỊ của từng người rồi mới duyệt. Từ chối thì người đó nhận thông báo lịch sự, không vào được phòng." data-en="Link guests always stop in the waiting room (when enabled) — host/co-hosts see each display name before admitting. Denied guests get a polite notice and cannot enter.">Người bấm link luôn dừng ở phòng chờ (nếu Host bật) — Host/Đồng chủ trì thấy TÊN HIỂN THỊ của từng người rồi mới duyệt. Từ chối thì người đó nhận thông báo lịch sự, không vào được phòng.</span></div>
+      </div>
+    </div>
+
+    <!-- 5H · VIRTUAL BACKGROUND -->
+    <div class="page" id="pg-bg">
+      <div class="appbar"><span class="back" onclick="go('join')">‹</span><div class="ttl"><span data-vi="Hình nền ảo" data-en="Virtual background">Hình nền ảo</span><div class="sub" data-vi="Virtual Background — thay cảnh phía sau bạn" data-en="Virtual Background — replace what's behind you">Virtual Background — thay cảnh phía sau bạn</div></div></div>
+      <div class="bgprev" style="background:linear-gradient(150deg,#3d5a80,#16283f 60%,#0e1a29)"><div class="ava" style="width:92px;height:92px;font-size:34px;background:linear-gradient(135deg,#84cc16,#3f6212);box-shadow:0 12px 30px rgba(0,0,0,.5)">B</div><div class="fx-tag" data-vi="Đang áp dụng: Văn phòng" data-en="Applied: Office">Đang áp dụng: Văn phòng</div><div class="who-tag">Brian Nguyen (<span data-vi="Bạn" data-en="You">Bạn</span>)</div></div>
+      <div class="scroll" style="padding-top:13px">
+        <div class="sec" style="margin-top:2px" data-vi="Chọn hình nền" data-en="Choose a background">Chọn hình nền</div>
+        <div class="bggrid">
+          <div class="bgopt"><div class="pv" style="background:#14171c">🚫</div><div class="bl" data-vi="Không (nền thật)" data-en="None (real)">Không (nền thật)</div></div>
+          <div class="bgopt"><div class="pv" style="background:linear-gradient(140deg,#5a6b7d,#2c3540)">🌫</div><div class="bl" data-vi="Làm mờ nền thật" data-en="Blur real background">Làm mờ nền thật</div></div>
+          <div class="bgopt sel"><div class="pv" style="background:linear-gradient(140deg,#3d5a80,#16283f)">🏢</div><div class="bl" data-vi="Văn phòng" data-en="Office">Văn phòng</div></div>
+          <div class="bgopt"><div class="pv" style="background:linear-gradient(140deg,#9d2449,#4a1030)">💅</div><div class="bl" data-vi="Tiệm nail" data-en="Nail salon">Tiệm nail</div></div>
+          <div class="bgopt"><div class="pv" style="background:linear-gradient(140deg,#7c4a12,#33200a)">☕</div><div class="bl" data-vi="Quán café" data-en="Café">Quán café</div></div>
+          <div class="bgopt"><div class="pv" style="background:linear-gradient(140deg,#22d3ee,#0e7490)">🏖</div><div class="bl" data-vi="Bãi biển" data-en="Beach">Bãi biển</div></div>
+          <div class="bgopt"><div class="pv" style="background:linear-gradient(140deg,#4a3b12,#241c08)">📚</div><div class="bl" data-vi="Thư viện" data-en="Library">Thư viện</div></div>
+          <div class="bgopt"><div class="pv" style="background:linear-gradient(140deg,#274b73,#12283f)">🌆</div><div class="bl" data-vi="Thành phố đêm" data-en="City night">Thành phố đêm</div></div>
+          <div class="bgopt"><div class="pv" style="background:#1b2129;border:1.5px dashed #3a424e;border-radius:0">⬆️</div><div class="bl" data-vi="Tải ảnh của bạn" data-en="Upload your own">Tải ảnh của bạn</div></div>
+        </div>
+        <div class="locknote" style="margin-top:12px">✨ <span data-vi="Hệ thống tự tách NGƯỜI ra khỏi cảnh thật rồi ghép vào cảnh đã chọn — ngồi ở nhà cũng thành đang ngồi văn phòng. Áp dụng cho video của chính bạn, mọi người trong phòng thấy ngay. Điện thoại yếu thì chọn Làm mờ cho nhẹ máy." data-en="The system separates YOU from your real surroundings and composites you into the chosen scene — sit at home, appear in an office. Applies to your own video; everyone sees it instantly. On weaker phones, Blur is the light option.">Hệ thống tự tách NGƯỜI ra khỏi cảnh thật rồi ghép vào cảnh đã chọn — ngồi ở nhà cũng thành đang ngồi văn phòng. Áp dụng cho video của chính bạn, mọi người trong phòng thấy ngay. Điện thoại yếu thì chọn Làm mờ cho nhẹ máy.</span></div>
+        <button class="btn btn-blue" style="width:100%;margin-top:13px" onclick="go('meet')" data-vi="Áp dụng & quay lại phòng" data-en="Apply & back to the meeting">Áp dụng & quay lại phòng</button>
+      </div>
+    </div>
+
+    <!-- 5G · PARTICIPANT PROFILE -->
+    <div class="page" id="pg-profile">
+      <div class="appbar"><span class="back" onclick="go('admin')">‹</span><div class="ttl" data-vi="Hồ sơ người tham gia" data-en="Participant profile">Hồ sơ người tham gia</div></div>
+      <div class="scroll">
+        <div style="display:flex;flex-direction:column;align-items:center;padding:10px 0 4px">
+          <div class="ava" style="width:104px;height:104px;font-size:40px;background:linear-gradient(135deg,#a78bfa,#6d28d9);box-shadow:0 12px 30px rgba(0,0,0,.45)">K</div>
+          <h3 style="font-size:21px;margin-top:12px">Kayla</h3>
+          <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;justify-content:center"><span class="role host" style="background:#0e7490" data-vi="ĐỒNG CHỦ TRÌ BUỔI HỌP" data-en="MEETING CO-HOST">ĐỒNG CHỦ TRÌ BUỔI HỌP</span><span class="role admin" data-vi="ADMIN NHÓM" data-en="GROUP ADMIN">ADMIN NHÓM</span></div>
+          <div style="color:#8b96a5;font-size:12.5px;margin-top:9px;text-align:center;line-height:1.6">NEXORA ID · NX-2041 · BITCOIN NAIL BAR — <span data-vi="Quản lý tiệm" data-en="Salon manager">Quản lý tiệm</span><br><span data-vi="Thành viên nhóm: Chủ tiệm Việt tại Mỹ" data-en="Group member: Vietnamese Salon Owners in the US">Thành viên nhóm: Chủ tiệm Việt tại Mỹ</span></div>
+        </div>
+        <div style="display:flex;gap:9px;margin:14px 0 6px">
+          <button class="btn btn-blue" style="flex:1" onclick="go('chat')" data-vi="💬 Nhắn riêng" data-en="💬 Message privately">💬 Nhắn riêng</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="go('meet')" data-vi="📌 Ghim lên màn hình" data-en="📌 Pin to screen">📌 Ghim lên màn hình</button>
+        </div>
+        <div class="locknote">🖼 <span data-vi="Ảnh đại diện của mỗi người hiện ở 3 chỗ: ô video khi họ tắt camera · cạnh mỗi tin nhắn trong chat · danh sách người tham gia — ai cũng nhận ra ai là ai. Mỗi người tự gắn / đổi ảnh trong hồ sơ NEXORA ID của mình (hoặc ngay ở màn hình trước khi vào phòng); chưa gắn ảnh thì hiện vòng tròn chữ cái đầu tên." data-en="Each person's photo shows in 3 places: their video tile when the camera is off · next to every chat message · the participant list — so everyone knows who is who. People set / change their photo in their own NEXORA ID profile (or on the pre-join screen); with no photo, an initial-letter circle is shown.">Ảnh đại diện của mỗi người hiện ở 3 chỗ: ô video khi họ tắt camera · cạnh mỗi tin nhắn trong chat · danh sách người tham gia — ai cũng nhận ra ai là ai. Mỗi người tự gắn / đổi ảnh và SỬA TÊN HIỂN THỊ trong hồ sơ NEXORA ID của mình (hoặc ngay ở màn hình trước khi vào phòng); chưa gắn ảnh thì hiện vòng tròn chữ cái đầu tên.</span></div>
+      </div>
+    </div>
+
+    <!-- 6 · RECORDINGS -->
+    <div class="page" id="pg-records">
+      <div class="appbar"><span class="back" onclick="go('group')">‹</span><div class="ttl"><span data-vi="Bản ghi buổi họp" data-en="Meeting recordings">Bản ghi buổi họp</span><div class="sub" data-vi="Nhóm: Chủ tiệm Việt tại Mỹ" data-en="Group: Vietnamese Salon Owners in the US">Nhóm: Chủ tiệm Việt tại Mỹ</div></div></div>
+      <div class="scroll">
+        <div class="reccard"><div class="thumb">▶<span class="dur">58:12</span></div><div style="flex:1;min-width:0"><h4 data-vi="Đào tạo Gel-X — buổi 2" data-en="Gel-X Training — session 2">Đào tạo Gel-X — buổi 2</h4><div class="meta"><span data-vi="01/11/2026 · Chủ trì: Kayla · 6 người tham gia" data-en="Nov 1, 2026 · Host: Kayla · 6 participants">01/11/2026 · Chủ trì: Kayla · 6 người tham gia</span></div><div class="acts"><button>▶ <span data-vi="Xem" data-en="Play">Xem</span></button><button onclick="go('summary')" style="background:#14406e;color:#cfe6ff">✨ <span data-vi="Tóm tắt AI" data-en="AI summary">Tóm tắt AI</span></button><button data-vi="Tải về" data-en="Download">Tải về</button><button data-vi="Chia sẻ" data-en="Share">Chia sẻ</button></div></div></div>
+        <div class="reccard"><div class="thumb">▶<span class="dur">41:37</span></div><div style="flex:1;min-width:0"><h4 data-vi="Họp team tháng 11" data-en="November team meeting">Họp team tháng 11</h4><div class="meta"><span data-vi="28/10/2026 · Chủ trì: Brian · 9 người tham gia" data-en="Oct 28, 2026 · Host: Brian · 9 participants">28/10/2026 · Chủ trì: Brian · 9 người tham gia</span></div><div class="acts"><button>▶ <span data-vi="Xem" data-en="Play">Xem</span></button><button data-vi="Tải về" data-en="Download">Tải về</button><button data-vi="Chia sẻ" data-en="Share">Chia sẻ</button></div></div></div>
+        <div class="locknote">🔒 <span data-vi="Chỉ Admin và người đã tham gia buổi họp mới xem/tải được bản ghi. Lưu miễn phí trên cloud trong hạn (đề xuất 90 ngày) — tải về máy của bạn bất cứ lúc nào. Muốn giữ lâu hơn / nhiều hơn: mua thêm DUNG LƯỢNG lưu trữ. Hết hạn hoặc đầy dung lượng mà không mua thêm: hệ thống báo trước rồi tự xóa bản cũ nhất. (Phần chữ — transcript + tóm tắt AI — dung lượng rất nhỏ, được giữ lại.)" data-en="Only admins and that meeting's participants can view/download. Kept free on cloud within the limit (proposed 90 days) — download to your own device anytime. Need more/longer: buy extra STORAGE. Past the limit without buying: we warn you first, then auto-delete the oldest. (Text — transcript + AI summary — is tiny and stays.)">Chỉ Admin và người đã tham gia buổi họp mới xem/tải được bản ghi. Lưu miễn phí trên cloud trong hạn (đề xuất 90 ngày) — tải về máy của bạn bất cứ lúc nào. Muốn giữ lâu hơn / nhiều hơn: mua thêm DUNG LƯỢNG lưu trữ. Hết hạn hoặc đầy dung lượng mà không mua thêm: hệ thống báo trước rồi tự xóa bản cũ nhất. (Phần chữ — transcript + tóm tắt AI — dung lượng rất nhỏ, được giữ lại.)</span></div>
+      </div>
+    </div>
+
+    <!-- 6B · AI MEETING SUMMARY -->
+    <div class="page" id="pg-summary">
+      <div class="appbar"><span class="back" onclick="go('records')">‹</span><div class="ttl"><span data-vi="Tóm tắt AI — sau buổi họp" data-en="AI summary — after the meeting">Tóm tắt AI — sau buổi họp</span><div class="sub" data-vi="Đào tạo Gel-X — buổi 2 · AI tự làm từ bản ghi" data-en="Gel-X Training — session 2 · made by AI from the recording">Đào tạo Gel-X — buổi 2 · AI tự làm từ bản ghi</div></div></div>
+      <div class="scroll">
+        <div class="sumcard"><h4>✨ <span data-vi="Ý CHÍNH" data-en="KEY POINTS">Ý CHÍNH</span></h4><ul>
+          <li data-vi="Bảng giá Gel-X 2026 áp dụng từ tuần sau; mẫu mới về thêm 2 bộ." data-en="The Gel-X 2026 price list applies from next week; 2 new sample sets arrived.">Bảng giá Gel-X 2026 áp dụng từ tuần sau; mẫu mới về thêm 2 bộ.</li>
+          <li data-vi="Quy trình gắn móng thống nhất 3 bước như buổi đào tạo hôm nay." data-en="Application is standardized into the 3 steps from today's training.">Quy trình gắn móng thống nhất 3 bước như buổi đào tạo hôm nay.</li>
+          <li data-vi="Khách than phiền nhiều nhất về thời gian chờ cuối tuần." data-en="Customers complain most about weekend wait times.">Khách than phiền nhiều nhất về thời gian chờ cuối tuần.</li></ul></div>
+        <div class="sumcard"><h4>✅ <span data-vi="ĐÃ CHỐT (QUYẾT ĐỊNH)" data-en="DECISIONS MADE">ĐÃ CHỐT (QUYẾT ĐỊNH)</span></h4><ul>
+          <li data-vi="Áp giá mới từ thứ Hai tuần sau." data-en="New prices apply from next Monday.">Áp giá mới từ thứ Hai tuần sau.</li>
+          <li data-vi="Buổi đào tạo buổi 3 học về chọn size móng khó." data-en="Session 3 covers hard sizing cases.">Buổi đào tạo buổi 3 học về chọn size móng khó.</li></ul></div>
+        <div class="sumcard"><h4>📌 <span data-vi="VIỆC CẦN LÀM (AI GỢI Ý — HOST DUYỆT MỚI THÀNH VIỆC TRONG NHÓM)" data-en="ACTION ITEMS (AI-SUGGESTED — HOST APPROVES TO CREATE TASKS IN THIS GROUP)">VIỆC CẦN LÀM (AI GỢI Ý — HOST DUYỆT MỚI THÀNH VIỆC TRONG NHÓM)</span></h4>
+          <div class="taskrow"><span class="own">Kayla</span><span data-vi="Cập nhật bảng giá trong POS trước thứ Sáu" data-en="Update the price list in the POS before Friday">Cập nhật bảng giá trong POS trước thứ Sáu</span></div>
+          <div class="taskrow"><span class="own">Philip</span><span data-vi="Gửi file quy trình 3 bước vào chat nhóm" data-en="Send the 3-step process file into the group chat">Gửi file quy trình 3 bước vào chat nhóm</span></div>
+          <div class="taskrow"><span class="own">Trang</span><span data-vi="Chốt lịch đào tạo buổi 3" data-en="Confirm the session 3 training time">Chốt lịch đào tạo buổi 3</span></div>
+          <button class="btn btn-blue" style="width:100%;margin-top:9px" data-vi="Duyệt & tạo việc ngay trong nhóm này" data-en="Approve & create tasks in this group">Duyệt & tạo việc ngay trong nhóm này</button></div>
+        <div class="sumcard"><h4>🗣 <span data-vi="THỜI LƯỢNG NÓI" data-en="TALK TIME">THỜI LƯỢNG NÓI</span></h4>
+          <div class="talkbar"><span style="width:52px">Kayla</span><div class="tr"><div class="fl" style="width:45%"></div></div><span>45%</span></div>
+          <div class="talkbar"><span style="width:52px">Philip</span><div class="tr"><div class="fl" style="width:30%"></div></div><span>30%</span></div>
+          <div class="talkbar"><span style="width:52px">Trang</span><div class="tr"><div class="fl" style="width:15%"></div></div><span>15%</span></div>
+          <div class="talkbar"><span style="width:52px">Brian</span><div class="tr"><div class="fl" style="width:10%"></div></div><span>10%</span></div></div>
+        <div class="sumcard"><h4>📝 <span data-vi="LỜI THOẠI ĐẦY ĐỦ (TRANSCRIPT)" data-en="FULL TRANSCRIPT">LỜI THOẠI ĐẦY ĐỦ (TRANSCRIPT)</span></h4>
+          <div style="display:flex;gap:7px;margin-bottom:9px"><span class="tochip on">Tiếng Việt</span><span class="tochip">English (gốc)</span></div>
+          <div style="font-size:13px;line-height:1.65;color:#cfd8e3"><b style="color:#7db8ff">Kayla:</b> <span data-vi="Nhờ mọi người xem bảng giá Gel-X mới trước thứ Sáu nhé…" data-en="Please review the new Gel-X price list before Friday…">Nhờ mọi người xem bảng giá Gel-X mới trước thứ Sáu nhé…</span><br><b style="color:#7db8ff">Philip:</b> <span data-vi="Mình gửi file quy trình vào chat nhóm luôn." data-en="I'll send the process file into the group chat.">Mình gửi file quy trình vào chat nhóm luôn.</span></div>
+          <div class="locknote" style="margin-top:10px">🤖 <span data-vi="Tóm tắt + transcript do AI làm từ bản ghi — chỉ đúng vai trò xem bản ghi mới xem được. Transcript có thể sai từ khó/nghe nhầm; việc cần làm chỉ thành việc thật khi Host duyệt." data-en="Summary + transcript are AI-made from the recording — same access as the recording itself. Transcripts can mishear words; action items become real tasks only when the host approves.">Tóm tắt + transcript do AI làm từ bản ghi — chỉ đúng vai trò xem bản ghi mới xem được. Transcript có thể sai từ khó/nghe nhầm; việc cần làm chỉ thành việc thật khi Host duyệt.</span></div></div>
+      </div>
+    </div>
+
+    <!-- 7 · ADMIN -->
+    <div class="page" id="pg-admin">
+      <div class="appbar"><span class="back" onclick="go('meet')">‹</span><div class="ttl" data-vi="Điều khiển của Chủ trì / Admin" data-en="Host / Admin controls">Điều khiển của Chủ trì / Admin</div></div>
+      <div class="scroll">
+        <div class="meetcard" style="margin-bottom:4px"><div class="when" data-vi="PHÒNG CHỜ · 2 NGƯỜI ĐANG CHỜ" data-en="WAITING ROOM · 2 WAITING">PHÒNG CHỜ · 2 NGƯỜI ĐANG CHỜ</div><h3 style="font-size:15px" data-vi="Duyệt cho khách vào phòng" data-en="Admit guests into the room">Duyệt cho khách vào phòng</h3><div class="row"><button class="btn btn-blue" onclick="go('wait')" data-vi="Xem phòng chờ & duyệt" data-en="Open the waiting room">Xem phòng chờ & duyệt</button></div></div>
+        <div class="sec" data-vi="Người tham gia (4)" data-en="Participants (4)">Người tham gia (4)</div>
+        <div class="prow"><div class="ava" style="width:40px;height:40px;background:linear-gradient(135deg,#84cc16,#3f6212)">B</div><div class="nm"><b>Brian (<span data-vi="Bạn" data-en="You">Bạn</span>)</b></div><span class="role host" data-vi="CHỦ TRÌ" data-en="HOST">CHỦ TRÌ</span></div>
+        <div class="prow"><div class="ava" style="width:40px;height:40px;background:linear-gradient(135deg,#a78bfa,#6d28d9)">K</div><div class="nm" onclick="go('profile')" style="cursor:pointer"><b>Kayla ›</b></div><span class="role host" style="background:#0e7490" data-vi="ĐỒNG CHỦ TRÌ" data-en="CO-HOST">ĐỒNG CHỦ TRÌ</span><div class="pacts"><button class="mini" data-vi="Tắt mic" data-en="Mute">Tắt mic</button><button class="mini red" data-vi="Hủy quyền" data-en="Revoke">Hủy quyền</button></div></div>
+        <div class="prow"><div class="ava" style="width:40px;height:40px;background:linear-gradient(135deg,#22d3ee,#0e7490)">P</div><div class="nm"><b>Philip</b></div><span class="role mem" data-vi="THÀNH VIÊN" data-en="MEMBER">THÀNH VIÊN</span><div class="pacts"><button class="mini" data-vi="Đặt đồng chủ trì" data-en="Make co-host">Đặt đồng chủ trì</button><button class="mini" data-vi="Tắt mic" data-en="Mute">Tắt mic</button><button class="mini red" data-vi="Mời ra" data-en="Remove">Mời ra</button></div></div>
+        <div class="prow"><div class="ava" style="width:40px;height:40px;background:linear-gradient(135deg,#fb7185,#9d2449)">T</div><div class="nm"><b>Trang</b></div><span class="role mem" data-vi="THÀNH VIÊN" data-en="MEMBER">THÀNH VIÊN</span><div class="pacts"><button class="mini" data-vi="Đặt đồng chủ trì" data-en="Make co-host">Đặt đồng chủ trì</button><button class="mini" data-vi="Tắt mic" data-en="Mute">Tắt mic</button><button class="mini red" data-vi="Mời ra" data-en="Remove">Mời ra</button></div></div>
+        <div class="sec" data-vi="Quyền của Đồng chủ trì (Co-host)" data-en="What a co-host can do">Quyền của Đồng chủ trì (Co-host)</div>
+        <div class="permbox can"><b data-vi="ĐƯỢC LÀM" data-en="CAN DO">ĐƯỢC LÀM</b><span data-vi="✓ Tắt mic người khác · ✓ Duyệt người ở phòng chờ vào · ✓ Bắt đầu / dừng ghi hình · ✓ Chia sẻ màn hình · ✓ Ghim người thuyết trình" data-en="✓ Mute others · ✓ Admit from the waiting room · ✓ Start / stop recording · ✓ Share screen · ✓ Pin the presenter">✓ Tắt mic người khác · ✓ Duyệt người ở phòng chờ vào · ✓ Bắt đầu / dừng ghi hình · ✓ Chia sẻ màn hình · ✓ Ghim người thuyết trình</span></div>
+        <div class="permbox cant"><b data-vi="KHÔNG ĐƯỢC — CHỈ CHỦ TRÌ (HOST)" data-en="NOT ALLOWED — HOST ONLY">KHÔNG ĐƯỢC — CHỈ CHỦ TRÌ (HOST)</b><span data-vi="✕ Kết thúc họp cho tất cả · ✕ Mời Host ra · ✕ Đổi chủ phòng / hủy lịch họp của người khác" data-en="✕ End the meeting for everyone · ✕ Remove the host · ✕ Transfer hosting / cancel someone else's meeting">✕ Kết thúc họp cho tất cả · ✕ Mời Host ra · ✕ Đổi chủ phòng / hủy lịch họp của người khác</span></div>
+        <div class="sec" data-vi="Quyền trong phòng họp" data-en="In-meeting permissions">Quyền trong phòng họp</div>
+        <div class="trow"><span data-vi="Cho phép thành viên chia sẻ màn hình" data-en="Let members share their screen">Cho phép thành viên chia sẻ màn hình</span><div class="tgl on"></div></div>
+        <div class="trow"><span data-vi="Chỉ Admin được ghi hình" data-en="Only admins can record">Chỉ Admin được ghi hình</span><div class="tgl on"></div></div>
+        <div class="trow"><span data-vi="Khóa phòng (không cho join thêm)" data-en="Lock meeting (no new joins)">Khóa phòng (không cho join thêm)</span><div class="tgl"></div></div>
+        <button class="btn btn-ghost" style="width:100%;margin-top:15px" data-vi="Tắt mic tất cả" data-en="Mute everyone">Tắt mic tất cả</button>
+        <button class="btn" style="width:100%;margin-top:9px;background:#e02e24;color:#fff" onclick="go('records')" data-vi="Kết thúc họp cho tất cả" data-en="End meeting for everyone">Kết thúc họp cho tất cả</button>
+      </div>
+    </div>
+
+    <div class="tourbar" id="tourbar"><div class="tt"><span>✦ AI SMART TOUR</span><span id="tourstep"></span></div><div class="tx" id="tourtext"></div><div class="tb"><button class="next" id="tournext"></button><button class="close" id="tourclose"></button></div></div>
+</div></div>
+
+  <div class="rail">
+    <h2 data-vi="7 màn hình trong bản xem trước" data-en="15 screens in this preview">15 màn hình trong bản xem trước</h2>
+    <div class="hint" data-vi="Bấm để chuyển màn hình. Trong điện thoại cũng bấm được các nút chính (Tham gia họp, Lên lịch, Chia sẻ, Kết thúc…)." data-en="Click to switch screens. Main buttons inside the phone work too (Join, Schedule, Share, End…).">Bấm để chuyển màn hình. Trong điện thoại cũng bấm được các nút chính (Tham gia họp, Lên lịch, Chia sẻ, Kết thúc…).</div>
+    <div id="sbtns"></div>
+    <div class="rowb"><button class="tourbtn" id="tourbtn">✦ AI SMART TOUR</button><button class="langbtn" id="langbtn">EN · English</button></div>
+  </div>
+  <div class="foot" data-vi="Bản xem trước (prototype) — bố cục & luồng thao tác, chưa phải bản chạy thật. Toàn bộ tính năng trong này là XÂY MỚI: hiện tại group call đang bị khóa trên app thật (đã kiểm chứng 05/11/2026)." data-en="Preview prototype — layout & flow only, not the live build. Everything shown is NEW BUILD: group calls are currently disabled in the real app (verified Nov 5, 2026).">Bản xem trước (prototype) — bố cục & luồng thao tác, chưa phải bản chạy thật. Toàn bộ tính năng trong này là XÂY MỚI: hiện tại group call đang bị khóa trên app thật (đã kiểm chứng 05/11/2026).</div>
+</div>
+<script>
+var LANG='vi';
+var SCREENS=[
+ {id:'group',   vi:'Nhóm — mục Họp nhóm', en:'Group — Meetings tab', dvi:'Trong group có sẵn mục Họp nhóm: buổi họp sắp tới, nút Họp ngay / Lên lịch, và trong chat có gửi file.', den:'Each group gets a Meetings tab: upcoming meeting, Meet now / Schedule buttons, and file sharing in chat.', tvi:'Đây là cửa vào: ngay trong nhóm có mục Họp nhóm. Buổi họp sắp tới hiện trên cùng, bấm Tham gia là vào phòng. Trong chat nhóm cũng gửi file được.', ten:'The entry point: a Meetings tab right inside the group. The upcoming meeting sits on top — tap Join to enter. Files can be sent in group chat too.'},
+ {id:'schedule',vi:'Lên lịch họp + link + phân quyền', en:'Schedule + link + roles', dvi:'Đặt tên, ngày, giờ; tạo link mời; chỉ định ĐỒNG CHỦ TRÌ + đặt quyền; gửi lời mời qua EMAIL/SMS; đẩy link ra Facebook/YouTube/TikTok và các kênh hệ sinh thái.', den:'Title, date, time; join link; assign CO-HOSTS up front and preset permissions (who may share, who may record) at scheduling time.', tvi:'Lên lịch như Zoom và phân quyền ngay từ đầu: chọn sẵn Đồng chủ trì, đặt ai được chia sẻ màn hình, ai được ghi hình, bật phòng chờ. Vào họp là quyền áp dụng luôn, Host không phải chỉnh lại.', ten:'Schedule like Zoom and set roles up front: pick co-hosts, who may share, who may record, waiting room on. Permissions apply the moment the meeting starts.'},
+ {id:'meet',    vi:'Trong phòng họp nhóm', en:'Inside the group meeting', dvi:'Lưới người tham gia, hàng biểu cảm + nút Chat, thanh nút kính hiện đại Mic · Video · Chia sẻ · Ghi hình · Thêm · Kết thúc.', den:'Participant grid, reactions row + Chat button, modern glass bar: Mute · Video · Share · Record · More · End.', tvi:'Trong phòng họp: lưới người tham gia, hàng biểu cảm thả 👍 ❤️ 👏 và giơ tay, nút Chat có số tin chưa đọc, thanh nút kính kiểu Zoom/Meet. Bấm mic/video là đổi trạng thái tắt ngay trên nút.', ten:'Inside the meeting: participant grid, a reactions row (👍 ❤️ 👏 and raise hand), a Chat button with an unread badge, and the modern glass Zoom/Meet control bar. Tapping mic/video flips its muted state right on the button.'},
+ {id:'chat',    vi:'Chat trong phòng họp', en:'In-meeting chat', dvi:'Chat ngay trong phòng: gửi cho EVERYONE (cả phòng thấy) hoặc nhắn RIÊNG từng người (chỉ 2 người thấy); gửi ẢNH, VIDEO, FILE; họp xong lưu vào Bản ghi của nhóm.', den:'Chat inside the room: text, PHOTOS, VIDEO, FILES; reactions under messages; saved to the group Recordings afterwards.', tvi:'Phòng họp có chat riêng: gửi chữ, ảnh, video, file ngay trong phòng, thả biểu cảm ❤️ 👏 dưới mỗi tin. Họp xong, toàn bộ chat và file được lưu vào mục Bản ghi của nhóm.', ten:'The meeting has its own chat: send text, photos, video and files right in the room, react ❤️ 👏 under messages. Afterwards the whole chat is saved into the group Recordings.'},
+ {id:'sharepick',vi:'Chọn nội dung chia sẻ', en:'Choose what to share', dvi:'Như Zoom/Meet: share TOÀN BỘ màn hình, một CỬA SỔ ứng dụng, hoặc một TAB trình duyệt — kèm tùy chọn share cả âm thanh.', den:'Like Zoom/Meet: share the ENTIRE screen, one app WINDOW, or one browser TAB — with an also-share-audio option.', tvi:'Bấm Chia sẻ là hiện bảng chọn: toàn bộ màn hình, một cửa sổ, hay một tab trình duyệt. Chọn cửa sổ/tab thì các nội dung khác trên máy không lộ — an toàn hơn khi thuyết trình.', ten:'Tapping Share opens the picker: entire screen, one window, or one browser tab. Picking a window/tab keeps everything else on your device hidden — safer for presenting.'},
+ {id:'wait',    vi:'Phòng chờ — Admin duyệt vào', en:'Waiting room — admit', dvi:'Host/Đồng chủ trì thấy danh sách người đang chờ kèm tên hiển thị và nguồn vào (link/Facebook), bấm Cho vào hoặc Từ chối từng người, hoặc cho tất cả vào.', den:'Host/co-hosts see who is waiting with display names and entry source (link/Facebook), then Admit or Deny each person, or admit everyone.', tvi:'Đây là phòng chờ phía Host: ai bấm link vào sẽ chờ ở đây, hiện rõ tên và họ đến từ kênh nào. Host hoặc Đồng chủ trì bấm Cho vào, Từ chối, hoặc Cho tất cả vào.', ten:'The host-side waiting room: link guests wait here with their name and where they came from. The host or a co-host taps Admit, Deny, or Admit everyone.'},
+ {id:'tz',      vi:'Chọn múi giờ toàn cầu', en:'Global time-zone picker', dvi:'Danh sách múi giờ chuẩn IANA toàn cầu (Việt Nam, Trung Đông, Mỹ, châu Âu…) có tìm kiếm; giờ lưu UTC và tự quy đổi cho từng người nhận.', den:'Full IANA global zone list (Vietnam, Middle East, US, Europe…) with search; times stored in UTC and auto-converted per invitee.', tvi:'Múi giờ là danh sách toàn cầu: gõ tìm là ra — Việt Nam GMT+7, Dubai GMT+4, Houston GMT-6. Giờ họp lưu theo UTC, khách ở nước nào thấy giờ của nước đó, không lệch.', ten:'Time zones are a full global list with search — Vietnam GMT+7, Dubai GMT+4, Houston GMT-6. Times are stored in UTC; every guest sees their own local time.'},
+ {id:'join',    vi:'Vào phòng bằng link + nhập tên', en:'Join by link + enter name', dvi:'Khách bấm link mời: chọn NGÔN NGỮ hiển thị (Việt/Anh/Tây Ban Nha/Trung/Hàn/Ả Rập), nhập TÊN HIỂN THỊ là vào, xem trước hình, chọn tắt mic/camera.', den:'Guests tap the invite link: enter a DISPLAY NAME to join (no account), preview themselves, choose mute/camera before entering.', tvi:'Người ngoài bấm link mời sẽ tới màn hình này: nhập tên hiển thị, xem trước hình của mình, chọn tắt mic/camera sẵn, rồi bấm Vào phòng họp. Có phòng chờ thì Host duyệt mới vào.', ten:'Invite-link guests land here: enter a display name, preview themselves, pre-set mic/camera off, then tap Join. With a waiting room, the host admits them first.'},
+ {id:'share',   vi:'Đang chia sẻ màn hình', en:'Screen sharing in progress', dvi:'Nội dung share chiếm màn hình chính, có banner tên người share và nút Dừng chia sẻ 1 chạm.', den:'Shared content takes the main area, with a sharer banner and a one-tap Stop sharing button.', tvi:'Khi có người share, nội dung của họ chiếm gần hết màn hình, người khác thu nhỏ xuống dưới. Người share luôn thấy banner và nút Dừng chia sẻ. Bấm Kết thúc là share tự dừng.', ten:'When someone shares, their content takes most of the screen and everyone else shrinks below. The sharer always sees the banner and Stop sharing. Ending the call stops the share automatically.'},
+ {id:'call11',  vi:'Gọi 1-1 — thêm nút Share', en:'1-to-1 call — Share added', dvi:'Màn hình cuộc gọi 1-1 hiện có thêm nút Chia sẻ màn hình (Ticket 04). Cả hai phía đều bấm được.', den:'The existing 1-to-1 call screen gains a Share Screen button (Ticket 04). Either side can share.', tvi:'Không chỉ họp nhóm: cuộc gọi phone 1-1 cũng có nút Chia sẻ màn hình — đúng Ticket 04 đã soạn hôm 30/10. Cả hai phía đều share được, không cần là người gọi.', ten:'Not just group meetings: 1-to-1 phone calls get a Share Screen button too — exactly Ticket 04 from Oct 30. Either side can share, not only the caller.'},
+ {id:'records', vi:'Kho Bản ghi trong nhóm', en:'Recordings library in the group', dvi:'Họp xong, bản ghi tự vào mục Bản ghi của nhóm: xem lại, tải, chia sẻ. Chỉ Admin + người tham gia mới xem được.', den:'After the meeting, the recording lands in the group\u2019s Recordings: play, download, share. Admins + participants only.', tvi:'Họp xong không mất file: bản ghi tự vào mục Bản ghi của nhóm, mở xem lại hoặc tải về. Chỉ Admin và người đã tham gia buổi đó mới xem được, và tự xóa sau 90 ngày.', ten:'Nothing gets lost after a meeting: the recording lands in the group\u2019s Recordings to replay or download. Only admins and that meeting\u2019s participants can view it; it auto-deletes after 90 days.'},
+ {id:'bg',      vi:'Hình nền ảo (Virtual Background)', en:'Virtual background', dvi:'Chọn cảnh ghép phía sau người nói: Văn phòng, Tiệm nail, Café, Bãi biển… hoặc tải ảnh riêng; có cả Làm mờ nền thật cho máy yếu.', den:'Pick a scene composited behind the speaker: Office, Nail salon, Café, Beach… or upload your own; Blur for weaker phones.', tvi:'Cái anh tìm tên là Hình nền ảo: hệ thống tách người ra khỏi cảnh thật, ghép vào cảnh văn phòng hay tiệm nail đã chọn. Ai họp ở nhà cũng lên hình như đang ngồi văn phòng.', ten:'This is the Virtual Background: the system cuts you out of your real surroundings and drops you into the chosen office or salon scene.'},
+ {id:'profile', vi:'Hồ sơ người tham gia (ảnh + danh tính)', en:'Participant profile (photo + identity)', dvi:'Bấm vào 1 người trong phòng/danh sách là mở hồ sơ: ẢNH đại diện, tên, vai trò, NEXORA ID, tiệm — kèm nút Nhắn riêng và Ghim lên màn hình.', den:'Tap anyone in the room/list to open their profile: PHOTO, name, roles, NEXORA ID, salon — with Message privately and Pin actions.', tvi:'Trong phòng, bấm vào hình hoặc tên một người là mở hồ sơ của họ: ảnh đại diện lớn, vai trò trong buổi họp và trong nhóm, mã NEXORA ID. Ảnh này cũng là ảnh hiện khi họ tắt camera và cạnh tin nhắn chat của họ.', ten:'In the room, tap a person’s tile or name to open their profile: big photo, meeting and group roles, NEXORA ID. That same photo appears on their tile when their camera is off and beside their chat messages.'},
+ {id:'summary', vi:'Tóm tắt AI sau buổi họp', en:'AI meeting summary', dvi:'AI tự làm từ bản ghi: ý chính, việc đã chốt, VIỆC CẦN LÀM kèm người phụ trách (Host duyệt mới giao việc thật), thời lượng nói, transcript song ngữ.', den:'AI-made from the recording: key points, decisions, ACTION ITEMS with owners (host approves before real assignment), talk time, bilingual transcript.', tvi:'Họp xong, AI nghe lại bản ghi và làm sẵn bản tóm tắt: chốt cái gì, ai làm việc gì, ai nói bao nhiêu — kèm lời thoại đầy đủ, xem tiếng Việt hay tiếng Anh gốc đều được.', ten:'After the meeting, AI replays the recording and drafts the summary: what was decided, who does what, who spoke how much — plus the full transcript in Vietnamese or the original English.'},
+ {id:'admin',   vi:'Admin / Chủ trì + phân quyền Co-host', en:'Admin / host + co-host rights', dvi:'Đặt / hủy Đồng chủ trì ngay trong phòng, tắt mic, mời ra, khóa phòng — kèm bảng quyền: Co-host được làm gì, việc gì chỉ Host.', den:'Assign / revoke co-hosts live, mute, remove, lock the room — plus the rights table: what co-hosts can do vs host-only actions.', tvi:'Trong phòng, Host đặt hoặc hủy quyền Đồng chủ trì cho từng người ngay tại danh sách tham gia. Bảng quyền ghi rõ: Đồng chủ trì được tắt mic, duyệt phòng chờ, ghi hình — còn kết thúc họp cho tất cả thì chỉ Host.', ten:'In the room, the host grants or revokes co-host per participant. The rights table is explicit: co-hosts can mute, admit, record — ending the meeting for everyone stays host-only.'}
+];
+var cur='meet', tourIdx=-1;
+function toggleHand(el){ var on = el.classList.toggle('on'); document.getElementById('myhand').style.display = on ? 'flex' : 'none'; }
+function go(id){
+  cur=id;
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  document.getElementById('pg-'+id).classList.add('on');
+  document.querySelectorAll('.sbtn').forEach(function(b){b.classList.toggle('on', b.dataset.id===id)});
+  if(tourIdx>=0){ showTourText(); }
+}
+function buildRail(){
+  var box=document.getElementById('sbtns'); box.innerHTML='';
+  SCREENS.forEach(function(s,i){
+    var b=document.createElement('button'); b.className='sbtn'; b.dataset.id=s.id;
+    b.innerHTML='<span class="n">'+(i+1)+'</span><span><b>'+(LANG==='vi'?s.vi:s.en)+'</b><span>'+(LANG==='vi'?s.dvi:s.den)+'</span></span>';
+    b.onclick=function(){ stopTour(); go(s.id); };
+    box.appendChild(b);
+  });
+}
+function applyLang(){
+  document.querySelectorAll('[data-vi]').forEach(function(el){ el.textContent = (LANG==='vi'? el.dataset.vi : el.dataset.en); });
+  document.getElementById('langbtn').textContent = (LANG==='vi'? 'EN · English' : 'VI · Tiếng Việt');
+  buildRail(); go(cur);
+}
+document.getElementById('langbtn').onclick=function(){ LANG = (LANG==='vi'?'en':'vi'); applyLang(); };
+document.querySelectorAll('.tgl').forEach(function(t){ t.onclick=function(){ t.classList.toggle('on'); }; });
+function showTourText(){
+  var s=SCREENS[tourIdx];
+  document.getElementById('tourstep').textContent=(tourIdx+1)+' / '+SCREENS.length;
+  document.getElementById('tourtext').textContent=(LANG==='vi'? s.tvi : s.ten);
+  document.getElementById('tournext').textContent=(tourIdx>=SCREENS.length-1)? (LANG==='vi'?'Xem lại từ đầu':'Restart') : (LANG==='vi'?'Tiếp ›':'Next ›');
+  document.getElementById('tourclose').textContent=(LANG==='vi'?'Đóng':'Close');
+}
+function startTour(){ tourIdx=0; document.getElementById('tourbar').classList.add('on'); go(SCREENS[0].id); showTourText(); }
+function stopTour(){ tourIdx=-1; document.getElementById('tourbar').classList.remove('on'); }
+document.getElementById('tourbtn').onclick=startTour;
+document.getElementById('tourclose').onclick=stopTour;
+document.getElementById('tournext').onclick=function(){ tourIdx=(tourIdx+1)%SCREENS.length; go(SCREENS[tourIdx].id); };
+document.querySelectorAll('.ctl[data-toggle]').forEach(function(c){ c.addEventListener('click', function(e){ e.stopPropagation(); c.classList.toggle('off'); }); });
+var h=(location.hash||'').replace('#','');
+if(SCREENS.some(function(s){return s.id===h})) cur=h;
+buildRail(); go(cur);
+</script>
+<script src="adapter.js?v=20261106-v31"></script></body>
+</html>

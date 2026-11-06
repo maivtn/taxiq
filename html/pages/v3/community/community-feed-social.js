@@ -134,8 +134,8 @@
         for(const groupId of Array.isArray(destinations?.groupIds)?destinations.groupIds:[]){const group=groups.find(item=>String(item.id)===String(groupId));const name=group?.title||group?.name;if(name)names.push({name,authored:true,scope:'group:'+groupId});}
       }
       const distinctNames=names.filter((destination,index)=>names.findIndex(item=>item.name===destination.name)===index);
-      const created=post.createdAt||post.publishedAt;
-      return `<header class="community-feed-post-header" data-social-ui="header"><span class="community-feed-post-avatar" aria-hidden="true">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(initials)}</span><div class="community-feed-post-author-info"><div class="community-feed-post-name-row"><strong class="community-feed-post-author" title="${esc(owner)}" data-community-authored>${esc(owner)}</strong>${business?`<span class="community-feed-post-business">${esc(labels.business)}</span>`:''}</div><div class="community-feed-post-tags"><span class="community-feed-post-type" data-post-kind="${esc(kind)}">${esc(postTypes[language][kind]||postTypes[language].general)}</span>${post.resolved?`<span class="community-feed-post-resolved">${esc(labels.resolved)}</span>`:''}${isMarket(post)&&!isOpen(post)?`<span class="community-feed-post-market-status">${esc(t(post.status==='bought'?'bought':'sold'))}</span>`:''}</div><div class="community-feed-post-meta">${created||post.lastEditedAt?`<div class="community-feed-post-byline">${created?`<time datetime="${esc(created)}">${esc(date(created))}</time>`:''}${post.lastEditedAt?`<span>${created?' · ':''}${esc(t('edited'))}</span>`:''}</div>`:''}${distinctNames.length?`<div class="community-feed-post-destinations" aria-label="${esc(labels.destinations)}">${distinctNames.map(destination=>`<button type="button" class="community-feed-post-destination" data-social-action="destination"${attr(post.id,` data-social-scope="${esc(destination.scope)}"`)}${destination.authored?' data-community-authored':''}>${esc(destination.name)}</button>`).join('')}</div>`:''}</div></div>${menuMarkup(post)}</header>`;
+      const created=post.createdAt||post.publishedAt;const sourceLink=post.nailhubUrl||post.sourceUrl||'';
+      return `<header class="community-feed-post-header" data-social-ui="header"><span class="community-feed-post-avatar" aria-hidden="true">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(initials)}</span><div class="community-feed-post-author-info"><div class="community-feed-post-name-row"><strong class="community-feed-post-author" title="${esc(owner)}" data-community-authored>${esc(owner)}</strong>${business?`<span class="community-feed-post-business">${esc(labels.business)}</span>`:''}</div><div class="community-feed-post-tags"><span class="community-feed-post-type" data-post-kind="${esc(kind)}">${esc(postTypes[language][kind]||postTypes[language].general)}</span>${post.resolved?`<span class="community-feed-post-resolved">${esc(labels.resolved)}</span>`:''}${isMarket(post)&&!isOpen(post)?`<span class="community-feed-post-market-status">${esc(t(post.status==='bought'?'bought':'sold'))}</span>`:''}</div><div class="community-feed-post-meta">${created||post.lastEditedAt?`<div class="community-feed-post-byline">${created?`<time datetime="${esc(created)}">${esc(date(created))}</time>`:''}${post.lastEditedAt?`<span>${created?' · ':''}${esc(t('edited'))}</span>`:''}</div>`:''}${distinctNames.length?`<div class="community-feed-post-destinations" aria-label="${esc(labels.destinations)}">${distinctNames.map(destination=>`<button type="button" class="community-feed-post-destination" data-social-action="destination"${attr(post.id,` data-social-scope="${esc(destination.scope)}"`)}${destination.authored?' data-community-authored':''}>${esc(destination.name)}</button>`).join('')}</div>`:''}</div></div>${/^https?:\/\//i.test(sourceLink)?`<a href="${esc(sourceLink)}" target="_blank" rel="noopener noreferrer">${document.documentElement.lang==='en'?'View on NailHub':'Xem trên NailHub'}</a>`:''}${menuMarkup(post)}</header>`;
     }
     function marketplaceMarkup(post) {
       if(!isMarket(post))return '';
@@ -283,7 +283,7 @@
         if(!result){for(const key of Object.keys(post))delete post[key];Object.assign(post,snapshot);formError(t('error'));return;}
         closeDialog();refresh();tell(t(post.type==='want'?'bought':'markedSold'));return;
       }
-      if(action==='like'){if(member&&change(next=>{const row=next.posts[postId],has=row.likedBy.includes(member);row.likedBy=has?row.likedBy.filter(name=>name!==member):[...row.likedBy,member];})){refresh();focusControl('like',postId,inDetail);}}
+      if(action==='like'){if(member&&change(next=>{const row=next.posts[postId],has=row.likedBy.includes(member);row.likedBy=has?row.likedBy.filter(name=>name!==member):[...row.likedBy,member];})){if(ensurePost(post).likedBy.filter(name=>name!==post.owner).length>=10)window.NEXORA_COMMUNITY_SHARED?.activity('engagement',postId,post.owner);refresh();focusControl('like',postId,inDetail);}}
       else if(action==='comments'){opened.has(postId)?opened.delete(postId):opened.add(postId);refresh();if(opened.has(postId))focusComposer(postId,inDetail);else focusControl('comments',postId,inDetail);}
       else if(action==='edit-post'&&own(post)){if(adapter.editPost){modal=null;adapter.editPost(post);}else subDialog('edit',post);}
       else if(action==='delete-post'&&own(post))subDialog('delete-post',post);
@@ -296,12 +296,12 @@
       else if(action==='delete-comment'&&comment?.owner===member)subDialog('delete-comment',post,comment.id);
       else if(action==='report-comment'&&comment&&comment.owner!==member)subDialog('report',post,comment.id);
       else if(action==='confirm-delete-comment'&&modal?.kind==='delete-comment'&&modal.id===postId&&modal.commentId===commentId&&comment?.owner===member) {
-        if(change(next=>{next.posts[postId].comments=next.posts[postId].comments.filter(row=>row.id!==commentId&&row.parentId!==commentId);})){closeDialog();refresh();}
+        const removed=entry.comments.filter(row=>row.id===commentId||row.parentId===commentId);if(change(next=>{next.posts[postId].comments=next.posts[postId].comments.filter(row=>row.id!==commentId&&row.parentId!==commentId);})){for(const row of removed)window.NEXORA_COMMUNITY_SHARED?.revoke(row.id,row.owner);closeDialog();refresh();}
       } else if(action==='confirm-delete-post'&&modal?.kind==='delete-post'&&modal.id===postId&&own(post)) {
         const before=copy(state);before.posts=Object.assign(Object.create(null),before.posts);
         if(!change(next=>{if(!next.deletedPostIds.includes(postId))next.deletedPostIds.push(postId);})){formError(t('error'));return;}
         if(!removeStoredPost(post)){persist(before);adapter.render?.();enhance();formError(t('error'));return;}
-        closeDialog(false);refresh();tell(t('deleted'));
+        window.NEXORA_COMMUNITY_SHARED?.revoke(postId,post.owner);for(const row of entry.comments)window.NEXORA_COMMUNITY_SHARED?.revoke(row.id,row.owner);closeDialog(false);refresh();tell(t('deleted'));
       } else if(action==='gallery')openGallery(post,Number(target.dataset.socialIndex)||0);
       else if(action==='gallery-prev'&&modal?.kind==='gallery')openGallery(post,modal.index-1);
       else if(action==='gallery-next'&&modal?.kind==='gallery')openGallery(post,modal.index+1);
@@ -319,8 +319,8 @@
       if(form.hasAttribute('data-social-comment-form')) {
         const body=form.elements.comment.value.trim();if(!member||!body||body.length>1000)return;
         const target=ensurePost(post).comments.find(row=>row.id===replyTargets.get(postId)),rootId=target?.parentId||target?.id||null;
-        if(change(next=>{next.posts[postId].comments.push({id:id('comment'),owner:member,body,parentId:rootId,replyTo:target?.owner||'',createdAt:new Date().toISOString()});})){
-          if(rootId)threads.add(threadKey(postId,rootId));else limits.set(postId,ensurePost(post).comments.filter(row=>!row.parentId).length);
+        const commentId=id('comment');if(change(next=>{next.posts[postId].comments.push({id:commentId,owner:member,body,parentId:rootId,replyTo:target?.owner||'',createdAt:new Date().toISOString()});})){
+          window.NEXORA_COMMUNITY_SHARED?.activity('comment',commentId,member);window.NEXORA_COMMUNITY_SHARED?.notify(post.title||post.body||'', 'feed', {postId:postId,commentId:commentId},post.owner);if(rootId)threads.add(threadKey(postId,rootId));else limits.set(postId,ensurePost(post).comments.filter(row=>!row.parentId).length);
           drafts.delete(postId);replyTargets.delete(postId);refresh();
         }
       } else if(form.hasAttribute('data-social-edit-form')&&own(post)&&modal?.kind==='edit'&&modal.id===postId) {

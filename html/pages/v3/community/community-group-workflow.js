@@ -25,16 +25,19 @@
     const topic=group=>String(group.topic||group.industry||'');
     const notifyError=()=>adapter.toast?.(t('error'));
     let dialogGroup=null,dialogKind=null,returnFocus=null,destroyed=false,sequence=0,filtersOpen=false;
-    const selections={city:'',topic:'',type:''};
-    const fresh=()=>({version:1,groups:Object.create(null),invitations:[],deletedGroupIds:[]});
+    const selections={city:'',topic:'',type:''};let search='',mineOnly=false;
+    const fresh=()=>({version:1,groups:Object.create(null),invitations:[],deletedGroupIds:[],joinRequests:[],roles:{}});
     function read() {
       let data;try{data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');}catch{}
       if(!data||typeof data!=='object'||Array.isArray(data))return fresh();
-      return {version:1,groups:Object.assign(Object.create(null),data.groups&&typeof data.groups==='object'&&!Array.isArray(data.groups)?data.groups:{}),invitations:Array.isArray(data.invitations)?data.invitations.filter(row=>row&&typeof row.id==='string'):[],deletedGroupIds:Array.isArray(data.deletedGroupIds)?data.deletedGroupIds.map(String):[]};
+      return {joinRequests:Array.isArray(data.joinRequests)?data.joinRequests:[],roles:data.roles||{},version:1,groups:Object.assign(Object.create(null),data.groups&&typeof data.groups==='object'&&!Array.isArray(data.groups)?data.groups:{}),invitations:Array.isArray(data.invitations)?data.invitations.filter(row=>row&&typeof row.id==='string'):[],deletedGroupIds:Array.isArray(data.deletedGroupIds)?data.deletedGroupIds.map(String):[]};
     }
     function groups(){const deleted=read().deletedGroupIds;return sourceGroups().filter(group=>!deleted.includes(String(group.id)));}
     const find=id=>groups().find(group=>String(group.id)===String(id))||null;
-    const canManage=(groupId,actor=current)=>{const group=find(groupId);return !!group&&!!actor&&groupOwner(group)===String(actor);};
+    const roleFor=(groupId,actor=current)=>groupOwner(find(groupId))===String(actor)?'owner':members(groupId).includes(String(actor))?read().roles?.[groupId]?.[actor]||'member':'member';
+    const canManage=(groupId,actor=current)=>!!find(groupId)&&['owner','admin'].includes(roleFor(groupId,actor));
+    const canModerate=(groupId,actor=current)=>!!find(groupId)&&['owner','admin','moderator'].includes(roleFor(groupId,actor));
+    const label=(vi,en)=>document.documentElement.lang==='en'?en:vi;
     function sourceJoined(group) {
       if(groupOwner(group)===current&&current)return true;
       const joined=adapter.getJoinedGroups?.();
@@ -74,15 +77,19 @@
         const row=record(state,group);
         row.members=shouldJoin?unique([...row.members,member]):row.members.filter(name=>name!==member);
         row.removed=shouldJoin?row.removed.filter(name=>name!==member):unique([...row.removed,member]);
-        state.groups[String(groupId)]=row;
+        state.groups[String(groupId)]=row;if(!shouldJoin&&state.roles?.[groupId])delete state.roles[groupId][member];
       },()=>member===current?adapter.setMembership?.(String(groupId),shouldJoin):true);
     }
-    function join(groupId,member=current){return membership(groupId,member,true,member);}
-    function publishToGroups(ids,savePost) {
+    function join(groupId,member=current){
+      const group=find(groupId);if(!group)return false;
+      if(['private','closed'].includes(String(group.privacy||group.visibility||'').toLowerCase())&&!canManage(groupId,member))return transaction(state=>{state.joinRequests||=[];if(!state.joinRequests.some(row=>row.groupId===String(groupId)&&row.member===member&&row.status==='pending'))state.joinRequests.push({id:'join-'+Date.now(),groupId:String(groupId),member,status:'pending',createdAt:new Date().toISOString()});});
+      return membership(groupId,member,true,member);
+    }
+    function publishToGroups(ids,savePost,post) {
       const targets=unique(ids).map(find);
       if(targets.some(group=>!group||groupType(group)==='Marketplace'||!joined(group.id)&&['private','closed'].includes(String(group.visibility||group.privacy||'').toLowerCase())))return false;
       // Commit memberships and the post together; a rejected post restores group storage.
-      return transaction(state=>{for(const group of targets){const row=record(state,group);row.members=unique([...row.members,current]);row.removed=row.removed.filter(name=>name!==current);state.groups[String(group.id)]=row;}},savePost);
+      return transaction(state=>{for(const group of targets){const row=record(state,group);row.members=unique([...row.members,current]);row.removed=row.removed.filter(name=>name!==current);if(post&&(group.approval===true||group.approval==='true')&&!canModerate(group.id)){row.pendingPosts=unique([...(row.pendingPosts||[]),post.id]);post.moderation||={};post.moderation[group.id]='pending';}state.groups[String(group.id)]=row;}},savePost);
     }
     function leave(groupId,member=current){return membership(groupId,member,false,member);}
     function remove(groupId,member,actor=current){if(!canManage(groupId,actor))return false;return membership(groupId,member,false,actor);}
@@ -111,7 +118,7 @@
     }
     function update(groupId,values) {
       const group=find(groupId);if(!group||!canManage(groupId)||typeof adapter.saveGroups!=='function')return false;
-      const allowed={};for(const key of ['title','name','description','rules','region','city'])if(typeof values[key]==='string')allowed[key]=values[key].trim();
+      const allowed={};for(const key of ['title','name','description','rules','region','city','privacy','approval'])if(typeof values[key]==='string')allowed[key]=values[key].trim();
       if(('title' in allowed&&!allowed.title)||('name' in allowed&&!allowed.name))return false;
       return transaction(()=>true,()=>adapter.saveGroups(sourceGroups().map(row=>String(row.id)===String(groupId)?{...clone(row),...allowed,lastEditedAt:new Date().toISOString()}:clone(row))));
     }
@@ -123,9 +130,9 @@
     function filter(posts,scope='all') {
       const valid=new Set(groups().map(group=>String(group.id))),myGroups=new Set(groups().filter(group=>joined(group.id)).map(group=>String(group.id)));
       return posts.filter(post=>{
-        const dest=destinations(post),ids=dest.ids.filter(id=>valid.has(id));
+        const dest=destinations(post),ids=dest.ids.filter(id=>{const group=find(id);if(!valid.has(id)||!group||['private','closed'].includes(String(group.privacy||group.visibility||'').toLowerCase())&&!joined(id))return false;const pending=read().groups[id]?.pendingPosts?.includes(post.id)||post.moderation?.[id]==='pending';return post.moderation?.[id]!=='rejected'&&(!pending||post.owner===current);});
         if(!dest.main&&dest.ids.length&&!ids.length)return false;
-        if(String(scope).startsWith('group:'))return ids.includes(String(scope).slice(6));
+        if(String(scope).startsWith('group:')){const groupId=String(scope).slice(6),group=find(groupId);if(!group||['private','closed'].includes(String(group.privacy||group.visibility||'').toLowerCase())&&!joined(groupId))return false;const pending=read().groups[groupId]?.pendingPosts?.includes(post.id)||post.moderation?.[groupId]==='pending';return ids.includes(groupId)&&post.moderation?.[groupId]!=='rejected'&&(!pending||post.owner===current);}
         if(['main','scope:main'].includes(scope))return dest.main;
         if(['joined','scope:joined'].includes(scope))return ids.some(id=>myGroups.has(id));
         if(['market','scope:market','marketplace'].includes(scope))return post.kind==='market'||post.type==='sale'||post.type==='want';
@@ -154,14 +161,14 @@
       return Math.max(known,base+(joined(group.id)&&!sourceJoined(group)?1:0)-(stored?.removed?.includes(current)&&sourceJoined(group)?1:0));
     }
     const button=(action,label,groupId,extra='',className='btn small')=>`<button type="button" class="${className}" data-community-group-action="${action}" data-community-group-id="${esc(groupId)}"${extra}>${esc(label)}</button>`;
-    const membershipButton=group=>button('membership',t(joined(group.id)?'leave':'join'),group.id,` aria-pressed="${joined(group.id)}"${canManage(group.id)?' disabled':''}`,'btn small '+(joined(group.id)?'':'primary'));
+    const membershipButton=group=>{const pending=read().joinRequests.some(row=>row.groupId===String(group.id)&&row.member===current&&row.status==='pending');return button('membership',pending?label('Đang chờ duyệt','Pending approval'):t(joined(group.id)?'leave':'join'),group.id,` aria-pressed="${joined(group.id)}"${groupOwner(group)===current||pending?' disabled':''}`,'btn small '+(joined(group.id)?'':'primary'));};
     function directoryMarkup() {
-      const rows=groups().filter(group=>(!selections.city||city(group)===selections.city)&&(!selections.topic||topic(group)===selections.topic)&&(!selections.type||groupType(group)===selections.type));
+      const rows=groups().filter(group=>(!selections.city||city(group)===selections.city)&&(!selections.topic||topic(group)===selections.topic)&&(!selections.type||groupType(group)===selections.type)&&(!mineOnly||joined(group.id))&&(!search||(title(group)+' '+group.description+' '+city(group)).toLowerCase().includes(search.toLowerCase())));
       return ['Community','Marketplace'].map(type=>{const matches=rows.filter(group=>groupType(group)===type);return matches.length?`<section class="community-group-section"><h3>${esc(t(type==='Community'?'community':'marketplace'))}</h3>${matches.map(group=>`<article class="panel content-card community-group-card" data-community-group-card="${esc(group.id)}"><div class="community-group-card-heading"><h3 data-community-authored>${esc(title(group))}</h3><span class="community-group-free">${esc(t('free'))}</span></div><div class="meta" data-community-authored>${esc([topic(group),city(group)].filter(Boolean).join(' · '))}</div>${group.description?`<p data-community-authored>${esc(group.description)}</p>`:''}${group.rules?`<p class="community-group-inline-rules"><strong>${esc(t('rules'))}:</strong> <span data-community-authored>${esc(group.rules)}</span></p>`:''}<div class="chips"><span class="chip">${esc(t('members',{count:memberCount(group).toLocaleString('en-US')}))}</span>${joined(group.id)?`<span class="chip">${esc(t('joined'))}</span>`:''}</div><div class="listing-actions">${button('detail',t('view'),group.id,'','btn small soft')}${membershipButton(group)}</div></article>`).join('')}</section>`:'';}).join('');
     }
     function filtersMarkup() {
       const options=(name,rows)=>`<label><span>${esc(t(name))}</span><select class="select" data-community-group-filter="${name}"><option value="">${esc(t('all'))}</option>${unique(rows).sort((a,b)=>a.localeCompare(b)).map(value=>`<option value="${esc(value)}"${selections[name]===value?' selected':''}>${esc(value)}</option>`).join('')}</select></label>`;
-      return `<div class="community-group-filters" id="communityGroupFilters" data-community-group-filters>${options('city',groups().map(city))}${options('topic',groups().map(topic))}<label><span>${esc(t('type'))}</span><select class="select" data-community-group-filter="type"><option value="">${esc(t('all'))}</option>${['Community','Marketplace'].map(type=>`<option value="${type}"${selections.type===type?' selected':''}>${esc(t(type==='Community'?'community':'marketplace'))}</option>`).join('')}</select></label></div>`;
+      return `<div class="community-group-search"><input class="field" id="groupsSearch" type="search" placeholder="${esc(label('Tìm nhóm hoặc món hàng…','Search groups or items…'))}" value="${esc(search)}"><button type="button" class="btn soft" data-community-group-action="mine" aria-pressed="${mineOnly}">${esc(label('Nhóm của tôi','My groups'))}</button></div><div class="community-group-filters" id="communityGroupFilters" data-community-group-filters>${options('city',groups().map(city))}${options('topic',groups().map(topic))}<label><span>${esc(t('type'))}</span><select class="select" data-community-group-filter="type"><option value="">${esc(t('all'))}</option>${['Community','Marketplace'].map(type=>`<option value="${type}"${selections.type===type?' selected':''}>${esc(t(type==='Community'?'community':'marketplace'))}</option>`).join('')}</select></label></div>`;
     }
     function enhance(root=document) {
       if(destroyed)return;
@@ -180,8 +187,28 @@
     function openGroup(groupId) {
       const group=find(groupId);if(!group)return false;dialogGroup=String(groupId);dialogKind='detail';
       const posts=groupPosts(groupId).slice(0,5),rules=group.rules||t('defaultRules');
-      showDialog(group,`<div class="dialog-body"><p class="community-group-description" data-community-authored>${esc(group.description||'')}</p><dl class="community-group-facts"><div><dt>${esc(t('type'))}</dt><dd>${esc(t(groupType(group)==='Community'?'community':'marketplace'))}</dd></div><div><dt>${esc(t('membership'))}</dt><dd>${esc(t(joined(groupId)?'joined':'notJoined'))}</dd></div><div><dt>${esc(t('members',{count:memberCount(group).toLocaleString('en-US')}))}</dt><dd data-community-authored>${esc([topic(group),city(group)].filter(Boolean).join(' · '))}</dd></div></dl><section class="community-group-rules"><h3>${esc(t('rules'))}</h3><p data-community-authored>${esc(rules)}</p></section><section class="community-group-latest"><h3>${esc(t('posts'))}</h3>${posts.length?`<ul>${posts.map(post=>`<li><strong data-community-authored>${esc(post.owner||post.authorDisplayName||'')}</strong><p data-community-authored>${esc(post.title||post.content||post.description||post.details||post.steps||'')}</p>${button('post',t('viewPost'),group.id,` data-community-group-post="${esc(post.id)}"`,'btn small soft')}</li>`).join('')}</ul>`:`<p class="tip">${esc(t('noPosts'))}</p>`}</section></div>`,(canManage(groupId)?button('edit',t('edit'),groupId)+button('delete',t('remove'),groupId,'','btn small danger'):membershipButton(group))+button('feed',t('viewFeed'),groupId,'','btn soft')+(groupType(group)==='Community'?button('chat',t('chat'),groupId,joined(groupId)?'':' disabled','btn primary'):''));
+      showDialog(group,`<div class="dialog-body"><p class="community-group-description" data-community-authored>${esc(group.description||'')}</p><dl class="community-group-facts"><div><dt>${esc(t('type'))}</dt><dd>${esc(t(groupType(group)==='Community'?'community':'marketplace'))}</dd></div><div><dt>${esc(t('membership'))}</dt><dd>${esc(t(joined(groupId)?'joined':'notJoined'))}</dd></div><div><dt>${esc(t('members',{count:memberCount(group).toLocaleString('en-US')}))}</dt><dd data-community-authored>${esc([topic(group),city(group)].filter(Boolean).join(' · '))}</dd></div></dl><section class="community-group-rules"><h3>${esc(t('rules'))}</h3><p data-community-authored>${esc(rules)}</p></section><section class="community-group-latest"><h3>${esc(t('posts'))}</h3>${posts.length?`<ul>${posts.map(post=>`<li><strong data-community-authored>${esc(post.owner||post.authorDisplayName||'')}</strong><p data-community-authored>${esc(post.title||post.content||post.description||post.details||post.steps||'')}</p>${button('post',t('viewPost'),group.id,` data-community-group-post="${esc(post.id)}"`,'btn small soft')}</li>`).join('')}</ul>`:`<p class="tip">${esc(t('noPosts'))}</p>`}</section>${moderationMarkup(group)}</div>`,(canManage(groupId)?button('edit',t('edit'),groupId)+button('delete',t('remove'),groupId,'','btn small danger'):membershipButton(group))+button('feed',t('viewFeed'),groupId,['private','closed'].includes(String(group.privacy||group.visibility||'').toLowerCase())&&!joined(groupId)?' disabled':'','btn soft')+button('meet',label('Họp nhóm','Meetings'),groupId,joined(groupId)?'':' disabled','btn soft')+(groupType(group)==='Community'?button('chat',t('chat'),groupId,joined(groupId)?'':' disabled','btn primary'):''));
       return true;
+    }
+
+    function meetingTasks(group){if(!joined(group.id))return '';const tasks=(window.NEXORA_COMMUNITY_SHARED?.read().meetings||[]).filter(row=>row.groupId===String(group.id)).flatMap(row=>(row.tasks||[]).filter(task=>task.approvedBy===row.host));return tasks.length?'<section><h3>'+esc(label('Việc cần làm','Action items'))+'</h3>'+tasks.map(task=>'<article class="panel"><strong>'+esc(task.body)+'</strong><p>'+esc(task.owner)+'</p></article>').join('')+'</section>':'';}
+    function moderationMarkup(group){
+      const groupId=String(group.id),state=read(),moderator=canModerate(groupId),requests=state.joinRequests.filter(row=>row.groupId===groupId&&row.status==='pending'),pending=sourceFeed().filter(post=>state.groups[groupId]?.pendingPosts?.includes(post.id));
+      const controls=members(groupId).map(name=>`<div class="community-member-row"><strong>${esc(name)}</strong><span class="chip">${esc(roleFor(groupId,name))}</span>${canManage(groupId)&&name!==groupOwner(group)?`<select class="select" data-group-member-role="${esc(groupId)}" data-member="${esc(name)}">${['member','moderator','admin'].map(role=>`<option value="${role}"${roleFor(groupId,name)===role?' selected':''}>${esc(role)}</option>`).join('')}</select>${button('remove-member',label('Mời ra','Remove'),groupId,` data-member="${esc(name)}"`)}`:''}</div>`).join('');
+      return `<section class="community-group-members"><h3>${esc(label('Thành viên nhóm','Group members'))}</h3>${controls}</section>${meetingTasks(group)}${moderator?`<section><h3>${esc(label('Yêu cầu tham gia','Join requests'))} <span class="chip">${requests.length}</span></h3>${requests.map(row=>`<div class="community-member-row"><strong>${esc(row.member)}</strong>${button('accept-join',label('Chấp nhận','Accept'),groupId,` data-request="${esc(row.id)}"`)}${button('reject-join',label('Từ chối','Reject'),groupId,` data-request="${esc(row.id)}"`)}</div>`).join('')}</section><section><h3>${esc(label('Bài chờ duyệt','Pending posts'))} <span class="chip">${pending.length}</span></h3>${pending.map(post=>`<article class="panel"><strong>${esc(post.title)}</strong><p>${esc(post.description||post.body||post.details||'')}</p>${button('approve-post',label('Duyệt','Approve'),groupId,` data-post="${esc(post.id)}"`)}${button('reject-post',label('Từ chối','Reject'),groupId,` data-post="${esc(post.id)}"`)}</article>`).join('')}</section>`:''}`;
+    }
+    function reviewAction(action,group,target){
+      if(action==='meet'&&joined(group.id)){adapter.openMeet?.(group.id);closeDialog();return true;}
+      if(action==='remove-member'&&canManage(group.id)){remove(group.id,target.dataset.member);refresh();return true;}
+      if(['accept-join','reject-join'].includes(action)&&canModerate(group.id)){
+        transaction(state=>{const request=state.joinRequests.find(row=>row.id===target.dataset.request&&row.groupId===String(group.id)&&row.status==='pending');if(!request)return false;request.status=action==='accept-join'?'accepted':'rejected';if(request.status==='accepted'){const row=record(state,group);row.members=unique([...row.members,request.member]);row.removed=row.removed.filter(name=>name!==request.member);state.groups[String(group.id)]=row;}window.NEXORA_COMMUNITY_SHARED?.notify(title(group),'groups',{groupId:group.id},request.member);});refresh();return true;
+      }
+      if(['approve-post','reject-post'].includes(action)&&canModerate(group.id)){
+        const postId=target.dataset.post,rows=clone(sourceFeed()),post=rows.find(row=>row.id===postId);if(!post)return false;
+        post.moderation||={};post.moderation[group.id]=action==='approve-post'?'approved':'rejected';
+        transaction(state=>{const row=record(state,group);row.pendingPosts=(row.pendingPosts||[]).filter(id=>id!==postId);state.groups[String(group.id)]=row;},()=>adapter.saveFeed?.(rows));refresh();return true;
+      }
+      return false;
     }
     function navigate(scope){closeDialog();adapter.navigateFeed?.(scope);return scope;}
     function editDialog(group) {
@@ -193,7 +220,7 @@
       const target=event.target.closest?.('[data-community-group-action]');
       if(!target){if(event.target.matches?.('[data-community-group-overlay]'))closeDialog();return;}
       event.preventDefault();event.stopPropagation();
-      const action=target.dataset.communityGroupAction;if(action==='filters'){filtersOpen=!filtersOpen;enhance();return;}const group=find(target.dataset.communityGroupId);if(action==='close'){closeDialog();return;}if(!group)return;
+      const action=target.dataset.communityGroupAction;if(action==='filters'){filtersOpen=!filtersOpen;enhance();return;}if(action==='mine'){mineOnly=!mineOnly;enhance();return;}const group=find(target.dataset.communityGroupId);if(action==='close'){closeDialog();return;}if(!group)return;if(reviewAction(action,group,target))return;
       if(action==='detail')openGroup(group.id);
       else if(action==='membership'){if((joined(group.id)?leave(group.id):join(group.id))!==false)refresh();}
       else if(action==='feed')navigate('group:'+group.id);
@@ -203,7 +230,7 @@
       else if(action==='delete'&&canManage(group.id)){dialogGroup=String(group.id);dialogKind='delete';showDialog(group,`<div class="dialog-body"><p>${esc(t('deleteConfirm'))}</p><p class="community-group-error" data-community-group-error role="alert"></p></div>`,button('detail',t('cancel'),group.id)+button('confirm-delete',t('remove'),group.id,'','btn danger'),t('deleteTitle'));}
       else if(action==='confirm-delete'&&dialogKind==='delete'&&dialogGroup===String(group.id)){if(deleteGroup(group.id)!==false){closeDialog();adapter.toast?.(t('deleted'));adapter.navigateFeed?.('all');refresh();}else{const error=document.querySelector('[data-community-group-error]');if(error)error.textContent=t('error');}}
     }
-    function onChange(event){const name=event.target.dataset?.communityGroupFilter;if(name&&Object.hasOwn(selections,name)){selections[name]=event.target.value;enhance();}}
+    function onChange(event){if(event.target.dataset.groupMemberRole){const groupId=event.target.dataset.groupMemberRole,who=event.target.dataset.member,group=find(groupId);if(canManage(groupId)&&who!==groupOwner(group)&&['member','moderator','admin'].includes(event.target.value))transaction(state=>{state.roles[groupId]||={};state.roles[groupId][who]=event.target.value;});refresh();return;}const name=event.target.dataset?.communityGroupFilter;if(name&&Object.hasOwn(selections,name)){selections[name]=event.target.value;enhance();}}
     function onSubmit(event) {
       const form=event.target;if(!form.matches?.('[data-community-group-edit]'))return;event.preventDefault();
       const name=form.elements.title.value.trim(),error=form.querySelector('[data-community-group-error]');
@@ -228,8 +255,8 @@
     function reset(){try{localStorage.removeItem(STORAGE_KEY);}catch{notifyError();return false;}dialogGroup=null;dialogKind=null;enhance();return true;}
     function destroy(){destroyed=true;document.removeEventListener('click',onClick);document.removeEventListener('change',onChange);document.removeEventListener('submit',onSubmit);document.removeEventListener('keydown',onKeyDown,true);window.removeEventListener('storage',onStorage);observer.disconnect();}
     function onStorage(event){if(event.key===STORAGE_KEY||event.key==='nexora-v3:nexora-community-templates-v1')refresh();}
-    if(!options.storeOnly){document.addEventListener('click',onClick);document.addEventListener('change',onChange);document.addEventListener('submit',onSubmit);document.addEventListener('keydown',onKeyDown,true);window.addEventListener('storage',onStorage);observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});}
-    const store={groups,members,memberRecords:groupId=>members(groupId).map(name=>({id:name,name,role:canManage(groupId,name)?'owner':'member'})),invitations,invite,respond,remove,leave,join,joined,canManage,create,update,deleteGroup,groupType,publishToGroups,read:()=>clone(read())};
+    if(!options.storeOnly){document.addEventListener('input',event=>{if(event.target.id==='groupsSearch'){search=event.target.value;const position=event.target.selectionStart;enhance();const input=document.getElementById('groupsSearch');input?.focus();input?.setSelectionRange(position,position);}});document.addEventListener('click',onClick);document.addEventListener('change',onChange);document.addEventListener('submit',onSubmit);document.addEventListener('keydown',onKeyDown,true);window.addEventListener('storage',onStorage);observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});}
+    const store={groups,members,memberRecords:groupId=>members(groupId).map(name=>({id:name,name,role:roleFor(groupId,name)})),invitations,invite,respond,remove,leave,join,joined,canManage,create,update,deleteGroup,groupType,publishToGroups,read:()=>clone(read())};
     const instance={enhance,openGroup,navigate,filter,groupPosts,store,reset,destroy,onDialogClosed:()=>{dialogGroup=null;dialogKind=null;},isGroupVisible:group=>!!find(group.id)};
     if(!options.storeOnly)mounted=instance;return instance;
   }

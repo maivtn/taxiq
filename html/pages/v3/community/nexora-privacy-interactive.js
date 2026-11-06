@@ -8,21 +8,17 @@
   const tourSeenKey = 'nexora-v3:nexora-connect-guide-seen-v1';
   let profileUrl = 'https://nexoratouch.com/community?tab=connect&handle=@bitcoin.nail.bar';
   const inviteUrl = 'https://nexoratouch.com/';
-  const defaults = {phone:'shared', email:'nobody', messages:'requests', calls:'shared', request:'pending', sentMessages:{}, sourceChats:{}, deletedCalls:[], createdGroups:[], joinedCommunities:[], connections:[], chatPrefs:{}, archivedChats:[], deletedChats:[], reportedChats:[],clearedChats:{},callHistory:[],messageMeta:{},profile:{}};
+  const defaults = {phone:'shared', email:'nobody', messages:'requests', calls:'shared', request:'ignored', sentMessages:{}, sourceChats:{}, deletedCalls:[], createdGroups:[], joinedCommunities:[], connections:[], chatPrefs:{}, archivedChats:[], deletedChats:[], reportedChats:[],clearedChats:{},callHistory:[],messageMeta:{},profile:{}};
   const members = [
     {name:'Mai Nguyễn', id:'NX-2041', handle:'@mai.nail', detail:'request'},
     {name:'Kim Tuyen', id:'NX-2042', handle:'@kim.tuyen', phone:'7135550144', detail:'chat-kim'},
     {name:'Sally Thanh Hoang', id:'NX-2043', handle:'@sally.hoang', email:'sally@example.com', detail:'chat-sally'},
     ...(window.NEXORA_COMMUNITY_DEMO?.connect?.members||[])
   ];
+  members.splice(0,members.length,...Object.entries(window.NEXORA_COMMUNITY_SHARED?.read().identities||{}).filter(([name])=>name!==currentMember).map(([name,identity])=>({name,id:identity.id,handle:'@'+identity.nickname,email:identity.email||'',phone:identity.phone||'',detail:'source-'+encodeURIComponent(name)})));
+  for(const person of members){const identity=window.NEXORA_COMMUNITY_SHARED?.identity(person.name);if(identity){person.id=identity.id;person.handle='@'+identity.nickname;}}
   const callTime=(days,hour,minute)=>{const date=new Date();date.setDate(date.getDate()-days);date.setHours(hour,minute,0,0);if(date>new Date())date.setDate(date.getDate()-1);return date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' · '+date.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
   const calls = [
-    {name:'Kim Tuyen',id:'call-1',type:'outgoing-voice',summary:'Outgoing · Voice · '+callTime(0,9,25)},
-    {name:'Mai Nguyễn',id:'call-2',type:'missed-video',summary:'Missed · Video · '+callTime(1,14,24)},
-    {name:'Sally Thanh Hoang',id:'call-4',type:'missed-voice',summary:'Missed · Voice · '+callTime(1,10,41)},
-    {name:'Kim Tuyen',id:'call-5',type:'outgoing-voice',summary:'Outgoing · Voice · '+callTime(2,16,10)},
-    {name:'Mai Nguyễn',id:'call-6',type:'outgoing-video',summary:'Outgoing · Video · '+callTime(3,11,5)},
-    ...(window.NEXORA_COMMUNITY_DEMO?.connect?.calls||[]).map(call=>({...call,summary:(call.type.startsWith('missed-')?'Missed':'Outgoing')+' · '+(call.type.endsWith('video')?'Video':'Voice')+' · '+callTime(call.days,call.hour,call.minute)}))
   ];
   const communities = [
     {id:'dallas', name:'Dallas – Fort Worth Nail Technicians', type:'city', detail:'Dallas – Fort Worth · 962 members'},
@@ -397,8 +393,8 @@
       $('#directPanel .surface:nth-child(2)').append(accepted);
     }
     accepted.innerHTML = state.request === 'accepted' && !state.archivedChats.includes('chat-mai') && !state.deletedChats.includes('chat-mai') ? '<button class="row-button" data-detail="chat-mai" data-initials="MN"><span><strong>Mai Nguyễn</strong><small>About your 12 white waiting chairs</small></span><span class="arrow">›</span></button>' : '';
-    for(const id of ['chat-kim','chat-sally']){const row=document.querySelector('#directPanel .surface:nth-child(2) [data-detail="'+id+'"]');if(row){row.style.display=state.archivedChats.includes(id)||state.deletedChats.includes(id)?'none':'';row.querySelector('strong').textContent=chatPref(id).nickname||members.find(member=>member.detail===id)?.name||'';}}
-    $('#recentChatsEmpty').classList.toggle('hidden',['chat-kim','chat-sally','chat-mai',...Object.keys(state.sourceChats)].some(id=>!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)&&(id!=='chat-mai'||state.request==='accepted')));
+    for(const id of ['chat-kim','chat-sally']){const row=document.querySelector('#directPanel .surface:nth-child(2) [data-detail="'+id+'"]');if(row){row.style.display=!state.sentMessages[id]?.length||state.archivedChats.includes(id)||state.deletedChats.includes(id)?'none':'';row.querySelector('strong').textContent=chatPref(id).nickname||({'chat-kim':'Kim Tuyen','chat-sally':'Sally Thanh Hoang'}[id]);}}
+    $('#recentChatsEmpty').classList.toggle('hidden',[...['chat-kim','chat-sally'].filter(id=>state.sentMessages[id]?.length),'chat-mai',...Object.keys(state.sourceChats)].some(id=>!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)&&(id!=='chat-mai'||state.request==='accepted')));
     const archived=state.archivedChats.filter(id=>!state.deletedChats.includes(id));
     $('#archivedChatsCard').classList.toggle('hidden',archived.length===0);
     $('#archivedChatRows').innerHTML=archived.map(id=>{const person=members.find(member=>member.detail===id||(id==='chat-mai'&&member.detail==='request'))||(state.sourceChats[id]?{name:state.sourceChats[id].recipient}:null);if(!person)return '';return '<button class="row-button" data-detail="'+esc(id)+'" data-initials="'+esc(initials(person.name))+'"><span><strong>'+esc(chatPref(id).nickname||person.name)+'</strong><small>'+esc(ui('Archived · tap to open','Đã lưu trữ · bấm để mở'))+'</small></span><span class="arrow">›</span></button>';}).join('');
@@ -406,6 +402,7 @@
     renderConnections();changed();
   }
   function renderConnections() {
+    for(const person of members)if(state.connections.includes(person.id)&&!state.sourceChats[person.detail])state.sourceChats[person.detail]={recipient:person.name,reference:person.handle,sourceId:person.id};
     const card = $('#connectionsCard');
     const connected = members.filter(member => state.connections.includes(member.id));
     card.classList.toggle('hidden', connected.length === 0);

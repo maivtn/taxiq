@@ -48,7 +48,7 @@
       try { value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { value = {}; }
       return {version:1,sharing:safeMap(value?.sharing),availability:safeMap(value?.availability),zelle:safeMap(value?.zelle),assignments:Array.isArray(value?.assignments) ? value.assignments.filter(row=>row?.id&&row.shiftId&&row.worker) : [],settlements:Array.isArray(value?.settlements) ? value.settlements.filter(row=>row?.id&&row.assignmentId&&row.shiftId) : [],invitations:Array.isArray(value?.invitations) ? value.invitations.filter(row=>row?.id&&row.shiftId&&row.worker) : []};
     }
-    function seedDemo() {
+    function seedDemo() {return;
       const samples=window.NEXORA_COMMUNITY_DEMO?.shiftWorkflow;if(!samples)return;
       const state=read();let changed=false;
       for(const row of samples.assignments)if(shiftById(row.shiftId)&&!state.assignments.some(item=>item.id===row.id)){state.assignments.push(clone(row));changed=true;}
@@ -89,7 +89,13 @@
     const isPayee = settlement => settlement.payee === member() && settlement.payeeRole === role();
     const visibleSettlement = settlement => settlement && (isPayer(settlement)||isPayee(settlement));
     const overdue = (state, who=member(), whoRole=role()) => state.settlements.filter(row=>row.payer===who&&row.payerRole===whoRole&&row.type!=='Deposit'&&row.status==='AwaitingProof'&&+new Date(row.proofDueAt)<now());
-    const ensureUnblocked = state => { if(overdue(state).length) fail('overdue_payment_blocked'); };
+    function restriction(state,who=member()){
+      const recent=state.assignments.filter(row=>row.worker===who&&Number.isFinite(Date.parse(row.closedAt))&&now()-Date.parse(row.closedAt)<=90*24*HOUR),time=row=>Date.parse(row.closedAt);
+      const cancelled=recent.filter(row=>row.status==='WorkerCancelled').map(time),noShows=recent.filter(row=>row.status==='NoShow').map(time),late=recent.filter(row=>row.status==='WorkerCancelled'&&row.isLateCancellation).map(time);
+      const until=Math.max(0,...cancelled.map(value=>value+7*24*HOUR),...(noShows.length>=2?[Math.max(...noShows)+30*24*HOUR]:[]),...(late.length>=2?[Math.max(...late)+30*24*HOUR]:[]));return until>now()?until:null;
+    }
+    function restrictionMessage(until){return (lang()==='en'?'New shifts are paused until ':'Tạm dừng đặt ca mới đến ')+date(until)+'.';}
+    const ensureUnblocked = state => { if(overdue(state).length) fail('overdue_payment_blocked');const until=role()==='staff'&&restriction(state);if(until)throw new Error(restrictionMessage(until)); };
     const zelle = (state, who, whoRole, shift) => state.zelle[whoRole+':'+who] || (whoRole==='owner' ? shift?.businessZelle || shift?.zelle : null);
     const hasZelle = account => !!String(account?.accountInfo || '').trim();
     const validEvidence = images => Array.isArray(images)&&images.length<=3&&images.every(url=>typeof url==='string'&&/^data:image\/(jpeg|png|webp);base64,[a-z0-9+/=]+$/i.test(url));
@@ -372,7 +378,7 @@
       }).filter(Boolean);
     }
     function policyMarkup(p=POLICY) {return `<details class="shifts-policy"><summary>${esc(t('policy.title'))}</summary><ul>${[
-      t('policy.deposit',{percent:p.depositPercent}),t('policy.workerFree',{hours:p.freeCancellationHours}),t('policy.workerLate',{hours:p.freeCancellationHours,percent:p.workerLateCancelForfeitPercent}),t('policy.noShow',{minutes:p.lateGraceMinutes,percent:p.noShowForfeitPercent}),t('policy.salonLate',{hours:p.freeCancellationHours,percent:p.businessLateCancelPayPercent}),t('policy.dispute',{hours:p.disputeWindowHours})
+      (lang()==='en'?'Cancel 1+ time: no new bookings for 7 days.':'Hủy từ 1 lần: không đặt ca mới trong 7 ngày.'),(lang()==='en'?'2 no-shows or 2 late cancellations in 90 days: bookings paused for 30 days.':'2 lần vắng hoặc 2 lần hủy trễ trong 90 ngày: tạm dừng đặt ca 30 ngày.'),t('policy.deposit',{percent:p.depositPercent}),t('policy.workerFree',{hours:p.freeCancellationHours}),t('policy.workerLate',{hours:p.freeCancellationHours,percent:p.workerLateCancelForfeitPercent}),t('policy.noShow',{minutes:p.lateGraceMinutes,percent:p.noShowForfeitPercent}),t('policy.salonLate',{hours:p.freeCancellationHours,percent:p.businessLateCancelPayPercent}),t('policy.dispute',{hours:p.disputeWindowHours})
     ].map(text=>`<li>${esc(text)}</li>`).join('')}</ul></details>`;}
     function button(action,id,label,extra='',style='') {return `<button type="button" class="btn small ${style}" data-shifts-action="${action}" data-shifts-id="${esc(id||'')}" ${extra}>${esc(label)}</button>`;}
     function empty(text) {return `<p class="shifts-empty">${esc(text)}</p>`;}
@@ -484,9 +490,9 @@
       document.querySelectorAll('#shiftTemplates [data-template]').forEach(button=>{button.hidden=button.dataset.template!==(role()==='owner'?'dayhire':'daywork');});
       const state=read();if(sweep(state)){try{persist(state);}catch{errorMessage=t('errors.generic');}}
       const tabs=role()==='owner'?['my-shifts','payments']:['browse','my-shifts','payments'];if(!tabs.includes(view.tab))view.tab=tabs[0];
-      const pending=overdue(state),blocked=pending.length?`<div class="shifts-overdue" role="status"><p>${esc(t('overdue.message',{count:pending.length,amount:money(pending.reduce((sum,row)=>sum+row.amount,0))}))}</p>${button('payOverdue','',t('overdue.payNow'),'','soft')}</div>`:'';
+      const pending=overdue(state),paused=role()==='staff'&&restriction(state),blocked=pending.length?`<div class="shifts-overdue" role="status"><p>${esc(t('overdue.message',{count:pending.length,amount:money(pending.reduce((sum,row)=>sum+row.amount,0))}))}</p>${button('payOverdue','',t('overdue.payNow'),'','soft')}</div>`:'';
       document.getElementById('dayworkView')?.classList.toggle('shifts-owner-view',role()==='owner');
-      root.innerHTML=`${blocked}<div class="shifts-tabs" role="tablist" aria-label="${esc(t('navigation.label'))}">${tabs.map(tab=>`<button type="button" role="tab" id="shift-tab-${tab}" data-shifts-tab="${tab}" aria-controls="shift-panel-${tab}" aria-selected="${tab===view.tab}" tabindex="${tab===view.tab?0:-1}">${esc(t('navigation.'+tab))}</button>`).join('')}</div>${errorMessage?`<p class="shifts-error" role="alert">${esc(errorMessage)}</p>`:''}<div class="shifts-workspace"><div role="tabpanel" id="shift-panel-${view.tab}" aria-labelledby="shift-tab-${view.tab}" class="shifts-stack">${view.tab==='payments'?paymentMarkup(state):role()==='owner'?ownerMarkup(state):view.tab==='browse'?browseMarkup(state):myMarkup(state)}</div><aside class="shifts-stack">${sharingMarkup(state)}${view.tab!=='browse'?reliabilityMarkup(state):''}${policyMarkup()}${button('setup','',t('setup.'+(role()==='owner'?'businessZelle':'staffZelle')+'.cta'),'','soft')}</aside></div>`;
+      root.innerHTML=`${paused?`<div class="shifts-overdue" role="status">${esc(restrictionMessage(paused))}</div>`:''}${blocked}<div class="shifts-tabs" role="tablist" aria-label="${esc(t('navigation.label'))}">${tabs.map(tab=>`<button type="button" role="tab" id="shift-tab-${tab}" data-shifts-tab="${tab}" aria-controls="shift-panel-${tab}" aria-selected="${tab===view.tab}" tabindex="${tab===view.tab?0:-1}">${esc(t('navigation.'+tab))}</button>`).join('')}</div>${errorMessage?`<p class="shifts-error" role="alert">${esc(errorMessage)}</p>`:''}<div class="shifts-workspace"><div role="tabpanel" id="shift-panel-${view.tab}" aria-labelledby="shift-tab-${view.tab}" class="shifts-stack">${view.tab==='payments'?paymentMarkup(state):role()==='owner'?ownerMarkup(state):view.tab==='browse'?browseMarkup(state):myMarkup(state)}</div><aside class="shifts-stack">${sharingMarkup(state)}${view.tab!=='browse'?reliabilityMarkup(state):''}${policyMarkup()}${button('setup','',t('setup.'+(role()==='owner'?'businessZelle':'staffZelle')+'.cta'),'','soft')}</aside></div>`;
     }
     function modal(title,body,footer='') {
       adapter.openDialog?.(`<div class="overlay" data-shifts-overlay><section class="dialog shifts-dialog" role="dialog" aria-modal="true" aria-labelledby="shiftsDialogTitle"><div class="dialog-head"><h2 id="shiftsDialogTitle">${esc(title)}</h2>${button('close','',t('close'),'','soft')}</div><div class="dialog-body">${body}<p class="shifts-error" data-shifts-dialog-error role="alert"></p></div>${footer?`<div class="dialog-footer">${footer}</div>`:''}</section></div>`);
@@ -498,7 +504,7 @@
     }
     function openClaim(id,invitationId) {
       const shift=shiftById(id),state=read();if(!shift||shift.kind!=='dayhire'||closed(shift))return unavailable();
-      if(role()!=='staff'||owned(shift))return openShift(id);
+      if(role()!=='staff'||owned(shift))return openShift(id);if(restriction(state)){tell(restrictionMessage(restriction(state)));return;}
       if(!hasProfile()){modal(t('setup.staffProfile.title'),`<p>${esc(t('setup.staffProfile.body'))}</p>`,button('profile','',t('setup.staffProfile.cta'),'','primary'));return;}
       if(!hasZelle(zelle(state,member(),'staff'))){openSetup();return;}
       if(!hasZelle(zelle(state,shift.owner,'owner',shift))){tell(t('claim.salonZelleMissing'));return;}
@@ -511,7 +517,7 @@
       const mine=role()==='staff'&&state.assignments.find(row=>row.shiftId===id&&row.worker===member()&&OPEN.includes(row.status));
       let tools='';
       if(owned(shift))tools=button('edit',id,t('availability.edit'),'','soft');
-      else if(shift.kind==='dayhire'&&role()==='staff'&&!closed(shift)&&starts(shift)>now())tools=mine?button('openAssignment',mine.id,t('my.title')):pay(shift)>0?button('claim',id,t('claim.'+(mode(shift)==='Instant'?'instantCta':'applyCta')),overdue(state).length||occupied(state,shift)>=countNeeded(shift)?'disabled':'','primary'):button('contact',id,t('contact'),'','soft');
+      else if(shift.kind==='dayhire'&&role()==='staff'&&!closed(shift)&&starts(shift)>now())tools=mine?button('openAssignment',mine.id,t('my.title')):pay(shift)>0?button('claim',id,t('claim.'+(mode(shift)==='Instant'?'instantCta':'applyCta')),overdue(state).length||restriction(state)||occupied(state,shift)>=countNeeded(shift)?'disabled':'','primary'):button('contact',id,t('contact'),'','soft');
       else if(shift.kind==='daywork')tools=button('contact',id,t('contact'),'','soft');
       if(owned(shift)&&role()==='owner'&&shift.kind==='dayhire'&&!closed(shift)&&starts(shift)>now())tools+=button('workers',id,t('owner.findWorkers'),overdue(state).length?'disabled':'','soft')+button('cancelShift',id,t('owner.cancelShift'),'','soft');
       dialog={type:'shift',id};publishContext();

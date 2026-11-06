@@ -438,5 +438,7 @@
     try { localStorage.setItem(baselineKey, JSON.stringify(baselines)); } catch {}
     return rows;
   }
-  window.NEXORA_COMMUNITY_DEMO = {date, at, images, mediaURL, videos, videoURL, merge, market, extra:{feed,groups,pages,pagePosts,jobs,shifts,messages:[],promotions:{}}, blogs, connect, jobCandidates, shiftWorkflow};
+  // v3.1 starts with real user records or empty states; existing browser records are preserved.
+  const retain=current=>Array.isArray(current)?clone(current):[];
+  window.NEXORA_COMMUNITY_DEMO = {date,at,images,mediaURL,videos,videoURL,merge:retain,market:[],extra:{feed:[],groups:[],pages:[],pagePosts:[],jobs:[],shifts:[],messages:[],promotions:{}},blogs:[],connect:{members:[],chats:[],rooms:[],groupMessages:{}},jobCandidates:{},shiftWorkflow:{assignments:[],settlements:[]}};
 })();

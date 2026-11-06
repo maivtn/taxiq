@@ -69,10 +69,10 @@
     }
     function ensureFrame(name){
       if(frames.has(name))return frames.get(name);
-      const frame=document.createElement('iframe');frame.className='community-deals-frame';frame.title=ROUTES[selected].label;frame.hidden=true;
+      const frame=document.createElement('section');frame.className='community-deals-frame';frame.title=ROUTES[selected].label;frame.hidden=true;
       const record={frame,ready:false};frames.set(name,record);
       const url=new URL('deals/'+name+'.html?v=20261105-deals-controls-v5',BASE);url.searchParams.set('member',adapter.member);url.searchParams.set('role',adapter.role);
-      frame.src=url.href;frameHost.append(frame);
+      frameHost.append(frame);window.NEXORA_NATIVE.mount(frame,url,{onMessage:(data,source)=>{frame.contentWindow=source;window.receiveMessage(data,source);}}).then(api=>{frame.contentWindow=api.window;frame.contentDocument=api.document;frame.dispatchEvent(new Event('load'));}).catch(()=>{frame.textContent='Something went wrong. Please try again.';});
       frame.addEventListener('load',()=>{record.ready=true;if(active&&ROUTES[selected].module===name)configure(record);});
       return record;
     }
