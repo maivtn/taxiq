@@ -11,29 +11,7 @@
   <script src="ticket.js" defer></script>
 </head>
 <body>
-  <header class="app-header">
-    <button class="menu-button" type="button" aria-label="Expand menu"><span aria-hidden="true">▣</span> Expand menu</button>
-    <div class="header-search" aria-hidden="true"><span>⌕</span> Search staff, reviews, or tips...</div>
-    <div class="header-actions" aria-hidden="true"><span class="salon-mark">VIE</span><span class="notification">♧<b>30</b></span><span>▢</span><span>◎<small> EN</small></span><span>⠿</span></div>
-  </header>
-
   <main class="page">
-    <nav class="front-tabs" aria-label="Front Desk">
-      <button class="tab-arrow" type="button" aria-label="Previous tabs">‹</button>
-      <a class="tab-tile tile-overview" href="#"><img src="../../assets/icons/pos-front-desk/overview.svg" alt=""><span>Overview</span></a>
-      <a class="tab-tile tile-checkin" href="#"><img src="../../assets/icons/pos-front-desk/check-in.svg" alt=""><span>Check-in</span></a>
-      <a class="tab-tile tile-tickets" href="#"><img src="../../assets/icons/pos-front-desk/tickets.svg" alt=""><span>Tickets</span><b>14</b></a>
-      <a class="tab-tile tile-turn" href="#"><img src="../../assets/icons/pos-front-desk/turn-board.svg" alt=""><span>Turn Board</span></a>
-      <a class="tab-tile tile-tech" href="#"><img src="../../assets/icons/pos-front-desk/staffs-clock.svg" alt=""><span>Technicians</span></a>
-      <a class="tab-tile tile-checkout active" href="#"><img src="../../assets/icons/pos-front-desk/checkout-customer.svg" alt=""><span>Checkout Customer</span><b>11</b></a>
-      <a class="tab-tile tile-gift" href="#"><img src="../../assets/icons/pos-front-desk/gift-card-center.svg" alt=""><span>Gift Card Center</span></a>
-      <a class="tab-tile tile-completed" href="#"><img src="../../assets/icons/pos-front-desk/completed-services.svg" alt=""><span>Completed Services</span></a>
-      <a class="tab-tile tile-booking" href="#"><img src="../../assets/icons/pos-front-desk/appointments.svg" alt=""><span>Booking</span></a>
-      <a class="tab-tile tile-estimate" href="#"><img src="../../assets/icons/pos-front-desk/estimate.svg" alt=""><span>Estimate</span></a>
-      <a class="tab-tile tile-clock" href="#"><img src="../../assets/icons/pos-front-desk/staffs-clock.svg" alt=""><span>Staffs Clock</span></a>
-      <button class="tab-arrow" type="button" aria-label="Next tabs">›</button>
-    </nav>
-
     <section class="ticket-workspace" aria-label="Ticket #1">
       <div class="workspace-heading">
         <button id="back-button" class="back-button" type="button">← <span>Back</span></button>
@@ -93,8 +71,6 @@
       </div>
     </section>
   </main>
-
-  <footer class="page-footer"><span>© 2026 NEXORA Touch.</span><div><span class="store-badge">▶ &nbsp;GET IT ON<br><b>Google Play</b></span><span class="store-badge">● &nbsp;Download on the<br><b>App Store</b></span></div></footer>
 
   <dialog id="tip-dialog" class="tip-dialog" aria-labelledby="tip-title"><div class="tip-content"><div class="tip-heading"><h2 id="tip-title">Tip</h2><div><button id="hand-to-customer" type="button">Hand to customer</button><button id="close-tip" type="button" aria-label="Close">×</button></div></div><div id="customer-tip-title" class="customer-tip-title" hidden><strong>Add a tip</strong></div><div class="tip-field"><strong>TIP AS</strong><div id="tip-type" class="tip-type"><button type="button" data-tip-type="amount" aria-pressed="true">Amount</button><button type="button" data-tip-type="percent" aria-pressed="false">Percent</button></div></div><div class="tip-field"><strong>VALUE</strong><div id="tip-values" class="tip-values"></div></div><div id="tip-calculated" class="tip-calculated" hidden></div><div class="tip-footer"><button id="remove-tip" type="button" hidden>No Tip</button><button id="save-tip" type="button" disabled>Add Tip</button></div></div></dialog>
   <dialog id="print-dialog" class="print-dialog" aria-labelledby="print-dialog-title"><div class="print-dialog-header"><div><small>PRINT PREVIEW</small><h2 id="print-dialog-title">Print Ticket</h2></div><button type="button" class="close-print" aria-label="Close">×</button></div><div id="print-pages" class="print-pages"></div><div class="print-dialog-footer"><button type="button" class="close-print">Close</button><button type="button" id="print-now">Print Ticket</button></div></dialog>

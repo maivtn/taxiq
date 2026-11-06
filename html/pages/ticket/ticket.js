@@ -146,6 +146,7 @@
   function render() {
     document.body.classList.toggle('checkout-mode', state.mode === 'checkout');
     $('back-button').querySelector('span').textContent = state.mode === 'checkout' ? 'Back to Edit' : 'Back';
+    $('back-button').hidden = state.mode !== 'checkout';
     $('payment-area').hidden = state.mode !== 'checkout';
     renderCatalog(); renderGroups(); renderPreview(); renderPayment(); renderAction();
   }
@@ -253,8 +254,6 @@
   });
   $('service-search').addEventListener('input', event => { state.search = event.target.value; renderCatalog(); });
   $('tip-values').addEventListener('input', () => { state.tipChoice = null; updateTipSave(); });
-  document.querySelectorAll('.front-tabs a').forEach(anchor => anchor.addEventListener('click', event => event.preventDefault()));
-  document.querySelectorAll('.tab-arrow').forEach(button => button.addEventListener('click', () => document.querySelector('.front-tabs').scrollBy({ left: button.getAttribute('aria-label').startsWith('Next') ? 220 : -220, behavior: 'smooth' })));
 
   function updateTipSave() {
     const input = $('tip-values').querySelector('input');

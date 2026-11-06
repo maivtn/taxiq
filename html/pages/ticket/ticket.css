@@ -86,3 +86,6 @@
 .preview-icon{border:1px solid #d8dbf9}
 .preview-icon svg{width:16px;height:16px}
 @media(min-width:1001px){body:not(.checkout-mode) .technician-groups{max-height:210px}}
+/* Standalone Ticket workspace: no dashboard chrome. */
+.page{padding:24px 29px 48px}
+@media(max-width:650px){.page{padding:16px 12px 42px}}
