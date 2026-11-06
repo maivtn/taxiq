@@ -152,3 +152,41 @@
  .nexora-dashboard .detail-tax-audiences { grid-template-columns:1fr; }
 }
 .nexora-dashboard .detail-tax-audience .nexora-3d-icon { flex-shrink:0; }
+
+/* Restore the PO's operational tiles and service-menu panel. */
+.nexora-dashboard .detail-product-page { display:inline-flex; align-items:center; min-height:44px; margin-left:auto; padding:8px 12px; border:1px solid var(--line); border-radius:9px; color:var(--violet); font-size:12px; font-weight:700; text-decoration:none; }
+.nexora-dashboard .detail-link-copy { min-width:0; }
+.nexora-dashboard .detail-link[aria-disabled="true"] { border-style:dashed; cursor:default; }
+.nexora-dashboard button.detail-link { cursor:pointer; }
+.nexora-dashboard button.detail-link:hover { border-color:var(--violet); background:#f2efff; }
+.nexora-dashboard .pos-actions { align-items:stretch; }
+.nexora-dashboard .pos-action { position:relative; flex:0 1 calc((100% - 20px)/3); min-width:0; min-height:166px; flex-direction:column; align-items:stretch; justify-content:flex-start; gap:13px; padding:16px; background:linear-gradient(145deg,#fff,#f6f8fe); }
+.nexora-dashboard .pos-action-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.nexora-dashboard .pos-action-top img { width:36px; height:36px; object-fit:contain; }
+.nexora-dashboard .pos-action-step { display:flex; align-items:center; justify-content:center; width:25px; height:25px; border-radius:8px; background:#eeebff; color:#6551c8; font-size:11px; font-weight:800; }
+.nexora-dashboard .pos-action .detail-link-copy { padding-right:20px; font-weight:800; }
+.nexora-dashboard .pos-action .detail-link-arrow { position:absolute; right:14px; bottom:15px; }
+.nexora-dashboard .pos-action small { font-weight:400; }
+.nexora-dashboard .menu-sync-panel { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:14px; padding:17px; border:1px solid #d7e8df; border-radius:12px; background:linear-gradient(120deg,#f0faf6,#f8fbff); }
+.nexora-dashboard .menu-sync-panel > div:first-child { flex:1 1 380px; min-width:0; }
+.nexora-dashboard .menu-sync-panel h3 { margin:0 0 6px; font-size:15px; }
+.nexora-dashboard .menu-sync-panel p { margin:0 0 5px; font-size:12px; color:var(--muted); line-height:1.6; }
+.nexora-dashboard .menu-sync-panel small { color:#637d72; font-size:10px; }
+.nexora-dashboard .menu-sync-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.nexora-dashboard .menu-sync-actions a { display:inline-flex; align-items:center; min-height:44px; padding:9px 12px; border:1px solid #c7dcd1; border-radius:8px; background:#fff; color:#226c60; font-size:11px; font-weight:800; text-decoration:none; }
+@media (min-width:768px) and (max-width:1100px) {
+  .nexora-dashboard .pos-action { flex-basis:calc((100% - 10px)/2); }
+}
+@media (max-width:767px) {
+  .nexora-dashboard .detail-tabs { flex-wrap:nowrap; overflow-x:auto; margin:15px -3px 10px; padding:3px; }
+  .nexora-dashboard .detail-tabs button { flex:none; font-size:11px; padding:8px 10px; }
+  .nexora-dashboard .detail-return-actions { gap:7px; }
+  .nexora-dashboard .detail-product-page { margin-left:0; padding:8px 10px; font-size:11px; }
+  .nexora-dashboard .pos-action { flex-basis:calc((100% - 10px)/2); min-height:155px; padding:12px; gap:10px; font-size:12px; }
+  .nexora-dashboard .pos-action small { font-size:10px; }
+  .nexora-dashboard .pos-action-top img { width:30px; height:30px; }
+  .nexora-dashboard .menu-sync-panel { padding:13px; gap:10px; }
+  .nexora-dashboard .detail-marketing-grid > * { flex-basis:calc((100% - 12px)/2); }
+  .nexora-dashboard .detail-marketing-grid > :last-child { flex-basis:100%; }
+}
+@media (max-width:360px) { .nexora-dashboard .pos-action { flex-basis:100%; min-height:135px; } }

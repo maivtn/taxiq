@@ -55,7 +55,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "View details",
     "availability": "available",
     "showcaseOrder": 7,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/one-qr/index.html"
   },
   "payments": {
     "title": "Payments & Payouts",
@@ -142,7 +142,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "View details",
     "availability": "available",
     "showcaseOrder": 9,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/payments-payouts/index.html"
   },
   "pos": {
     "title": "SI POS",
@@ -493,7 +493,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "View details",
     "availability": "available",
     "showcaseOrder": 0,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/si-pos/index.html"
   },
   "aihub": {
     "title": "AI Hub",
@@ -553,6 +553,29 @@ window.NEXORA_PRODUCT_CATALOG = {
         "upcoming": "In development: AI content, review reply suggestions, customer segments and campaign results.",
         "sections": [
           {
+            "name": "Marketing & campaigns",
+            "items": [
+              {
+                "label": "Create campaign",
+                "description": "Choose a goal, audience and message",
+                "icon": "spark",
+                "url": "products/ai-marketing/studio.html#create"
+              },
+              {
+                "label": "Manage campaigns",
+                "description": "View and edit saved drafts",
+                "icon": "list",
+                "url": "products/ai-marketing/studio.html#manage"
+              },
+              {
+                "label": "Marketing performance",
+                "description": "Compare reach and booked appointments",
+                "icon": "chart",
+                "url": "products/ai-marketing/studio.html#performance"
+              }
+            ]
+          },
+          {
             "name": "Nexora",
             "items": [
               {
@@ -609,7 +632,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "View details",
     "availability": "available",
     "showcaseOrder": 1,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/ai-hub/index.html"
   },
   "reviews": {
     "title": "Reviews",
@@ -641,7 +664,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "View details",
     "availability": "available",
     "showcaseOrder": 10,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/reviews/index.html"
   },
   "gift": {
     "title": "Gift Card Center",
@@ -730,7 +753,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "View details",
     "availability": "available",
     "showcaseOrder": 5,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/gift-card-center/index.html"
   },
   "analytics": {
     "title": "Analytics",
@@ -762,7 +785,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "View details",
     "availability": "available",
     "showcaseOrder": 11,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/analytics/index.html"
   },
   "community": {
     "title": "Community",
@@ -815,7 +838,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "View details",
     "availability": "available",
     "showcaseOrder": 6,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/community/index.html"
   },
   "taxiq": {
     "hidden": true,
@@ -872,7 +895,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": false,
     "availability": "preview",
     "showcaseOrder": 8,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/tax-iq/index.html"
   },
   "spinwheel": {
     "title": "Spin Wheel",
@@ -885,7 +908,15 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Try the prize wheel",
+            "demo": "wheel"
+          },
+          {
+            "label": "Create a wheel campaign",
             "url": "products/spin-wheel/create.html"
+          },
+          {
+            "label": "Campaigns",
+            "url": "https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10"
           }
         ]
       }
@@ -905,6 +936,6 @@ window.NEXORA_PRODUCT_CATALOG = {
     "action": "Try the prize wheel",
     "availability": "preview",
     "showcaseOrder": 4,
-    "landingHref": "salon-home.html#salon-feature-explorer"
+    "landingHref": "products/spin-wheel/index.html"
   }
 };

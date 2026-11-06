@@ -24,7 +24,9 @@
     if (href.indexOf('#module-') === 0) {
       var module = href.slice(8);
       if (module === 'gift') return 'gift-card-center.html';
-      return 'dashboard.html?module=' + (module === 'aihub-marketing' ? 'aihub&section=marketing' : module);
+      if (module === 'pos-marketing') return 'dashboard.html?module=pos&group=3';
+      if (module === 'spin-wheel') module = 'spinwheel';
+      return 'dashboard.html?module=' + (module === 'aihub-marketing' || module === 'aimarketing' ? 'aihub&section=marketing' : module);
     }
     var anchors = {
       '#pos-front-desk': 'pos-front-desk.html',
@@ -41,15 +43,14 @@
       '#pos-loyalty': 'salon-setup-reward.html'
     };
     if (anchors[href]) return anchors[href];
+    if (href.indexOf('#salon-') === 0) return 'salon-home.html' + href;
     if (href[0] === '#') return 'dashboard.html' + href;
     if (!/^https?:/.test(href)) {
       if (/^(nexora_home_de_xuat|index)\.html/.test(href)) return 'nexora-home.html';
-      if (href === 'products/spin-wheel/create.html') return 'vlinkpay-campaigns.html?view=create';
       if (href.indexOf('products/') === 0) {
-        var product = href.split('/')[1], modules = {'si-pos':'pos','one-qr':'oneqr','payments-payouts':'payments','ai-hub':'aihub','ai-marketing':'aihub&section=marketing','reviews':'reviews','gift-card-center':'gift','analytics':'analytics','community':'community','spin-wheel':'spinwheel','tax-iq':'taxiq'};
-        if (product === 'gift-card-center') return 'gift-card-center.html';
-        if (product === 'ai-voice-sms') return 'pos-ai-voice.html';
-        return 'dashboard.html?module=' + (modules[product] || 'pos');
+        // Product stories and PO tools have their own content and navigation.
+        // Keep their paths, query and section instead of routing back to a module.
+        return href.replace(/^products\/(si-pos|one-qr|payments-payouts|ai-hub|ai-voice-sms|ai-marketing|reviews|gift-card-center|analytics|community|spin-wheel|tax-iq)\.html(?=[?#]|$)/, 'products/$1/index.html');
       }
       return href;
     }

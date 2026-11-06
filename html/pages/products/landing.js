@@ -2,7 +2,8 @@
   const data = JSON.parse(document.getElementById('page-data').textContent);
   const select = document.getElementById('language');
   const allowed = ['vi', 'en', 'zh', 'ko', 'es', 'ja', 'th', 'ar', 'fr'];
-  const saved = localStorage.getItem('nexora-dashboard-language-v1');
+  let saved;
+  try { saved = localStorage.getItem('nexora-dashboard-language-v1'); } catch (_) { /* Keep the page usable when storage is blocked. */ }
   let lang = allowed.includes(saved) ? saved : 'vi';
   const localeCatalog = window.NEXORA_PRODUCT_LOCALES || {};
   const originalLocaleText = new WeakMap();
@@ -84,6 +85,14 @@
   const pick = (value) => value?.[lang] || value?.en || value?.vi || '';
   const escapeHTML = (text) => String(text).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const all = selector => [...document.querySelectorAll(selector)];
+  const dashboardModules = { 'si-pos':'pos', 'one-qr':'oneqr', 'payments-payouts':'payments', 'ai-hub':'aihub', 'ai-voice-sms':'aihub', 'ai-marketing':'aihub&section=marketing', reviews:'reviews', 'gift-card-center':'gift', analytics:'analytics', community:'community', 'spin-wheel':'spinwheel' };
+  const breadcrumb = document.querySelector('.breadcrumb');
+  if (breadcrumb) {
+    const dashboard = document.createElement('a'); dashboard.textContent = 'Dashboard';
+    dashboard.href = '../../dashboard.html' + (dashboardModules[data.slug] ? '?module=' + dashboardModules[data.slug] : '');
+    const separator = document.createElement('span'); separator.textContent = '/'; separator.setAttribute('aria-hidden', 'true');
+    breadcrumb.prepend(dashboard, separator);
+  }
   const iconPaths = {
     storefront:'<path d="M3 10h18l-2-6H5l-2 6Zm1 0v10h16V10M8 20v-6h8v6"/>',
     calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3"/>',
@@ -643,7 +652,7 @@
 
   select.addEventListener('change', event => {
     lang = event.target.value;
-    localStorage.setItem('nexora-dashboard-language-v1', lang);
+    try { localStorage.setItem('nexora-dashboard-language-v1', lang); } catch (_) { /* The selected language still applies for this visit. */ }
     render();
   });
   render();

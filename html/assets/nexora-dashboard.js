@@ -9,6 +9,21 @@
   var search = document.getElementById('search'), category = document.getElementById('category');
   var cards = Array.from(document.querySelectorAll('#cards [data-module]'));
   var lastModule = '';
+  var moduleOpens = {}, usageKey = 'nexora-dashboard-module-opens-v1';
+  try {
+    var saved = JSON.parse(localStorage.getItem(usageKey) || '{}');
+    if (saved && typeof saved === 'object' && !Array.isArray(saved)) moduleOpens = saved;
+  } catch (_) {}
+  function openCount(key) { return Number.isSafeInteger(moduleOpens[key]) && moduleOpens[key] > 0 ? moduleOpens[key] : 0; }
+  function sortCards() {
+    cards.sort(function (a, b) {
+      return Number(b.dataset.module === 'pos') - Number(a.dataset.module === 'pos') ||
+        Number(catalog[a.dataset.module].availability === 'preview') - Number(catalog[b.dataset.module].availability === 'preview') ||
+        openCount(b.dataset.module) - openCount(a.dataset.module) ||
+        a.querySelector('.card-name').textContent.localeCompare(b.querySelector('.card-name').textContent, 'en');
+    });
+    cards.forEach(function (card, index) { card.style.setProperty('--card-index', index); document.getElementById('cards').appendChild(card); });
+  }
   function normalize(value) { return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase(); }
   function params() { return new URLSearchParams(window.location.search); }
   function updateURL(next, replace) {
@@ -32,16 +47,30 @@
     updateURL(next, true); filterCards();
   }
   function reset() { search.value = ''; category.value = 'all'; saveFilters(); search.focus(); }
-  function link(item) {
-    var href = item.linkPending ? '' : item.demo === 'wheel' ? 'vlinkpay-campaigns.html?view=create' : item.url ? routes.resolve(item.url) : '';
-    var unavailable = !item.linkPending && (item.unavailable || !href);
-    var node = document.createElement(item.linkPending ? 'button' : href && !item.unavailable ? 'a' : 'div');
-    if (item.linkPending) node.type = 'button';
+  var iconFiles = { arrival:'user-round', ticket:'ticket', queue:'layout-list', card:'credit-card', done:'circle-check', calendar:'calendar-days', estimate:'receipt', clock:'clock', customer:'user-round', gift:'gift', star:'star', spark:'sparkles', wallet:'wallet', list:'list', team:'users-round', chart:'layout-dashboard', settings:'settings', phone:'phone' };
+  function actionIcon(kind) {
+    var image = document.createElement('img'); image.src = '../assets/icon-oneqr/issue-2040-oneqr-' + (iconFiles[kind] || 'list') + '-3d.png';
+    image.width = 32; image.height = 32; image.alt = ''; image.setAttribute('aria-hidden', 'true'); image.loading = 'lazy';
+    return image;
+  }
+  function link(item, index, pos, workflow) {
+    var demo = item.demo === 'wheel';
+    var href = item.url ? routes.resolve(item.url) : '';
+    var unavailable = !!(item.linkPending || item.unavailable || (!href && !demo));
+    var node = document.createElement(demo ? 'button' : href && !unavailable ? 'a' : 'div');
+    if (demo) { node.type = 'button'; node.addEventListener('click', function () { window.NEXORA_WHEEL_DEMO.open(); }); }
+    if (unavailable) node.setAttribute('aria-disabled', 'true');
     node.className = 'detail-link' + (unavailable ? ' unavailable' : '');
-    var copy = document.createElement('span'); copy.textContent = item.label + (unavailable ? ' · unavailable' : ''); node.appendChild(copy);
+    if (pos) {
+      node.classList.add('pos-action');
+      var top = document.createElement('span'); top.className = 'pos-action-top'; top.appendChild(actionIcon(item.icon));
+      if (workflow) { var step = document.createElement('span'); step.className = 'pos-action-step'; step.textContent = String(index + 1); step.setAttribute('aria-hidden', 'true'); top.appendChild(step); }
+      node.appendChild(top);
+    }
+    var copy = document.createElement('span'); copy.className = 'detail-link-copy'; copy.textContent = item.label + (unavailable && !item.linkPending ? ' · unavailable' : ''); node.appendChild(copy);
     if (item.description) { var description = document.createElement('small'); description.textContent = item.description; copy.appendChild(description); }
-    if (href && !item.unavailable) {
-      node.href = href;
+    if ((href || demo) && !unavailable) {
+      if (href) node.href = href;
       if (item.newTab && /^https?:/.test(href)) { node.target = '_blank'; node.rel = 'noopener noreferrer'; }
       var arrow = document.createElement('i'); arrow.dataset.lucide = 'arrow-up-right'; arrow.className = 'detail-link-arrow'; arrow.setAttribute('aria-hidden','true'); node.appendChild(arrow);
     }
@@ -57,9 +86,18 @@
       var wrap = document.createElement('section'); wrap.className = 'detail-section';
       if (group.sections) { var heading = document.createElement('h3'); heading.textContent = section.name; wrap.appendChild(heading); }
       var list = document.createElement('div'); list.className = 'detail-link-list';
-      (section.items || []).forEach(function (item) { list.appendChild(link(item)); });
+      var pos = product.key === 'pos' && !group.sections;
+      list.classList.toggle('pos-actions', pos);
+      (section.items || []).forEach(function (item, i) { list.appendChild(link(item, i, pos, pos && index === 0)); });
       wrap.appendChild(list); host.appendChild(wrap);
     });
+    if (product.key === 'pos' && index === 0) {
+      var panel = document.createElement('section'); panel.className = 'menu-sync-panel';
+      panel.innerHTML = '<div><h3>Auto-updating service menu</h3><p>Design preview: each salon has its own menu. Edit services, prices and durations in Salon Settings → Services; the customer menu opens the salon’s Nexora data.</p><small>Bitcoin Nail Bar is the sample salon in this design</small></div><div class="menu-sync-actions"><a href="../menu/menu.html">View customer menu ↗</a><a href="pos-salon-settings.html?section=services">Manage services ↗</a></div>';
+      var salon = window.NEXORA_ACTIVE_SALON;
+      if (salon && typeof salon.name === 'string' && salon.name.trim()) panel.querySelector('small').textContent = salon.name.trim();
+      host.appendChild(panel);
+    }
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
     var marketing = document.getElementById('detail-marketing-preview');
     if (marketing) marketing.hidden = product.key !== 'aihub' || group.name !== 'Marketing Assistant';
@@ -70,6 +108,7 @@
     category.value = Array.from(category.options).some(function (o) { return o.value === state.get('category'); }) ? state.get('category') : 'all';
     filterCards();
     browser.hidden = !!product; detail.hidden = !product;
+    document.title = product ? product.title + ' · Nexora Touch' : 'Nexora Touch - Dashboard';
     window.NEXORA_SHELL?.refreshSidebar?.();
     if (!product) { if (focus && lastModule) document.querySelector('[data-module="' + lastModule + '"]')?.focus(); return; }
     lastModule = product.key;
@@ -77,6 +116,10 @@
     document.getElementById('detail-description').textContent = product.description;
     document.getElementById('detail-status').textContent = product.status;
     document.getElementById('detail-status').classList.toggle('pending', product.availability === 'preview');
+    document.getElementById('detail-product-page').href = product.landingHref;
+    document.querySelector('.detail-pos-back').href = 'dashboard.html?module=pos';
+    document.querySelector('.detail-pos-back').hidden = product.key === 'pos';
+    document.querySelector('#detail-marketing-preview .detail-marketing-heading a').href = 'products/ai-marketing/index.html';
     var tax = document.getElementById('detail-tax-preview'); if (tax) tax.hidden = product.key !== 'taxiq';
     var tabs = document.getElementById('detail-tabs'); tabs.replaceChildren();
     var index = state.get('section') === 'marketing' && product.key === 'aihub' ? 1 : Number(state.get('group')) || 0;
@@ -98,13 +141,25 @@
     var key = card.dataset.module;
     var cardIcon = card.querySelector('.card-icon');
     if (!cardIcon.querySelector('img')) cardIcon.innerHTML = window.NEXORA_ICONS.image(key, {size: 48});
-    card.addEventListener('click', function () { var next = params(); next.set('module', key); next.delete('section'); next.delete('group'); updateURL(next); renderRoute(true); });
+    card.addEventListener('click', function () {
+      moduleOpens[key] = openCount(key) + 1;
+      try { localStorage.setItem(usageKey, JSON.stringify(moduleOpens)); } catch (_) {}
+      sortCards();
+      var next = params(); next.set('module', key); next.delete('section'); next.delete('group'); updateURL(next); renderRoute(true);
+    });
   });
   document.getElementById('detail-back').addEventListener('click', function () { var next = params(); ['module','section','group'].forEach(function (key) { next.delete(key); }); updateURL(next); renderRoute(true); });
-  document.querySelector('.detail-pos-back').href = 'pos-front-desk.html';
   search.addEventListener('input', saveFilters); category.addEventListener('change', saveFilters);
   document.getElementById('clear-filter').addEventListener('click', reset);
   document.getElementById('empty-reset').addEventListener('click', reset);
   window.addEventListener('popstate', function () { renderRoute(false); });
+  // Keep handoff bookmarks and old product links useful after splitting the PO page.
+  if (location.hash && /^(#module-|#pos-|#salon-|#dashboard-onboarding|#modules)/.test(location.hash)) {
+    var target = new URL(routes.resolve(location.hash), location.href);
+    if (target.pathname !== location.pathname) { location.replace(target.href); return; }
+    var next = params(); target.searchParams.forEach(function (value, key) { next.set(key, value); });
+    var url = new URL(location.href); url.search = next.toString(); url.hash = ''; history.replaceState({}, '', url);
+  }
+  sortCards();
   renderRoute(false);
 })();

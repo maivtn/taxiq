@@ -1,0 +1,69 @@
+/* Preserve the PO tool sections with denser, wrapping layouts. */
+body { overflow-wrap: anywhere; }
+.top-inner, .shell { width: 100%; }
+.crumb { flex-wrap: wrap; line-height: 1.5; }
+.layout { display: flex; flex-wrap: wrap; gap: 18px; }
+.layout > .form { flex: 1.48 1 460px; min-width: 0; }
+.layout > .preview { flex: .85 1 290px; min-width: 0; }
+.panel, .form, .draft-list, .prize-list { display:flex; flex-direction:column; }
+.preview-prizes { display:flex; flex-wrap:wrap; }
+.preview-prizes > span { flex:1 1 calc(50% - 4px); min-width:0; }
+.fields { display: flex; flex-wrap: wrap; gap: 14px; }
+.fields > .field { flex: 1 1 calc(50% - 7px); min-width: 0; }
+.fields > .field.full { flex-basis: 100%; }
+.tabs { display: flex; flex-wrap: wrap; gap: 10px; }
+.tabs a { flex: 1 1 170px; }
+.metric-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.metric-grid > .metric { flex: 1 1 180px; min-width: 0; }
+.field select { appearance: none; padding-right: 44px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2352637f' stroke-width='2'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 16px center; }
+.tool-date { position: relative; display: block; min-width: 0; }
+.tool-date input { display: block; color: transparent; }
+.tool-date input:focus { color: #1e3354; }
+.tool-date output { position: absolute; inset: 0 38px 0 11px; display: flex; align-items: center; color: #1e3354; pointer-events: none; font-weight: 400; }
+.tool-date:focus-within output { visibility: hidden; }
+.tool-date input::-webkit-datetime-edit { opacity: 0; }
+.tool-date input:focus::-webkit-datetime-edit { opacity: 1; }
+.button, .draft-actions button { min-height: 44px; }
+.draft-card { min-width: 0; }
+.draft-card > div { min-width: 0; }
+.draft-card h3, .draft-card p { overflow-wrap: anywhere; }
+.draft-actions button:focus-visible, a:focus-visible, button:focus-visible { outline: 3px solid #8e7be8; outline-offset: 3px; }
+@media (max-width: 850px) {
+  .layout > .form, .layout > .preview { flex-basis: 100%; }
+  .layout > .preview { position: static; }
+}
+@media (max-width: 600px) {
+  .shell { padding: 16px 12px 32px; }
+  .top-inner { padding: 10px 12px; gap: 10px; }
+  .brand { font-size: 11px; letter-spacing: .04em; }
+  .brand img { width: 32px; height: 32px; }
+  .top a.back, .top-back { font-size: 11px; padding: 9px; }
+  .hero { min-height: 210px; margin: 12px 0; border-radius: 14px; }
+  .hero-copy { padding: 20px 16px; }
+  .hero h1, .heading h1 { font-size: 27px; }
+  .hero p, .heading p { font-size: 12px; }
+  .hero-chips { margin-top: 12px; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; margin: 16px 0 12px; gap: 6px; padding: 3px; }
+  .tabs a { flex: 1 0 140px; min-height: 44px; padding: 8px 10px; font-size: 11px; }
+  .tabs a span { width: 24px; height: 24px; }
+  .panel, .form { gap: 12px; }
+  .panel-head h2 { font-size: 21px; }
+  .fields > .field { flex-basis: 100%; }
+  .card { padding: 14px; border-radius: 12px; }
+  .card-head { margin-bottom: 14px; }
+  .fields { gap: 11px; }
+  .metric-grid > .metric { flex-basis: calc(50% - 5px); padding: 12px; }
+  .metric-grid > .metric:last-child { flex-basis: 100%; }
+  .preview-image { height: 140px; margin: -14px -14px 14px; }
+  .preview-stage { padding: 18px; }
+  .preview-wheel { width: min(260px, 100%); }
+  .draft-card { padding: 13px; gap: 10px; }
+  .prize-head, .prize-row { grid-template-columns: minmax(0, 1fr) 58px 68px; gap: 6px; }
+  .prize-row input { font-size: 12px; padding: 8px 6px; }
+  .prize-index { width: 23px; height: 25px; }
+  .prize-name { gap: 5px; }
+  .actions { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}
