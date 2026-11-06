@@ -225,15 +225,24 @@ body:not(.checkout-mode) #collapse-ticket{display:none}
 .add-services-item{cursor:pointer}
 .add-services-item:hover,.add-services-item.selected{border-color:#9397ed;background:#f8f8ff}
 .add-services-item:focus-visible{outline:2px solid #4648d8;outline-offset:2px}
-/* Slightly larger type for the ticket and service pickers. */
-.catalog-heading strong,.customer-card h2,.technician-card h2,.note-card h2,.payment-method-card h2,.payment-summary-card h2,.reward-card h2{font-size:12px}
-.category-list button,.add-services-categories button,.service-category-title,.add-services-list h3{font-size:12px}
-.service-tile strong,.add-services-item strong,.customer-line strong,.group-tech-trigger,.change-service-list>div{font-size:13px}
-.service-tile em,.service-tile small,.add-services-item span,.add-services-item small,.add-services-body p,.add-services-body .add-services-help{font-size:12px}
-.count-pill,.group-heading .tech-label,.group-subtotal,.preview-group-heading small,.tech-option-meta{font-size:11px}
-.ticket-line-name,.ticket-line-price,.preview-group-heading,.preview-item,.preview-addon,.payment-line,.summary-amounts>div{font-size:12px}
-.status,.line-actions button,.line-actions .line-tech-trigger,.add-on-line,.addon-discount,.group-actions button,.add-technician{font-size:11px}
+/* Readable type across the ticket workspace. */
+.catalog-heading strong,.customer-card h2,.technician-card h2,.note-card h2,.payment-method-card h2,.payment-summary-card h2,.reward-card h2{font-size:13px}
+.category-list button,.add-services-categories button{font-size:13px}
+.service-category-title,.add-services-list h3{font-size:12px}
+.service-tile strong,.add-services-item strong,.customer-line strong,.group-tech-trigger,.change-service-list>div{font-size:14px}
+.service-tile em,.service-tile small,.add-services-item span,.add-services-item small,.add-services-body p,.add-services-body .add-services-help{font-size:13px}
+.count-pill,.group-heading .tech-label,.group-subtotal,.preview-group-heading small,.tech-option-meta{font-size:12px}
+.ticket-line-name,.ticket-line-price,.preview-group-heading,.preview-item,.preview-addon,.payment-line,.summary-amounts>div{font-size:13px}
+.status,.line-actions button,.line-actions .line-tech-trigger,.add-on-line,.addon-discount,.group-actions button,.add-technician{font-size:12px}
 .add-services-categories button,.category-list button{min-height:35px}
 .add-services-item{min-height:68px}
-.add-services-stepper output,.add-services-footer span,.add-services-footer button{font-size:13px}
-.money-input>span,.custom-inputs .money-input input,.custom-addon-inputs .money-input input{font-size:12px}
+.add-services-stepper output,.add-services-footer span,.add-services-footer button{font-size:14px}
+.money-input>span,.custom-inputs .money-input input,.custom-addon-inputs .money-input input{font-size:13px}
+.catalog-search input,.add-services-search input,.custom-inputs>input,.custom-addon-inputs>input,.note-card textarea,.reward-card input{font-size:13px}
+.customer-phone,.text-link,.returning,.preview-heading p,.payment-group-label span,.receipt-row strong,.receipt-row button:not(.text-link){font-size:12px}
+.payment-group-label,.payment-summary-actions button,.discount-body,.change-service-list button{font-size:13px}
+.payment-methods button,.payment-extra button{font-size:15px}
+.add-services-header h2,.service-action-header h2{font-size:20px}
+.add-services-technician{font-size:14px}
+.discount-types button,.discount-values button,.discount-reason input,.change-service-list button{font-size:13px}
+@media(max-width:650px){.payment-methods button,.payment-extra button{font-size:14px}}
