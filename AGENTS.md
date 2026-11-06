@@ -58,6 +58,7 @@
 - Khi test bằng Chrome hoặc trình duyệt khác, ưu tiên chế độ headless; nếu cần giao diện thì chạy nền, không đưa cửa sổ lên trên cùng hoặc chiếm focus của ứng dụng người dùng đang làm việc.
 - Không gọi `bringToFront`, kích hoạt ứng dụng hoặc dùng thao tác tương đương để đưa cửa sổ/tab test ra foreground. Quy tắc này áp dụng cả khi mở trình duyệt, điều hướng, chụp ảnh và chuyển tab trong suốt quá trình test.
 - Nếu công cụ test tự đưa trình duyệt ra foreground và không thể chạy nền, chuyển sang công cụ/chế độ khác hỗ trợ chạy nền. Chỉ đưa trình duyệt lên foreground khi người dùng yêu cầu rõ ràng.
+- Ngay khi kết thúc test (kể cả test lỗi hoặc bị dừng), đóng các tab/cửa sổ, browser context và tiến trình trình duyệt do phiên test tạo; không để Chrome test tiếp tục chạy nền. Chỉ dọn tài nguyên của phiên test, không đóng tab/cửa sổ hoặc dừng trình duyệt người dùng đang sử dụng.
 
 ## Tổ chức kiểm thử JavaScript
 
