@@ -1,0 +1,2090 @@
+{
+  "title": "Community v2.2 — evidence trước / sau",
+  "createdAt": "2026-11-06T08:04:31.590116+00:00",
+  "versions": {
+    "before": {
+      "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+      "htmlTree": "b01785847e1f3e153f66000bc0efac6d1c4a8cb1"
+    },
+    "after": {
+      "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+      "htmlTree": "0b545f9d0d9838e13bb0dfa9b6de7eba812cb07d"
+    }
+  },
+  "entrypoint": "html/pages/community.html",
+  "scope": "Local Git snapshots, UI screenshots and sample actions only. No npm test, live deployment, real payments, messages, audio/video calls, GPS or backend verification.",
+  "viewports": {
+    "phone": {
+      "width": 390,
+      "height": 844
+    },
+    "ipad": {
+      "width": 820,
+      "height": 1180
+    },
+    "desktop": {
+      "width": 1440,
+      "height": 1000
+    }
+  },
+  "codesWithScreenshots": [
+    "SS01",
+    "SS02",
+    "SS03",
+    "SS04",
+    "SS05",
+    "SS06",
+    "SS07",
+    "SS08",
+    "SS09",
+    "SS10",
+    "SS11",
+    "SS12",
+    "SS13",
+    "SS14",
+    "SS15",
+    "SS16",
+    "SS17",
+    "SS18",
+    "SS20",
+    "SS21",
+    "SS22",
+    "SS23",
+    "SS24",
+    "SS25",
+    "SS26",
+    "SS27",
+    "SS28",
+    "SS29"
+  ],
+  "pairs": [
+    {
+      "id": "feed-destinations",
+      "title": "Feed — Marketplace, gợi ý nơi đăng và bài mẫu",
+      "codes": [
+        "SS02",
+        "SS03",
+        "SS29"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "feed",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/feed-destinations-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=feed",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=feed",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:51.178Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "marketDisabled": 0,
+            "suggestionVisible": 0
+          },
+          "pageErrors": [],
+          "sha256": "8339e03d61386e076d96949b4d22b8c78e06015fcc5856dc0d5a81069673d2cc",
+          "bytes": 185477,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/feed-destinations-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=feed",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=feed",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:53.266Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "marketDisabled": 3,
+            "suggestionVisible": 1
+          },
+          "pageErrors": [],
+          "sha256": "1aea8eb281f794c063acc7d9dfa2dc99ae63cc9f7ecaf2047d20dda741f48cc8",
+          "bytes": 206584,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Cùng form General post: bản sau có AI suggests / Use suggestion và vô hiệu hóa nhóm Marketplace. Các nhóm chưa tham gia được ghi rõ ngay trong danh sách."
+    },
+    {
+      "id": "feed-safety",
+      "title": "Feed — cùng nội dung yêu cầu đặt cọc, bấm Post",
+      "codes": [
+        "SS01"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "feed",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/feed-safety-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=feed",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=feed",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:55.522Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Sau Post: bài được lưu trong Feed local.",
+          "state": {
+            "formRemains": false,
+            "error": "",
+            "postVisible": 1
+          },
+          "pageErrors": [],
+          "sha256": "5f7c939773a246ce1d043cb3f9864d1ae85610d0281695f485ff3b11c22dc8df",
+          "bytes": 368029,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/feed-safety-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=feed",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=feed",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:58.180Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Sau Post: form còn mở và hiển thị cảnh báo.",
+          "state": {
+            "formRemains": true,
+            "error": "⛔ AI blocked: Requests for money / deposits outside the app — common scam signs. Please edit the content.",
+            "postVisible": 0
+          },
+          "pageErrors": [],
+          "sha256": "1e2db11af8bcf1a6f22ce7639ace304ff1b896bd9f6911e2fa714cca402f9c13",
+          "bytes": 216075,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Cùng tiêu đề và nội dung chứa “deposit by Zelle”, cùng bấm Post. Bản trước lưu bài local; bản sau giữ form và hiển thị thông báo chặn."
+    },
+    {
+      "id": "feed-phone",
+      "title": "Feed — form đăng bài trên viewport điện thoại",
+      "codes": [
+        "SS02",
+        "SS03",
+        "SS29"
+      ],
+      "device": "phone",
+      "person": "owner",
+      "area": "feed",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/feed-phone-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=feed",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=feed",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:01:00.044Z",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "role": "owner",
+          "note": "",
+          "state": {},
+          "pageErrors": [],
+          "sha256": "74e30fabcf4cd4ba28e91532dc08ac825c273424022b920bffeb3b3eba12a60c",
+          "bytes": 66365,
+          "width": 390,
+          "height": 844
+        },
+        "after": {
+          "file": "images/feed-phone-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=feed",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=feed",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:01:02.092Z",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "role": "owner",
+          "note": "",
+          "state": {},
+          "pageErrors": [],
+          "sha256": "51dffc9055c341ae9199dcbb93f2a41cb9f08fb345e3e55bb3e4492231261cce",
+          "bytes": 73236,
+          "width": 390,
+          "height": 844
+        }
+      },
+      "observation": "Cùng form và viewport 390 × 844. Ảnh tập trung vùng chọn nơi đăng; các phần dài được xem bằng cuộn trong modal."
+    },
+    {
+      "id": "jobs-templates",
+      "title": "Jobs — thư viện 8 mẫu tìm việc",
+      "codes": [
+        "SS04",
+        "SS29"
+      ],
+      "device": "desktop",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-templates-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:40.716Z",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "templateCount": 0
+          },
+          "pageErrors": [],
+          "sha256": "5371ec804b4a7b63bc14cf568a906b3ab4dce5228823c13ceeb89de1462f816e",
+          "bytes": 252295,
+          "width": 1440,
+          "height": 1000
+        },
+        "after": {
+          "file": "images/jobs-templates-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:42.396Z",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "templateCount": 8
+          },
+          "pageErrors": [],
+          "sha256": "aae8f70d61cc1806a08270ab2dfeee785373de7c519ed8f1912e84cb40c60b2f",
+          "bytes": 265396,
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "observation": "Mở Seeking work bằng tài khoản demo David Le. Bản sau mở thêm Use a template, hiển thị đủ 8 mẫu; bản trước mở thẳng form."
+    },
+    {
+      "id": "jobs-sentence",
+      "title": "Jobs — nói/gõ một câu và điền mẫu",
+      "codes": [
+        "SS05"
+      ],
+      "device": "ipad",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-sentence-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:44.062Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "sentenceControl": 0,
+            "title": "",
+            "city": "Houston, TX"
+          },
+          "pageErrors": [],
+          "sha256": "78d2d5681758b8c58074f9c22735093f3279d518389fc4d13ea3af44996787a8",
+          "bytes": 168699,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/jobs-sentence-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:46.212Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "sentenceControl": 1,
+            "title": "Full-time acrylic tech",
+            "city": "Houston, TX"
+          },
+          "pageErrors": [],
+          "sha256": "9672222fec3bbcb249cad479608e6e5f7be30d090d7fb1d541b9a57f777c4474",
+          "bytes": 179373,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Bản sau mở Say or type one sentence, bấm microphone demo rồi AI fill. Script chỉ tự điền câu mẫu, không ghi âm hoặc gọi AI thật."
+    },
+    {
+      "id": "jobs-pay-schedule",
+      "title": "Jobs — khoảng lương, ngày/buổi làm và phạm vi đi xa",
+      "codes": [
+        "SS07",
+        "SS08",
+        "SS09"
+      ],
+      "device": "ipad",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-pay-schedule-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:48.223Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "rangeInputs": 0,
+            "dayOptions": 0
+          },
+          "pageErrors": [],
+          "sha256": "396aa12eeda3d86af5c81920bc04f349e2a236a1e735afe0d32657652030da2c",
+          "bytes": 153560,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/jobs-pay-schedule-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:50.212Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "rangeInputs": 2,
+            "dayOptions": 7
+          },
+          "pageErrors": [],
+          "sha256": "5b296e87fb4e88fb668d78bb232c7757632ebbb0a21b0838cf9616c336d30eb4",
+          "bytes": 168001,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Bản sau nhập 1000–1200 /week và chọn Open to other states (needs housing). Ảnh trước đặt ở trường Salary type hiện có; bản sau ở vùng Pay & schedule mới."
+    },
+    {
+      "id": "jobs-writing-privacy",
+      "title": "Jobs — câu nhanh, công cụ viết, ẩn họ và thời hạn",
+      "codes": [
+        "SS06",
+        "SS10",
+        "SS11",
+        "SS12"
+      ],
+      "device": "ipad",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-writing-privacy-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:52.298Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "quickPhrases": 0,
+            "hideName": 0,
+            "duration": 0
+          },
+          "pageErrors": [],
+          "sha256": "396aa12eeda3d86af5c81920bc04f349e2a236a1e735afe0d32657652030da2c",
+          "bytes": 153560,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/jobs-writing-privacy-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:54.307Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "quickPhrases": 8,
+            "hideName": 1,
+            "duration": 1
+          },
+          "pageErrors": [],
+          "sha256": "b37505a0048456ad48259221fa10b84fde00b130590bb72011f3a927c3807fed",
+          "bytes": 171664,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Đối chiếu cuối form: 8 câu nhanh, ba nút trợ giúp viết, Hide last name và Listing duration. Đây là evidence về control hiển thị, chưa chạy hết tổ hợp dữ liệu."
+    },
+    {
+      "id": "jobs-my-posts",
+      "title": "Jobs — cùng một tin tìm việc vừa đăng",
+      "codes": [
+        "SS13",
+        "SS14",
+        "SS15",
+        "SS16"
+      ],
+      "device": "ipad",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-my-posts-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:56.473Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "actions": [
+              "Nail technician seeking work in Houston",
+              "Details",
+              "Edit",
+              "Close post"
+            ],
+            "text": "Seeking work\nRecruiting\nNail technician seeking work in Houston\nDavid Le · Houston, TX · Nov 6, 2026\n\nAvailable for full-time work in Houston. Gel-X, manicure and pedicure. Please send an invitation via NEXORA.\n\nNail & beauty\nNail technician\nGel-X, manicure and pedicure\nAvailable from Nov 9, 2026\nNegotiable\nDetails\nEdit\nClose post"
+          },
+          "pageErrors": [],
+          "sha256": "f8822db9d32a19ef518760071e357e86f59f5e3e67b9871569ca871be5c8efd4",
+          "bytes": 300636,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/jobs-my-posts-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T07:59:58.618Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "actions": [
+              "Nail technician seeking work in Houston",
+              "Details",
+              "Edit",
+              "Close post",
+              "⏸ Pause",
+              "🎉 Got hired",
+              "🗑 Delete"
+            ],
+            "text": "Seeking work\nRecruiting\nNail technician seeking work in Houston\nDavid Le · Houston, TX · Nov 6, 2026\n\nAvailable for full-time work in Houston. Gel-X, manicure and pedicure. Please send an invitation via NEXORA.\n\nNail & beauty\nNail technician\nGel-X, manicure and pedicure\nAvailable from Nov 9, 2026\nNegotiable\n\nDemo data · 0 views · 0 invites · 0 saves · 30 days left\n\nDetails\nEdit\nClose post\n⏸ Pause\n🎉 Got hired\n🗑 Delete"
+          },
+          "pageErrors": [],
+          "sha256": "986ad828fcc8be123b71bef739442a3f56d78f304c0511750d83b073b445f412",
+          "bytes": 269681,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Hai bản đều đăng bằng UI cùng một tin mẫu “Nail technician seeking work in Houston”. Bản sau có thêm Pause, Got hired, Delete và chỉ số demo local."
+    },
+    {
+      "id": "jobs-paused",
+      "title": "Jobs — Pause và Show again",
+      "codes": [
+        "SS13"
+      ],
+      "device": "ipad",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-paused-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:00.776Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "Không có Pause; giữ màn tin vừa đăng.",
+          "state": {
+            "text": "Seeking work\nRecruiting\nNail technician seeking work in Houston\nDavid Le · Houston, TX · Nov 6, 2026\n\nAvailable for full-time work in Houston. Gel-X, manicure and pedicure. Please send an invitation via NEXORA.\n\nNail & beauty\nNail technician\nGel-X, manicure and pedicure\nAvailable from Nov 9, 2026\nNegotiable\nDetails\nEdit\nClose post"
+          },
+          "pageErrors": [],
+          "sha256": "f8822db9d32a19ef518760071e357e86f59f5e3e67b9871569ca871be5c8efd4",
+          "bytes": 300636,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/jobs-paused-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:03.070Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "Đã bấm Pause; badge Paused và nút Show again.",
+          "state": {
+            "text": "Seeking work\nPaused\nNail technician seeking work in Houston\nDavid Le · Houston, TX · Nov 6, 2026\n\nAvailable for full-time work in Houston. Gel-X, manicure and pedicure. Please send an invitation via NEXORA.\n\nNail & beauty\nNail technician\nGel-X, manicure and pedicure\nAvailable from Nov 9, 2026\nNegotiable\n\nDemo data · 0 views · 0 invites · 0 saves · 30 days left\n\nDetails\nEdit\nClose post\n▶ Show again\n🎉 Got hired\n🗑 Delete"
+          },
+          "pageErrors": [],
+          "sha256": "93b9cc222ca0c9f31a23968e26a54820485f7f208af87ba120ec4d3a719b0d71",
+          "bytes": 269347,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Bản trước không có Pause, giữ màn tin vừa đăng. Bản sau đã bấm Pause: hiện badge Paused và nút Show again."
+    },
+    {
+      "id": "jobs-delete",
+      "title": "Jobs — xác nhận Delete",
+      "codes": [
+        "SS15"
+      ],
+      "device": "ipad",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-delete-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:08.738Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "Không có Delete.",
+          "state": {
+            "confirmation": 0
+          },
+          "pageErrors": [],
+          "sha256": "f8822db9d32a19ef518760071e357e86f59f5e3e67b9871569ca871be5c8efd4",
+          "bytes": 300636,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/jobs-delete-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:10.916Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "Mở xác nhận Delete; chưa xác nhận xóa.",
+          "state": {
+            "confirmation": 1
+          },
+          "pageErrors": [],
+          "sha256": "29f16d351292ff52392c5304e1e2d3a5c6752d4d00396073d7456ef3d7c66159",
+          "bytes": 217283,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Bản sau mở hộp xác nhận Delete; chưa xác nhận xóa. Bản trước chụp cùng tin, chưa có thao tác Delete."
+    },
+    {
+      "id": "jobs-phone",
+      "title": "Jobs — phần bổ sung trên viewport điện thoại",
+      "codes": [
+        "SS06",
+        "SS07",
+        "SS08",
+        "SS09",
+        "SS10",
+        "SS11",
+        "SS12"
+      ],
+      "device": "phone",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-phone-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:12.854Z",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "role": "staff",
+          "note": "",
+          "state": {},
+          "pageErrors": [],
+          "sha256": "4f623227104af9f76462a3ba04b8fd429aa49ae7e98b2840b3d84540da050ae4",
+          "bytes": 49036,
+          "width": 390,
+          "height": 844
+        },
+        "after": {
+          "file": "images/jobs-phone-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:14.848Z",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "role": "staff",
+          "note": "",
+          "state": {},
+          "pageErrors": [],
+          "sha256": "a637b38bc7ca9326517d77c1112978dff3bdec243bb1eb217fd6302a6050dc8e",
+          "bytes": 63409,
+          "width": 390,
+          "height": 844
+        }
+      },
+      "observation": "Cuộn đến cuối Seeking work ở viewport 390 × 844 để so sánh các câu nhanh, công cụ viết và footer Publish."
+    },
+    {
+      "id": "jobs-hired",
+      "title": "Jobs — kết quả Got hired",
+      "codes": [
+        "SS14"
+      ],
+      "device": "ipad",
+      "person": "staff",
+      "area": "jobs",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/jobs-hired-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:01:13.897Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "Không có Got hired.",
+          "state": {
+            "text": "Seeking work\nRecruiting\nNail technician seeking work in Houston\nDavid Le · Houston, TX · Nov 6, 2026\n\nAvailable for full-time work in Houston. Gel-X, manicure and pedicure. Please send an invitation via NEXORA.\n\nNail & beauty\nNail technician\nGel-X, manicure and pedicure\nAvailable from Nov 9, 2026\nNegotiable\nDetails\nEdit\nClose post"
+          },
+          "pageErrors": [],
+          "sha256": "46ab1aa42894ea6c229e26fbc845d38a2ce66131f34ebfaab3b0d678b27dc703",
+          "bytes": 300639,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/jobs-hired-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&role=staff&account=personal&member=David+Le&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:01:16.080Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "staff",
+          "note": "Đã bấm Got hired.",
+          "state": {
+            "text": "Seeking work\nGot hired\nNail technician seeking work in Houston\nDavid Le · Houston, TX · Nov 6, 2026\n\nAvailable for full-time work in Houston. Gel-X, manicure and pedicure. Please send an invitation via NEXORA.\n\nNail & beauty\nNail technician\nGel-X, manicure and pedicure\nAvailable from Nov 9, 2026\nNegotiable\n\nDemo data · 0 views · 0 invites · 0 saves · 30 days left\n\nDetails\n🗑 Delete"
+          },
+          "pageErrors": [],
+          "sha256": "490e2a6065d007d18fcfe1c2c0615dcc72087b0ad091e916e720487612fd426a",
+          "bytes": 286045,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Bản trước không có Got hired, giữ màn tin vừa đăng. Bản sau đã bấm Got hired và chụp trạng thái kết quả."
+    },
+    {
+      "id": "deals-owner-nav",
+      "title": "Deals — các lối vào Business tools dành cho owner",
+      "codes": [
+        "SS17",
+        "SS18",
+        "SS20",
+        "SS21"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "deals",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/deals-owner-nav-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=deals",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:00.029Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "businessEntries": []
+          },
+          "pageErrors": [],
+          "sha256": "95b23fcafec9bbad616a86be75ebb647c2df5f2c5a9d02482ada9b8439b0a832",
+          "bytes": 266351,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/deals-owner-nav-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=deals",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:01.836Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "businessEntries": [
+              "Create in POS ↗",
+              "Live coupons",
+              "Redeem counter",
+              "Campaigns",
+              "Grand opening · 30 days",
+              "Deal Match · client demand"
+            ]
+          },
+          "pageErrors": [],
+          "sha256": "c0186d7f8a45a7aad260ffe6f8277fab1b698370dca6888d3eefe5266ac0dab3",
+          "bytes": 251262,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Owner: bản sau bổ sung cụm Business tools, gồm Create in POS, Live coupons, Redeem counter, Campaigns, Grand opening · 30 days và Deal Match · client demand."
+    },
+    {
+      "id": "deals-campaign",
+      "title": "Deals — Campaigns",
+      "codes": [
+        "SS17"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "deals",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/deals-campaign-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=deals&dealTab=campaign",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&dealTab=campaign",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/deals/campaigns.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:05.109Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Mở bằng deep link vì bản trước chưa có nút trong navigation.",
+          "state": {
+            "active": []
+          },
+          "pageErrors": [],
+          "sha256": "212fc3b255e070c28790a264e2c3847301c2afb7cf3b79f0dd6a999eb58aab6f",
+          "bytes": 225474,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/deals-campaign-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=deals&dealTab=campaign",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner",
+            "http://127.0.0.1:8788/html/assets/community-v2/deals/campaigns.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:08.032Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Mở bằng nút Business tools vừa bổ sung.",
+          "state": {
+            "active": [
+              "Campaigns"
+            ]
+          },
+          "pageErrors": [],
+          "sha256": "bbe2d8059e0f3931505932b66b8294bb79d3e915efaba926e3a88a109d89978e",
+          "bytes": 227979,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Màn Campaigns đã có trong code trước sửa. Ảnh trước mở bằng deep link; ảnh sau mở từ nút Campaigns mới trên navigation."
+    },
+    {
+      "id": "deals-redeem",
+      "title": "Deals — Redeem counter",
+      "codes": [
+        "SS18"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "deals",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/deals-redeem-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=deals&dealTab=redeem",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&dealTab=redeem",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:11.606Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Mở bằng deep link vì bản trước chưa có nút trong navigation.",
+          "state": {
+            "active": []
+          },
+          "pageErrors": [],
+          "sha256": "a5d83b9cd3ca26718252c7ebb4c337928beb1523d2363902352e074f3313153d",
+          "bytes": 186180,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/deals-redeem-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=deals&dealTab=redeem",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:14.720Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Mở bằng nút Business tools vừa bổ sung.",
+          "state": {
+            "active": [
+              "Redeem counter"
+            ]
+          },
+          "pageErrors": [],
+          "sha256": "8807d4c7ac945f9b77d842c4f12fa96e722f26dd7469858129ce0f537071f995",
+          "bytes": 199239,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Màn Redeem counter đã có trước sửa qua deep link. Ảnh sau mở bằng nút Redeem counter mới; không thực hiện redeem thật."
+    },
+    {
+      "id": "deals-create",
+      "title": "Deals — Create in POS",
+      "codes": [
+        "SS20"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "deals",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/deals-create-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=deals&dealTab=nearby",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&dealTab=create",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:17.917Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Mở bằng deep link vì bản trước chưa có nút trong navigation.",
+          "state": {
+            "active": []
+          },
+          "pageErrors": [],
+          "sha256": "b433d6b60c7b490bc26e9452f012d235c8deb94774cfc533f34e5065896f7fe3",
+          "bytes": 266347,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/deals-create-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=deals&dealTab=create",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:20.834Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Mở bằng nút Business tools vừa bổ sung.",
+          "state": {
+            "active": [
+              "Create in POS ↗"
+            ]
+          },
+          "pageErrors": [],
+          "sha256": "fc116c23474b58f9ba1a44e1a81a4ef5b5905483f898177a5058b5972ad4d310",
+          "bytes": 227582,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Ảnh trước mở deep link Create in POS; ảnh sau bấm nút cùng tên. Chụp đường vào và giao diện local, chưa tạo khuyến mãi trên POS thật."
+    },
+    {
+      "id": "deals-openingBusiness",
+      "title": "Deals — Grand opening · 30 days",
+      "codes": [
+        "SS21"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "deals",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/deals-openingBusiness-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=deals&dealTab=openingBusiness",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&dealTab=openingBusiness",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/deals/grand-opening.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:24.146Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Mở bằng deep link vì bản trước chưa có nút trong navigation.",
+          "state": {
+            "active": []
+          },
+          "pageErrors": [],
+          "sha256": "9689733a16d8eb637aa1462437fba6d688d8e9bc21213a00b449a50fc109e84b",
+          "bytes": 225359,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/deals-openingBusiness-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=deals",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=deals&dealTab=openingBusiness",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner",
+            "http://127.0.0.1:8788/html/assets/community-v2/deals/grand-opening.html?v=20261105-deals-controls-v5&member=BITCOIN+NAIL+BAR&role=owner"
+          ],
+          "capturedAt": "2026-11-06T08:00:27.132Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Mở bằng nút Business tools vừa bổ sung.",
+          "state": {
+            "active": [
+              "Grand opening · 30 days"
+            ]
+          },
+          "pageErrors": [],
+          "sha256": "578df05eb5724c405b8fe82db2bd2d46f993fc84c0267f863bc4cf55b5e0c988",
+          "bytes": 227554,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "So sánh cùng màn chiến dịch 30 ngày: trước dùng deep link, sau bấm Grand opening · 30 days. Không coi màn khai trương dành cho khách là màn cấu hình này."
+    },
+    {
+      "id": "deals-personal-phone",
+      "title": "Deals — quyền personal trên viewport điện thoại",
+      "codes": [],
+      "device": "phone",
+      "person": "staff",
+      "area": "deals",
+      "note": "Đối chiếu quyền: personal không có các công cụ chỉ dành cho owner.",
+      "images": {
+        "before": {
+          "file": "images/deals-personal-phone-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=deals&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=deals&role=staff&account=personal&member=David+Le",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=David+Le&role=staff&account=personal",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=David+Le&role=staff"
+          ],
+          "capturedAt": "2026-11-06T08:00:28.966Z",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "businessEntries": 0
+          },
+          "pageErrors": [],
+          "sha256": "8428a419d9e6e2018d680530290cd4063c5cfa40bef193c92f6f20dfb99220e1",
+          "bytes": 113164,
+          "width": 390,
+          "height": 844
+        },
+        "after": {
+          "file": "images/deals-personal-phone-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=deals&role=staff&account=personal&member=David+Le",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=deals&role=staff&account=personal&member=David+Le",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=David+Le&role=staff&account=personal",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/deals/nearby.html?v=20261105-deals-controls-v5&member=David+Le&role=staff"
+          ],
+          "capturedAt": "2026-11-06T08:00:30.770Z",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "role": "staff",
+          "note": "",
+          "state": {
+            "businessEntries": 0
+          },
+          "pageErrors": [],
+          "sha256": "8428a419d9e6e2018d680530290cd4063c5cfa40bef193c92f6f20dfb99220e1",
+          "bytes": 113164,
+          "width": 390,
+          "height": 844
+        }
+      },
+      "observation": "Đối chiếu quyền personal trên viewport 390 × 844: cả hai bản đều không hiển thị cụm công cụ dành riêng cho owner."
+    },
+    {
+      "id": "shifts-owner-sharing",
+      "title": "Extra shifts — yêu cầu và công tắc chia sẻ thợ",
+      "codes": [
+        "SS22"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "shifts",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/shifts-owner-sharing-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=shift",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=shift&shiftTab=my-shifts",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:24.491Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "askButtons": 0
+          },
+          "pageErrors": [],
+          "sha256": "ac89374f02faca2bc6241bf69e59769620249d4da09d65ec40a613e53b72da7e",
+          "bytes": 205012,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/shifts-owner-sharing-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=shift",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=shift&shiftTab=my-shifts",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:26.399Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "askButtons": 2
+          },
+          "pageErrors": [],
+          "sha256": "5f32afcb3f87d8310809781b59a008cbbebbf1054cbdda3cbe29d35bf578fe29",
+          "bytes": 191796,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Owner xem danh sách thợ cùng tiệm và trạng thái consent. Bản sau có Ask tech; owner không có nút tự cấp consent thay thợ."
+    },
+    {
+      "id": "shifts-staff-consent",
+      "title": "Extra shifts — thợ tự đồng ý chia sẻ",
+      "codes": [
+        "SS22"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "shifts",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/shifts-staff-consent-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=shift&role=staff&account=personal&member=Kim+Tuyen",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=shift&role=staff&account=personal&member=Kim+Tuyen&shiftTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&member=Kim+Tuyen&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:29.295Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "Kim Tuyen",
+          "note": "Màn thợ chưa có yêu cầu/công tắc đồng ý chia sẻ.",
+          "state": {
+            "consent": 0
+          },
+          "pageErrors": [],
+          "sha256": "589c5f3a1cdbef254e45b654246dbf24618bfeeee5541d653e223b820d90ba80",
+          "bytes": 207273,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/shifts-staff-consent-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=shift&role=staff&account=personal&member=Kim+Tuyen",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=shift&role=staff&account=personal&member=Kim+Tuyen&shiftTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59&member=Kim+Tuyen&role=staff&account=personal",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:32.591Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "Kim Tuyen",
+          "note": "Cùng context local: owner hỏi Kim Tuyen; chính Kim Tuyen bật đồng ý.",
+          "state": {
+            "consent": 1
+          },
+          "pageErrors": [],
+          "sha256": "1241b3e521147dc3580a895b8c431041878f2a213d2c4034da5f820bcd4b573e",
+          "bytes": 207451,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Trong cùng context local: owner bấm Ask tech với Kim Tuyen, mở tài khoản demo Kim Tuyen và chính thợ bật đồng ý. Bản trước chụp màn thợ tương ứng, chưa có công tắc này."
+    },
+    {
+      "id": "shifts-shared-on",
+      "title": "Extra shifts — owner bật chia sẻ sau khi có consent",
+      "codes": [
+        "SS22"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "shifts",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/shifts-shared-on-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=shift",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=shift&shiftTab=my-shifts",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:34.432Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "shareSwitch": []
+          },
+          "pageErrors": [],
+          "sha256": "ac89374f02faca2bc6241bf69e59769620249d4da09d65ec40a613e53b72da7e",
+          "bytes": 205012,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/shifts-shared-on-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=shift",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=shift&shiftTab=my-shifts",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:00:37.993Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "shareSwitch": [
+              "On"
+            ]
+          },
+          "pageErrors": [],
+          "sha256": "903d3ea2dbcd0063dd7412bcad068c6e7245a056e4f2b200c0acdfcc9bf8c04d",
+          "bytes": 191381,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Sau khi Kim Tuyen tự đồng ý, owner bật chia sẻ On. Chỉ kiểm chứng chuỗi demo local này; chưa thực hiện lời mời giữa hai tiệm hoặc nhận ca."
+    },
+    {
+      "id": "connect-translate-tools",
+      "title": "Connect — Translate và công cụ chia sẻ trong chat",
+      "codes": [
+        "SS23",
+        "SS27"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "connect",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/connect-translate-tools-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261030-profile-share-single-action-v49"
+          ],
+          "capturedAt": "2026-11-06T08:00:46.117Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "translate": 0,
+            "shareShift": 0,
+            "shareLocation": 0
+          },
+          "pageErrors": [],
+          "sha256": "3e8a156b1a399f47cf6cf7cc9294d72028294daf77ab221dd6b05545643bfec5",
+          "bytes": 228193,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/connect-translate-tools-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261106-community-v22-restoration-v59"
+          ],
+          "capturedAt": "2026-11-06T08:00:48.232Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "translate": 1,
+            "shareShift": 1,
+            "shareLocation": 1
+          },
+          "pageErrors": [],
+          "sha256": "0ded7bd49c29707dceac826cadf04581efdfef9a2cf3f3b1f9e8ddf05c58e5da",
+          "bytes": 246988,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Cùng chat Kim Tuyen. Bản sau có bản dịch mẫu, nút Translate và hai lựa chọn Share an extra shift / Salon location. Bản dịch dùng dữ liệu PO mẫu."
+    },
+    {
+      "id": "connect-share-shift",
+      "title": "Connect — Chia sẻ thẻ ca làm thêm",
+      "codes": [
+        "SS27"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "connect",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/connect-share-shift-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261030-profile-share-single-action-v49"
+          ],
+          "capturedAt": "2026-11-06T08:00:49.848Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Chat chưa có lựa chọn chia sẻ ngữ cảnh này.",
+          "state": {
+            "cards": 0
+          },
+          "pageErrors": [],
+          "sha256": "939ac07a3234e2459c2bfb7295e2bc7926736180d54308b364ab0a6fdcf141aa",
+          "bytes": 228194,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/connect-share-shift-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261106-community-v22-restoration-v59"
+          ],
+          "capturedAt": "2026-11-06T08:00:52.065Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Chọn dữ liệu có sẵn và gửi thẻ trong chat local.",
+          "state": {
+            "cards": 1
+          },
+          "pageErrors": [],
+          "sha256": "63d92f16ad62d332a758787eeececcf6a401656a45d5b54857da2a81a53e80cd",
+          "bytes": 253430,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Bản sau chọn một ca có sẵn và gửi thẻ vào chat local. Bản trước chưa có lựa chọn này. Chưa nhận ca hoặc chuyển tiền."
+    },
+    {
+      "id": "connect-share-location",
+      "title": "Connect — Chia sẻ vị trí tiệm",
+      "codes": [
+        "SS27"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "connect",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/connect-share-location-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261030-profile-share-single-action-v49"
+          ],
+          "capturedAt": "2026-11-06T08:00:53.656Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Chat chưa có lựa chọn chia sẻ ngữ cảnh này.",
+          "state": {
+            "cards": 0
+          },
+          "pageErrors": [],
+          "sha256": "b6a586457a61df54510264bab241be9bafc7775b34bcd39e424e9ccdbc013e2f",
+          "bytes": 228484,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/connect-share-location-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261106-community-v22-restoration-v59"
+          ],
+          "capturedAt": "2026-11-06T08:00:55.895Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "Chọn dữ liệu có sẵn và gửi thẻ trong chat local.",
+          "state": {
+            "cards": 1
+          },
+          "pageErrors": [],
+          "sha256": "9db1f140ce50ca6e1c86a6e76ccfe31d14319925f3a43f0b56abb8fc238d594b",
+          "bytes": 243679,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Bản sau chọn Fanpage có sẵn và gửi thẻ vị trí tiệm vào chat local. Không dùng GPS hoặc gửi vị trí thiết bị."
+    },
+    {
+      "id": "connect-privacy",
+      "title": "Connect — tùy chọn AI scam alerts",
+      "codes": [
+        "SS28"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "connect",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/connect-privacy-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=privacy",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=privacy",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=privacy&rev=20261030-profile-share-single-action-v49"
+          ],
+          "capturedAt": "2026-11-06T08:01:07.081Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "switch": 0
+          },
+          "pageErrors": [],
+          "sha256": "d1b90ab60ca88f24298a6bfbd76a53212d731ec386eea08f1defb9f89e97e911",
+          "bytes": 168968,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/connect-privacy-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=privacy",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=privacy",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=privacy&rev=20261106-community-v22-restoration-v59"
+          ],
+          "capturedAt": "2026-11-06T08:01:08.885Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "switch": 1
+          },
+          "pageErrors": [],
+          "sha256": "61efde2ab625426b817a1000f5fb7ef3563a097176f1858a3fde125af0dc519b",
+          "bytes": 169967,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Cùng màn Settings / Privacy: bản sau thêm switch AI scam alerts. Ảnh ghi trạng thái mặc định; chưa kiểm toàn bộ tình huống phát hiện lừa đảo."
+    },
+    {
+      "id": "connect-phone",
+      "title": "Connect — công cụ chat trên viewport điện thoại",
+      "codes": [
+        "SS23",
+        "SS27"
+      ],
+      "device": "phone",
+      "person": "owner",
+      "area": "connect",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/connect-phone-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261030-profile-share-single-action-v49"
+          ],
+          "capturedAt": "2026-11-06T08:01:10.815Z",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "role": "owner",
+          "note": "",
+          "state": {},
+          "pageErrors": [],
+          "sha256": "c653071c3102469191880c96b6373bace20345f411564d34c216a1c58752de4f",
+          "bytes": 103752,
+          "width": 390,
+          "height": 844
+        },
+        "after": {
+          "file": "images/connect-phone-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261106-community-v22-restoration-v59"
+          ],
+          "capturedAt": "2026-11-06T08:01:12.844Z",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "role": "owner",
+          "note": "",
+          "state": {},
+          "pageErrors": [],
+          "sha256": "7511f543096d537dd9c9bac33a8c3bf2d5bed8d8fdd6262f26657c96b21dbe6f",
+          "bytes": 87830,
+          "width": 390,
+          "height": 844
+        }
+      },
+      "observation": "Cùng chat Kim Tuyen và viewport 390 × 844, cuộn tới thanh công cụ gửi tin để đối chiếu hai lựa chọn chia sẻ mới."
+    },
+    {
+      "id": "connect-call",
+      "title": "Connect — Speaker, phụ đề mẫu và nhãn Encrypted",
+      "codes": [
+        "SS24",
+        "SS25",
+        "SS26"
+      ],
+      "device": "desktop",
+      "person": "owner",
+      "area": "connect",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/connect-call-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261030-profile-share-single-action-v49"
+          ],
+          "capturedAt": "2026-11-06T08:01:59.104Z",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "role": "owner",
+          "note": "Cuộc gọi và phụ đề là UI demo; không có cuộc gọi/mã hóa thật.",
+          "state": {
+            "callText": "Kim Tuyen\nMinimize\n\n0:00\n\nMute\nEnd"
+          },
+          "pageErrors": [],
+          "sha256": "d2f99fd864c0e2bfc41933a5461c768bf080f954b80c5e261e055d90c861ca80",
+          "bytes": 286505,
+          "width": 1440,
+          "height": 1000
+        },
+        "after": {
+          "file": "images/connect-call-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=connect",
+            "about:blank",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-privacy-qr-layout.html?embedded=1&section=messages&rev=20261106-community-v22-restoration-v59"
+          ],
+          "capturedAt": "2026-11-06T08:02:00.967Z",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "role": "owner",
+          "note": "Cuộc gọi và phụ đề là UI demo; không có cuộc gọi/mã hóa thật.",
+          "state": {
+            "callText": "Kim Tuyen\nMinimize\n\nEncrypted · Demo\n\nAvailable after secure messaging launches\n\n0:00\n\nMute\nSpeaker\nAI captions\nEnd\nDemo data\n\nSaturday we have an 8-guest party — can you come at 9?\n\nThứ 7 có party 8 khách, em đi sớm 9h được không?"
+          },
+          "pageErrors": [],
+          "sha256": "3bb9c90e8dcfea7640f46d4626c535cd6c360aae223f21166c4020ef191aaddc",
+          "bytes": 301180,
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "observation": "Hai bản đều mở cuộc gọi thoại demo và bấm Join. Bản sau bật Speaker, AI captions, hiển thị phụ đề mẫu VI–EN và Encrypted · Demo; không có cuộc gọi hoặc mã hóa thật."
+    },
+    {
+      "id": "page-sample",
+      "title": "Page — Sample post và bộ chọn ảnh hiện có",
+      "codes": [
+        "SS29"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "forms",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/page-sample-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=pages",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=pages",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:01:55.547Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "sampleButton": 0,
+            "fileControls": 4
+          },
+          "pageErrors": [],
+          "sha256": "26aaeb3080a521e4663bb2e3bb035bf6135f3e945e560b7638a3354d16b25b20",
+          "bytes": 213439,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/page-sample-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=pages",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=pages",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:01:57.809Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "sampleButton": 1,
+            "fileControls": 4
+          },
+          "pageErrors": [],
+          "sha256": "53812c9acb8e883860a9c55fff48e3c9a10e9233b875b765791fc29277ca00c1",
+          "bytes": 215615,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Cùng form Create a Page: bản sau mở Sample post / Use this example. Các nút chọn ảnh đại diện và ảnh bìa hiện có vẫn được chụp trong cùng form."
+    },
+    {
+      "id": "blog-sample",
+      "title": "Blog — Use this example",
+      "codes": [
+        "SS29"
+      ],
+      "device": "ipad",
+      "person": "owner",
+      "area": "forms",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/blog-sample-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=blog",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=blog",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:01:59.496Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "sampleButton": 0
+          },
+          "pageErrors": [],
+          "sha256": "865d00c106574395791ca4d5a2c09827bf43e69d19adf2d5800f48ebad494c2f",
+          "bytes": 173925,
+          "width": 820,
+          "height": 1180
+        },
+        "after": {
+          "file": "images/blog-sample-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=blog",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=blog",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:02:01.129Z",
+          "viewport": {
+            "width": 820,
+            "height": 1180
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "sampleButton": 1
+          },
+          "pageErrors": [],
+          "sha256": "9e3e82e6b0cbe63980003f8cc59704f3954f79c93b0c233aabfa3bd6650e0d2e",
+          "bytes": 181392,
+          "width": 820,
+          "height": 1180
+        }
+      },
+      "observation": "Cùng form Write Blog: bản sau mở panel Sample post và nút Use this example. Không đăng bài lên NailHub thật."
+    },
+    {
+      "id": "hiring-sample",
+      "title": "Hiring — Use this example trong form tuyển dụng",
+      "codes": [
+        "SS29"
+      ],
+      "device": "desktop",
+      "person": "owner",
+      "area": "forms",
+      "note": "",
+      "images": {
+        "before": {
+          "file": "images/hiring-sample-before.png",
+          "sha": "817dd3b71ecd1ebce9dfd4141565a8f23580fc2a",
+          "sourceURL": "http://127.0.0.1:8787/html/pages/community.html?tab=jobs",
+          "frameURLs": [
+            "http://127.0.0.1:8787/html/pages/community.html?tab=jobs&jobsTab=browse",
+            "http://127.0.0.1:8787/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:02:02.808Z",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "sampleButton": 0
+          },
+          "pageErrors": [],
+          "sha256": "51fb6fa3302d4346e1c6b9e54b127b100e6ba47bc28e57a94493317cd081e25b",
+          "bytes": 259252,
+          "width": 1440,
+          "height": 1000
+        },
+        "after": {
+          "file": "images/hiring-sample-after.png",
+          "sha": "62899b094ee62867c6aa5ed6f66621448a18cb51",
+          "sourceURL": "http://127.0.0.1:8788/html/pages/community.html?tab=jobs",
+          "frameURLs": [
+            "http://127.0.0.1:8788/html/pages/community.html?tab=jobs&jobsTab=browse",
+            "http://127.0.0.1:8788/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261106-community-v22-restoration-v59",
+            "about:blank"
+          ],
+          "capturedAt": "2026-11-06T08:02:04.519Z",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "role": "owner",
+          "note": "",
+          "state": {
+            "sampleButton": 1
+          },
+          "pageErrors": [],
+          "sha256": "54558b2e821795441a60bd41d92842a6e4c6ff39050d84915f7a09a722208eb1",
+          "bytes": 266351,
+          "width": 1440,
+          "height": 1000
+        }
+      },
+      "observation": "Cùng form Hiring của owner trên viewport desktop: bản sau mở Sample post / Use this example."
+    }
+  ],
+  "reportChecks": {
+    "checkedAt": "2026-11-06T08:05:55.821984+00:00",
+    "browser": "151.0.7922.34",
+    "pairs": 30,
+    "imageCount": 60,
+    "failedImageLoads": [],
+    "viewports": [
+      {
+        "width": 1600,
+        "overflow": false
+      },
+      {
+        "width": 390,
+        "overflow": false
+      }
+    ],
+    "searchSS04": {
+      "visible": 1,
+      "text": "1 / 30 cặp"
+    },
+    "phoneFilter": {
+      "visible": 4,
+      "text": "4 / 30 cặp"
+    },
+    "zoomOpened": true,
+    "zoomSwapped": true,
+    "pageErrors": []
+  }
+}
