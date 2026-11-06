@@ -19,3 +19,6 @@
 .checkout-mode .action-area{position:fixed;right:max(29px,calc((100vw - 1600px)/2));bottom:14px;width:calc((100vw - 82px)/2);max-width:776px;box-shadow:0 4px 24px #23345b24}
 @media(max-width:1000px){.checkout-mode .action-area{right:12px;width:calc(100vw - 24px);max-width:none}}
 @media(max-width:650px){.catalog-heading{align-items:stretch;flex-direction:column}.catalog-heading .catalog-search{width:100%;max-width:none;margin-left:0}}
+.customer-view{display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:0 4px;font-size:12px;text-underline-offset:4px}
+.customer-view svg,.customer-phone svg{width:14px;height:14px;flex:none}
+.customer-phone{display:flex;align-items:center;gap:6px}
