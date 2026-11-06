@@ -186,7 +186,8 @@
       editButton.querySelector('.assign-icon').hidden = !state.hasPendingChanges;
       editButton.querySelector('.checkout-icon').hidden = state.hasPendingChanges;
       editButton.classList.toggle('checkout-ready', !state.hasPendingChanges);
-      editButton.setAttribute('aria-disabled', String(missingTech()));
+      editButton.disabled = !allLines().some(filled);
+      editButton.setAttribute('aria-disabled', String(editButton.disabled || missingTech()));
     } else {
       button.textContent = `Pay · ${money(total())}`;
       button.disabled = !state.paymentMethod || missingTech() || !allLines().some(filled);
@@ -421,7 +422,7 @@
     if (button.dataset.addCustomAddon) { const found = findLine(button.dataset.addCustomAddon); if (found) { const index = found.item.addons.push({ name: '', price: 0, discount: 0, custom: true }) - 1; renderGroups(); document.querySelector(`[data-custom-addon-name="${found.item.id}|${index}"]`)?.focus(); } return; }
     if (button.dataset.addCustom) { addCustom(button.dataset.addCustom); return; }
     if (button.dataset.removeLine) { const found = findLine(button.dataset.removeLine); if (found) { found.group.lines = found.group.lines.filter(line => line.id !== found.item.id); if (found.group.id === 'unassigned' && !found.group.lines.length) state.groups = state.groups.filter(group => group.id !== 'unassigned'); } markPending(); render(); return; }
-    if (button.dataset.removeGroup) { state.groups = state.groups.filter(group => group.id !== button.dataset.removeGroup); if (!state.groups.length) state.groups.push({ id: `group-${nextId++}`, tech: '', lines: [] }); state.activeGroup = state.groups[0].id; markPending(); render(); return; }
+    if (button.dataset.removeGroup) { state.groups = state.groups.filter(group => group.id !== button.dataset.removeGroup); state.activeGroup = state.groups[0]?.id ?? null; markPending(); render(); return; }
     if (button.dataset.removeAddon) { const [id, index] = button.dataset.removeAddon.split('|'); const found = findLine(id); if (found) found.item.addons.splice(Number(index), 1); markPending(); render(); return; }
     if (button.dataset.discountAddon) { const [id, index] = button.dataset.discountAddon.split('|'); const addon = findLine(id)?.item.addons[Number(index)]; if (addon?.discount) { addon.discount = 0; markPending(); render(); } else openDiscount(id, Number(index)); return; }
     if (button.dataset.discount) { const item = findLine(button.dataset.discount)?.item; if (item?.discount) { item.discount = 0; markPending(); render(); } else openDiscount(button.dataset.discount); return; }
