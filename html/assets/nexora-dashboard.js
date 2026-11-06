@@ -77,6 +77,16 @@
   }
   function renderGroup(product, index) {
     var group = product.groups[index], host = document.getElementById('detail-links');
+    var marketingView = product.key === 'aihub' && group.name === 'Marketing Assistant';
+    var title = marketingView ? 'AI Marketing Tool' : product.title;
+    // The PO marketing deep link has its own presentation within AI Hub.
+    document.getElementById('detail-title').textContent = title;
+    document.getElementById('detail-title').prepend(window.NEXORA_ICONS.contentNode(marketingView ? 'marketing' : product.iconKey, { size:42 }));
+    document.getElementById('detail-description').textContent = marketingView ? 'Choose an audience, prepare an SMS campaign and review results in one illustrated journey.' : product.description;
+    document.getElementById('detail-status').textContent = marketingView ? 'Interface preview' : product.status;
+    document.getElementById('detail-status').classList.toggle('pending', marketingView || product.availability === 'preview');
+    document.getElementById('detail-product-page').href = marketingView ? 'products/ai-marketing/index.html' : product.landingHref;
+    document.title = title + ' · Nexora Touch';
     host.replaceChildren(); host.setAttribute('aria-labelledby', 'module-group-' + index);
     host.id = 'detail-links';
     Array.from(document.querySelectorAll('#detail-tabs button')).forEach(function (tab, i) { tab.setAttribute('aria-selected', String(index === i)); tab.tabIndex = index === i ? 0 : -1; });
@@ -100,7 +110,7 @@
     }
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
     var marketing = document.getElementById('detail-marketing-preview');
-    if (marketing) marketing.hidden = product.key !== 'aihub' || group.name !== 'Marketing Assistant';
+    if (marketing) marketing.hidden = !marketingView;
   }
   function renderRoute(focus) {
     var state = params(), key = state.get('module'), product = Object.prototype.hasOwnProperty.call(catalog, key) && !catalog[key].hidden ? catalog[key] : null;
@@ -112,12 +122,6 @@
     window.NEXORA_SHELL?.refreshSidebar?.();
     if (!product) { if (focus && lastModule) document.querySelector('[data-module="' + lastModule + '"]')?.focus(); return; }
     lastModule = product.key;
-    document.getElementById('detail-title').textContent = product.title;
-    document.getElementById('detail-title').prepend(window.NEXORA_ICONS.contentNode(product.iconKey, { size:42 }));
-    document.getElementById('detail-description').textContent = product.description;
-    document.getElementById('detail-status').textContent = product.status;
-    document.getElementById('detail-status').classList.toggle('pending', product.availability === 'preview');
-    document.getElementById('detail-product-page').href = product.landingHref;
     document.querySelector('.detail-pos-back').href = 'dashboard.html?module=pos';
     document.querySelector('.detail-pos-back').hidden = product.key === 'pos';
     document.querySelector('#detail-marketing-preview .detail-marketing-heading a').href = 'products/ai-marketing/index.html';
