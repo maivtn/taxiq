@@ -214,3 +214,5 @@ body:not(.checkout-mode) #collapse-ticket{display:none}
 .payment-extra button[data-method=vlinkpay]{border-color:#c9ceff;background:#f0f2ff;color:#4648c8}
 .payment-extra button.selected{box-shadow:0 0 0 2px #4648d8 inset;border-color:#4648d8}
 @media(max-width:650px){.payment-extra button{flex:1 1 44%;font-size:13px}}
+.payment-summary-actions #discount-all{display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.payment-summary-actions #discount-all svg{width:14px;height:14px;flex:none}

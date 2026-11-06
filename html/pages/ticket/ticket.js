@@ -172,7 +172,7 @@
     $('summary-tip').textContent = money(state.tip);
     $('summary-discount').textContent = money(allLines().reduce((sum, item) => sum + item.discount + visibleAddons(item).reduce((addonSum, addon) => addonSum + (addon.discount || 0), 0), 0));
     $('payment-total').textContent = money(total());
-    $('discount-all').textContent = state.discountAll ? '↶ Undo discount all' : '◉ Discount all';
+    $('discount-all').querySelector('span').textContent = state.discountAll ? 'Undo discount all' : 'Discount all';
   }
 
   function renderAction() {
