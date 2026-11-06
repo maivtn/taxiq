@@ -24,3 +24,26 @@
 .customer-phone{display:flex;align-items:center;gap:6px}
 .checkout-mode .back-button{min-height:52px;padding:0 22px;border:2px solid #7779dc;background:#dde0ff;color:#292b9d;font-size:16px;font-weight:900;box-shadow:0 3px 10px #4446b32b}
 .checkout-mode .back-button:hover{background:#cdd2ff;border-color:#5e61ce}
+/* Checkout line removal follows the staging payment summary. */
+.payment-summary-card{padding:16px}
+.payment-lines{max-height:none;overflow:visible;margin-top:16px;padding-right:0}
+.payment-summary-group{padding-bottom:10px}
+.payment-summary-group+.payment-summary-group{border-top:1px dashed #e3e8f0;padding-top:12px}
+.payment-group-label,.payment-group-label:first-child{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;margin:0 0 8px;color:#4148bf;font-size:12px}
+.payment-group-label span{color:#62718a;font-size:10px;font-weight:700}
+.payment-line,.payment-line.addon{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:34px;padding:3px 0;border:0;font-size:11px}
+.payment-line.addon{padding-left:16px}
+.payment-item-label{min-width:0;display:inline-flex;align-items:center;gap:3px;flex-wrap:wrap}
+.payment-item-label strong{font-weight:700}
+.payment-category{color:#52617a}
+.addon-arrow{margin-right:2px;color:#4648d8;font-size:17px;line-height:1}
+.payment-line-end{display:inline-flex;align-items:center;gap:7px;flex:none}
+.payment-line-end>strong{min-width:66px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.payment-remove{width:28px;height:28px;display:grid;place-items:center;flex:none;padding:0;border:1px solid #ffe0e5;border-radius:8px;background:#fff;color:#e84865}
+.payment-remove:hover{background:#fff1f3;border-color:#f7b4c1}
+.payment-remove svg{width:12px;height:12px}
+.payment-remove-confirm{display:inline-flex;gap:4px}
+.payment-remove-confirm button{min-height:28px;border:1px solid #f2b0bd;border-radius:7px;background:#fff3f5;color:#bb3553;padding:0 7px;font-size:10px;font-weight:700}
+.payment-remove-confirm button:first-child{background:#d63c5f;color:#fff}
+.summary-amounts{border-top:1px solid #dce4f1;padding-top:8px}
+.summary-amounts #summary-discount{color:#e43f5e}
