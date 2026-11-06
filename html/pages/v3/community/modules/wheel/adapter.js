@@ -55,8 +55,10 @@
   };
   const oldToggle=toggleCheck;toggleCheck=function(key){oldToggle(key);persist();};
   const oldRedeem=redeemCredit;redeemCredit=function(){oldRedeem();persist();};
-  showEntryPopup=function(){};
-  for(const selector of ['header','.lang-toggle','#tourBtn','#welcomeBanner'])document.querySelector(selector)?.setAttribute('hidden','');
+  markEntryShown();closeEntryPopup();showEntryPopup=function(){};
+  const originalLanguage=setLang;setLang=function(value){originalLanguage(value);$('hubSub').hidden=true;document.documentElement.lang=value;};
+  const layout=document.createElement('style');layout.textContent='#tabbar{position:sticky;left:0;right:auto;transform:none;bottom:0;width:100%;max-width:none;z-index:20}#app{padding-bottom:24px}';document.head.append(layout);
+  for(const selector of ['header','.lang-toggle','#tourBtn','#tourStartBtn','#welcomeBanner'])document.querySelector(selector)?.setAttribute('hidden','');
   window.NEXORA_COMMUNITY_MODULE={setLanguage(value){setLang(value==='vi'?'vi':'en');renderAll();},navigate(route,context){if(context?.wheelTab)showTab(context.wheelTab);},deactivate(){tourStop();}};
   setLang(localStorage.getItem('nexora-v3:nexora-community-language')||'en');renderAuthState();renderAll();persist();
 })();

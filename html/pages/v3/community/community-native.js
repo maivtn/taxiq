@@ -4,7 +4,7 @@
   const browser = window;
   const fetched = new Map();
   function read(url) {
-    if (!fetched.has(url)) fetched.set(url, fetch(url).then(response => {
+    if (!fetched.has(url)) fetched.set(url, fetch(url, {cache:'no-cache'}).then(response => {
       if (!response.ok) throw new Error('Unable to load Community: ' + response.status);
       return response.text();
     }).catch(error => { fetched.delete(url); throw error; }));
@@ -38,7 +38,7 @@
     for (const attribute of parsed.body.attributes) if (attribute.name !== 'class') body.setAttribute(attribute.name, attribute.value);
     body.append(...parsed.body.childNodes); html.append(head, body);
     const style = document.createElement('style');
-    style.textContent = styles.join('\n') + '\n:host{display:block;min-width:0;height:100%;container:module / inline-size;isolation:isolate}[hidden]{display:none!important}.native-head{display:none}.native-html,.native-body{min-height:100%;margin:0;box-sizing:border-box}.native-body{overflow-x:clip}*,*::before,*::after{box-sizing:border-box}img,video{max-width:100%}dialog{max-width:calc(100% - 24px)}';
+    style.textContent = styles.join('\n') + '\n:host{display:block;min-width:0;height:100%;container:module / inline-size;contain:layout style;isolation:isolate}[hidden]{display:none!important}.native-head{display:none}.native-html,.native-body{min-height:100%;margin:0;box-sizing:border-box}.native-body{overflow-x:clip}*,*::before,*::after{box-sizing:border-box}img,video{max-width:100%}dialog{max-width:calc(100% - 24px)}';
     root.append(style, html);
     const events = new EventTarget(), variables = Object.create(null), regionID=crypto.randomUUID();
     const listeners = [], timers = new Set();
@@ -57,8 +57,8 @@
       for(const button of candidates){
         if(button.querySelector('svg')||button.closest('[data-user-text],[data-community-authored],.chat-message-body'))continue;
         const action=Object.values(button.dataset).join(' ')+' '+(button.getAttribute('aria-label')||'')+' '+button.textContent;
-        const rules=[[/close|cancel|đóng|hủy|×|✕/i,'X'],[/mic|micro|voice|giọng/i,'Mic'],[/video|reel/i,'Video'],[/photo|image|ảnh|camera/i,'Camera'],[/delete|remove|xóa|xoá/i,'Trash2'],[/save|lưu/i,'Save'],[/search|find|tìm/i,'Search'],[/back|prev|quay lại|trước/i,'ArrowLeft'],[/next|tiếp/i,'ArrowRight'],[/send|gửi|reply|trả lời/i,'Send'],[/create|add|new|thêm|tạo/i,'Plus'],[/edit|sửa/i,'SquarePen'],[/share|chia sẻ/i,'Share2'],[/call|gọi/i,'Phone'],[/copy|sao chép/i,'Copy'],[/filter|lọc/i,'SlidersHorizontal'],[/download|tải về/i,'Download'],[/check|approve|accept|duyệt|chấp nhận/i,'Check'],[/service|dịch vụ/i,'Wrench']];
-        const name=rules.find(([pattern])=>pattern.test(action))?.[1]||(button.type==='submit'?'Send':null),definition=name&&browser.lucide?.icons[name];
+        const rules=[[/spin|quay/i,'RotateCw'],[/close|cancel|đóng|hủy|×|✕/i,'X'],[/mic|micro|voice|giọng/i,'Mic'],[/video|reel/i,'Video'],[/photo|image|ảnh|camera/i,'Camera'],[/delete|remove|xóa|xoá/i,'Trash2'],[/save|lưu/i,'Save'],[/search|find|tìm/i,'Search'],[/back|prev|quay lại|trước/i,'ArrowLeft'],[/next|tiếp/i,'ArrowRight'],[/send|gửi|reply|trả lời/i,'Send'],[/create|add|new|thêm|tạo/i,'Plus'],[/edit|sửa/i,'SquarePen'],[/share|chia sẻ/i,'Share2'],[/call|gọi/i,'Phone'],[/copy|sao chép/i,'Copy'],[/filter|lọc/i,'SlidersHorizontal'],[/download|tải về/i,'Download'],[/check|approve|accept|duyệt|chấp nhận/i,'Check'],[/service|dịch vụ/i,'Wrench']];
+        const name=rules.find(([pattern])=>pattern.test(action))?.[1]||(button.type==='submit'&&button.closest('form')?'Send':null),definition=name&&browser.lucide?.icons[name];
         if(!definition)continue;
         for(const node of [...button.childNodes])if(node.nodeType===3)node.nodeValue=node.nodeValue.replace(/^\s*[\p{Extended_Pictographic}\uFE0F\u200D＋✦✧▣▤✎⌕↻▶⏸★☆🗑]+\s*/u,'');
         const svg=browser.lucide.createElement(definition,{width:18,height:18,class:'community-action-icon','aria-hidden':'true',focusable:'false'});button.prepend(svg);button.style.display='inline-flex';button.style.alignItems='center';button.style.justifyContent='center';button.style.gap='6px';

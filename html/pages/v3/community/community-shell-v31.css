@@ -7,3 +7,5 @@
 .platform-button{display:inline-flex;align-items:center;justify-content:center;gap:7px}.platform-button svg{flex:none}
 
 .hub-account-drawer{position:fixed;z-index:100;top:0;bottom:0;left:0;width:min(360px,calc(100vw - 24px));background:#fff;box-shadow:0 0 0 100vmax #0b122077;padding:24px;overflow:auto}.hub-account-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.hub-account-drawer p{overflow-wrap:anywhere;color:#68758b}.hub-account-drawer nav{display:grid;gap:8px;margin-top:24px}.hub-account-drawer .hub-nav-item{justify-content:flex-start;text-decoration:none;min-height:48px;color:#17294c}
+
+.hub-menu [data-hub-route="assistant"]{display:none}@container community (max-width:767px){.hub-menu [data-hub-route="assistant"]{display:flex}}

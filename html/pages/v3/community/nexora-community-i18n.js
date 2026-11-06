@@ -3,6 +3,11 @@
 (() => {
   const isConnect = location.pathname.includes('privacy-qr-layout');
   const communityPairs = `
+Quyền riêng tư	Privacy
+Duyệt bài	Post approval
+Dịch vụ & sản phẩm	Services & products
+Hộp thư	Inbox
+Thiết lập	Setup
 Gọi	Call
 Ảnh	Photos
 Người theo dõi	Followers

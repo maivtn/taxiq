@@ -183,7 +183,7 @@
     <div class="card" style="margin-top:18px;" id="earn-card">
       <h3>⭐ <span data-i18n="earn">Đóng góp = nhận điểm NEXORA</span></h3>
       <div style="font-size:13.8px; line-height:2; color:#454f61;">
-        ✍️ <span data-i18n="e1">Viết review</span> <b style="color:#d9480f;">+20</b><br>
+        ✍️ <span data-i18n="e1">Viết review</span> <b style="color:#d9480f;">+50</b><br>
         💬 <span data-i18n="e2">Bình luận hữu ích</span> <b style="color:#d9480f;">+5</b><br>
         🏠 <span data-i18n="e3">Tạo trang / nhóm</span> <b style="color:#d9480f;">+50</b><br>
         🍳 <span data-i18n="e4">Chia sẻ mẹo nấu ăn</span> <b style="color:#d9480f;">+15</b>
@@ -337,7 +337,7 @@ setInterval(()=>{ const slides=document.querySelectorAll(".hero img.slide"); con
   slides[slide].classList.remove("on"); dots[slide].classList.remove("on"); slide=(slide+1)%slides.length;
   slides[slide].classList.add("on"); dots[slide].classList.add("on"); }, 4200);
 /* ================= I18N (khung chính) ================= */
-const I18N = { en: { pts:"NEXORA Points", login:"Sign in with NEXORA ID", "hero-h":"Great food anywhere —<br>ask the local community first.", "hero-p":"One community per region: locals review real places, share cooking tips, hunt deals. Contribute well — earn NEXORA points.", explore:"Explore dishes", createpage:"+ Create a Page / Group", regions:"Communities by region", pages:"Featured pages & groups", create2:"+ Create your page / group", createnote:"Owners create restaurant pages · Home cooks create recipe groups · Anyone can, free.", earn:"Contribute = earn NEXORA points", e1:"Write a review", e2:"Helpful comment", e3:"Create a page / group", e4:"Share a cooking tip", writereview:"✍️ Write a review now", creator:"Have a YouTube / TikTok / Facebook channel? Attach it to your page — new videos appear in your region's community automatically.", m1h:"Create your page / group", m1s:"Owners create pages for menus + deals. Cooks & creators create groups to build their own community. It appears in the left column instantly.", "f-type":"Type", "f-name":"Page / group name", "f-region":"Region", cancel:"Cancel", createbtn:"Create now · +50 pts", m2h:"Write a review", m2s:"Your review appears at the top of the region feed. Real, helpful reviews = +20 NEXORA points.", "f-place":"Place / dish you review", "f-stars":"Star rating", "f-text":"Content", postbtn:"Post review · +50 pts" } };
+const I18N = { en: { pts:"NEXORA Points", login:"Sign in with NEXORA ID", "hero-h":"Great food anywhere —<br>ask the local community first.", "hero-p":"One community per region: locals review real places, share cooking tips, hunt deals. Contribute well — earn NEXORA points.", explore:"Explore dishes", createpage:"+ Create a Page / Group", regions:"Communities by region", pages:"Featured pages & groups", create2:"+ Create your page / group", createnote:"Owners create restaurant pages · Home cooks create recipe groups · Anyone can, free.", earn:"Contribute = earn NEXORA points", e1:"Write a review", e2:"Helpful comment", e3:"Create a page / group", e4:"Share a cooking tip", writereview:"✍️ Write a review now", creator:"Have a YouTube / TikTok / Facebook channel? Attach it to your page — new videos appear in your region's community automatically.", m1h:"Create your page / group", m1s:"Owners create pages for menus + deals. Cooks & creators create groups to build their own community. It appears in the left column instantly.", "f-type":"Type", "f-name":"Page / group name", "f-region":"Region", cancel:"Cancel", createbtn:"Create now · +50 pts", m2h:"Write a review", m2s:"Your review appears at the top of the region feed. Real, helpful reviews = +50 NEXORA points.", "f-place":"Place / dish you review", "f-stars":"Star rating", "f-text":"Content", postbtn:"Post review · +50 pts" } };
 let lang = localStorage.getItem("nexora-v3:nexora-community-language")||"en"; const viCache = {};
 document.querySelectorAll("[data-i18n]").forEach(el=>{ viCache[el.dataset.i18n] = el.innerHTML; });
 $("#lang-btn").onclick = ()=>{ lang = lang==="vi" ? "en" : "vi"; $("#lang-btn").textContent = lang==="vi" ? "EN" : "VI";
@@ -349,7 +349,7 @@ const TOUR = [
   { sel:"#feed", tt:"3 · Bảng tin sống / Live feed", tx:"Review, mẹo nấu ăn, deal — bấm Thích, mở Bình luận và gõ thử, Chia sẻ: tất cả bấm được như app thật." },
   { sel:"#pages-card", tt:"4 · Tự tạo trang & nhóm / Create pages & groups", tx:"Chủ quán tạo fanpage, đầu bếp tạo nhóm. Bấm nút này và tạo thử một trang — nó hiện ngay vào danh sách." },
   { sel:"#deals-card", tt:"5 · Deal của quán / Merchant deals", tx:"Quán tự đăng khuyến mãi vào cộng đồng vùng của mình." },
-  { sel:"#earn-card", tt:"6 · Điểm NEXORA dùng chung / Shared points", tx:"Viết review +20, bình luận +5, tạo trang +50. Điểm cộng thật trên góc phải — dùng chung toàn hệ sinh thái, không tách ví." },
+  { sel:"#earn-card", tt:"6 · Điểm NEXORA dùng chung / Shared points", tx:"Viết review +50, bình luận +5, tạo trang +50. Điểm cộng thật trên góc phải — dùng chung toàn hệ sinh thái, không tách ví." },
   { sel:"#pts-box", tt:"7 · Một NEXORA ID / One identity", tx:"Đăng nhập một tài khoản cho Food Community, NEXORA Community và mọi sản phẩm VLINKPAY." }
 ];
 let tourIdx = 0, tourTimer = null, tourOn = false;
@@ -374,8 +374,8 @@ $("#tour-close").onclick = tourStop;
 $("#tour-pause").onclick = e=>{ if(tourTimer && e.target.dataset.p!=="1"){ clearTimeout(tourTimer); e.target.textContent="Tiếp tục"; e.target.dataset.p="1"; } else { e.target.textContent="Tạm dừng"; e.target.dataset.p=""; tourTimer=setTimeout(()=>{ if(tourOn){ tourIdx++; tourShow(tourIdx);} }, 1200); } };
 ["pointerdown","wheel","keydown"].forEach(ev=>window.addEventListener(ev, ()=>{ if(tourOn) tourStop(); }, { passive:true }));
 /* ================= INIT ================= */
-renderRegions(); renderPages(); renderFeed(); renderDeals();
+/* The adapter initializes the persisted Food records and common language. */
 
 </script>
-<script src="adapter.js?v=20261106-v31"></script></body>
+<script src="adapter.js?v=20261106-v31-qa3"></script></body>
 </html>

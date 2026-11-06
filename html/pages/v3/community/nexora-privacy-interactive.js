@@ -243,7 +243,7 @@
   function thread(name, context, messages, threadId, allowCalls = false) {
     messages=window.NEXORA_COMMUNITY_CONNECT?.seedMessages(threadId,messages)||messages;
     const seeded=state.clearedChats?.[threadId]?[]:messages.map((message,index)=>({...message,id:message.id||threadId+'-seed-'+index,author:message.author||(message.mine?currentMember:name),createdAt:message.createdAt||new Date(new Date().setHours(9,index,0,0)).toISOString()}));
-    const allMessages = state.deletedChats.includes(threadId) ? [] : [...seeded, ...(Array.isArray(state.sentMessages[threadId]) ? state.sentMessages[threadId] : [])];
+    const allMessages = state.deletedChats.includes(threadId) ? [] : [...seeded, ...(Array.isArray(state.sentMessages[threadId]) ? state.sentMessages[threadId] : [])].filter((row,index,rows)=>rows.findIndex(item=>item.id===row.id)===index);
     currentMessages=allMessages;
     const initials = name.split(/\s+/).map(part => part[0]).slice(-2).join('').toUpperCase();
     const group = threadId.startsWith('group-');
@@ -340,6 +340,7 @@
       const source = state.sourceChats[kind];
       const messages=window.NEXORA_COMMUNITY_DEMO?.connect?.chats?.find(chat=>chat.id===kind)?.messages||[];
       html = thread(source.recipient, source.reference, messages, kind, true);
+      if(source.requestStatus==='pending')html='<div class="surface">'+['accepted','ignored','blocked'].map((action,index)=>'<button type="button" class="secondary" data-source-request="'+esc(kind)+'" data-source-request-action="'+action+'">'+[ui('Accept','Chấp nhận'),ui('Ignore','Bỏ qua'),ui('Block','Chặn')][index]+'</button>').join('')+'</div>'+html;
     } else if (kind.startsWith('group-')&&window.NEXORA_COMMUNITY_CONNECT) {
       const room=window.NEXORA_COMMUNITY_CONNECT.resolveThread(kind);
       if(!room){currentMessages=[];pendingChatAttachment=null;mediaGeneration++;closeChatRecording();const panel=$('#detailPanel');panel.replaceChildren();panel.classList.add('hidden');currentDetail='';showSection('groups');return false;}
@@ -368,6 +369,7 @@
     requestAnimationFrame(()=>{const list=panel.querySelector('.chat-message-list');if(list)list.scrollTop=list.scrollHeight;});
     panel.classList.remove('hidden');
     if (window.parent !== window) window.parent.postMessage({type:'nexora-connect-detail',open:true}, parentMessageOrigin);
+    if(state.sourceChats[kind]?.requestStatus==='pending')for(const control of document.querySelectorAll('#detailPanel #messageText,#detailPanel [data-send-message],#detailPanel [data-start-call]'))control.disabled=true;
     $('#connectStage').classList.add('detail-open');
     $('#connectStage').classList.toggle('default-preview', defaultPreview);
     document.querySelectorAll('.row-button.is-selected').forEach(button => button.classList.remove('is-selected'));
@@ -381,11 +383,13 @@
   function renderMessages() {
     let sourceList = $('#communitySourceChats');
     if (!sourceList) { sourceList = document.createElement('div'); sourceList.id = 'communitySourceChats'; $('#directPanel .surface:nth-child(2)').append(sourceList); }
-    sourceList.innerHTML = Object.entries(state.sourceChats).filter(([id])=>!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)).map(([id,source])=>'<button class="row-button" data-detail="'+esc(id)+'" data-initials="'+esc(initials(source.recipient))+'"><span><strong>'+esc(chatPref(id).nickname||source.recipient)+'</strong><small>'+esc(source.reference)+'</small></span><span class="arrow">›</span></button>').join('');
-    $('#requestCount').textContent = state.request === 'pending' ? '1' : '0';
+    sourceList.innerHTML = Object.entries(state.sourceChats).filter(([id,source])=>!['pending','ignored','blocked'].includes(source.requestStatus)&&!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)).map(([id,source])=>'<button class="row-button" data-detail="'+esc(id)+'" data-initials="'+esc(initials(source.recipient))+'"><span><strong>'+esc(chatPref(id).nickname||source.recipient)+'</strong><small>'+esc(source.reference)+'</small></span><span class="arrow">›</span></button>').join('');
+    const incoming=Object.entries(state.sourceChats).filter(([,source])=>source.requestStatus==='pending');
+    $('#requestCount').textContent = String(incoming.length+(state.request==='pending'?1:0));
     $('#requestRow').innerHTML = state.request === 'pending'
       ? '<button class="row-button" data-detail="request" data-initials="MN"><span><strong>Mai Nguyễn</strong><small>Are the white chairs still available?</small></span><span class="arrow">View ›</span></button>'
       : '<p>No new requests.</p>';
+    if(incoming.length){if(state.request!=='pending')$('#requestRow').innerHTML='';$('#requestRow').insertAdjacentHTML('beforeend',incoming.map(([id,source])=>'<button class="row-button" data-detail="'+esc(id)+'"><span><strong>'+esc(source.recipient)+'</strong></span><span class="arrow">'+ui('View','Xem')+' ›</span></button>').join(''));}
     let accepted = $('#acceptedRow');
     if (!accepted) {
       accepted = document.createElement('div');
@@ -394,7 +398,7 @@
     }
     accepted.innerHTML = state.request === 'accepted' && !state.archivedChats.includes('chat-mai') && !state.deletedChats.includes('chat-mai') ? '<button class="row-button" data-detail="chat-mai" data-initials="MN"><span><strong>Mai Nguyễn</strong><small>About your 12 white waiting chairs</small></span><span class="arrow">›</span></button>' : '';
     for(const id of ['chat-kim','chat-sally']){const row=document.querySelector('#directPanel .surface:nth-child(2) [data-detail="'+id+'"]');if(row){row.style.display=!state.sentMessages[id]?.length||state.archivedChats.includes(id)||state.deletedChats.includes(id)?'none':'';row.querySelector('strong').textContent=chatPref(id).nickname||({'chat-kim':'Kim Tuyen','chat-sally':'Sally Thanh Hoang'}[id]);}}
-    $('#recentChatsEmpty').classList.toggle('hidden',[...['chat-kim','chat-sally'].filter(id=>state.sentMessages[id]?.length),'chat-mai',...Object.keys(state.sourceChats)].some(id=>!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)&&(id!=='chat-mai'||state.request==='accepted')));
+    $('#recentChatsEmpty').classList.toggle('hidden',[...['chat-kim','chat-sally'].filter(id=>state.sentMessages[id]?.length),'chat-mai',...Object.keys(state.sourceChats).filter(id=>!['pending','ignored','blocked'].includes(state.sourceChats[id].requestStatus))].some(id=>!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)&&(id!=='chat-mai'||state.request==='accepted')));
     const archived=state.archivedChats.filter(id=>!state.deletedChats.includes(id));
     $('#archivedChatsCard').classList.toggle('hidden',archived.length===0);
     $('#archivedChatRows').innerHTML=archived.map(id=>{const person=members.find(member=>member.detail===id||(id==='chat-mai'&&member.detail==='request'))||(state.sourceChats[id]?{name:state.sourceChats[id].recipient}:null);if(!person)return '';return '<button class="row-button" data-detail="'+esc(id)+'" data-initials="'+esc(initials(person.name))+'"><span><strong>'+esc(chatPref(id).nickname||person.name)+'</strong><small>'+esc(ui('Archived · tap to open','Đã lưu trữ · bấm để mở'))+'</small></span><span class="arrow">›</span></button>';}).join('');
@@ -691,6 +695,7 @@
       $('#detailPanel [data-send-message]')?.click();
     }
   });
+  document.addEventListener('click',event=>{const button=event.target.closest('[data-source-request-action]');if(!button)return;event.preventDefault();const id=button.dataset.sourceRequest,action=button.dataset.sourceRequestAction;if(!['accepted','ignored','blocked'].includes(action)||!state.sourceChats[id])return;if(mutate(next=>{next.sourceChats[id].requestStatus=action;if(action==='blocked'){next.chatPrefs[id]||={};next.chatPrefs[id].blocked=true;}})){showSection('messages');if(action==='accepted')showDetail(id);}else toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));});
   $('#memberQuery').addEventListener('input', renderMemberResults);
   $('#backToCommunityBtn').addEventListener('click',()=>{if(window.parent!==window)window.parent.postMessage({type:'nexora-connect-back-community'},parentMessageOrigin);else location.href='nexora-community-complete.html?view=feed';});
   $('#groupName').addEventListener('input', () => { $('#confirmCreateGroup').disabled = !$('#groupName').value.trim(); });

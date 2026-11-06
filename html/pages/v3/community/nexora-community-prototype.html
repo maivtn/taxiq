@@ -204,7 +204,7 @@
   <link rel="stylesheet" href="community-deals-workflow.css?v=20261106-community-v22-restoration-v59">
 
   <script src="/html/assets/industry-icons.js?v=20261105-deals-controls-v5" data-industry-icons></script>
-<link rel="stylesheet" href="community-expansion.css?v=20261106-v31"></head>
+<link rel="stylesheet" href="community-expansion.css?v=20261106-v31-qa3"></head>
 <body>
 <script>
   if(new URLSearchParams(location.search).get('embedded')==='1')document.body.classList.add('embedded');
@@ -302,19 +302,19 @@
 <div id="notifyPanel" class="notify-panel panel hide" role="dialog" aria-label="Thông báo phù hợp"></div>
 <div id="modalRoot"></div><div id="toast" class="toast hide" role="status"></div>
 <script src="/html/assets/vendor/tom-select/tom-select.complete.min.js"></script>
-<script src="community-demo-data.js?v=20261106-v31"></script>
+<script src="community-demo-data.js?v=20261106-v31-qa3"></script>
 <script src="community-page-ads.js?v=20261030-page-ads-v2"></script>
 <script src="nexora-us-geo-2025.js"></script>
 <script src="nexora-us-place-centers-2025.js"></script>
 <script src="community-record-store.js?v=20261029-community-tour-actions-v21"></script>
-<script src="community-group-workflow.js?v=20261106-v31"></script>
-<script src="community-jobs-expansion.js?v=20261106-v31"></script>
-<script src="community-jobs-workflow.js?v=20261106-v31"></script>
-<script src="community-shifts-workflow.js?v=20261106-v31"></script>
-<script src="community-feed-social.js?v=20261106-v31"></script>
+<script src="community-group-workflow.js?v=20261106-v31-qa3"></script>
+<script src="community-jobs-expansion.js?v=20261106-v31-qa3"></script>
+<script src="community-jobs-workflow.js?v=20261106-v31-qa3"></script>
+<script src="community-shifts-workflow.js?v=20261106-v31-qa3"></script>
+<script src="community-feed-social.js?v=20261106-v31-qa3"></script>
 <script src="community-feed-composer.js?v=20261106-community-v22-restoration-v59"></script>
 <script src="community-deals-selects.js?v=20261105-deals-controls-v5"></script>
-<script src="community-deals-workflow.js?v=20261106-v31"></script>
+<script src="community-deals-workflow.js?v=20261106-v31-qa3"></script>
 <script>
 (() => {
   const KEY='nexora-v3:nexora-market-prototype-v1';
@@ -935,7 +935,7 @@
   const previewView=previewParams.get('view');
   if(previewParams.get('embedded')==='1')document.body.classList.add('embedded');
   if(previewParams.get('mobile')==='1')document.body.classList.add('mobile-preview');
-  window.addEventListener('message',event=>{if(event.source!==window.parent||(location.protocol!=='file:'&&event.origin!==location.origin))return;if(event.data?.type==='nexora-close-modal'){closeModal();dealsWorkflow?.closeDetail();}if(event.data?.type==='nexora-community-context')openContext(event.data.context);if(event.data?.type==='nexora-open-view'&&['feed','groups','market','pages','jobs','daywork','deals','blog','messages'].includes(event.data.view))setView(event.data.view);});
+  window.addEventListener('message',event=>{if(event.source!==window.parent||(location.protocol!=='file:'&&event.origin!==location.origin))return;if(event.data?.type==='nexora-close-modal'){closeModal();dealsWorkflow?.closeDetail();}if(event.data?.type==='nexora-suspend'&&!$('#modalRoot form'))closeModal();if(event.data?.type==='nexora-community-context')openContext(event.data.context);if(event.data?.type==='nexora-open-view'&&['feed','groups','market','pages','jobs','daywork','deals','blog','messages'].includes(event.data.view))setView(event.data.view);});
   document.addEventListener('click',event=>{if(event.target.closest('#fillExample'))fillExample();if(event.target.closest('#fillBlogExample'))fillBlogExample();});
   const feedAdapter={groupType:group=>groupWorkflow?.store.groupType(group),getFeed:()=>[...extra.feed,...listings],removePost:removeFeedPost,avatarFor:feedAvatar,isBusiness:feedBusiness,getGroups:()=>(groupWorkflow?.store.groups()||extra.groups).map(group=>({...group,joined:groupWorkflow?groupWorkflow.store.joined(group.id):Boolean(membershipFlags()[group.id])})),getJoinedGroups:()=>(groupWorkflow?.store.groups()||extra.groups).filter(group=>groupWorkflow?groupWorkflow.store.joined(group.id):membershipFlags()[group.id]),currentMember:ME,role:ROLE,navigateFeed,renderPost:post=>feedCardHTML({...post,surface:post.type==='sale'||post.type==='want'?'market':'feed'}),contactPost:contact,markSold:post=>{const item=listings.find(row=>row.id===post.id);if(!item||item.owner!==ME||item.status!=='open')return false;const previous=item.status;item.status=item.type==='want'?'bought':'sold';if(!save()){item.status=previous;return false;}return true;},save:saveExtra,render:renderExtra,openTemplate,editPost:item=>item.type==='sale'||item.type==='want'?form(item):openTemplate(item.kind,item),openDialog:html=>{$('#modalRoot').innerHTML=html;},closeDialog:closeModal,escape:esc,toast};
   feedSocial=window.NEXORA_COMMUNITY_FEED_SOCIAL?.mount({...feedAdapter,render:()=>{render();renderExtra();}})||null;
@@ -950,12 +950,12 @@
   setInterval(()=>{if(extra.pagePosts.some(post=>post.status==='scheduled'&&post.publishAt&&new Date(post.publishAt).getTime()<=Date.now())){renderExtra();const open=document.querySelector('#communityPageScreen [data-page-detail-id],#modalRoot [data-page-detail-id]');if(open){const page=extra.pages.find(x=>x.id===open.dataset.pageDetailId),tab=open.querySelector('[data-page-tab].active')?.dataset.pageTab;if(page&&tab==='scheduled')pageDetail(page,'scheduled');}}},30000);
 })();
 </script>
-<script src="nexora-community-i18n.js?v=20261030-community-english-v32"></script>
+<script src="nexora-community-i18n.js?v=20261106-v31-qa3"></script>
   <script src="/html/assets/vendor/lucide.min.js" defer></script>
   <script src="/html/assets/vendor/sweetalert2.all.min.js?v=11.26.25" defer></script>
-  <script src="community-ui.js?v=20261106-v31" defer></script>
-  <script src="community-pages-expansion.js?v=20261106-v31"></script>
-  <script src="community-pages-screen.js?v=20261106-v31" defer></script>
+  <script src="community-ui.js?v=20261106-v31-qa3" defer></script>
+  <script src="community-pages-expansion.js?v=20261106-v31-qa3"></script>
+  <script src="community-pages-screen.js?v=20261106-v31-qa3" defer></script>
 <script src="community-page-photos.js?v=20261030-page-photo-viewer-v1" defer></script>
 </body>
 </html>

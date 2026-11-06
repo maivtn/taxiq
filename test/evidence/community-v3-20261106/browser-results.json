@@ -1,0 +1,412 @@
+{
+  "matrix": [
+    {
+      "width": 390,
+      "route": "feed",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "groups",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "pages",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "deals",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "jobs",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "shift",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "connect",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "realestate",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "food",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "shop",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "transfer",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "reels",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "live",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "news",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "wallet",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "wheel",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "meet",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "account",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 390,
+      "route": "assistant",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "feed",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "groups",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "pages",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "deals",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "jobs",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "shift",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "connect",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "realestate",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "food",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "shop",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "transfer",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "reels",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "live",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "news",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "wallet",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "wheel",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "meet",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "account",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 834,
+      "route": "assistant",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "feed",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "groups",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "pages",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "deals",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "jobs",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "shift",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "connect",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "realestate",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "food",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "shop",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "transfer",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "reels",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "live",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "news",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "wallet",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "wheel",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "meet",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "account",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    },
+    {
+      "width": 1440,
+      "route": "assistant",
+      "error": false,
+      "documentOverflow": false,
+      "moduleOverflow": false
+    }
+  ],
+  "failures": [],
+  "pageErrors": [],
+  "resourceErrors": [],
+  "mobileDrawerWallet": true,
+  "mobileAssistantLucide": true,
+  "routing": {
+    "personal": "/html/pages/v3/staff-community.html",
+    "business": "/html/pages/dashboard.html"
+  }
+}
