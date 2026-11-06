@@ -83,6 +83,15 @@
     ['[data-action="close"],[data-extra-action="closeJob"],[data-extra-action="closeShift"]','Check'],
     ['[data-social-action="contact-seller"],[data-jobs-action="job-chat"],[data-jobs-action="application-chat"],[data-jobs-action="applicant-chat"]','MessageCircle'],
     ['#jobsToggleFilters','SlidersHorizontal'],
+    ['#templateForm [data-jobs-action="sentence-mic"]','Mic'],
+    ['#templateForm [data-jobs-action="sentence-fill"],#templateForm [data-jobs-action="ai-write"],[data-composer-suggest]','Sparkles'],
+    ['#templateForm [data-jobs-action="ai-english"]','Languages'],
+    ['#templateForm [data-jobs-action="ai-shorten"]','Scissors'],
+    ['#templateForm [data-jobs-action="sentence-example"]','Quote'],
+    ['#templateForm [data-jobs-action="all-days"]','CalendarCheck'],
+    ['#templateForm [data-jobs-action="quick-phrase"]','Plus'],
+    ['#templateForm [data-jobs-action="save-draft"],[data-composer-save-draft]','Save'],
+    ['#fillExample,#fillBlogExample','FileInput'],
     ['[data-jobs-action="detail"],[data-jobs-action="view-application"]','FileText'],
     ['[data-jobs-action="save"]','Bookmark'],
     ['[data-jobs-action="candidate"],[data-jobs-action="applicant-profile"]','UserRound'],
@@ -122,6 +131,10 @@
   function decorateButtons() {
     if(!window.lucide)return;
     for(const [selector,name] of buttonIcons)document.querySelectorAll(selector).forEach(button=>addButtonIcon(button,name));
+    document.querySelectorAll('[data-community-inline-icon]').forEach(holder=>{
+      const definition=window.lucide.icons[holder.dataset.communityInlineIcon];
+      if(definition&&!holder.querySelector('svg'))holder.append(window.lucide.createElement(definition,{width:16,height:16,class:'community-action-icon','aria-hidden':'true',focusable:'false'}));
+    });
     document.querySelectorAll('[data-community-group-action="membership"]').forEach(button=>addButtonIcon(button,button.getAttribute('aria-pressed')==='true'?'UserMinus':'UserPlus'));
     document.querySelectorAll('[data-follow-page]').forEach(button=>addButtonIcon(button,button.getAttribute('aria-pressed')==='true'?'UserCheck':'UserPlus'));
     document.querySelectorAll('[data-page-primary]').forEach(button=>addButtonIcon(button,button.dataset.communityPrimary==='booking'?'CalendarDays':'MessageCircle'));
