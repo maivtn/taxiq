@@ -1,0 +1,243 @@
+[
+  {
+    "width": 1440,
+    "tab": "feed",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 1440,
+    "tab": "groups",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 1440,
+    "tab": "market",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 1440,
+    "tab": "pages",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 1440,
+    "tab": "deals",
+    "changedPixels": 1948,
+    "changedPercent": 0.13528,
+    "above8Pixels": 1893,
+    "bounds": [
+      318,
+      520,
+      1395,
+      1000
+    ]
+  },
+  {
+    "width": 1440,
+    "tab": "jobs",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 1440,
+    "tab": "shift",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 1440,
+    "tab": "blog",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 1440,
+    "tab": "connect",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 834,
+    "tab": "feed",
+    "changedPixels": 131,
+    "changedPercent": 0.01413,
+    "above8Pixels": 72,
+    "bounds": [
+      318,
+      729,
+      790,
+      990
+    ]
+  },
+  {
+    "width": 834,
+    "tab": "groups",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 834,
+    "tab": "market",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 834,
+    "tab": "pages",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 834,
+    "tab": "deals",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 834,
+    "tab": "jobs",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 834,
+    "tab": "shift",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 834,
+    "tab": "blog",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 834,
+    "tab": "connect",
+    "changedPixels": 22,
+    "changedPercent": 0.00237,
+    "above8Pixels": 0,
+    "bounds": [
+      411,
+      138,
+      794,
+      245
+    ]
+  },
+  {
+    "width": 390,
+    "tab": "feed",
+    "changedPixels": 176,
+    "changedPercent": 0.05347,
+    "above8Pixels": 147,
+    "bounds": [
+      194,
+      713,
+      220,
+      733
+    ]
+  },
+  {
+    "width": 390,
+    "tab": "groups",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 390,
+    "tab": "market",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 390,
+    "tab": "pages",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 390,
+    "tab": "deals",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 390,
+    "tab": "jobs",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 390,
+    "tab": "shift",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 390,
+    "tab": "blog",
+    "changedPixels": 0,
+    "changedPercent": 0.0,
+    "above8Pixels": 0,
+    "bounds": null
+  },
+  {
+    "width": 390,
+    "tab": "connect",
+    "changedPixels": 9,
+    "changedPercent": 0.00273,
+    "above8Pixels": 2,
+    "bounds": [
+      256,
+      189,
+      350,
+      246
+    ]
+  }
+]

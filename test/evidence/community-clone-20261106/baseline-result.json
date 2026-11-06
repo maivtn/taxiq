@@ -1,0 +1,22 @@
+{
+  "phase": "plain-v2-clone-before-PO-additions",
+  "baseCommit": "816f77efb82164b07696d087bdb50f1be4e6f9ae",
+  "sourceFilesMatched": 75,
+  "sourceFilesCompared": 75,
+  "viewportWidths": [
+    1440,
+    834,
+    390
+  ],
+  "screenPairs": 27,
+  "contentPairsMatched": 27,
+  "pixelIdenticalPairs": 22,
+  "pixelDifferenceNote": "Remaining differences are limited to video loading indicators, radar movement and small text rasterization differences.",
+  "npmTest": {
+    "tests": 2109,
+    "pass": 1818,
+    "fail": 291,
+    "exitCode": 1
+  },
+  "browser": "isolated headless Chromium; emulated viewports"
+}

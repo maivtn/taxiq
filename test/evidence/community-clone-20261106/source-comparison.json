@@ -1,0 +1,381 @@
+{
+  "files": 75,
+  "matches": 75,
+  "rows": [
+    {
+      "file": "community-connect-workflow.css",
+      "match": true,
+      "sha256": "7c9424863226769ea1633207f2276bc7812cd713d57167cb08dd233407bcf3a4"
+    },
+    {
+      "file": "community-connect-workflow.js",
+      "match": true,
+      "sha256": "2fd1de855e3eb762a4feb3818b030fd77b93fb2c30d5b2ac73bef6a99310e2ff"
+    },
+    {
+      "file": "community-controls.css",
+      "match": true,
+      "sha256": "cae8707f3329e3436b4cc9fdb90330c0be171877f8fe1747dcd37b7cd24bcc7e"
+    },
+    {
+      "file": "community-deals-demo.js",
+      "match": true,
+      "sha256": "243cf2c9ec691b6042f93c1bb339994a5b13bd7993b9ae725b323230e22277c6"
+    },
+    {
+      "file": "community-deals-items.js",
+      "match": true,
+      "sha256": "abe5bad2f2ad2f3ddadf864882fbb45e5cb9ea1cbc640b17dae85abc88b1a45e"
+    },
+    {
+      "file": "community-deals-module.css",
+      "match": true,
+      "sha256": "5cae60e61867069160e575756bbd55b654ed31b2d11d8c493fa4483ba8ed65c6"
+    },
+    {
+      "file": "community-deals-module.js",
+      "match": true,
+      "sha256": "75a163130aae663c81be9cdc1a8f15f5446eed1709bacf9af231b47b0ee3c4a4"
+    },
+    {
+      "file": "community-deals-selects.css",
+      "match": true,
+      "sha256": "658af4be45a605402b422e83b0ddf2130e872fdc11fe0b02562e8a9a8b93dcc0"
+    },
+    {
+      "file": "community-deals-selects.js",
+      "match": true,
+      "sha256": "24a10733b417323f4a93a54f3f1035514af1d0afbef2ef5eed8e3e3dec7deda8"
+    },
+    {
+      "file": "community-deals-workflow.css",
+      "match": true,
+      "sha256": "11db0ef45784f078cc7c2660cd32e50fefdd267573fd6e0cd8e480bfd9c216b4"
+    },
+    {
+      "file": "community-deals-workflow.js",
+      "match": true,
+      "sha256": "881e358fea2012412e047663e402bba54b71d01861012468e63f262b2188c99d"
+    },
+    {
+      "file": "community-demo-data.js",
+      "match": true,
+      "sha256": "a40985ad427cb269caa6d9867e4f8078991d12c23800823e8a0bd0f073fc2ef5"
+    },
+    {
+      "file": "community-embed.css",
+      "match": true,
+      "sha256": "a8966568c69c448f03506010d32f7cb876679839eae61c6fa7e4b03aad9e2fab"
+    },
+    {
+      "file": "community-feed-composer.css",
+      "match": true,
+      "sha256": "e24c2593c69bb8e569ee92c0a83565d4457b3177645bd29206c8982e0734f5b0"
+    },
+    {
+      "file": "community-feed-composer.js",
+      "match": true,
+      "sha256": "ea7fec566d374fe6cd45e2964172da2e27f176ca4b9aa353aa4f36ff00be8c64"
+    },
+    {
+      "file": "community-feed-social.css",
+      "match": true,
+      "sha256": "705d3cd1796a1893a15e93b27ae094ad5042f4586984089979898a1f8988da36"
+    },
+    {
+      "file": "community-feed-social.js",
+      "match": true,
+      "sha256": "f4f3344371d98e02e46c28a7dc0cc622607d2ceb39107c4d4fce3a2a7facbb8a"
+    },
+    {
+      "file": "community-group-workflow.css",
+      "match": true,
+      "sha256": "b2f1cb1a910b0cd566e157dbc2c2a78346a7f9cb02d0d3b30a78b4bbfa8f7f4f"
+    },
+    {
+      "file": "community-group-workflow.js",
+      "match": true,
+      "sha256": "3df0f5292c2ae06899b076e065713745b27ae4bbbc61ec83ff98622adce4dc2b"
+    },
+    {
+      "file": "community-hub.js",
+      "match": true,
+      "sha256": "2cb51698a503058f3e24703a85fed888693fa4c5f4f214013badf2b0e9db67a0"
+    },
+    {
+      "file": "community-jobs-workflow.css",
+      "match": true,
+      "sha256": "a4f6b67eb4b64aa1966d42a02bd1a130b78725958cafe92843a4e70e1db2a6f6"
+    },
+    {
+      "file": "community-jobs-workflow.js",
+      "match": true,
+      "sha256": "852e5e99fdd2260b3cd07855d037108b86db58059c1479c6e1751dfaf2a0afa8"
+    },
+    {
+      "file": "community-layout.css",
+      "match": true,
+      "sha256": "4a2b3badd01e68b2a5838db14b11d558a5922d3cc43f206f87f6dd2b676b979c"
+    },
+    {
+      "file": "community-mobile.css",
+      "match": true,
+      "sha256": "d703e9d291db54f4c57bd1c0e337b627bcba072537458abd37e7815cce1b5bdb"
+    },
+    {
+      "file": "community-page-ads.js",
+      "match": true,
+      "sha256": "7bdab776ac6fc451ffd46346f71e7f587ce4876883d0d3777c47052784eb1cb1"
+    },
+    {
+      "file": "community-page-photos.js",
+      "match": true,
+      "sha256": "0e8197089b1838a500a664205ed258668ec7265841641a614debd81fa1a3700e"
+    },
+    {
+      "file": "community-pages-screen.css",
+      "match": true,
+      "sha256": "ce4c13da501b9cba9f35081d5ff3b19f893a36171157dd6c2a1b5dd3dcf2a9b6"
+    },
+    {
+      "file": "community-pages-screen.js",
+      "match": true,
+      "sha256": "43f1f2ba667a62ff63676bd25f1ec6df12f2f9ec460d4828dc218c39b18fe9d4"
+    },
+    {
+      "file": "community-record-store.js",
+      "match": true,
+      "sha256": "677530ae4283fe93e87da600df8294c9f335c603cce1a5393b0a651430d8f1af"
+    },
+    {
+      "file": "community-shifts-workflow.css",
+      "match": true,
+      "sha256": "28933df9a906a5b5e2eb58e0cf2abbb4ec9ca0c175810829b51281c5f50aa375"
+    },
+    {
+      "file": "community-shifts-workflow.js",
+      "match": true,
+      "sha256": "b21e64df6b567ba79d09f906e5f55c0ec163169de9cf1936f69674c6be27d2c4"
+    },
+    {
+      "file": "community-ui.js",
+      "match": true,
+      "sha256": "8284ada02b8f2067a774d828e395367f7d95b67d6cd3f6c49e54cfc3d9318d7c"
+    },
+    {
+      "file": "deals/campaigns.html",
+      "match": true,
+      "sha256": "16c0e4483968b0873782fdd136ae6333f432c720a32a67d08b853b4bf5344642"
+    },
+    {
+      "file": "deals/deal-match.html",
+      "match": true,
+      "sha256": "c24df662d391b2e8cb288a070b5d7bd09216d531daf5d4f73e32bc25a3523ba6"
+    },
+    {
+      "file": "deals/grand-opening.html",
+      "match": true,
+      "sha256": "0f9baf54cff39abd880637a73021c8b0eca3b3867716ba60735428d7d958dbe6"
+    },
+    {
+      "file": "deals/nearby.html",
+      "match": true,
+      "sha256": "0b07256aeb41eaec2cb9e4d2c24bfbe687b4d1406d8230748937b4c1aaea4b8f"
+    },
+    {
+      "file": "feed-icons/blog-1352524.png",
+      "match": true,
+      "sha256": "3b1d925c0f2e2091ac0934e5837c9df9a9c3ed141de50ce99da8ecbb0d5152eb"
+    },
+    {
+      "file": "feed-icons/event-18669653.png",
+      "match": true,
+      "sha256": "d3560e4ffcefc579afac4649f34c116f5b682302922161ad9355275cc683444e"
+    },
+    {
+      "file": "feed-icons/flash-sale-15106141.png",
+      "match": true,
+      "sha256": "43b6a8253985630ee2de80736914ad1ab782515ac3eec9e0aa95e80b1b1473f9"
+    },
+    {
+      "file": "feed-icons/mode-8484254.png",
+      "match": true,
+      "sha256": "ddfaeeee6e21010bb6dc081a4d0c685c0ebf57fbb52ce26a3b1e0146d71d87ab"
+    },
+    {
+      "file": "feed-icons/picture-2659360.png",
+      "match": true,
+      "sha256": "21b6c1500f1ef39c56a3ce8fc546cf60dec2633f5a616ef079f91db3aca974ce"
+    },
+    {
+      "file": "feed-icons/posting-8522069.png",
+      "match": true,
+      "sha256": "6baf7c5042c59dbcad3104887d978059660e0836a5f1fc2b7752695cf8ed359b"
+    },
+    {
+      "file": "feed-icons/sources.json",
+      "match": true,
+      "sha256": "c971d9162e6451a73abe4df79409ed30dce944ef4b94bfd56db553b47902936e"
+    },
+    {
+      "file": "feed-icons/speech-bubble-5726734.png",
+      "match": true,
+      "sha256": "60b1c6b78f6c684579ed2551915166c1814f65bdbf78bd1c4cb516ec5794a9df"
+    },
+    {
+      "file": "feed-icons/vote-8121705.png",
+      "match": true,
+      "sha256": "f283cbc893cf43371d589d572b81a39dd2f84e283eec482237c553f557cf1472"
+    },
+    {
+      "file": "market-photos/bistro-table.jpg",
+      "match": true,
+      "sha256": "c9b17e416b3970c67bd70ba1365bd9066264c43e4843860cbe7a5cb3abb0fee3"
+    },
+    {
+      "file": "market-photos/gel-lamp.jpg",
+      "match": true,
+      "sha256": "8e76f0a776321211dee4ae9c28ab027c4b3b8f4d3a5f9d088687e9a34731989c"
+    },
+    {
+      "file": "market-photos/salon-trolley.jpg",
+      "match": true,
+      "sha256": "72b291703815ffbbeb205fbeaf9059707b5ce495e461f0f4573adc5c6cf76948"
+    },
+    {
+      "file": "market-photos/waiting-chair.jpg",
+      "match": true,
+      "sha256": "394fbca0df315a2cd11d519e275d4db3dd14d4afd013a31b3f4017b32a63da34"
+    },
+    {
+      "file": "nav-icons/blog.svg",
+      "match": true,
+      "sha256": "736d955bc6a801abb1137a9f60e158a4b131ac93192cab48aa58b88c03ffc175"
+    },
+    {
+      "file": "nav-icons/calendar.svg",
+      "match": true,
+      "sha256": "2704dac956abb12473a6a2c22d56120586be95c60c0cd451b2742b8300fd65fc"
+    },
+    {
+      "file": "nav-icons/calls.svg",
+      "match": true,
+      "sha256": "f6d2be6141d7bd130dc9ff93dda677ba14070bd06f37c720104e82c8d4f55df4"
+    },
+    {
+      "file": "nav-icons/deals.svg",
+      "match": true,
+      "sha256": "5d6c0c647be697fdf257da047d4d440a8a4bed9fc68f625af20367ec17274fb3"
+    },
+    {
+      "file": "nav-icons/feed.webp",
+      "match": true,
+      "sha256": "26ab587bfe4950d110cf40eddd2ced9cc635f67ea289867454f1d846da6cdc61"
+    },
+    {
+      "file": "nav-icons/groups.svg",
+      "match": true,
+      "sha256": "71778c08ace9dbb92d75c4a37945810e9ae3cc5401966c75c88e9ef6f7d50fe5"
+    },
+    {
+      "file": "nav-icons/jobs.svg",
+      "match": true,
+      "sha256": "65b73a1eccac89faaaa85ec216048b9e44273c8566c27861ac64f118fbab0f82"
+    },
+    {
+      "file": "nav-icons/messages.svg",
+      "match": true,
+      "sha256": "387d39b70310d06a52d26cb2e1861889ab28939f0f3e3bb7512b506f80fea57b"
+    },
+    {
+      "file": "nav-icons/pages.svg",
+      "match": true,
+      "sha256": "ea1badb6e951b1b8e1c225dc200797057fc07f91bc9ba3fc82be3f512f6099fd"
+    },
+    {
+      "file": "nav-icons/settings.svg",
+      "match": true,
+      "sha256": "f0057dbddca947b9ab2ec928f5028c743e642cba021f0ad35bae3f62537e3092"
+    },
+    {
+      "file": "nexora-bitcoin-nailbar.png",
+      "match": true,
+      "sha256": "69dc214e15b38d938be43e8f7ce2bcf1cbbb36aec6cb3bf7d0481a5496b1e380"
+    },
+    {
+      "file": "nexora-brand-logo.png",
+      "match": true,
+      "sha256": "6014c9aa0fe5553ee5855178fc590f75e9cbbf77a28d3b0015dfda9aa5e9c14f"
+    },
+    {
+      "file": "nexora-chat-gif-hello.gif",
+      "match": true,
+      "sha256": "1bc83eb57eb7e2ec943d7f46337d855b1cf6839637de7f238d0880cc1152876b"
+    },
+    {
+      "file": "nexora-chat-gif-thanks.gif",
+      "match": true,
+      "sha256": "834906cacda332bad4f6ad603537c3ec8c7ea0d17e826a03a5312d4beced6d5b"
+    },
+    {
+      "file": "nexora-community-complete.html",
+      "match": true,
+      "sha256": "438860d1bd4bd5c1d918f01b7484c88698e514a775a038c0af12caf21ce6beef"
+    },
+    {
+      "file": "nexora-community-i18n.js",
+      "match": true,
+      "sha256": "405890936fe86ee6096004c2b2245103107e8d3b422e593d8be1f769397a762b"
+    },
+    {
+      "file": "nexora-community-prototype.html",
+      "match": true,
+      "sha256": "b84184414314e406e6e34c069c3a49c8f78cb1afb1315de5090ae8ba011d01ca"
+    },
+    {
+      "file": "nexora-ecosystem.svg",
+      "match": true,
+      "sha256": "75b3a80811c35e3ecf0e549726786c3ac1a6a3ea8bfd09d0a0c0d71d9a6cd7b7"
+    },
+    {
+      "file": "nexora-nailhub-blog-preview.html",
+      "match": true,
+      "sha256": "fcf152fe073c00544ccbf2c1e9e1ffb8f5f09dab7bba25435c1bf1b60a891322"
+    },
+    {
+      "file": "nexora-privacy-interactive.js",
+      "match": true,
+      "sha256": "46bbe3adc47c026702546d9eb16615acd65d69f64707025e3731b130d1a6140c"
+    },
+    {
+      "file": "nexora-privacy-qr-layout.html",
+      "match": true,
+      "sha256": "91c11158abc9fe66b215137fc75d3abf4c87cd5027ae98bc946e2d3382eee2a6"
+    },
+    {
+      "file": "nexora-profile-qr.svg",
+      "match": true,
+      "sha256": "955c96f7a51d3a7ed2740b1552b89e6761d1f1c211efda1981f051a0ae428532"
+    },
+    {
+      "file": "nexora-us-geo-2025.js",
+      "match": true,
+      "sha256": "2f4da19714688228564d6a60b08b28d9b7f40a37ff6cc4a05a248fae80e835f0"
+    },
+    {
+      "file": "nexora-us-place-centers-2025.js",
+      "match": true,
+      "sha256": "62b2acdf596766ec5dc8fb8ed1ed08a8d1ab3dc1d175a1228f96a851db56d317"
+    },
+    {
+      "file": "page-videos/nail-colors.mp4",
+      "match": true,
+      "sha256": "1dac4a4c1f1536add92cf578e45f9f3d0bca214dd79627e841c3b863715e0a54"
+    },
+    {
+      "file": "page-videos/nail-weekend.mp4",
+      "match": true,
+      "sha256": "66429b3e80ea6dfd4468bbf5f86f04ed092536f31da31f3784168e8cd9976489"
+    }
+  ]
+}

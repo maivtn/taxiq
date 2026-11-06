@@ -1,0 +1,99 @@
+/* The dashboard owns the workspace shell; the PO owns Community content. */
+.community-back { display:none; }
+body.embedded .app { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+body.embedded .app > .sidebar,
+body.embedded .app-footer,
+body.embedded #sidebarToggle,
+body.embedded .header-search,
+body.embedded #accountButton { display: none; }
+body.embedded .system-bar {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+body.embedded .community-heading {
+  justify-content: flex-start;
+  gap: 12px;
+  margin: 24px auto 20px;
+  padding-right: 176px;
+}
+body.embedded .community-heading > div { min-width: 0; }
+body.embedded .top-actions { gap: 3px; }
+body.embedded .top-actions button { width: 34px; height: 34px; }
+body.embedded .header-menu { top: 60px; }
+
+/* Split tabs share one active surface and elevation. */
+.top .tab-group { border-radius: 15px; }
+.top .tab-group:has(> .tab.active) {
+  background: linear-gradient(110deg, #4d5df1, #8252e9);
+  box-shadow: inset 0 1px 0 #ffffff70, 0 3px 0 #5144ba, 0 7px 15px #5148bd29;
+}
+.top .tab-group:has(> .tab.active) > .tab.active,
+.top .tab-group:has(> .tab.active) > .tab-sub-toggle {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.top .tab-group > .tab:is(:hover, :active) {
+  transform: none;
+  box-shadow: none;
+}
+.top .tab-group > .tab-sub-toggle {
+  position: relative;
+  min-width: 48px;
+  padding: 0;
+}
+.top .tab-group > .tab-sub-toggle svg {
+  position: absolute;
+  top: calc(50% - 8px);
+  right: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* Shared tab artwork uses generic product icons, never social-network marks. */
+.community-nav-art { display:block; width:26px; height:26px; object-fit:contain; flex:none; }
+.top .tab { min-height:44px; gap:8px; }
+.top .tab-submenu button { min-height:44px; }
+.top .tab-submenu { max-height:min(420px,65dvh); overflow-y:auto; }
+body.embedded { overflow:hidden; }
+
+body.embedded .system-bar { display:none; }
+body.embedded .community-heading { padding-right:0; }
+body.embedded .community-heading > div { flex:1; }
+
+@media (max-width:800px) {
+  .mobile-nav:not([hidden]) { align-items:stretch; padding-bottom:max(12px,env(safe-area-inset-bottom)); }
+  .mobile-nav .mobile-tab.tab { display:grid; grid-template-rows:27px minmax(2.5em,auto); align-content:start; align-items:start; justify-items:center; }
+  .mobile-nav .mobile-tab.tab > :is(svg,.community-nav-art) { display:block; width:27px; height:27px; transform:none; }
+  .mobile-nav .mobile-tab.tab > span { min-height:2.5em; text-align:center; }
+  body.embedded .main { height:100dvh; min-height:0; }
+  body.embedded .top { flex:none; background:#fff; border-bottom:1px solid #e2e8f0; }
+  body.embedded .community-heading { width:calc(100% - 28px); min-height:44px; margin:3px auto; padding:0; gap:8px; }
+  body.embedded .community-heading h1 { font-size:18px; line-height:1.3; white-space:normal; }
+  .community-heading > div { flex:1; }
+  .community-heading .community-back { display:inline-flex; align-items:center; justify-content:center; flex:none; min-width:60px; height:44px; padding:0; border:0; border-radius:8px; background:transparent; color:#5445c6; font-size:11px; font-weight:700; }
+  .community-back-face { display:inline-flex; align-items:center; justify-content:center; gap:4px; min-height:30px; padding:6px 8px; border:1px solid #d9d2fa; border-radius:8px; background:#f5f3ff; box-shadow:0 1px 2px #34226c0a; }
+  .community-back svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .community-back:hover .community-back-face { background:#eee9ff; border-color:#bdb1f5; }
+  .community-back:focus-visible { outline:0; }
+  .community-back:focus-visible .community-back-face { outline:3px solid #aaa0ff; outline-offset:2px; }
+  body.embedded .tour-launch { display:inline-flex; align-items:center; justify-content:center; min-height:44px; height:44px; padding:0; border:0; background:transparent; font-size:10px; flex:none; }
+  body.embedded .tour-launch-face { display:inline-flex; align-items:center; min-height:30px; padding:5px 9px; border:1px solid #d9d2fa; border-radius:999px; background:#f3f0ff; line-height:1.2; }
+  body.embedded .tour-launch:hover .tour-launch-face { background:#eae5ff; }
+  body.embedded .header-menu { top:calc(100% + 4px); right:12px; max-height:calc(100dvh - 88px); overflow-y:auto; }
+  body.embedded .header-menu button { min-height:44px; }
+  body.embedded .mobile-nav:not([hidden]) { grid-template-columns:repeat(var(--community-nav-count,6),minmax(0,1fr)); gap:2px; padding:7px 5px max(12px,env(safe-area-inset-bottom)); border-top:1px solid #e2e8f0; box-shadow:0 -4px 18px #0f172a06; }
+  body.embedded .mobile-tab.tab { min-height:60px; padding:5px 2px; gap:4px; font-size:10px; line-height:1.25; box-shadow:none; }
+  body.embedded .mobile-tab.tab.active { background:linear-gradient(155deg,#fff 0%,var(--nav-tint) 100%); color:var(--nav-accent); box-shadow:inset 0 1px 0 #fff,inset 0 0 0 1px var(--nav-edge),0 3px 0 var(--nav-edge),0 6px 13px var(--nav-shadow); animation:none; }
+  body.embedded .mobile-tab.tab .community-nav-art { width:27px; height:27px; }
+  body.embedded .mobile-tab.tab > span { display:block; max-width:100%; overflow-wrap:normal; }
+  body.embedded .mobile-tab.tab:active { transform:none; }
+}
+@media (hover:none) {
+  .top .tab:hover:not(:active),.top-actions button:hover:not(:active) { transform:none; }
+}
