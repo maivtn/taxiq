@@ -245,6 +245,7 @@
     '<div class="chat-menu-subpanel hidden" id="chatMenuSubpanel"></div></div>';}
   let currentMessages=[];
   function thread(name, context, messages, threadId, allowCalls = false) {
+    messages=window.NEXORA_COMMUNITY_CONNECT?.seedMessages(threadId,messages)||messages;
     const seeded=state.clearedChats?.[threadId]?[]:messages.map((message,index)=>({...message,id:message.id||threadId+'-seed-'+index,author:message.author||(message.mine?currentMember:name),createdAt:message.createdAt||new Date(new Date().setHours(9,index,0,0)).toISOString()}));
     const allMessages = state.deletedChats.includes(threadId) ? [] : [...seeded, ...(Array.isArray(state.sentMessages[threadId]) ? state.sentMessages[threadId] : [])];
     currentMessages=allMessages;

@@ -45,3 +45,6 @@
   .composer-draft-actions .btn { flex:1; min-height:44px; }
   .composer-save-draft { margin-right:0; }
 }
+
+/* Restored PO destination suggestions. */
+.composer-suggestion{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px;border:1px solid #dcd8f6;border-radius:10px;background:#f6f4ff;margin-bottom:12px}.composer-suggestion .btn{margin-left:auto;min-height:40px}.composer-market-disabled{opacity:.55}.composer-market-disabled .composer-destination{cursor:not-allowed}@media(max-width:600px){.composer-suggestion .btn{margin-left:0;width:100%}}

@@ -54,7 +54,11 @@
       const groups=adapter.getJoinedGroups?adapter.getJoinedGroups():(adapter.getGroups?.()||[]).filter(group=>group.isMember===true||group.joined===true||group.owner===member);
       return groups.filter(group=>group&&typeof group.id==='string');
     };
-    function destinationsOf(item){const value=item?.destinations;return {includeMainFeed:value?.includeMainFeed!==false,groupIds:[...new Set(Array.isArray(value?.groupIds)?value.groupIds:[])].filter(id=>joinedGroups().some(group=>group.id===id)).slice(0,value?.includeMainFeed===false?MAX_DESTINATIONS:MAX_DESTINATIONS-1)};}
+    const allGroups=()=> (adapter.getGroups?.()||joinedGroups()).filter(group=>group&&typeof group.id==='string'&&(joinedGroups().some(row=>row.id===group.id)||!['private','closed'].includes(String(group.visibility||group.privacy||'').toLowerCase())));
+    const isMarket=group=>adapter.groupType?.(group)==='Marketplace'||/market|chợ/i.test(group.groupType||group.type||group.title||'');
+    const allowedGroup=group=>!isMarket(group)&&(joinedGroups().some(row=>row.id===group.id)||!['private','closed'].includes(String(group.visibility||group.privacy||'').toLowerCase()));
+    const words=()=>document.documentElement.lang==='vi'?{suggest:'✦ AI gợi ý:',use:'Dùng gợi ý',unjoined:'sẽ tự tham gia khi đăng',blocked:'Chợ chỉ dành cho bài mua bán',money:'⛔ AI chặn: Yêu cầu chuyển tiền / đặt cọc ngoài app — dấu hiệu lừa đảo phổ biến. Vui lòng sửa nội dung.',phone:'⚠️ Có số điện thoại — nên để người mua nhắn tin trong app. Sửa lại hoặc bấm “Tiếp” lần nữa.'}:{suggest:'✦ AI suggests:',use:'Use suggestion',unjoined:"you’ll join when posting",blocked:'Markets are for sale posts only',money:'⛔ AI blocked: Requests for money / deposits outside the app — common scam signs. Please edit the content.',phone:'⚠️ Phone number detected — let buyers message you in the app. Edit it or continue again.'};
+    function destinationsOf(item){const value=item?.destinations;return {includeMainFeed:value?.includeMainFeed!==false,groupIds:[...new Set(Array.isArray(value?.groupIds)?value.groupIds:[])].filter(id=>allGroups().some(group=>group.id===id&&allowedGroup(group))).slice(0,value?.includeMainFeed===false?MAX_DESTINATIONS:MAX_DESTINATIONS-1)};}
     function readDrafts(){try{const rows=JSON.parse(localStorage.getItem(DRAFT_KEY)||'[]');return Array.isArray(rows)?rows.filter(row=>row&&typeof row.id==='string'&&typeof row.owner==='string'&&KINDS.has(row.kind)):[];}catch{return [];}}
     const listDrafts=()=>clone(readDrafts().filter(row=>row.owner===member).sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))));
     function writeDrafts(rows){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(rows));return true;}catch{return false;}}
@@ -71,9 +75,12 @@
     function renderDestinations(state){
       if(state.photoOnly)return;
       const c=copy(),selected=state.destinations,count=Number(selected.includeMainFeed)+selected.groupIds.length,atLimit=count>=MAX_DESTINATIONS;
-      const option=(id,title,detail,chosen,isMain=false)=>`<button type="button" class="composer-destination${chosen?' is-selected':''}" ${isMain?'data-composer-main':`data-composer-group="${esc(id)}"`} aria-pressed="${chosen}" ${!chosen&&atLimit?'disabled':''}><span aria-hidden="true" class="composer-destination-icon">${isMain?ICONS.globe:ICONS.users}</span><span><strong data-community-authored>${esc(title)}</strong>${detail?`<small>${esc(detail)}</small>`:''}</span><span class="composer-check" aria-hidden="true">${chosen?ICONS.check:''}</span></button>`;
-      const groups=joinedGroups();
-      state.form.querySelector('[data-composer-destinations]').innerHTML=option('',c.main,c.mainDesc,selected.includeMainFeed,true)+`<h4>${esc(c.joined)}</h4>`+(groups.length?groups.map(group=>option(group.id,group.title||group.name||group.id,group.region||'',selected.groupIds.includes(group.id))).join(''):`<p class="helper">${esc(c.none)}</p>`)+`<p class="helper composer-destination-count" aria-live="polite">${esc(c.count.replace('{count}',String(count)))}</p>`;
+      const option=(id,title,detail,chosen,isMain=false)=>`<button type="button" class="composer-destination${chosen?' is-selected':''}" ${isMain?'data-composer-main':`data-composer-group="${esc(id)}"`} aria-pressed="${chosen}" ${!isMain&& !allowedGroup(allGroups().find(group=>group.id===id)||{})||!chosen&&atLimit?'disabled':''}><span aria-hidden="true" class="composer-destination-icon">${isMain?ICONS.globe:ICONS.users}</span><span><strong data-community-authored>${esc(title)}</strong>${detail?`<small>${esc(detail)}</small>`:''}</span><span class="composer-check" aria-hidden="true">${chosen?ICONS.check:''}</span></button>`;
+      const groups=allGroups(),joined=new Set(joinedGroups().map(group=>group.id)),w=words();
+      const content=[...state.form.querySelectorAll('input:not([type=file]),textarea')].map(field=>field.value).join(' '),terms=/spa|massage/i.test(content)?/spa|massage/i:/hair|tóc/i.test(content)?/hair|tóc/i:/lash|mi|brow/i.test(content)?/lash|mi|brow/i:/nail|gel/i;
+      const suggested=groups.filter(allowedGroup).filter(group=>terms.test([group.title,group.industry,group.description].join(' '))).slice(0,2);
+      state.suggested=suggested.map(group=>group.id);
+      state.form.querySelector('[data-composer-destinations]').innerHTML=`<div class="composer-suggestion"><strong>${esc(w.suggest)}</strong> ${esc([c.main,...suggested.map(group=>group.title||group.name)].join(' · '))}<button type="button" class="btn small" data-composer-suggest>${esc(w.use)}</button></div>`+option('',c.main,c.mainDesc,selected.includeMainFeed,true)+`<h4>${esc(document.documentElement.lang==='vi'?'Nhóm':'Groups')}</h4>`+(groups.length?groups.map(group=>`<div${allowedGroup(group)?'':' class="composer-market-disabled"'}>${option(group.id,group.title||group.name||group.id,[group.region||'',!allowedGroup(group)?w.blocked:!joined.has(group.id)?w.unjoined:''].filter(Boolean).join(' · '),selected.groupIds.includes(group.id))}</div>`).join(''):`<p class="helper">${esc(c.none)}</p>`)+`<p class="helper composer-destination-count" aria-live="polite">${esc(c.count.replace('{count}',String(count)))}</p>`;
     }
     function renderChrome(state){
       const c=copy();
@@ -106,10 +113,11 @@
       section.addEventListener('click',event=>{
         const add=event.target.closest('[data-composer-add-photo]');if(add){section.querySelector('[data-composer-file]').click();return;}
         const remove=event.target.closest('[data-composer-remove-photo]');if(remove&&!state.busy){const index=Number(remove.dataset.composerRemovePhoto);state.photos.splice(index,1);clearError(state);renderPhotos(state);(section.querySelector('[data-composer-remove-photo="'+Math.min(index,state.photos.length-1)+'"]')||section.querySelector('[data-composer-add-photo]'))?.focus({preventScroll:true});return;}
+        if(event.target.closest('[data-composer-suggest]')){state.destinations={includeMainFeed:true,groupIds:state.suggested||[]};clearError(state);renderDestinations(state);return;}
         const main=event.target.closest('[data-composer-main]'),group=event.target.closest('[data-composer-group]');if(!main&&!group)return;
         const count=Number(state.destinations.includeMainFeed)+state.destinations.groupIds.length;
         if(main){if(state.destinations.includeMainFeed||count<MAX_DESTINATIONS)state.destinations.includeMainFeed=!state.destinations.includeMainFeed;}
-        else{const id=group.dataset.composerGroup;if(state.destinations.groupIds.includes(id))state.destinations.groupIds=state.destinations.groupIds.filter(value=>value!==id);else if(count<MAX_DESTINATIONS)state.destinations.groupIds.push(id);}
+        else{const id=group.dataset.composerGroup;if(!allowedGroup(allGroups().find(row=>row.id===id)||{})){adapter.toast?.(words().blocked);return;}if(state.destinations.groupIds.includes(id))state.destinations.groupIds=state.destinations.groupIds.filter(value=>value!==id);else if(count<MAX_DESTINATIONS)state.destinations.groupIds.push(id);}
         clearError(state);renderDestinations(state);(main?section.querySelector('[data-composer-main]'):[...section.querySelectorAll('[data-composer-group]')].find(button=>button.dataset.composerGroup===group.dataset.composerGroup))?.focus({preventScroll:true});
       });
       section.addEventListener('change',event=>{
@@ -119,6 +127,7 @@
         clearError(state);if(files.length>available)error(state,'tooMany');setBusy(state,true);
         state.pending=(async()=>{for(const file of files.slice(0,available)){if(state.cancelled||!form.isConnected)break;try{const photo=await optimizePhoto(file);if(state.cancelled||!form.isConnected)break;state.photos.push(photo);}catch(ex){if(form.isConnected&&!state.cancelled)error(state,COPY.en[ex.message]?ex.message:'unreadable');}}})().finally(()=>{setBusy(state,false);});
       });
+      form.addEventListener('input',event=>{if(event.target.matches('input[name=title],textarea')&&!state.photoOnly)renderDestinations(state);});
       form.addEventListener('click',event=>{if(event.target.closest('#cancelModal,[data-composer-dismiss]'))state.cancelled=true;});
       draftButton.addEventListener('click',()=>{void saveDraft(form);});
       return true;
@@ -128,8 +137,12 @@
       await state.pending;if(state.cancelled||!form.isConnected)return null;
       clearError(state);
       // Membership may have changed in another tab while this form was open.
-      if(!state.photoOnly){const joined=new Set(joinedGroups().map(group=>group.id));state.destinations.groupIds=state.destinations.groupIds.filter(id=>joined.has(id));}
+      if(!state.photoOnly){const groups=allGroups();state.destinations.groupIds=state.destinations.groupIds.filter(id=>groups.some(group=>group.id===id&&allowedGroup(group)));}
       if(!options.draft){
+        const content=[...form.querySelectorAll('input[name=title],textarea')].map(field=>field.value).join(' ');
+        if(/(?:deposit|pay(?:ment)?|send|transfer|fee|chuyển|đặt cọc).{0,70}(?:zelle|cash\s*app|gift\s*card|venmo|western union|trước|advance)|(?:zelle|venmo|cash\s*app).{0,70}(?:deposit|advance|first)|chuyển tiền trước|đặt cọc/i.test(content)){const target=form.querySelector('[data-composer-error]');target.textContent=words().money;target.hidden=false;target.scrollIntoView({block:'nearest'});return null;}
+        const phone=/(?:\+?1[ .-]?)?(?:\(\d{3}\)|\d{3})[ .-]?\d{3}[ .-]?\d{4}/.test(content);
+        if(phone&&state.warnedContent!==content){state.warnedContent=content;const target=form.querySelector('[data-composer-error]');target.textContent=words().phone;target.hidden=false;target.scrollIntoView({block:'nearest'});return null;}
         if(!state.photoOnly&&!state.destinations.includeMainFeed&&!state.destinations.groupIds.length)return error(state,'destinationRequired');
         if(state.photos.length&&!state.rights)return error(state,'rightsRequired');
       }

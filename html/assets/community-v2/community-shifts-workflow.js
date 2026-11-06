@@ -40,11 +40,13 @@
     const profile = () => adapter.getProfile?.() || null;
     const hasProfile = () => {const value=profile();return !!(value?.exists&&value.basicSavedAt)&&value.hasJobProfile!==false;};
     const scope = () => role() + ':' + member();
+    const po=(vi,en)=>lang()==='en'?en:vi;
+    const roster=()=>adapter.getStaff?.()||[];
     const safeMap = value => value && typeof value === 'object' && !Array.isArray(value) ? Object.assign(Object.create(null), value) : Object.create(null);
     function read() {
       let value;
       try { value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { value = {}; }
-      return {version:1,availability:safeMap(value?.availability),zelle:safeMap(value?.zelle),assignments:Array.isArray(value?.assignments) ? value.assignments.filter(row=>row?.id&&row.shiftId&&row.worker) : [],settlements:Array.isArray(value?.settlements) ? value.settlements.filter(row=>row?.id&&row.assignmentId&&row.shiftId) : [],invitations:Array.isArray(value?.invitations) ? value.invitations.filter(row=>row?.id&&row.shiftId&&row.worker) : []};
+      return {version:1,sharing:safeMap(value?.sharing),availability:safeMap(value?.availability),zelle:safeMap(value?.zelle),assignments:Array.isArray(value?.assignments) ? value.assignments.filter(row=>row?.id&&row.shiftId&&row.worker) : [],settlements:Array.isArray(value?.settlements) ? value.settlements.filter(row=>row?.id&&row.assignmentId&&row.shiftId) : [],invitations:Array.isArray(value?.invitations) ? value.invitations.filter(row=>row?.id&&row.shiftId&&row.worker) : []};
     }
     function seedDemo() {
       const samples=window.NEXORA_COMMUNITY_DEMO?.shiftWorkflow;if(!samples)return;
@@ -199,6 +201,19 @@
     }
     function act(action,id,data={}) {
       return transaction((state,rows)=>{
+        if(['askTech','shareTech','shareConsent'].includes(action)) {
+          if(action==='shareConsent') {
+            requireRole('staff');const row=state.sharing[id];
+            if(!row||row.worker!==member())fail('not_allowed');
+            row.consented=!!data.agreed;row.consentedBy=member();row.consentedAt=iso(now());if(!row.consented)row.shared=false;
+          }else{
+            requireRole('owner');if(!roster().some(worker=>worker.name===id))fail('not_allowed');
+            const key=member()+':'+id,row=state.sharing[key]||{salon:member(),worker:id,consented:false,shared:false};
+            if(action==='askTech'){row.requestedAt=iso(now());state.sharing[key]=row;}
+            else{if(!row.consented||row.consentedBy!==id)fail('not_allowed');row.shared=!row.shared;state.sharing[key]=row;}
+          }
+          return true;
+        }
         if(action==='availability') {
           requireRole('staff');
           const current=availability(state),next={...current,...data};
@@ -237,6 +252,7 @@
           requireRole('owner');ensureUnblocked(state);
           const shift=shiftById(id),worker=String(data.worker||'');
           if(!owned(shift)||shift.kind!=='dayhire'||closed(shift)||starts(shift)<=now()||occupied(state,shift)>=countNeeded(shift)||worker===member())fail('invitation_not_allowed');
+          if(data.requireSharing&&!Object.values(state.sharing).some(row=>row.worker===worker&&row.salon!==member()&&row.shared&&row.consented&&row.consentedBy===worker))fail('worker_not_eligible');
           if(!availableWorkers(state,shift,25).some(row=>row.owner===worker))fail('worker_not_eligible');
           if(assignmentsFor(state,shift).some(row=>row.worker===worker&&OPEN.includes(row.status)))fail('invitation_not_allowed');
           if(state.invitations.some(row=>row.shiftId===id&&row.worker===worker&&row.status==='Pending'))fail('invitation_already_pending');
@@ -351,7 +367,8 @@
         if(required.length&&skills.length&&!required.some(required=>skills.some(skill=>skill.includes(required)||required.includes(skill))))return null;
         if(post&&Number.isFinite(starts(post))&&(starts(post)>starts(shift)||ends(post)<ends(shift)))return null;
         if(overlaps(state,shift,name))return null;
-        return {owner:name,skills:post?.skills||entry.skills||'',photoUrl:entry.photoUrl||'',distance:distanceMiles(entry,shift)};
+        const shared=Object.values(state.sharing).find(row=>row.worker===name&&row.consented&&row.consentedBy===name&&row.shared);
+        return {owner:name,skills:post?.skills||entry.skills||'',photoUrl:entry.photoUrl||'',distance:distanceMiles(entry,shift),sharedBy:shared?.salon||''};
       }).filter(Boolean);
     }
     function policyMarkup(p=POLICY) {return `<details class="shifts-policy"><summary>${esc(t('policy.title'))}</summary><ul>${[
@@ -412,6 +429,25 @@
       payouts.forEach(row=>{actions+=button('settlement',row.id,t(owner?'owner.sendPay':'my.viewPayment',{amount:money(row.amount)}),'','soft');});
       return `<article class="shifts-inner-card" id="shift-assignment-${esc(assignment.id)}" tabindex="-1"><div class="shifts-card-heading"><strong>${esc(owner?assignment.worker:shift.title||shift.role)}</strong><span class="shifts-badge">${esc(t('status.'+assignment.status))}</span></div><p class="meta">${esc(owner?shift.title:shift.owner)} · ${esc(when(starts(shift)))}</p><p class="meta">${esc(shift.city)} · ${esc(shift.hours||'')} · ${esc(money(assignment.payAmount))}</p>${assignment.dispute?`<p class="shifts-status">${esc(t('settlement.disputeOpen'))}</p>`:''}<div class="shifts-actions">${actions}</div></article>`;
     }
+    function sharedInviteDialog(worker) {
+      if(role()!=='owner')return false;
+      const state=read();
+      if(!Object.values(state.sharing).some(row=>row.worker===worker&&row.salon!==member()&&row.shared&&row.consented&&row.consentedBy===worker))return false;
+      const shifts=getShifts().filter(row=>owned(row)&&row.kind==='dayhire'&&!closed(row)&&starts(row)>now()&&occupied(state,row)<countNeeded(row)&&availableWorkers(state,row,25).some(candidate=>candidate.owner===worker));
+      dialog={type:'sharedInvite',worker};
+      modal(po('Mời vào ca','Invite to shift')+' · '+worker,shifts.length?shifts.map(shift=>`<article class="shifts-inner-card"><h3>${esc(shift.title||shift.role)}</h3><p>${esc(when(starts(shift)))} · ${esc(shift.city)}</p>${button('inviteSharedToShift',shift.id,t('availableWorkers.invite'),`data-shifts-worker="${esc(worker)}"${overdue(state).length||state.invitations.some(row=>row.shiftId===shift.id&&row.worker===worker&&row.status==='Pending')?' disabled':''}`,'primary')}</article>`).join(''):empty(t('availableWorkers.empty')));
+      return true;
+    }
+    function sharingMarkup(state) {
+      const title=po('🤝 Chia sẻ thợ dư cho tiệm khác','🤝 Share spare techs with other salons');
+      if(role()==='staff') {
+        const requests=Object.entries(state.sharing).filter(([,row])=>row.worker===member());
+        return requests.length?`<section class="panel shifts-section"><h3>${esc(title)}</h3><p>${esc(po('Thợ phải tự đồng ý','The tech must consent'))}</p>${requests.map(([key,row])=>`<label class="jobs-privacy-row"><span><strong>${esc(row.salon)}</strong><small>${esc(po('Thợ đồng ý chia sẻ','Tech agreed to share'))}</small></span><input type="checkbox" role="switch" data-shifts-share-consent="${esc(key)}"${row.consented?' checked':''}></label>`).join('')}</section>`:'';
+      }
+      const salonShift=getShifts().find(row=>owned(row)&&row.kind==='dayhire'&&!closed(row)&&starts(row)>now());
+      const nearby=Object.values(state.sharing).filter(row=>row.salon!==member()&&row.consented&&row.consentedBy===row.worker&&row.shared&&availability(state,row.worker).isAvailable&&salonShift&&matchesLocation(availability(state,row.worker),salonShift,10));
+      return `<section class="panel shifts-section"><h3>${esc(title)}</h3><p>${esc(po('Hôm nào tiệm vắng khách, cho thợ của mình nhận ca ở tiệm khác.','On slow days, let your techs take shifts at other salons.'))} <strong>${esc(po('Thợ phải tự đồng ý','The tech must consent'))}</strong> ${esc(po('— chủ tiệm không “cho mượn” thay thợ.','— owners can\'t “lend” techs without it.'))}</p>${roster().map(worker=>{const row=state.sharing[member()+':'+worker.name];return `<div class="shifts-sharing-row"><div><strong>${esc(worker.name)}</strong><small>${esc(worker.skills||'')}</small><span class="shifts-badge">${esc(row?.consented?po('Thợ đồng ý chia sẻ','Tech agreed to share'):po('Chưa bật đồng ý','Not consented yet'))}</span></div>${row?.consented?`<button type="button" role="switch" aria-checked="${!!row.shared}" class="btn small" data-shifts-action="shareTech" data-shifts-id="${esc(worker.name)}">${esc(row.shared?po('Bật','On'):po('Tắt','Off'))}</button>`:button('askTech',worker.name,po('Hỏi thợ','Ask tech'),row?.requestedAt?'disabled':'','soft')}</div>`;}).join('')}</section><section class="panel shifts-section"><h3>${esc(po('👀 Thợ đang rảnh gần tiệm','👀 Available techs nearby'))}</h3>${nearby.length?nearby.map(row=>`<div class="shifts-sharing-row"><span><strong>${esc(row.worker)}</strong><small>${esc(po('Chia sẻ từ ','Shared by ')+row.salon)}</small></span>${button('inviteShared',row.worker,po('Mời vào ca','Invite to shift'),'','soft')}</div>`).join(''):empty(t('availableWorkers.empty'))}</section>`;
+    }
     function ownerMarkup(state) {
       const rows=getShifts().filter(shift=>owned(shift)&&shift.kind==='dayhire').filter(shift=>view.filter==='Cancelled'?closed(shift):view.filter==='Past'?!closed(shift)&&ends(shift)<now():!closed(shift)&&ends(shift)>=now());
       return `<section class="shifts-section"><div class="shifts-section-heading"><h3>${esc(t('owner.title'))}</h3>${button('post','',t('post.open'),overdue(state).length?'disabled':'','primary')}</div>${filterButtons(['Active','Past','Cancelled'].map(value=>[value,t('owner.filters.'+value)]),'filter')}${rows.length?paged(rows,shift=>{
@@ -450,7 +486,7 @@
       const tabs=role()==='owner'?['my-shifts','payments']:['browse','my-shifts','payments'];if(!tabs.includes(view.tab))view.tab=tabs[0];
       const pending=overdue(state),blocked=pending.length?`<div class="shifts-overdue" role="status"><p>${esc(t('overdue.message',{count:pending.length,amount:money(pending.reduce((sum,row)=>sum+row.amount,0))}))}</p>${button('payOverdue','',t('overdue.payNow'),'','soft')}</div>`:'';
       document.getElementById('dayworkView')?.classList.toggle('shifts-owner-view',role()==='owner');
-      root.innerHTML=`${blocked}<div class="shifts-tabs" role="tablist" aria-label="${esc(t('navigation.label'))}">${tabs.map(tab=>`<button type="button" role="tab" id="shift-tab-${tab}" data-shifts-tab="${tab}" aria-controls="shift-panel-${tab}" aria-selected="${tab===view.tab}" tabindex="${tab===view.tab?0:-1}">${esc(t('navigation.'+tab))}</button>`).join('')}</div>${errorMessage?`<p class="shifts-error" role="alert">${esc(errorMessage)}</p>`:''}<div class="shifts-workspace"><div role="tabpanel" id="shift-panel-${view.tab}" aria-labelledby="shift-tab-${view.tab}" class="shifts-stack">${view.tab==='payments'?paymentMarkup(state):role()==='owner'?ownerMarkup(state):view.tab==='browse'?browseMarkup(state):myMarkup(state)}</div><aside class="shifts-stack">${view.tab!=='browse'?reliabilityMarkup(state):''}${policyMarkup()}${button('setup','',t('setup.'+(role()==='owner'?'businessZelle':'staffZelle')+'.cta'),'','soft')}</aside></div>`;
+      root.innerHTML=`${blocked}<div class="shifts-tabs" role="tablist" aria-label="${esc(t('navigation.label'))}">${tabs.map(tab=>`<button type="button" role="tab" id="shift-tab-${tab}" data-shifts-tab="${tab}" aria-controls="shift-panel-${tab}" aria-selected="${tab===view.tab}" tabindex="${tab===view.tab?0:-1}">${esc(t('navigation.'+tab))}</button>`).join('')}</div>${errorMessage?`<p class="shifts-error" role="alert">${esc(errorMessage)}</p>`:''}<div class="shifts-workspace"><div role="tabpanel" id="shift-panel-${view.tab}" aria-labelledby="shift-tab-${view.tab}" class="shifts-stack">${view.tab==='payments'?paymentMarkup(state):role()==='owner'?ownerMarkup(state):view.tab==='browse'?browseMarkup(state):myMarkup(state)}</div><aside class="shifts-stack">${sharingMarkup(state)}${view.tab!=='browse'?reliabilityMarkup(state):''}${policyMarkup()}${button('setup','',t('setup.'+(role()==='owner'?'businessZelle':'staffZelle')+'.cta'),'','soft')}</aside></div>`;
     }
     function modal(title,body,footer='') {
       adapter.openDialog?.(`<div class="overlay" data-shifts-overlay><section class="dialog shifts-dialog" role="dialog" aria-modal="true" aria-labelledby="shiftsDialogTitle"><div class="dialog-head"><h2 id="shiftsDialogTitle">${esc(title)}</h2>${button('close','',t('close'),'','soft')}</div><div class="dialog-body">${body}<p class="shifts-error" data-shifts-dialog-error role="alert"></p></div>${footer?`<div class="dialog-footer">${footer}</div>`:''}</section></div>`);
@@ -510,7 +546,7 @@
         const distance=Number.isFinite(worker.distance)?' · '+esc(t('availableWorkers.distance.'+band(worker.distance))):'';
         const booked=applied?`<p class="shifts-status">${esc(t('availableWorkers.alreadyApplied'))}</p>`:'';
         const invite=button('invite',id,t(invited?'availableWorkers.invited':'availableWorkers.invite'),`data-shifts-worker="${esc(worker.owner)}" ${invited||applied||overdue(state).length?'disabled':''}`,'soft');
-        return `<article class="shifts-inner-card"><div class="shifts-worker-heading">${photo}<strong>${esc(worker.owner)}</strong></div><p class="meta">${esc(worker.skills)}${distance}</p><p class="meta">${esc(stats(worker.owner))}</p>${booked}${invite}</article>`;
+        return `<article class="shifts-inner-card"><div class="shifts-worker-heading">${photo}<strong>${esc(worker.owner)}</strong></div><p class="meta">${esc(worker.skills)}${worker.sharedBy?' · '+esc(po('Chia sẻ từ ','Shared by ')+worker.sharedBy):''}${distance}</p><p class="meta">${esc(stats(worker.owner))}</p>${booked}${invite}</article>`;
       }).join('');
       const paging=pages>1?`<nav class="shifts-pagination">${button('workersPage',page-1,t('availableWorkers.previous'),page<=1?'disabled':'','soft')}<span>${esc(t('availableWorkers.page',{page,total:pages}))}</span>${button('workersPage',page+1,t('availableWorkers.next'),page>=pages?'disabled':'','soft')}</nav>`:'';
       const invitationCards=invitations.map(row=>`<div class="shifts-inner-card"><strong>${esc(row.worker)}</strong><p class="meta">${esc(t('invitations.status.'+row.status))}</p>${row.status==='Pending'?button('withdrawInvitation',row.id,t('invitations.withdraw'),'','soft'):''}</div>`).join('');
@@ -649,6 +685,7 @@
       if(current.type==='settlement')openSettlement(current.id);
       else if(current.type==='assignment')openAssignment(current.id);
       else if(current.type==='shift')openShift(current.id);
+      else if(current.type==='sharedInvite')sharedInviteDialog(current.worker);
       else if(current.type==='workers')workersDialog(current.id,current.radius,current.page);
     }
     function onClick(event) {
@@ -658,6 +695,9 @@
       const buttonNode=event.target.closest('[data-shifts-action]');if(!buttonNode)return;
       event.preventDefault();event.stopImmediatePropagation();if(buttonNode.disabled)return;
       const action=buttonNode.dataset.shiftsAction,id=buttonNode.dataset.shiftsId;
+      if(['askTech','shareTech'].includes(action)){act(action,id);return;}
+      if(action==='inviteShared'){sharedInviteDialog(id);return;}
+      if(action==='inviteSharedToShift'){if(act('invite',id,{worker:buttonNode.dataset.shiftsWorker,requireSharing:true})){tell(t('availableWorkers.inviteSent'));closeDialog();}return;}
       if(action==='close'){closeDialog();return;}
       if(action==='details'){openShift(id);return;}
       if(action==='claim'){openClaim(id);return;}
@@ -690,6 +730,7 @@
     }
     function onChange(event) {
       const target=event.target;
+      if(target.matches('[data-shifts-share-consent]')){event.stopImmediatePropagation();act('shareConsent',target.dataset.shiftsShareConsent,{agreed:target.checked});return;}
       if(target.matches('[data-shifts-availability]')){event.stopImmediatePropagation();act('availability','',{isAvailable:target.checked});}
       if(target.matches('[data-shifts-distance]')){event.stopImmediatePropagation();act('availability','',{maxDistanceMiles:Number(target.value)});}
       if(target.matches('[data-shifts-payment-filter]')){view.paymentFilter=target.value;view.page=1;render();}

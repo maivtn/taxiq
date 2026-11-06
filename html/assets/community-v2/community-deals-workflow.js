@@ -28,8 +28,9 @@
     const root = document.createElement('section');
     root.id='communityDealsView';root.hidden=true;root.setAttribute('translate','no');root.setAttribute('data-community-authored','');
     const tabs=['nearby','industry','match','opening','wallet'];
+    const businessTabs=adapter.role==='owner'?['create','manage','redeem','campaign','openingBusiness','demand']:[];
     const tabButton = (key,main=false) => `<button type="button" class="community-deals-tab" data-deal-route="${key}" ${main?'role="tab" aria-selected="false" aria-controls="communityDealsStage"':'aria-pressed="false"'}>${icon(ROUTES[key].icon)}<span>${ROUTES[key].label}</span></button>`;
-    root.innerHTML=`<div class="community-deals-nav"><nav class="community-deals-nav-tabs" role="tablist" aria-label="Deals &amp; Coupons">${tabs.map(key=>tabButton(key,true)).join('')}</nav><button type="button" class="btn primary community-deals-post" data-template="deal">＋ Post an offer</button></div><div class="community-deals-stage" id="communityDealsStage" role="tabpanel"><div class="community-deals-frames"></div></div>`;
+    root.innerHTML=`<div class="community-deals-nav"><nav class="community-deals-nav-tabs" role="tablist" aria-label="Deals &amp; Coupons">${tabs.map(key=>tabButton(key,true)).join('')}</nav>${businessTabs.length?`<nav class="community-deals-business" aria-label="Business tools">${businessTabs.map(key=>tabButton(key)).join('')}</nav>`:''}<button type="button" class="btn primary community-deals-post" data-template="deal">＋ Post an offer</button></div><div class="community-deals-stage" id="communityDealsStage" role="tabpanel"><div class="community-deals-frames"></div></div>`;
     anchor.before(root);
     const frames=new Map(), frameHost=root.querySelector('.community-deals-frames');
     const initial=new URLSearchParams(location.search).get('dealTab');

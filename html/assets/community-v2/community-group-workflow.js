@@ -78,6 +78,12 @@
       },()=>member===current?adapter.setMembership?.(String(groupId),shouldJoin):true);
     }
     function join(groupId,member=current){return membership(groupId,member,true,member);}
+    function publishToGroups(ids,savePost) {
+      const targets=unique(ids).map(find);
+      if(targets.some(group=>!group||groupType(group)==='Marketplace'||!joined(group.id)&&['private','closed'].includes(String(group.visibility||group.privacy||'').toLowerCase())))return false;
+      // Commit memberships and the post together; a rejected post restores group storage.
+      return transaction(state=>{for(const group of targets){const row=record(state,group);row.members=unique([...row.members,current]);row.removed=row.removed.filter(name=>name!==current);state.groups[String(group.id)]=row;}},savePost);
+    }
     function leave(groupId,member=current){return membership(groupId,member,false,member);}
     function remove(groupId,member,actor=current){if(!canManage(groupId,actor))return false;return membership(groupId,member,false,actor);}
     function invitations(member=current) {return clone(read().invitations.filter(row=>row.status==='pending'&&row.member===identifier(member)&&find(row.groupId)));}
@@ -223,7 +229,7 @@
     function destroy(){destroyed=true;document.removeEventListener('click',onClick);document.removeEventListener('change',onChange);document.removeEventListener('submit',onSubmit);document.removeEventListener('keydown',onKeyDown,true);window.removeEventListener('storage',onStorage);observer.disconnect();}
     function onStorage(event){if(event.key===STORAGE_KEY||event.key==='nexora-community-templates-v1')refresh();}
     if(!options.storeOnly){document.addEventListener('click',onClick);document.addEventListener('change',onChange);document.addEventListener('submit',onSubmit);document.addEventListener('keydown',onKeyDown,true);window.addEventListener('storage',onStorage);observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});}
-    const store={groups,members,memberRecords:groupId=>members(groupId).map(name=>({id:name,name,role:canManage(groupId,name)?'owner':'member'})),invitations,invite,respond,remove,leave,join,joined,canManage,create,update,deleteGroup,groupType,read:()=>clone(read())};
+    const store={groups,members,memberRecords:groupId=>members(groupId).map(name=>({id:name,name,role:canManage(groupId,name)?'owner':'member'})),invitations,invite,respond,remove,leave,join,joined,canManage,create,update,deleteGroup,groupType,publishToGroups,read:()=>clone(read())};
     const instance={enhance,openGroup,navigate,filter,groupPosts,store,reset,destroy,onDialogClosed:()=>{dialogGroup=null;dialogKind=null;},isGroupVisible:group=>!!find(group.id)};
     if(!options.storeOnly)mounted=instance;return instance;
   }

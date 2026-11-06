@@ -10,7 +10,7 @@
   }
   async function mount(host,options={}){
     if(host.communityHub)return host.communityHub;
-    const url=new URL('nexora-community-complete.html?v=20261105-community-deals-controls-v58',BASE_URL);
+    const url=new URL('nexora-community-complete.html?v=20261106-community-v22-restoration-v59',BASE_URL);
     const parsed=new DOMParser().parseFromString(await read(url),'text/html');
     const styles=await Promise.all([...parsed.head.querySelectorAll('style,link[rel="stylesheet"]')].map(async node=>{const source=node.tagName==='STYLE'?url:new URL(node.getAttribute('href'),url);return scopedCSS(node.tagName==='STYLE'?node.textContent:await read(source),source);}));
     parsed.body.querySelectorAll('script').forEach(node=>node.remove());
@@ -120,6 +120,7 @@
         if(location.protocol!=='file:'&&event.origin!==location.origin)return;
         if(event.source===community.contentWindow&&event.data?.type==='nexora-feed-post-close'){notifyHost({type:'nexora-feed-post-close'});return;}
         if(event.source===community.contentWindow&&['nexora-community-page-navigate','nexora-community-page-state'].includes(event.data?.type)){if(event.data.type==='nexora-community-page-state')for(const key of ['pageId','pageMode','pageTab','pageScope']){if(event.data[key])params.set(key,event.data[key]);else params.delete(key);}notifyHost(event.data);return;}
+        if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-community-context'){const data=event.data.context;if(data?.view==='daywork'&&typeof data.shiftId==='string'){pendingContext={view:'daywork',shiftId:data.shiftId};setView('daywork');if(communityLoaded){sendToFrame(community,{type:'nexora-community-context',context:pendingContext});pendingContext=null;}}return;}
         if(event.source===community.contentWindow&&event.data?.type==='nexora-community-context'){notifyHost(event.data);return;}
         if(event.source===community.contentWindow&&event.data?.type==='nexora-community-pos'){notifyHost(event.data);return;}
         if(event.source===community.contentWindow&&event.data?.type==='nexora-open-community-group'){pendingGroup=event.data.group;connectSection='groups';setView('connect');if(connectLoaded){sendToFrame(connect,{type:'nexora-open-community-group',group:pendingGroup});pendingGroup=null;}return;}

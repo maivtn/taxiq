@@ -16,3 +16,6 @@
 .community-deals-nav{justify-content:space-between;gap:12px}
 .community-deals-post{margin-left:auto;min-height:40px;white-space:nowrap}
 @media(max-width:700px){.community-deals-post{margin-left:0}.community-deals-nav{align-items:flex-start;gap:12px}.community-deals-nav-tabs{flex:1 1 100%}}
+
+/* Owner-only entry points retain the existing Deal modules. */
+.community-deals-business{display:flex;gap:7px;flex-wrap:wrap;width:100%;padding:10px 0;border-top:1px solid #e1e5ee}.community-deals-business .community-deals-tab{min-height:44px;flex:0 1 auto}.community-deals-business [aria-pressed="true"]{background:#eceaff;color:#4338a0;border-color:#b9b1eb}@media(max-width:850px){.community-deals-business{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.community-deals-business .community-deals-tab{white-space:normal;text-align:center;justify-content:center;min-width:0}}@media(max-width:480px){.community-deals-business{grid-template-columns:repeat(2,minmax(0,1fr))}}
