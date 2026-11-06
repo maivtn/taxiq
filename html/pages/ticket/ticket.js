@@ -24,33 +24,39 @@
   ];
   const chevron = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   let nextId = 1;
-  const line = (name, category, price, status = '', addons = [], custom = false) => ({ id: `line-${nextId++}`, name, category, price, status, addons: addons.map(([name, price]) => ({ name, price })), custom, discount: 0 });
+  const line = (name, category, price, status = '', addons = [], custom = false) => ({ id: `line-${nextId++}`, name, category, price, status, addons: addons.map(([name, price]) => ({ name, price, discount: 0, custom: false })), custom, discount: 0 });
   const state = {
     mode: initialMode === 'checkout' ? 'checkout' : 'edit',
     groups: [
-      { id: 'andy', tech: 'ANDY', lines: [line('Paris Pearl', 'Pedicure', 75)] },
+      { id: 'andy', tech: 'ANDY', lines: [
+        line('Paris Pearl', 'Pedicure', 75, '', [['Hot Stone Massage Added on', 10]]),
+        line('test', '', 2, '', [], true),
+      ] },
       { id: 'nexora', tech: 'NEXORA_02', lines: [
-        line('President 7 Star', 'Pedicure', 499, 'Completed', [['Hot Stone Massage Added on', 10]]),
-        line('Paris Pearl', 'Pedicure', 75, 'Completed', [['Shellac Polish Change Hand', 25], ['Hot Stone Massage Added on', 10]]),
-        line('President 7 Star', 'Pedicure', 499, 'In Service'),
-        line('Bitcoin 24k Gold', 'Pedicure', 99, 'In Service'),
-        line('test', '', 2, 'In Service', [], true),
+        line('President 7 Star', 'Pedicure', 499, 'Completed', [['Shellac Polish Change Hand', 25]]),
+        line('test', '', 2, '', [], true),
       ] },
     ],
     activeGroup: 'andy', category: 'All', search: '', paymentMethod: null, hasPendingChanges: true,
     receipt: 'No Receipt', tip: 0, tipType: 'amount', tipChoice: null,
     discountAll: false, showMore: false, collapsed: false, replacingLineId: null, addonTargetLineId: null, pendingRemoveLineId: null,
+    addServicesGroupId: null, addServicesTargetLineId: null, addServicesCategoryIndex: 0, addServicesSearch: '', addServicesQuantities: {},
+    changeServiceId: null, changeServiceCategoryIndex: 0, changeServiceSearch: '',
+    discountTarget: null, discountType: 'amount', discountValue: null,
   };
   const $ = id => document.getElementById(id);
   const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const money = amount => `$${Number(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const moneyCompact = amount => `$${Number(amount || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
   const allLines = () => state.groups.flatMap(group => group.lines);
-  const lineTotal = item => item.price + item.addons.reduce((sum, addon) => sum + addon.price, 0) - item.discount;
+  const filled = item => !item.custom || Boolean(item.name.trim());
+  const visibleLines = group => group.lines.filter(filled);
+  const visibleAddons = item => filled(item) ? item.addons.filter(filled) : [];
+  const lineTotal = item => filled(item) ? item.price - item.discount + visibleAddons(item).reduce((sum, addon) => sum + addon.price - (addon.discount || 0), 0) : 0;
   const subtotal = () => allLines().reduce((sum, item) => sum + lineTotal(item), 0);
   const total = () => subtotal() + state.tip;
-  const missingTech = () => state.groups.some(group => !group.tech && group.lines.length);
-  const count = () => allLines().length + allLines().reduce((sum, item) => sum + item.addons.length, 0);
+  const missingTech = () => state.groups.some(group => !group.tech && group.lines.some(filled));
+  const count = () => allLines().filter(filled).length + allLines().reduce((sum, item) => sum + visibleAddons(item).length, 0);
   const findLine = id => { for (const group of state.groups) { const item = group.lines.find(line => line.id === id); if (item) return { group, item }; } return null; };
   const findGroup = id => state.groups.find(group => group.id === id);
 
@@ -94,9 +100,9 @@
 
   function renderGroups() {
     closeTechMenu();
-    const serviceCount = allLines().length;
-    const addons = allLines().reduce((sum, item) => sum + item.addons.length, 0);
-    const techCount = state.groups.filter(group => group.tech && group.lines.length).length;
+    const serviceCount = allLines().filter(filled).length;
+    const addons = allLines().reduce((sum, item) => sum + visibleAddons(item).length, 0);
+    const techCount = state.groups.filter(group => group.tech && visibleLines(group).length).length;
     $('service-count').textContent = `${techCount} tech${techCount === 1 ? '' : 's'} · ${serviceCount} services${addons ? ` · ${addons} add-ons` : ''}`;
     $('technician-groups').hidden = state.collapsed;
     $('add-technician').hidden = state.collapsed;
@@ -104,30 +110,31 @@
     $('collapse-ticket').setAttribute('aria-expanded', String(!state.collapsed));
     $('technician-groups').innerHTML = state.groups.map(group => {
       const groupTotal = group.lines.reduce((sum, item) => sum + lineTotal(item), 0);
-      const itemCount = group.lines.reduce((sum, item) => sum + 1 + item.addons.length, 0);
+      const itemCount = group.lines.reduce((sum, item) => sum + (filled(item) ? 1 + visibleAddons(item).length : 0), 0);
       const rows = group.lines.map(item => {
         const status = item.status ? `<span class="status ${item.status === 'Completed' ? 'completed' : 'in-service'}">${escape(item.status)}</span>` : '';
         const head = item.custom
-          ? `<div class="ticket-line-head"><div><span class="main-badge">Main services</span>${status}</div></div><div class="custom-inputs"><input aria-label="Custom service name" data-custom-name="${item.id}" value="${escape(item.name)}"><span>$</span><input aria-label="Custom service price" data-custom-price="${item.id}" inputmode="decimal" value="${item.price}"></div>`
-          : `<div class="ticket-line-head"><div><span class="main-badge">Main services</span><span class="ticket-line-name">${escape(item.category)} · ${escape(item.name)}</span>${status}</div><strong class="ticket-line-price">${moneyCompact(item.price)}</strong></div>`;
+          ? `${status ? `<div class="ticket-line-head"><div>${status}</div></div>` : ''}<div class="custom-inputs"><input aria-label="Custom service name" data-custom-name="${item.id}" value="${escape(item.name)}"><span>$</span><input aria-label="Custom service price" data-custom-price="${item.id}" inputmode="decimal" placeholder="0" value="${item.price}"></div>`
+          : `<div class="ticket-line-head"><div><span class="ticket-line-name">${escape(item.category)} · ${escape(item.name)}</span>${status}</div><strong class="ticket-line-price">${moneyCompact(item.price)}</strong></div>`;
         const change = `${item.status === 'Completed' ? '' : `<button type="button" class="purple" data-change-service="${item.id}">Change service</button>`}<button type="button" class="purple" data-add-on="${item.id}">+ Add-On</button>`;
         const techAction = `<button type="button" class="line-tech-trigger" data-line-tech="${item.id}" aria-haspopup="listbox" aria-expanded="false" aria-label="Change technician for ${escape(group.tech || 'this service')}">${group.tech ? 'Change tech' : 'Select technician'}</button>`;
-        return `<div class="ticket-line" data-line="${item.id}">${head}<div class="line-actions">${techAction}${change}<button type="button" class="purple" data-add-custom="${group.id}">+ Custom</button><button type="button" class="yellow" data-discount="${item.id}">${item.discount ? 'Undo discount' : 'Discount'}</button><button type="button" class="danger" data-remove-line="${item.id}">Remove</button></div>${item.addons.map((addon, index) => `<div class="add-on-line"><div><span>↳ ${escape(addon.name)}</span><button type="button" class="addon-discount">Discount</button></div><span>${moneyCompact(addon.price)} <button type="button" data-remove-addon="${item.id}|${index}" aria-label="Remove ${escape(addon.name)}">×</button></span></div>`).join('')}</div>`;
+        return `<div class="ticket-line" data-line="${item.id}">${head}<div class="line-actions">${techAction}${change}<button type="button" class="purple" data-add-custom-addon="${item.id}">+ Custom</button><button type="button" class="yellow" data-discount="${item.id}">${item.discount ? 'Undo discount' : 'Discount'}</button><button type="button" class="danger" data-remove-line="${item.id}">Remove</button></div>${item.addons.map((addon, index) => `<div class="add-on-line ${addon.custom ? 'custom-addon' : ''}"><div>${addon.custom ? `<div class="custom-addon-inputs"><span>↳</span><input aria-label="Custom add-on name" data-custom-addon-name="${item.id}|${index}" value="${escape(addon.name)}"><span>$</span><input aria-label="Custom add-on price" data-custom-addon-price="${item.id}|${index}" inputmode="decimal" placeholder="0" value="${addon.price}"></div>` : `<span>↳ ${escape(addon.name)}</span>`}<button type="button" class="addon-discount" ${filled(addon) ? `data-discount-addon="${item.id}|${index}"` : 'disabled'}>${addon.discount ? 'Undo discount' : 'Discount'}</button></div><span>${addon.custom ? '' : moneyCompact(addon.price - (addon.discount || 0))} <button type="button" data-remove-addon="${item.id}|${index}" aria-label="Remove ${escape(addon.name || 'custom add-on')}">×</button></span></div>`).join('')}</div>`;
       }).join('');
       return `<section class="technician-group ${state.activeGroup === group.id ? 'active' : ''}" data-group="${group.id}"><div class="group-heading"><span class="tech-label">Tech.</span><button type="button" class="group-tech-trigger" data-group-tech="${group.id}" aria-haspopup="listbox" aria-expanded="false" aria-label="${group.tech ? `Change technician for ${escape(group.tech)}` : 'Select technician'}"><span>${escape(group.tech || 'Select technician')}</span>${chevron}</button><div class="group-subtotal">${itemCount} item${itemCount === 1 ? '' : 's'}<strong>${money(groupTotal)}</strong></div><button class="remove-group" type="button" data-remove-group="${group.id}" aria-label="Remove technician group">×</button></div><div class="group-body">${rows}<div class="group-actions"><button type="button" data-add-main="${group.id}">＋ Add main service</button><button type="button" data-add-custom="${group.id}">＋ Custom service</button></div></div></section>`;
     }).join('');
   }
 
   function previewSections() {
-    return state.groups.filter(group => group.lines.length).map(group => {
-      const itemCount = group.lines.reduce((sum, item) => sum + 1 + item.addons.length, 0);
+    return state.groups.filter(group => visibleLines(group).length).map(group => {
+      const itemCount = visibleLines(group).reduce((sum, item) => sum + 1 + visibleAddons(item).length, 0);
       const groupTotal = group.lines.reduce((sum, item) => sum + lineTotal(item), 0);
-      return `<div class="preview-group"><div class="preview-group-heading"><span>${group.tech ? `Tech. ${escape(group.tech)}` : 'Technician needed'}</span><small>${itemCount} item${itemCount === 1 ? '' : 's'} &nbsp;·&nbsp; ${money(groupTotal)}</small></div>${group.lines.map(item => `<div class="preview-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price - item.discount)}</strong></div>${item.addons.map(addon => `<div class="preview-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price)}</strong></div>`).join('')}`).join('')}</div>`;
+      return `<div class="preview-group"><div class="preview-group-heading"><span>${group.tech ? `Tech. ${escape(group.tech)}` : 'Technician needed'}</span><small>${itemCount} item${itemCount === 1 ? '' : 's'} &nbsp;·&nbsp; ${money(groupTotal)}</small></div>${visibleLines(group).map(item => `<div class="preview-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price - item.discount)}</strong></div>${visibleAddons(item).map(addon => `<div class="preview-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price - (addon.discount || 0))}</strong></div>`).join('')}`).join('')}</div>`;
     }).join('');
   }
 
   function renderPreview() {
-    $('preview-count').textContent = `${count()} items · ${state.groups.filter(group => group.tech && group.lines.length).length} technician${state.groups.filter(group => group.tech && group.lines.length).length === 1 ? '' : 's'}`;
+    const technicianCount = state.groups.filter(group => group.tech && visibleLines(group).length).length;
+    $('preview-count').textContent = `${count()} items · ${technicianCount} technician${technicianCount === 1 ? '' : 's'}`;
     $('preview-lines').innerHTML = previewSections();
     $('preview-total').textContent = money(subtotal());
   }
@@ -137,29 +144,33 @@
     ['gift', 'Gift Card', 'gift_card.png'], ['crypto', 'Crypto', 'crypto.png'],
     ['split', 'Split Pay', 'split_pay.png'],
   ];
+  const extraMethods = [
+    ['zelle', 'Zelle', 'zelle.png'], ['cashapp', 'Cash App', 'cash-app.svg'],
+    ['venmo', 'Venmo', 'venmo.png'], ['vlinkpay', 'VLINKPAY Wallet', 'vlinkpay-logo.png'],
+  ];
   const removeIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
   function renderPayment() {
-    $('payment-methods').innerHTML = methods.map(([id, label, icon]) => `<button type="button" data-method="${id}" class="${state.paymentMethod === id ? 'selected' : ''}" aria-pressed="${state.paymentMethod === id}"><img src="${asset}${icon}" alt="">${label}</button>`).join('') + `<button type="button" data-more="1" aria-expanded="${state.showMore}">··· More</button>`;
+    $('payment-methods').innerHTML = methods.map(([id, label, icon]) => `<button type="button" data-method="${id}" class="${state.paymentMethod === id ? 'selected' : ''}" aria-pressed="${state.paymentMethod === id}"><img src="${asset}${icon}" alt="">${label}</button>`).join('') + `<button type="button" data-more="1" aria-expanded="${state.showMore}">··· ${state.showMore ? 'Less' : 'More'}</button>`;
     $('payment-extra').hidden = !state.showMore;
-    $('payment-extra').innerHTML = '<button type="button" data-method="other">Other</button>';
+    $('payment-extra').innerHTML = extraMethods.map(([id, label, icon]) => `<button type="button" data-method="${id}" class="${state.paymentMethod === id ? 'selected' : ''}" aria-pressed="${state.paymentMethod === id}"><img src="${asset}${icon}" alt="">${label}</button>`).join('');
     $('receipt-choices').innerHTML = ['No Receipt', 'Send SMS', 'Print'].map(choice => `<button type="button" data-receipt="${choice}" class="${state.receipt === choice ? 'selected' : ''}" aria-pressed="${state.receipt === choice}">${choice}</button>`).join('');
-    $('payment-lines').innerHTML = state.groups.filter(group => group.lines.length).map(group => {
-      const itemCount = group.lines.reduce((sum, item) => sum + 1 + item.addons.length, 0);
+    $('payment-lines').innerHTML = state.groups.filter(group => visibleLines(group).length).map(group => {
+      const itemCount = visibleLines(group).reduce((sum, item) => sum + 1 + visibleAddons(item).length, 0);
       const groupTotal = group.lines.reduce((sum, item) => sum + lineTotal(item), 0);
       const heading = group.tech ? `<div class="payment-group-label"><strong>Tech. ${escape(group.tech)}</strong><span>${itemCount} items <span aria-hidden="true">·</span> ${money(groupTotal)}</span></div>` : '';
-      const lines = group.lines.map(item => {
+      const lines = visibleLines(group).map(item => {
         const name = item.custom ? `<strong>${escape(item.name)}</strong>` : `<span class="payment-category">${escape(item.category)} · </span><strong>${escape(item.name)}</strong>`;
         const remove = state.pendingRemoveLineId === item.id
           ? `<span class="payment-remove-confirm"><button type="button" data-confirm-payment-remove="${item.id}">Confirm remove</button><button type="button" data-cancel-payment-remove="1">Cancel</button></span>`
           : `<button class="payment-remove" type="button" data-payment-remove-line="${item.id}" aria-label="Remove ${escape(item.name)}">${removeIcon}</button>`;
         const main = `<div class="payment-line"><span class="payment-item-label">${name}</span><span class="payment-line-end"><strong>${money(item.price - item.discount)}</strong>${remove}</span></div>`;
-        const addons = item.addons.map((addon, index) => `<div class="payment-line addon"><span class="payment-item-label"><span class="addon-arrow" aria-hidden="true">↳</span><strong>${escape(addon.name)}</strong></span><span class="payment-line-end"><strong>${money(addon.price)}</strong><button class="payment-remove" type="button" data-payment-remove-addon="${item.id}|${index}" aria-label="Remove ${escape(addon.name)}">${removeIcon}</button></span></div>`).join('');
+        const addons = item.addons.map((addon, index) => ({ addon, index })).filter(({ addon }) => filled(addon)).map(({ addon, index }) => `<div class="payment-line addon"><span class="payment-item-label"><span class="addon-arrow" aria-hidden="true">↳</span><strong>${escape(addon.name)}</strong></span><span class="payment-line-end"><strong>${money(addon.price - (addon.discount || 0))}</strong><button class="payment-remove" type="button" data-payment-remove-addon="${item.id}|${index}" aria-label="Remove ${escape(addon.name)}">${removeIcon}</button></span></div>`).join('');
         return main + addons;
       }).join('');
       return `<div class="payment-summary-group">${heading}${lines}</div>`;
     }).join('');
     $('summary-tip').textContent = money(state.tip);
-    $('summary-discount').textContent = money(allLines().reduce((sum, item) => sum + item.discount, 0));
+    $('summary-discount').textContent = money(allLines().reduce((sum, item) => sum + item.discount + visibleAddons(item).reduce((addonSum, addon) => addonSum + (addon.discount || 0), 0), 0));
     $('payment-total').textContent = money(total());
     $('discount-all').textContent = state.discountAll ? '↶ Undo discount all' : '◉ Discount all';
   }
@@ -177,7 +188,7 @@
       editButton.setAttribute('aria-disabled', String(missingTech()));
     } else {
       button.textContent = `Pay · ${money(total())}`;
-      button.disabled = !state.paymentMethod || missingTech() || !allLines().length;
+      button.disabled = !state.paymentMethod || missingTech() || !allLines().some(filled);
       button.setAttribute('aria-disabled', String(button.disabled));
     }
   }
@@ -203,12 +214,120 @@
   }
 
   function renderPrintPreview() {
-    const groups = state.groups.filter(group => group.lines.length);
+    const groups = state.groups.filter(group => visibleLines(group).length);
     const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date()).replace(' at ', ' ');
-    $('print-pages').innerHTML = groups.map((group, index) => `<article class="print-page"><div class="print-title">Ticket #1</div><div class="print-date">${escape(date)}</div><div class="print-customer">Customer: <strong>Mai test Upload Image 1</strong></div><div class="print-tech">${escape(group.tech || 'Technician needed')}</div>${group.lines.map(item => `<div class="print-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price - item.discount)}</strong></div>${item.addons.map(addon => `<div class="print-item print-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price)}</strong></div>`).join('')}`).join('')}${group.tech === 'NEXORA_02' ? '<div class="print-note"><strong>NOTE</strong><p><b>Pedicure · President 7 Star:</b> Client requested a shorter finish</p></div>' : ''}<div class="print-page-number">${index + 1} / ${groups.length}</div></article>`).join('');
+    $('print-pages').innerHTML = groups.map((group, index) => `<article class="print-page"><div class="print-title">Ticket #1</div><div class="print-date">${escape(date)}</div><div class="print-customer">Customer: <strong>Mai test Upload Image 1</strong></div><div class="print-tech">${escape(group.tech || 'Technician needed')}</div>${visibleLines(group).map(item => `<div class="print-item"><span>${item.custom ? escape(item.name) : `${escape(item.category)} · ${escape(item.name)}`}</span><strong>${money(item.price - item.discount)}</strong></div>${visibleAddons(item).map(addon => `<div class="print-item print-addon"><span>↳ ${escape(addon.name)}</span><strong>${money(addon.price - (addon.discount || 0))}</strong></div>`).join('')}`).join('')}${group.tech === 'NEXORA_02' ? '<div class="print-note"><strong>NOTE</strong><p><b>Pedicure · President 7 Star:</b> Client requested a shorter finish</p></div>' : ''}<div class="print-page-number">${index + 1} / ${groups.length}</div></article>`).join('');
   }
 
   function markPending() { state.hasPendingChanges = true; }
+
+  function renderAddServices() {
+    $('add-services-categories').innerHTML = catalog.map((group, index) => `<button type="button" data-modal-category="${index}" class="${index === state.addServicesCategoryIndex ? 'active' : ''}" aria-pressed="${index === state.addServicesCategoryIndex}">${escape(group.category)}</button>`).join('');
+    const query = state.addServicesSearch.trim().toLowerCase();
+    const group = catalog[state.addServicesCategoryIndex];
+    const items = group.items.map(([name, price, duration], index) => ({ name, price, duration, index })).filter(item => !query || item.name.toLowerCase().includes(query));
+    $('add-services-list').innerHTML = `<h3>${escape(group.category.toUpperCase())}</h3>${items.map(item => {
+      const key = `${state.addServicesCategoryIndex}:${item.index}`;
+      const quantity = state.addServicesQuantities[key] || 0;
+      return `<div class="add-services-item"><div><strong>${escape(item.name)}</strong><span>${money(item.price)} <small>${item.duration} min</small></span></div><div class="add-services-stepper"><button type="button" data-modal-quantity="${key}" data-delta="-1" aria-label="Decrease quantity: ${escape(item.name)}" ${quantity ? '' : 'disabled'}>−</button><output>${quantity}</output><button type="button" data-modal-quantity="${key}" data-delta="1" aria-label="Increase quantity: ${escape(item.name)}">+</button></div></div>`;
+    }).join('')}`;
+    const selected = Object.values(state.addServicesQuantities).reduce((sum, quantity) => sum + quantity, 0);
+    $('add-services-selected').textContent = selected ? `${selected} selected` : '';
+  }
+
+  function openAddServices(groupId, targetLineId = null) {
+    const group = findGroup(groupId);
+    if (!group) return;
+    state.activeGroup = groupId;
+    state.addServicesGroupId = groupId;
+    state.addServicesTargetLineId = targetLineId;
+    state.addServicesCategoryIndex = targetLineId ? catalog.findIndex(source => source.category === 'Additional') : 0;
+    state.addServicesSearch = '';
+    state.addServicesQuantities = {};
+    $('add-services-title').textContent = targetLineId ? `Add-ons — ${findLine(targetLineId)?.item.name || ''}` : 'Add Services';
+    $('add-services-instructions').hidden = Boolean(targetLineId);
+    $('save-add-services').textContent = targetLineId ? 'Add-On' : 'Add Services';
+    $('close-add-services').setAttribute('aria-label', targetLineId ? 'Close add-ons' : 'Close');
+    $('add-services-technician').textContent = `Tech. ${group.tech || 'Select technician'}`;
+    $('add-services-search').value = '';
+    renderAddServices();
+    $('add-services-dialog').showModal();
+  }
+
+  function saveAddServices() {
+    const group = findGroup(state.addServicesGroupId);
+    if (!group) return;
+    const target = state.addServicesTargetLineId ? findLine(state.addServicesTargetLineId)?.item : null;
+    let added = 0;
+    for (const [key, quantity] of Object.entries(state.addServicesQuantities)) {
+      const [categoryIndex, itemIndex] = key.split(':').map(Number);
+      const source = catalog[categoryIndex];
+      const item = source?.items[itemIndex];
+      if (!item) continue;
+      for (let index = 0; index < quantity; index++) {
+        if (target) target.addons.push({ name: item[0], price: item[1], discount: 0, custom: false });
+        else group.lines.push(line(item[0], source.category, item[1]));
+        added++;
+      }
+    }
+    if (!added) return;
+    $('add-services-dialog').close();
+    state.addServicesGroupId = null;
+    state.addServicesTargetLineId = null;
+    markPending();
+    render();
+  }
+
+  function renderChangeServices() {
+    $('change-service-categories').innerHTML = catalog.map((group, index) => `<button type="button" data-change-category="${index}" class="${index === state.changeServiceCategoryIndex ? 'active' : ''}" aria-pressed="${index === state.changeServiceCategoryIndex}">${escape(group.category)}</button>`).join('');
+    const source = catalog[state.changeServiceCategoryIndex];
+    const query = state.changeServiceSearch.trim().toLowerCase();
+    $('change-service-list').innerHTML = source.items.map(([name, price], index) => ({ name, price, index })).filter(item => !query || item.name.toLowerCase().includes(query)).map(item => `<div><span>${escape(item.name)} — ${money(item.price)}</span><button type="button" data-select-service="${state.changeServiceCategoryIndex}:${item.index}">Select</button></div>`).join('');
+  }
+
+  function openChangeService(id) {
+    const found = findLine(id);
+    if (!found) return;
+    state.changeServiceId = id;
+    state.changeServiceCategoryIndex = Math.max(0, catalog.findIndex(group => group.category === found.item.category));
+    state.changeServiceSearch = '';
+    $('change-service-search').value = '';
+    $('change-service-title').textContent = `Change Service · ${found.item.name}`;
+    renderChangeServices();
+    $('change-service-dialog').showModal();
+  }
+
+  function renderDiscountValues() {
+    document.querySelectorAll('[data-discount-type]').forEach(button => { button.classList.toggle('active', button.dataset.discountType === state.discountType); button.setAttribute('aria-pressed', String(button.dataset.discountType === state.discountType)); });
+    const values = [5, 10, 15, 20, 25];
+    $('discount-values').innerHTML = values.map(value => `<button type="button" data-discount-value="${value}" class="${state.discountValue === value ? 'active' : ''}">${state.discountType === 'amount' ? `$${value}` : `${value}%`}</button>`).join('') + `<label><span>${state.discountType === 'amount' ? '$' : '%'}</span><input id="discount-custom-value" type="number" min="0" inputmode="decimal" placeholder="Custom" aria-label="Value"></label>`;
+    $('save-discount').disabled = state.discountValue === null;
+  }
+
+  function openDiscount(id, addonIndex = null) {
+    const item = findLine(id)?.item;
+    const target = addonIndex === null ? item : item?.addons[addonIndex];
+    if (!target) return;
+    state.discountTarget = { id, addonIndex };
+    state.discountType = 'amount';
+    state.discountValue = null;
+    $('discount-title').textContent = `Discount — ${target.name}`;
+    $('discount-original').textContent = `Original price ${money(target.price)}`;
+    $('discount-reason').value = '';
+    renderDiscountValues();
+    $('discount-dialog').showModal();
+  }
+
+  function saveDiscount() {
+    const { id, addonIndex } = state.discountTarget || {};
+    const item = findLine(id)?.item;
+    const target = addonIndex === null ? item : item?.addons[addonIndex];
+    if (!target || state.discountValue === null) return;
+    const amount = state.discountType === 'percent' ? target.price * state.discountValue / 100 : state.discountValue;
+    target.discount = Math.min(target.price, Math.max(0, Math.round(amount * 100) / 100));
+    $('discount-dialog').close();
+    markPending(); render();
+  }
 
   function addService(category, name) {
     const source = catalog.find(group => group.category === category);
@@ -265,17 +384,32 @@
     if (!button) return;
     if (button.dataset.category !== undefined) { state.category = button.dataset.category; renderCatalog(); return; }
     if (button.dataset.addService) { const [category, name] = button.dataset.addService.split('|'); addService(category, name); return; }
-    if (button.dataset.addMain) { state.activeGroup = button.dataset.addMain; renderCatalog(); $('service-search').focus(); return; }
+    if (button.dataset.addMain) { openAddServices(button.dataset.addMain); return; }
+    if (button.dataset.modalCategory !== undefined) { state.addServicesCategoryIndex = Number(button.dataset.modalCategory); renderAddServices(); return; }
+    if (button.dataset.modalQuantity) { const key = button.dataset.modalQuantity; state.addServicesQuantities[key] = Math.max(0, (state.addServicesQuantities[key] || 0) + Number(button.dataset.delta)); renderAddServices(); return; }
+    if (button.id === 'close-add-services') { $('add-services-dialog').close(); return; }
+    if (button.id === 'save-add-services') { saveAddServices(); return; }
+    if (button.dataset.changeCategory !== undefined) { state.changeServiceCategoryIndex = Number(button.dataset.changeCategory); renderChangeServices(); return; }
+    if (button.dataset.selectService) { const [categoryIndex, itemIndex] = button.dataset.selectService.split(':').map(Number); const source = catalog[categoryIndex]; const item = source?.items[itemIndex]; const found = findLine(state.changeServiceId); if (item && found) { Object.assign(found.item, { name: item[0], category: source.category, price: item[1], custom: false, discount: 0 }); $('change-service-dialog').close(); markPending(); render(); } return; }
+    if (button.id === 'change-to-custom') { const found = findLine(state.changeServiceId); if (found) { Object.assign(found.item, { name: '', category: '', price: 0, custom: true, discount: 0 }); $('change-service-dialog').close(); markPending(); render(); document.querySelector(`[data-custom-name="${found.item.id}"]`)?.focus(); } return; }
+    if (button.id === 'close-change-service') { $('change-service-dialog').close(); return; }
+    if (button.dataset.discountType) { state.discountType = button.dataset.discountType; state.discountValue = null; renderDiscountValues(); return; }
+    if (button.dataset.discountValue) { state.discountValue = Number(button.dataset.discountValue); renderDiscountValues(); return; }
+    if (button.id === 'close-discount') { $('discount-dialog').close(); return; }
+    if (button.id === 'save-discount') { saveDiscount(); return; }
+    if (button.dataset.addCustomAddon) { const found = findLine(button.dataset.addCustomAddon); if (found) { const index = found.item.addons.push({ name: '', price: 0, discount: 0, custom: true }) - 1; renderGroups(); document.querySelector(`[data-custom-addon-name="${found.item.id}|${index}"]`)?.focus(); } return; }
     if (button.dataset.addCustom) { addCustom(button.dataset.addCustom); return; }
     if (button.dataset.removeLine) { const found = findLine(button.dataset.removeLine); if (found) found.group.lines = found.group.lines.filter(line => line.id !== found.item.id); markPending(); render(); return; }
     if (button.dataset.removeGroup) { state.groups = state.groups.filter(group => group.id !== button.dataset.removeGroup); if (!state.groups.length) state.groups.push({ id: `group-${nextId++}`, tech: '', lines: [] }); state.activeGroup = state.groups[0].id; markPending(); render(); return; }
     if (button.dataset.removeAddon) { const [id, index] = button.dataset.removeAddon.split('|'); const found = findLine(id); if (found) found.item.addons.splice(Number(index), 1); markPending(); render(); return; }
+    if (button.dataset.discountAddon) { const [id, index] = button.dataset.discountAddon.split('|'); const addon = findLine(id)?.item.addons[Number(index)]; if (addon?.discount) { addon.discount = 0; markPending(); render(); } else openDiscount(id, Number(index)); return; }
+    if (button.dataset.discount) { const item = findLine(button.dataset.discount)?.item; if (item?.discount) { item.discount = 0; markPending(); render(); } else openDiscount(button.dataset.discount); return; }
     if (button.dataset.paymentRemoveLine) { state.pendingRemoveLineId = button.dataset.paymentRemoveLine; renderPayment(); return; }
     if (button.dataset.confirmPaymentRemove) { const found = findLine(button.dataset.confirmPaymentRemove); if (found) found.group.lines = found.group.lines.filter(line => line.id !== found.item.id); state.pendingRemoveLineId = null; render(); return; }
     if (button.dataset.cancelPaymentRemove) { state.pendingRemoveLineId = null; renderPayment(); return; }
     if (button.dataset.paymentRemoveAddon) { const [id, index] = button.dataset.paymentRemoveAddon.split('|'); const found = findLine(id); if (found) found.item.addons.splice(Number(index), 1); render(); return; }
-    if (button.dataset.addOn) { state.addonTargetLineId = button.dataset.addOn; state.replacingLineId = null; state.category = 'Additional'; renderCatalog(); $('service-search').focus(); return; }
-    if (button.dataset.changeService) { state.replacingLineId = button.dataset.changeService; state.addonTargetLineId = null; state.category = 'All'; renderCatalog(); $('service-search').focus(); return; }
+    if (button.dataset.addOn) { const found = findLine(button.dataset.addOn); if (found) openAddServices(found.group.id, found.item.id); return; }
+    if (button.dataset.changeService) { openChangeService(button.dataset.changeService); return; }
     if (button.dataset.method) { state.paymentMethod = button.dataset.method; renderPayment(); renderAction(); return; }
     if (button.dataset.more) { state.showMore = !state.showMore; renderPayment(); return; }
     if (button.dataset.receipt) { state.receipt = button.dataset.receipt; renderPayment(); return; }
@@ -285,7 +419,7 @@
     if (button.id === 'collapse-ticket') { state.collapsed = !state.collapsed; renderGroups(); return; }
     if (button.id === 'back-button') { if (state.mode === 'checkout') setMode('edit'); return; }
     if (button.id === 'edit-primary-action') { if (missingTech()) { state.collapsed = false; renderGroups(); const group = state.groups.find(group => !group.tech && group.lines.length); document.querySelector(`[data-group-tech="${group.id}"]`)?.focus(); } else if (state.hasPendingChanges) { state.hasPendingChanges = false; renderAction(); } else setMode('checkout'); return; }
-    if (button.id === 'checkout-button') { if (!button.disabled) { $('confirm-method').textContent = `Payment method: ${methods.find(method => method[0] === state.paymentMethod)?.[1] || 'Other'}`; $('confirm-total').textContent = money(total()); $('confirm-dialog').showModal(); } return; }
+    if (button.id === 'checkout-button') { if (!button.disabled) { $('confirm-method').textContent = `Payment method: ${[...methods, ...extraMethods].find(method => method[0] === state.paymentMethod)?.[1] || 'Other'}`; $('confirm-total').textContent = money(total()); $('confirm-dialog').showModal(); } return; }
     if (button.id === 'add-tip') { state.tipType = 'amount'; state.tipChoice = state.tip || null; renderTipValues(); $('tip-dialog').showModal(); return; }
     if (button.id === 'close-tip') { $('tip-dialog').close(); return; }
     if (button.id === 'hand-to-customer') { const facing = $('tip-dialog').classList.toggle('customer-facing'); button.textContent = facing ? 'Back to staff' : 'Hand to customer'; $('customer-tip-title').hidden = !facing; return; }
@@ -301,8 +435,13 @@
     const field = event.target;
     if (field.dataset.customName) { const found = findLine(field.dataset.customName); if (found) found.item.name = field.value; markPending(); renderPreview(); renderPayment(); renderAction(); }
     if (field.dataset.customPrice) { const found = findLine(field.dataset.customPrice); if (found) found.item.price = Math.max(0, Number(field.value) || 0); markPending(); render(); }
+    if (field.dataset.customAddonName) { const [id, index] = field.dataset.customAddonName.split('|'); const addon = findLine(id)?.item.addons[Number(index)]; if (addon) addon.name = field.value; markPending(); renderGroups(); renderPreview(); renderPayment(); renderAction(); }
+    if (field.dataset.customAddonPrice) { const [id, index] = field.dataset.customAddonPrice.split('|'); const addon = findLine(id)?.item.addons[Number(index)]; if (addon) addon.price = Math.max(0, Number(field.value) || 0); markPending(); render(); }
   });
   $('service-search').addEventListener('input', event => { state.search = event.target.value; renderCatalog(); });
+  $('add-services-search').addEventListener('input', event => { state.addServicesSearch = event.target.value; renderAddServices(); });
+  $('change-service-search').addEventListener('input', event => { state.changeServiceSearch = event.target.value; renderChangeServices(); });
+  $('discount-values').addEventListener('input', event => { if (event.target.id === 'discount-custom-value') { const value = Number(event.target.value); state.discountValue = event.target.value === '' || !Number.isFinite(value) || value < 0 ? null : value; $('save-discount').disabled = state.discountValue === null; } });
   $('tip-values').addEventListener('input', () => { state.tipChoice = null; updateTipSave(); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape') closeTechMenu(); });
   window.addEventListener('resize', closeTechMenu);
