@@ -1,0 +1,1516 @@
+{
+  "meta": {
+    "observedAt": "2026-11-06T07:14:25.304581+00:00",
+    "sourceCommit": "a25efa2f1382b33d8853aebad3acea8c0b5462a2",
+    "deployCommit": "Chưa xác minh",
+    "sources": [
+      {
+        "path": "from-po/NEXORA-Community/nexora-community-tong-hop.html",
+        "sha256": "4e7b80b0ca619498713258f5cb213d14b333b7f403155a9cf1ba0062b2d7e4e2"
+      },
+      {
+        "path": "from-po/NEXORA-Community/nexora-campaigns.html",
+        "sha256": "86771d6730cdf8b3e74bc1278f32adf7542f6da57e881eab857a4ab4de8f9836"
+      },
+      {
+        "path": "from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/community/demo/nexora-community-complete.html",
+        "sha256": "e06ac3a28b691c6a5a9976cc0006fe4998713d5765b0f4b1514e1aeb86bbec39"
+      },
+      {
+        "path": "from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/community/demo/nexora-community-prototype.html",
+        "sha256": "58c63a2a2db71518cf38326d929fc31b542c120540e191675279935680ea1ab3"
+      }
+    ],
+    "parity": [
+      {
+        "path": "html/pages/community.html",
+        "sha": "96030e31105a038848d543c1e6d0d3c72485f1203f232ccb173c12a1d5513728",
+        "status": 200,
+        "deployedSha": "96030e31105a038848d543c1e6d0d3c72485f1203f232ccb173c12a1d5513728",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:44 GMT"
+      },
+      {
+        "path": "html/assets/community-v2-integration.js",
+        "sha": "df634a7fdefd105b255190868641f42a7ada6b81baf59425384f4c388f55ea43",
+        "status": 200,
+        "deployedSha": "df634a7fdefd105b255190868641f42a7ada6b81baf59425384f4c388f55ea43",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:45 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-pages-screen.js",
+        "sha": "43f1f2ba667a62ff63676bd25f1ec6df12f2f9ec460d4828dc218c39b18fe9d4",
+        "status": 200,
+        "deployedSha": "43f1f2ba667a62ff63676bd25f1ec6df12f2f9ec460d4828dc218c39b18fe9d4",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-jobs-workflow.js",
+        "sha": "274cb6d8b83b6358e36cd230efbdf0d9168181e2c75b1b07308f727629d7fa01",
+        "status": 200,
+        "deployedSha": "274cb6d8b83b6358e36cd230efbdf0d9168181e2c75b1b07308f727629d7fa01",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-feed-composer.js",
+        "sha": "6927b0a224840d3e518d5efe44f9c562c4154f8e165f8a941b44900ff90fd8d0",
+        "status": 200,
+        "deployedSha": "6927b0a224840d3e518d5efe44f9c562c4154f8e165f8a941b44900ff90fd8d0",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-feed-social.js",
+        "sha": "f4f3344371d98e02e46c28a7dc0cc622607d2ceb39107c4d4fce3a2a7facbb8a",
+        "status": 200,
+        "deployedSha": "f4f3344371d98e02e46c28a7dc0cc622607d2ceb39107c4d4fce3a2a7facbb8a",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-deals-module.js",
+        "sha": "f4674336ea8af4a6c1a918a98deb9a54784d63dcc4aa94fd7216a9a80ebc7168",
+        "status": 200,
+        "deployedSha": "f4674336ea8af4a6c1a918a98deb9a54784d63dcc4aa94fd7216a9a80ebc7168",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:59 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-group-workflow.js",
+        "sha": "10b07f3fafab80db6adf573579458749df8b98daffe072350ceda13a6461316f",
+        "status": 200,
+        "deployedSha": "10b07f3fafab80db6adf573579458749df8b98daffe072350ceda13a6461316f",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/nexora-privacy-interactive.js",
+        "sha": "05f633cb9ff1d4cab2fdbc1dd7de368d7eb082458fdb6c1372430e1de044e27a",
+        "status": 200,
+        "deployedSha": "05f633cb9ff1d4cab2fdbc1dd7de368d7eb082458fdb6c1372430e1de044e27a",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:44:09 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/nexora-community-i18n.js",
+        "sha": "405890936fe86ee6096004c2b2245103107e8d3b422e593d8be1f769397a762b",
+        "status": 200,
+        "deployedSha": "405890936fe86ee6096004c2b2245103107e8d3b422e593d8be1f769397a762b",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-deals-workflow.js",
+        "sha": "eef0405933b7911683d80dd840429a3187035b8facb4d8af52618baa4a353559",
+        "status": 200,
+        "deployedSha": "eef0405933b7911683d80dd840429a3187035b8facb4d8af52618baa4a353559",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:47 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-deals-demo.js",
+        "sha": "562c43d0bbbd7c04257da1e1c06c929c8e78c8f6584cb7e592cce80b6c5387b9",
+        "status": 200,
+        "deployedSha": "562c43d0bbbd7c04257da1e1c06c929c8e78c8f6584cb7e592cce80b6c5387b9",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:59 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-deals-items.js",
+        "sha": "241a3c0195e0402c3a15b27f7c5bb0c896cbcc802cbcb18a5f428cbdf1e16688",
+        "status": 200,
+        "deployedSha": "241a3c0195e0402c3a15b27f7c5bb0c896cbcc802cbcb18a5f428cbdf1e16688",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:59 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-page-ads.js",
+        "sha": "3373004e195f9972087af37f94ac37b85118b7c4982d9ba1cfe49a19d4818dfb",
+        "status": 200,
+        "deployedSha": "3373004e195f9972087af37f94ac37b85118b7c4982d9ba1cfe49a19d4818dfb",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/nexora-us-place-centers-2025.js",
+        "sha": "62b2acdf596766ec5dc8fb8ed1ed08a8d1ab3dc1d175a1228f96a851db56d317",
+        "status": 200,
+        "deployedSha": "62b2acdf596766ec5dc8fb8ed1ed08a8d1ab3dc1d175a1228f96a851db56d317",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:40:18 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-shifts-workflow.js",
+        "sha": "4d49e46dd504003350bd792df8b97f74b86c9bcdc7404b21bd658ceaf3a1b59f",
+        "status": 200,
+        "deployedSha": "4d49e46dd504003350bd792df8b97f74b86c9bcdc7404b21bd658ceaf3a1b59f",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-connect-workflow.js",
+        "sha": "e13b60ccea1b42d87058a7650627d3fe14ccbcaffe271dc56c525e8697dd3003",
+        "status": 200,
+        "deployedSha": "e13b60ccea1b42d87058a7650627d3fe14ccbcaffe271dc56c525e8697dd3003",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:44:09 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-record-store.js",
+        "sha": "677530ae4283fe93e87da600df8294c9f335c603cce1a5393b0a651430d8f1af",
+        "status": 200,
+        "deployedSha": "677530ae4283fe93e87da600df8294c9f335c603cce1a5393b0a651430d8f1af",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:47 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-demo-data.js",
+        "sha": "0a31319271e32d57a912cd4eca5d0f74d669dd73f7a1e0158e9f2cbe40cdfe4d",
+        "status": 200,
+        "deployedSha": "0a31319271e32d57a912cd4eca5d0f74d669dd73f7a1e0158e9f2cbe40cdfe4d",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-page-photos.js",
+        "sha": "0e8197089b1838a500a664205ed258668ec7265841641a614debd81fa1a3700e",
+        "status": 200,
+        "deployedSha": "0e8197089b1838a500a664205ed258668ec7265841641a614debd81fa1a3700e",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-hub.js",
+        "sha": "0df0b195bcb2c4bb1dd7eecdb6f48333ee353b5ec946840fb1a0a26f11cc6d01",
+        "status": 200,
+        "deployedSha": "0df0b195bcb2c4bb1dd7eecdb6f48333ee353b5ec946840fb1a0a26f11cc6d01",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:46 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/nexora-us-geo-2025.js",
+        "sha": "2f4da19714688228564d6a60b08b28d9b7f40a37ff6cc4a05a248fae80e835f0",
+        "status": 200,
+        "deployedSha": "2f4da19714688228564d6a60b08b28d9b7f40a37ff6cc4a05a248fae80e835f0",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-deals-selects.js",
+        "sha": "fd37af3a6e36bac2238e908f43ad7cdb03bb37b83b3644278d24604e963701cd",
+        "status": 200,
+        "deployedSha": "fd37af3a6e36bac2238e908f43ad7cdb03bb37b83b3644278d24604e963701cd",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:47 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/community-ui.js",
+        "sha": "4712123a9d241b8b60552157321f890e5067e533212502fe824e85021af347c6",
+        "status": 200,
+        "deployedSha": "4712123a9d241b8b60552157321f890e5067e533212502fe824e85021af347c6",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:48 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/nexora-community-complete.html",
+        "sha": "91b40bc0787fd8742fb546d46232841ee6d312138d7db9bd20a014238c85f277",
+        "status": 200,
+        "deployedSha": "91b40bc0787fd8742fb546d46232841ee6d312138d7db9bd20a014238c85f277",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:46 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/nexora-privacy-qr-layout.html",
+        "sha": "af50d6f5e480f5ef2353bef6c18baf12117dce0af339e09c731d0bd6f6a5c45b",
+        "status": 200,
+        "deployedSha": "af50d6f5e480f5ef2353bef6c18baf12117dce0af339e09c731d0bd6f6a5c45b",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:44:09 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/nexora-community-prototype.html",
+        "sha": "d34b860f5fc8034ddc0f1d8f7ca9fadc4d225dd17b2422a20f3792c606869e25",
+        "status": 200,
+        "deployedSha": "d34b860f5fc8034ddc0f1d8f7ca9fadc4d225dd17b2422a20f3792c606869e25",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:47 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/nexora-nailhub-blog-preview.html",
+        "sha": "5e1c7e1c167cd6bbf2adc76963165f2f6829788f925dd3afa7bdc42fdb24bdcb",
+        "status": 200,
+        "deployedSha": "5e1c7e1c167cd6bbf2adc76963165f2f6829788f925dd3afa7bdc42fdb24bdcb",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:45:42 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/deals/deal-match.html",
+        "sha": "3ee8e7a216c01e8df6d19692c781690a557668654ffc1baff675e368066cce39",
+        "status": 200,
+        "deployedSha": "3ee8e7a216c01e8df6d19692c781690a557668654ffc1baff675e368066cce39",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:45:43 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/deals/grand-opening.html",
+        "sha": "5e4dbc88b968591675fed8f89f6190d69b3d79f0c4c0e931d11d6fc59a343ae1",
+        "status": 200,
+        "deployedSha": "5e4dbc88b968591675fed8f89f6190d69b3d79f0c4c0e931d11d6fc59a343ae1",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:45:43 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/deals/campaigns.html",
+        "sha": "c1cb6a4dbdf869d633b1404f04bb0ecfde01f6fb62e5947b97a1c2a319fefceb",
+        "status": 200,
+        "deployedSha": "c1cb6a4dbdf869d633b1404f04bb0ecfde01f6fb62e5947b97a1c2a319fefceb",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:45:44 GMT"
+      },
+      {
+        "path": "html/assets/community-v2/deals/nearby.html",
+        "sha": "a62e17e3f35bf10973b7420e56d635c9406395a149f577f56cd4dd4ad5afa00d",
+        "status": 200,
+        "deployedSha": "a62e17e3f35bf10973b7420e56d635c9406395a149f577f56cd4dd4ad5afa00d",
+        "match": true,
+        "lastModified": "Fri, 06 Nov 2026 06:43:58 GMT"
+      }
+    ],
+    "viewports": [
+      "390×844",
+      "820×1180",
+      "1440×900"
+    ],
+    "roles": "Owner/business; staff/personal qua query demo; V1 Jessica/Kayla và V2 BITCOIN NAIL BAR",
+    "capturedStates": 179,
+    "uniqueScreenshots": 179,
+    "sourceApproval": "Người dùng xác nhận Dùng hai nguồn này trong chat ngày Nov 6, 2026."
+  },
+  "findings": [
+    {
+      "id": "SS01",
+      "group": "missing",
+      "area": "Feed",
+      "title": "Bỏ chặn nội dung yêu cầu chuyển tiền trước",
+      "v1": "Cùng câu chứa “deposit by Zelle” bị chặn ở bước Tiếp; không qua bước chọn nơi đăng.",
+      "v2": "Form một màn, không có bước kiểm tra tương đương.",
+      "v22": "Bấm Post tạo bài trong kho demo và hiện trên Feed; không xuất hiện cảnh báo hoặc bước chặn.",
+      "impact": "Mất điều kiện chặn đã có trong prototype v1. Đây là kết quả lưu local, không phải đăng lên mạng thật.",
+      "proposal": "Khôi phục điều kiện kiểm tra trước khi đăng theo quyết định PO; kiểm tra cả cảnh báo số điện thoại.",
+      "images": [
+        [
+          "V1 · iPad · bị chặn",
+          "v1-ipad-feed-prepublish-check.png"
+        ],
+        [
+          "V2.2 · iPad · bài đã lưu local",
+          "v22-ipad-feed-no-prepublish-check.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "SS02",
+      "group": "missing",
+      "area": "Feed",
+      "title": "Bài thường được đăng vào Marketplace",
+      "v1": "Nhóm Chợ bị vô hiệu hóa với bài không phải mua bán; chọn sẽ báo “Markets are for sale posts only”.",
+      "v2": "Không có bộ chọn nơi đăng tương đương.",
+      "v22": "Bài thường chọn được Texas Nail Equipment Marketplace và bài đã lưu có nhãn nhóm đó.",
+      "impact": "Không còn phân biệt nơi dành cho bài cộng đồng và bài mua bán như v1.",
+      "proposal": "Khôi phục quy tắc theo loại nhóm/loại bài, hoặc xin PO xác nhận chủ đích thay đổi.",
+      "images": [
+        [
+          "V1 · iPad · nhóm Chợ bị chặn",
+          "v1-ipad-feed-market-restricted.png"
+        ],
+        [
+          "V2.2 · iPad · bài thường trong Marketplace",
+          "v22-ipad-feed-no-prepublish-check.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "SS03",
+      "group": "missing",
+      "area": "Feed",
+      "title": "Thiếu gợi ý nơi đăng và nút Use suggestion",
+      "v1": "Bước chọn nơi có AI suggests và Use suggestion, gợi ý Feed và nhóm phù hợp nội dung.",
+      "v2": "Không có bộ chọn đích.",
+      "v22": "Có chọn tối đa 3 nơi nhưng không có phần gợi ý và thao tác áp dụng gợi ý.",
+      "impact": "Người đăng phải tự chọn đích; phần đã phục hồi mới giữ giới hạn 3 nơi.",
+      "proposal": "Giữ form một màn và bổ sung lại gợi ý nếu PO vẫn yêu cầu.",
+      "images": [
+        [
+          "V1 · chọn nơi đăng",
+          "v1-desktop-feed-compose-step2.png"
+        ],
+        [
+          "V2.2 · form chọn nơi",
+          "v22-desktop-composer-general.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS04",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Không còn thư viện 8 mẫu đăng tìm việc nhanh",
+      "v1": "Choose mode → Use a template → 8 mẫu theo nghề, lịch và nhu cầu; tự điền bài.",
+      "v2": "Chỉ có Hiring và Seeking work với ví dụ minh họa.",
+      "v22": "Seeking work mở thẳng form; không thấy thư viện 8 mẫu hoặc đường thay thế trong form/hồ sơ.",
+      "impact": "Mất cách đăng nhanh dành cho thợ ít muốn nhập liệu.",
+      "proposal": "Khôi phục chọn mẫu trước hoặc trong form hiện tại.",
+      "images": [
+        [
+          "V1 · 8 mẫu",
+          "v1-desktop-jobs-eight-templates.png"
+        ],
+        [
+          "V2.2 · Seeking work",
+          "v22-desktop-jobs-staff-seeking.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "SS05",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu Say/type one sentence và AI fill",
+      "v1": "Có ô nói/gõ một câu, microphone demo, ví dụ và AI fill.",
+      "v2": "Không có.",
+      "v22": "Không thấy chế độ này trong Seeking work, Tech Profile hoặc menu Jobs.",
+      "impact": "Thợ phải tự điền từng trường; không còn trải nghiệm trích thông tin từ một câu.",
+      "proposal": "Khôi phục luồng AI điền có bước cho thợ xem và sửa; không mô tả microphone demo là AI thật.",
+      "images": [
+        [
+          "V1 · nói/gõ một câu",
+          "v1-desktop-jobs-say.png"
+        ],
+        [
+          "V2.2 · form trực tiếp",
+          "v22-desktop-jobs-staff-seeking.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "SS06",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu chip câu nhanh trong bài tìm việc",
+      "v1": "8 câu nhanh như có đồ nghề, có xe, biết tiếng Anh, muốn làm lâu dài; chọn để thêm vào bài.",
+      "v2": "Không có.",
+      "v22": "Form có mô tả và kỹ năng nhập tay; không có các chip câu nhanh.",
+      "impact": "Mất một control hỗ trợ soạn bài, dù vẫn có thể tự gõ nội dung.",
+      "proposal": "Bổ sung lại các chip vào phần mô tả nếu giữ hành vi v1.",
+      "images": [
+        [
+          "V1 · quick phrases",
+          "v1-desktop-jobs-quick-fields.png"
+        ],
+        [
+          "V2.2 · form",
+          "v22-desktop-jobs-staff-seeking.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS07",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Mất bộ nhập lương mong muốn Từ–Đến và đơn vị",
+      "v1": "Có hai ô Từ/Đến và đơn vị /tuần, /ngày, /tháng; kiểm tra Từ ≤ Đến.",
+      "v2": "Seeking work không có bộ này.",
+      "v22": "Seeking work có Salary type và Weekly Salary; profile có Expected pay dạng text, không phải bộ khoảng tiền + đơn vị.",
+      "impact": "Không biểu diễn cùng dữ liệu lương mong muốn có cấu trúc như v1. Hiring vẫn có Pay period, không nằm trong thiếu hụt này.",
+      "proposal": "Bổ sung khoảng lương và đơn vị cho tin tìm việc; giữ quy tắc Guaranteed hiện có nếu được PO xác nhận.",
+      "images": [
+        [
+          "V1 · Pay & schedule",
+          "v1-desktop-jobs-pay-schedule.png"
+        ],
+        [
+          "V2.2 · Seeking work",
+          "v22-desktop-jobs-staff-seeking.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "SS08",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu ngày trong tuần và buổi làm trong tin tìm việc",
+      "v1": "Có chip T2–CN, All week và Ca: cả ngày/sáng/chiều/linh hoạt.",
+      "v2": "Chỉ có Available from và mô tả.",
+      "v22": "Seeking work chỉ có Available from và Work types; lịch rảnh ở Extra shifts là ngữ cảnh khác.",
+      "impact": "Không còn bộ chọn lịch làm thường xuyên theo từng tin Jobs.",
+      "proposal": "Khôi phục control lịch trong tin Jobs; không dùng lịch ca ngắn hạn để thay thế.",
+      "images": [
+        [
+          "V1 · ngày và ca",
+          "v1-desktop-jobs-pay-schedule.png"
+        ],
+        [
+          "V2.2 · trường tin tìm việc",
+          "v22-desktop-jobs-staff-seeking.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS09",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu phạm vi đi làm và lựa chọn đi bang khác/cần chỗ ở",
+      "v1": "Bước Job wanted có Within city, Within 20 miles, Open to other states (needs housing).",
+      "v2": "Không có lựa chọn có cấu trúc này.",
+      "v22": "Có khu vực, địa chỉ nhập tay; không có phạm vi đi xa hoặc cần chỗ ở trong form và Tech Profile đã mở.",
+      "impact": "Không còn thông tin phục vụ tìm việc liên bang/chỗ ở dưới dạng lựa chọn riêng.",
+      "proposal": "Bổ sung lại trường đi xa và nhu cầu chỗ ở theo PO.",
+      "images": [
+        [
+          "V1 · Job wanted",
+          "v1-desktop-jobs-full.png"
+        ],
+        [
+          "V2.2 · Seeking work",
+          "v22-desktop-jobs-staff-seeking.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS10",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu AI write / Add English version / Shorten",
+      "v1": "Bước Content & post có đủ ba nút trợ giúp viết bài.",
+      "v2": "Chỉ có Use this example.",
+      "v22": "Form cho sửa Title/description nhưng không có ba hành động này.",
+      "impact": "Mất các thao tác tạo, dịch bổ sung và rút gọn nội dung đã có trong demo v1.",
+      "proposal": "Khôi phục ở phần nội dung nếu còn hiệu lực; tách rõ bản dịch mẫu và AI thật.",
+      "images": [
+        [
+          "V1 · công cụ nội dung",
+          "v1-desktop-jobs-ai-privacy.png"
+        ],
+        [
+          "V2.2 · form",
+          "v22-desktop-jobs-staff-seeking.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS11",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu switch Hide last name",
+      "v1": "Có công tắc ẩn họ, ví dụ Jessica N.",
+      "v2": "Không có.",
+      "v22": "Tech Profile chỉ có Open to work, Hide current shop, Hide phone; không có ẩn họ.",
+      "impact": "Không giữ đủ lựa chọn riêng tư trên UI v1.",
+      "proposal": "Bổ sung lại control hoặc xác nhận PO đã bỏ; không nhầm với Hide phone vẫn còn.",
+      "images": [
+        [
+          "V1 · riêng tư bài",
+          "v1-desktop-jobs-ai-privacy.png"
+        ],
+        [
+          "V2.2 · riêng tư hồ sơ",
+          "v22-desktop-jobs-profile-preferences.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS12",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu thời hạn hiển thị 14/30/60 ngày",
+      "v1": "Bài tìm việc có Listing duration 14/30/60 ngày.",
+      "v2": "Không có lựa chọn thời hạn này.",
+      "v22": "Seeking work không có thời hạn; Apply by chỉ xuất hiện trong Hiring và có ý nghĩa khác.",
+      "impact": "Mất bộ chọn tuổi thọ tin tìm việc. Tự ẩn/gia hạn theo thời gian chưa được chờ chạy thực tế.",
+      "proposal": "Khôi phục thời hạn theo tin và quyết định rõ gia hạn, hết hạn, đóng tin.",
+      "images": [
+        [
+          "V1 · thời hạn",
+          "v1-desktop-jobs-ai-privacy.png"
+        ],
+        [
+          "V2.2 · tin tìm việc",
+          "v22-desktop-jobs-staff-seeking.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS13",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu Pause / Show again cho tin của tôi",
+      "v1": "Đã tạo tin bằng UI; Pause đổi badge Live → Paused và xuất hiện Show again.",
+      "v2": "Chỉ có Close post.",
+      "v22": "My Posts có Details, Edit, Close post; trạng thái Closed không có mở lại trong UI/code đã đối chiếu.",
+      "impact": "Đóng tin không thay thế được tạm ẩn rồi hiện lại.",
+      "proposal": "Bổ sung tạm ẩn/hiện lại, giữ riêng Close post.",
+      "images": [
+        [
+          "V1 · đã Pause",
+          "v1-ipad-jobs-my-posts-paused.png"
+        ],
+        [
+          "V2.2 · My Posts",
+          "v22-ipad-jobs-staff-myPosts.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "SS14",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu Got hired",
+      "v1": "My posts có Got hired, tách khỏi Pause và Delete.",
+      "v2": "Chỉ có Close post.",
+      "v22": "Không có hành động/badge đã có việc trong My Posts; chỉ Close post.",
+      "impact": "Không ghi được lý do kết thúc là thợ đã có việc như UI v1. Không khẳng định đã thử gửi thông báo cho mọi lời mời.",
+      "proposal": "Giữ riêng kết quả đã có việc nếu PO còn dùng cho lời mời và trạng thái.",
+      "images": [
+        [
+          "V1 · My posts",
+          "v1-ipad-jobs-my-posts-published.png"
+        ],
+        [
+          "V2.2 · My Posts",
+          "v22-ipad-jobs-staff-myPosts.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS15",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu Delete tin tìm việc",
+      "v1": "My posts có Delete.",
+      "v2": "Không có.",
+      "v22": "Chỉ thấy đóng tin; không có xóa bản đăng hoặc bản nháp từ danh sách tương đương.",
+      "impact": "Đóng tin không xóa bản ghi; mất một thao tác quản lý của v1.",
+      "proposal": "Bổ sung xóa kèm xác nhận và quy tắc với lời mời/đơn liên quan; không tự khôi phục khi chưa chốt.",
+      "images": [
+        [
+          "V1 · Delete",
+          "v1-ipad-jobs-my-posts-published.png"
+        ],
+        [
+          "V2.2 · thao tác tin",
+          "v22-ipad-jobs-staff-myPosts.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS16",
+      "group": "missing",
+      "area": "Jobs",
+      "title": "Thiếu thống kê trên từng tin của thợ",
+      "v1": "Card tin của tôi có views, invites, saves và số ngày còn lại.",
+      "v2": "Không có các chỉ số này.",
+      "v22": "My Posts của thợ không hiển thị các số này; Applicants của chủ tiệm là chỉ số khác.",
+      "impact": "Mất thông tin hiệu quả từng tin, không phải chỉ thay số dữ liệu mẫu.",
+      "proposal": "Giữ các chỉ số có nguồn thật hoặc đánh dấu demo rõ ràng.",
+      "images": [
+        [
+          "V1 · thống kê tin",
+          "v1-ipad-jobs-my-posts-published.png"
+        ],
+        [
+          "V2.2 · card tin",
+          "v22-ipad-jobs-staff-myPosts.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS17",
+      "group": "missing",
+      "area": "Deals",
+      "title": "Thiếu đường vào Campaigns",
+      "v1": "Menu Deal của chủ tiệm có Campaigns.",
+      "v2": "V2 chỉ có danh sách/post ưu đãi đơn giản.",
+      "v22": "Màn Channels/Campaigns/Analytics/Revenue còn chạy bằng dealTab=campaign.",
+      "impact": "Thiếu hoặc giảm khả năng tìm thấy đường thao tác; không kết luận đã xóa code/chức năng.",
+      "proposal": "Thêm đường điều hướng theo vai trò. Phân biệt công cụ doanh nghiệp với khám phá ưu đãi cho khách.",
+      "images": [
+        [
+          "V1 · menu chủ tiệm · desktop",
+          "v1-desktop-shift-owner.png"
+        ],
+        [
+          "V2.2 · menu chính",
+          "v22-owner-ipad-deals-ready.png"
+        ],
+        [
+          "V2.2 · đường riêng còn tồn tại",
+          "v22-desktop-deep-deals-campaign.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": "Live coupons có đường phụ trong Campaigns; thiếu ở menu chính không đồng nghĩa mất mọi đường truy cập."
+    },
+    {
+      "id": "SS18",
+      "group": "missing",
+      "area": "Deals",
+      "title": "Thiếu đường vào Redeem counter",
+      "v1": "Menu Deal của chủ tiệm có Quầy redeem.",
+      "v2": "V2 chỉ có danh sách/post ưu đãi đơn giản.",
+      "v22": "Form mã coupon + live PIN còn chạy bằng dealTab=redeem.",
+      "impact": "Thiếu hoặc giảm khả năng tìm thấy đường thao tác; không kết luận đã xóa code/chức năng.",
+      "proposal": "Thêm đường điều hướng theo vai trò. Phân biệt công cụ doanh nghiệp với khám phá ưu đãi cho khách.",
+      "images": [
+        [
+          "V1 · menu chủ tiệm · desktop",
+          "v1-desktop-shift-owner.png"
+        ],
+        [
+          "V2.2 · menu chính",
+          "v22-owner-ipad-deals-ready.png"
+        ],
+        [
+          "V2.2 · đường riêng còn tồn tại",
+          "v22-desktop-deep-deals-redeem.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": "Live coupons có đường phụ trong Campaigns; thiếu ở menu chính không đồng nghĩa mất mọi đường truy cập."
+    },
+    {
+      "id": "SS20",
+      "group": "missing",
+      "area": "Deals",
+      "title": "Post an offer chưa thay thế Create in POS",
+      "v1": "Menu v1 có Tạo trong POS / POS Promotion.",
+      "v2": "V2 chỉ có danh sách/post ưu đãi đơn giản.",
+      "v22": "Post an offer mở form đơn giản; form tạo PO nhiều kênh vẫn ở dealTab=create, không có đường vào rõ trên menu chính.",
+      "impact": "Thiếu hoặc giảm khả năng tìm thấy đường thao tác; không kết luận đã xóa code/chức năng.",
+      "proposal": "Thêm đường điều hướng theo vai trò. Phân biệt công cụ doanh nghiệp với khám phá ưu đãi cho khách.",
+      "images": [
+        [
+          "V1 · menu chủ tiệm · desktop",
+          "v1-desktop-shift-owner.png"
+        ],
+        [
+          "V2.2 · menu chính",
+          "v22-owner-ipad-deals-ready.png"
+        ],
+        [
+          "V2.2 · đường riêng còn tồn tại",
+          "v22-desktop-deep-deals-create.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": "Live coupons có đường phụ trong Campaigns; thiếu ở menu chính không đồng nghĩa mất mọi đường truy cập."
+    },
+    {
+      "id": "SS21",
+      "group": "missing",
+      "area": "Deals",
+      "title": "Grand opening đang dẫn tới màn khách, thiếu lối vào chiến dịch 30 ngày",
+      "v1": "Chủ tiệm v1 có lối vào thiết lập chiến dịch khai trương.",
+      "v2": "V2 chỉ có danh sách/post ưu đãi đơn giản.",
+      "v22": "Tab Grand opening là danh sách dành cho khách; thiết lập 5 giai đoạn còn ở dealTab=openingBusiness.",
+      "impact": "Thiếu hoặc giảm khả năng tìm thấy đường thao tác; không kết luận đã xóa code/chức năng.",
+      "proposal": "Thêm đường điều hướng theo vai trò. Phân biệt công cụ doanh nghiệp với khám phá ưu đãi cho khách.",
+      "images": [
+        [
+          "V1 · menu chủ tiệm · desktop",
+          "v1-desktop-shift-owner.png"
+        ],
+        [
+          "V2.2 · menu chính",
+          "v22-owner-ipad-deals-ready.png"
+        ],
+        [
+          "V2.2 · đường riêng còn tồn tại",
+          "v22-desktop-deep-deals-openingBusiness.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": "Live coupons có đường phụ trong Campaigns; thiếu ở menu chính không đồng nghĩa mất mọi đường truy cập."
+    },
+    {
+      "id": "SS22",
+      "group": "missing",
+      "area": "Extra shifts",
+      "title": "Thiếu chia sẻ thợ dư có sự đồng ý của thợ",
+      "v1": "Owner có Share spare techs; từng người có Tech agreed/Not consented, switch và Ask tech; danh sách người gần tiệm có Shared by salon.",
+      "v2": "Chỉ có tin cần người/rảnh nhận ca và liên hệ.",
+      "v22": "Owner có Post, Invite workers, My shifts, Zelle payments; không thấy quản lý chia sẻ nhân viên và sự đồng ý tương đương.",
+      "impact": "Mời người đã rảnh không thay thế việc tiệm đề nghị chia sẻ nhân viên có consent.",
+      "proposal": "Khôi phục phần quản lý đồng ý/chia sẻ nếu còn trong phạm vi PO.",
+      "images": [
+        [
+          "V1 · chia sẻ thợ",
+          "v1-desktop-shift-share-workers.png"
+        ],
+        [
+          "V2.2 · ca của tiệm",
+          "v22-desktop-baseline-shift.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "SS23",
+      "group": "missing",
+      "area": "Connect",
+      "title": "Thiếu Translate trên tin nhắn",
+      "v1": "Tin có bản dịch mẫu hiện nút Translate.",
+      "v2": "Không có thao tác dịch tương đương.",
+      "v22": "Trong phòng chat đã mở có Reply, Report, reaction; không có Translate; mã hiện tại cũng không thực hiện bản dịch.",
+      "impact": "Mất thao tác dịch tin trên UI; v1 chỉ dịch những tin có dữ liệu mẫu, không phải dịch AI thật.",
+      "proposal": "Khôi phục cách hiển thị bản dịch hoặc xác nhận bỏ phạm vi này.",
+      "images": [
+        [
+          "V1 · Translate",
+          "v1-desktop-connect-chat.png"
+        ],
+        [
+          "V2.2 · chat",
+          "v22-ipad-stable-connect-chat.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": "Ảnh khác tài khoản/viewport; dữ liệu hội thoại không được dùng để suy ra thiếu nội dung. Kết luận giới hạn ở control dùng chung."
+    },
+    {
+      "id": "SS24",
+      "group": "missing",
+      "area": "Connect",
+      "title": "Thiếu AI captions trong cuộc gọi",
+      "v1": "Call có nút AI captions; prototype có phụ đề Việt–Anh mẫu.",
+      "v2": "Không có.",
+      "v22": "Đã bấm gọi rồi Join: chỉ có Minimize, timer, Mute, End; video thêm Camera, không có captions.",
+      "impact": "Mất control phụ đề hỗ trợ trao đổi hai ngôn ngữ trong demo.",
+      "proposal": "Khôi phục UI và trạng thái phụ đề nếu còn yêu cầu; tách tích hợp thật khỏi mô phỏng.",
+      "images": [
+        [
+          "V1 · call",
+          "v1-desktop-connect-call.png"
+        ],
+        [
+          "V2.2 · call đã Join",
+          "v22-desktop-connect-call-active.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "SS25",
+      "group": "missing",
+      "area": "Connect",
+      "title": "Thiếu Speaker trên cuộc gọi thoại",
+      "v1": "Call thoại có nút Loa/Speaker ngoài Mute.",
+      "v2": "Không thấy.",
+      "v22": "Call thoại đã Join chỉ có Mute và End; không có Speaker.",
+      "impact": "Thiếu một control gọi thoại của v1; không đánh giá phần cứng âm thanh thật.",
+      "proposal": "Giữ control nếu luồng gọi thật cần chọn loa.",
+      "images": [
+        [
+          "V1 · Speaker",
+          "v1-desktop-connect-call.png"
+        ],
+        [
+          "V2.2 · Mute/End",
+          "v22-desktop-connect-call-active.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS26",
+      "group": "missing",
+      "area": "Connect",
+      "title": "Bỏ nhãn Encrypted trên màn gọi",
+      "v1": "Call có badge khóa và Encrypted.",
+      "v2": "Không thấy.",
+      "v22": "Màn gọi không hiển thị badge đó dù chuỗi dịch còn có trong code.",
+      "impact": "Đây là thiếu nhãn UI, không phải kết luận thay đổi mã hóa hoặc bảo mật cuộc gọi.",
+      "proposal": "Chỉ hiển thị nhãn khi có căn cứ tích hợp; PO xác nhận thông điệp phù hợp cho demo.",
+      "images": [
+        [
+          "V1 · badge Encrypted",
+          "v1-desktop-connect-call.png"
+        ],
+        [
+          "V2.2 · màn gọi",
+          "v22-desktop-connect-call-active.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P3",
+      "note": ""
+    },
+    {
+      "id": "SS27",
+      "group": "missing",
+      "area": "Connect",
+      "title": "Thiếu Share extra shift và Salon location trong đính kèm",
+      "v1": "Menu attachment có Photo/video, Share an extra shift, Salon location.",
+      "v2": "Có ảnh, voice, sticker/GIF/emoji; không có hai lựa chọn ngữ cảnh này.",
+      "v22": "Thanh công cụ trong phòng chat và mã xử lý đính kèm không có thẻ ca làm thêm hoặc vị trí tiệm.",
+      "impact": "Không còn thao tác chèn thẻ ngữ cảnh từ hai lựa chọn cũ; gửi text/link tay là hành vi khác.",
+      "proposal": "Bổ sung lại hai lựa chọn nếu PO vẫn yêu cầu nối luồng Community.",
+      "images": [
+        [
+          "V1 · attachment menu",
+          "v1-desktop-connect-attachments.png"
+        ],
+        [
+          "V2.2 · message tools",
+          "v22-ipad-stable-connect-chat.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS28",
+      "group": "missing",
+      "area": "Connect",
+      "title": "Thiếu switch AI scam alerts",
+      "v1": "Privacy có switch AI scam alerts và giải thích cảnh báo yêu cầu chuyển tiền.",
+      "v2": "Không có switch này.",
+      "v22": "Settings chỉ có quyền tìm/liên hệ, blocked và invite; không có switch cảnh báo lừa đảo.",
+      "impact": "Thiếu control trên Privacy; không khẳng định dịch vụ kiểm duyệt backend có/không hoạt động.",
+      "proposal": "Chốt tiếp tục cảnh báo trên tin và quyền bật/tắt; tránh dùng toast gửi báo cáo khi chỉ lưu local.",
+      "images": [
+        [
+          "V1 · AI scam alerts",
+          "v1-desktop-connect-scam-control.png"
+        ],
+        [
+          "V2.2 · Settings",
+          "v22-desktop-deep-privacy-qr.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "SS29",
+      "group": "missing",
+      "area": "Forms",
+      "title": "Bỏ Use this example trong các form demo của v2",
+      "v1": "V1 có các cơ chế mẫu riêng cho từng module.",
+      "v2": "Các form bài viết, tuyển dụng, Page, Blog có panel Sample post và Use this example.",
+      "v22": "Panel và nút này bị bỏ; còn gợi ý từ hồ sơ ở một số trường, không có nút áp cả ví dụ.",
+      "impact": "Mất thao tác phục vụ demo/UAT của v2, không phải mất nghiệp vụ đăng bài.",
+      "proposal": "Giữ nếu PO cần nhập nhanh khi duyệt, hoặc ghi nhận chủ đích bỏ UI minh họa.",
+      "images": [
+        [
+          "V2 · ví dụ form",
+          "v2-desktop-composer-general.png"
+        ],
+        [
+          "V2.2 · form",
+          "v22-desktop-composer-general.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P3",
+      "note": ""
+    },
+    {
+      "id": "SS19",
+      "group": "changed",
+      "area": "Deals",
+      "title": "Live coupons vẫn còn qua đường phụ Campaigns",
+      "v1": "Nguồn V1 có quản lý coupon; subnav của entry gộp bị ẩn, module riêng có nút liên quan.",
+      "v2": "Không có luồng quản lý sâu tương đương.",
+      "v22": "Trong Campaigns deep link có Live coupons và Create in POS; route manage vẫn có trong mã. Không kết luận đã mất chức năng quản lý.",
+      "impact": "Đường vào Campaigns chính bị thiếu ở SS17, nhưng không đếm Live coupons là thêm một chức năng bị mất.",
+      "proposal": "Làm rõ menu doanh nghiệp; giữ đường phụ hiện có.",
+      "images": [
+        [
+          "V1 · module riêng",
+          "v1-desktop-campaign-list.png"
+        ],
+        [
+          "V2.2 · nút trong Campaigns",
+          "v22-desktop-deep-deals-campaign.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P3",
+      "note": ""
+    },
+    {
+      "id": "CH01",
+      "group": "changed",
+      "area": "Extra shifts",
+      "title": "Cọc và tiền công đổi từ ví/thẻ giữ hộ sang Zelle trực tiếp",
+      "v1": "Demo tạm giữ bảo đảm tiền công và cọc qua NEXORA/ví/thẻ; làm xong trả công và hoàn cọc.",
+      "v2": "Chưa có luồng cọc/thanh toán sâu.",
+      "v22": "Post shift yêu cầu thêm Zelle; tiền chuyển trực tiếp giữa hai bên, tải receipt, xác nhận nhận tiền và xử lý trạng thái.",
+      "impact": "Thay đổi cơ chế và trách nhiệm của cả thợ lẫn tiệm; không phải chỉ làm đẹp UI. Cả hai đều là prototype, chưa có bằng chứng giao dịch thật.",
+      "proposal": "PO xác nhận cơ chế áp dụng trước khi coi v2.2 là bản giữ nguyên nghiệp vụ v1.",
+      "images": [
+        [
+          "V1 · holds",
+          "v1-desktop-shift-owner.png"
+        ],
+        [
+          "V2.2 · Zelle setup",
+          "v22-ipad-shift-post.png"
+        ],
+        [
+          "V2.2 · ledger",
+          "v22-ipad-shifts-payments.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P1",
+      "note": ""
+    },
+    {
+      "id": "CH02",
+      "group": "changed",
+      "area": "Feed",
+      "title": "Đăng vào nhóm chưa tham gia nay cần tham gia trước",
+      "v1": "Danh sách đích có cả nhóm chưa tham gia, ghi sẽ tự tham gia khi đăng.",
+      "v2": "Không có bộ đích.",
+      "v22": "Bộ đích chỉ liệt kê Joined groups. Vẫn có Join group ở trang Groups.",
+      "impact": "Đây là thêm bước trong luồng, không phải mất khả năng tham gia nhóm.",
+      "proposal": "Giữ cách mới nếu là chủ đích; cân nhắc đường tham gia nhóm từ form.",
+      "images": [
+        [
+          "V1 · nhóm chưa tham gia",
+          "v1-desktop-feed-compose-step2.png"
+        ],
+        [
+          "V2.2 · Joined groups",
+          "v22-desktop-composer-general.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "CH03",
+      "group": "changed",
+      "area": "Jobs",
+      "title": "Riêng tư của tin chuyển sang hồ sơ chung",
+      "v1": "Hide current salon/Hide phone chỉnh ở bước đăng từng bài.",
+      "v2": "Không có profile workflow đầy đủ.",
+      "v22": "Hai quyền này còn trong Tech Profile; form tìm việc không còn switch riêng từng bài.",
+      "impact": "Không ghi là mất Hide phone/Hide current shop; khác phạm vi áp dụng giữa từng tin và hồ sơ.",
+      "proposal": "PO xác nhận cần ghi đè theo tin hay dùng chung; kiểm chứng thêm ảnh hưởng với tin đã đăng.",
+      "images": [
+        [
+          "V1 · theo bài",
+          "v1-desktop-jobs-ai-privacy.png"
+        ],
+        [
+          "V2.2 · theo profile",
+          "v22-desktop-jobs-profile-preferences.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "CH04",
+      "group": "changed",
+      "area": "Feed",
+      "title": "Boost chuyển ra menu bài đã đăng và chỉ preview",
+      "v1": "Chọn Free/Boost trước Post; có gói và chọn ví/thẻ demo.",
+      "v2": "Không có Boost tương đương.",
+      "v22": "Menu bài của chủ bài có Promote/Extend; cùng gói 3/7/14 ngày trong mã, chọn chỉ ghi featuredPreview local.",
+      "impact": "Gói Boost không bị mất toàn bộ; bước thanh toán demo và thời điểm thực hiện đã đổi.",
+      "proposal": "Xác nhận luồng trả phí dự kiến; không mô tả preview là giao dịch đã thanh toán.",
+      "images": [
+        [
+          "V1 · trước khi đăng",
+          "v1-desktop-feed-compose-step3.png"
+        ],
+        [
+          "V2.2 · bài có menu",
+          "v22-desktop-baseline-feed.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho Preview/gói",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "CH05",
+      "group": "changed",
+      "area": "Shell",
+      "title": "Không còn chọn tiếng Việt trong Community",
+      "v1": "Có chuyển VI/EN.",
+      "v2": "Menu ngôn ngữ có VI/EN.",
+      "v22": "Integration ép en và gỡ lựa chọn vi; nhiều màn Deal vẫn lẫn tiếng Việt.",
+      "impact": "Ghi nhận thay đổi lựa chọn ngôn ngữ; chưa có căn cứ rằng việc chỉ dùng English là lỗi ngoài chủ đích trước đây.",
+      "proposal": "Giữ phạm vi ngôn ngữ đã được chốt; sửa phần copy còn lẫn nếu yêu cầu English.",
+      "images": [
+        [
+          "V2 · header/menu ngôn ngữ",
+          "v2-owner-ipad-feed.png"
+        ],
+        [
+          "V2.2 · English và copy lẫn",
+          "v22-desktop-campaign-list.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho ép en",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "UI01",
+      "group": "ui",
+      "area": "Deals",
+      "title": "Bảng/kênh và thông báo còn trộn tiếng Việt trong English",
+      "v1": "Nguồn v1 chủ yếu Việt, có bản dịch một phần.",
+      "v2": "Nguồn v2 cũng có nhiều nội dung minh họa chưa đồng nhất.",
+      "v22": "Campaigns còn KÊNH/CHI/LẤY/DÙNG, “Lên lịch”, “gộp ↑”; radar còn “deal trong”, “ghim”; tạo coupon còn nhiều nhãn Việt.",
+      "impact": "Lỗi nhất quán ngôn ngữ còn tồn tại; không quy toàn bộ là regression mới từ v1.",
+      "proposal": "Đồng bộ các nhãn động và header bảng theo ngôn ngữ đang chọn.",
+      "images": [
+        [
+          "V1 · bảng gốc",
+          "v1-desktop-campaign-list.png"
+        ],
+        [
+          "V2.2 · bảng English lẫn Việt",
+          "v22-desktop-campaign-list.png"
+        ]
+      ],
+      "verification": "UI observed",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW01",
+      "group": "new",
+      "area": "Feed",
+      "title": "Bình luận, reply, report và menu theo chủ bài",
+      "v1": "V1 có Like, report; bình luận chưa thực hiện.",
+      "v2": "V2 có thẻ nội dung cơ bản.",
+      "v22": "V2.2 có bộ tương tác, comments/replies và sửa/xóa theo quyền trong mã. Đã quan sát thẻ; nhánh bình luận/menu đối chiếu thêm trong mã, chưa duyệt mọi nhánh lỗi.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-desktop-baseline-feed.png"
+        ],
+        [
+          "V2",
+          "v2-desktop-baseline-feed.png"
+        ],
+        [
+          "V2.2",
+          "v22-desktop-baseline-feed.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW02",
+      "group": "new",
+      "area": "Feed",
+      "title": "Ảnh thật, chọn 3 đích và lưu bản nháp",
+      "v1": "V1 có ảnh mẫu và 3 đích, không có bản nháp tương đương form mới.",
+      "v2": "V2 dùng một photo field/ví dụ, chưa có đích.",
+      "v22": "V2.2 bổ sung upload/camera, tối đa 6 ảnh, chọn đích và Save draft; trường nội dung các loại bài vẫn được giữ.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-desktop-feed-compose-step1.png"
+        ],
+        [
+          "V2",
+          "v2-desktop-composer-general.png"
+        ],
+        [
+          "V2.2",
+          "v22-desktop-composer-general.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW03",
+      "group": "new",
+      "area": "Groups",
+      "title": "Quản lý nhóm, Join/Leave, bộ lọc và nội quy",
+      "v1": "Có nhóm/join/create cơ bản.",
+      "v2": "Có 2 thẻ nhóm và form.",
+      "v22": "V2.2 có nhóm community/marketplace, member count, Join/Leave, lọc và đường vào chi tiết; không tính tăng số nhóm mẫu là thêm tính năng.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-desktop-baseline-groups.png"
+        ],
+        [
+          "V2",
+          "v2-desktop-baseline-groups.png"
+        ],
+        [
+          "V2.2",
+          "v22-desktop-baseline-groups.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW04",
+      "group": "new",
+      "area": "Jobs",
+      "title": "Hồ sơ thợ 4 phần, privacy và trạng thái xác minh",
+      "v1": "V1 có hồ sơ nhưng có hai biến thể.",
+      "v2": "V2 chưa có luồng hồ sơ tương đương.",
+      "v22": "V2.2 có Basics/Skills/Portfolio/Job preferences và 3 quyền; không phải mất toàn bộ profile. License “NOT VERIFIED” tránh hiểu là đã xác minh thật.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-desktop-jobs-full.png"
+        ],
+        [
+          "V2",
+          "v2-desktop-baseline-jobs.png"
+        ],
+        [
+          "V2.2",
+          "v22-phone-profile-step-1.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW05",
+      "group": "new",
+      "area": "Jobs",
+      "title": "Ứng tuyển, Applied và danh sách Applicants",
+      "v1": "Apply trong v1 chủ yếu toast; chưa có danh sách hồ sơ ứng tuyển đầy đủ.",
+      "v2": "V2 chủ yếu Contact.",
+      "v22": "V2.2 có Applied, Apply now, profile prerequisite, Applicants, invite/cancel trong workflow; đã mở Applied/Job detail, chưa hoàn tất toàn bộ chuỗi hai vai.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-desktop-baseline-jobs.png"
+        ],
+        [
+          "V2",
+          "v2-ipad-jobs-hiring.png"
+        ],
+        [
+          "V2.2",
+          "v22-ipad-jobs-detail.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW06",
+      "group": "new",
+      "area": "Jobs",
+      "title": "Draft/Pending review/Closed, lương, ảnh/video và role gating",
+      "v1": "V1 có vòng đời riêng; không đồng nhất với các status mới.",
+      "v2": "V2 cho cả hai loại đăng tin.",
+      "v22": "V2.2 hiển thị Hiring/Seeking work và khóa nút không phù hợp tài khoản, thêm trạng thái, ảnh/video, dịch vụ và Preview cho chủ tiệm.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-desktop-jobs-owner.png"
+        ],
+        [
+          "V2",
+          "v2-ipad-jobs-hiring.png"
+        ],
+        [
+          "V2.2",
+          "v22-ipad-jobs-hiring.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW07",
+      "group": "new",
+      "area": "Extra shifts",
+      "title": "Sổ Zelle, chứng từ và trạng thái đối soát",
+      "v1": "V1 là held transactions mô phỏng.",
+      "v2": "V2 chưa có sổ giao dịch tương đương.",
+      "v22": "V2.2 có You send/You receive, lọc status, kỳ hạn và số tiền từng settlement; cơ chế mới cần chốt như CH01.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-desktop-shift-owner.png"
+        ],
+        [
+          "V2",
+          "v2-desktop-baseline-shift.png"
+        ],
+        [
+          "V2.2",
+          "v22-ipad-shifts-payments.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW08",
+      "group": "new",
+      "area": "Pages",
+      "title": "Page chuyển sang màn riêng, vẫn giữ các phần nội dung",
+      "v1": "V1 gộp cũ không có module Page tương đương.",
+      "v2": "V2 mở Page trong modal.",
+      "v22": "V2.2 có màn Page riêng và Back to Pages, vẫn có Posts/About/Photos/Video/Followers/Offers/Scheduled và công cụ owner. Đã mở màn, chưa thao tác đăng/lên lịch mọi loại media.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V2",
+          "v2-ipad-pages-detail.png"
+        ],
+        [
+          "V2.2",
+          "v22-ipad-stable-pages-detail.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW09",
+      "group": "new",
+      "area": "Blog",
+      "title": "Giữ bài chi tiết, topic, summary, body, cover và bản chia sẻ",
+      "v1": "V1 gộp cũ không có Blog tương đương.",
+      "v2": "V2 có Blog và NailHub preview.",
+      "v22": "V2.2 giữ các trường và mở bài đầy đủ, thêm ảnh mẫu/dữ liệu; xuất bản thật lên NailHub chưa được kiểm chứng.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V2",
+          "v2-ipad-blog-blog.png"
+        ],
+        [
+          "V2.2",
+          "v22-ipad-blog-create.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "NEW10",
+      "group": "new",
+      "area": "Connect",
+      "title": "Reply, reaction, tìm trong chat, nhóm và quản lý thành viên",
+      "v1": "V1 đã có một phần tương tác và public/POS group.",
+      "v2": "V2 có preview chat/nhóm.",
+      "v22": "V2.2 tăng quản lý private/shop/public group, invite, member và report reason trong code; chat đã mở, chưa kiểm mọi quyền và tổ hợp thành viên.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-desktop-connect-chat.png"
+        ],
+        [
+          "V2",
+          "v2-desktop-baseline-connect.png"
+        ],
+        [
+          "V2.2",
+          "v22-ipad-stable-connect-chat.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    },
+    {
+      "id": "UI02",
+      "group": "improved",
+      "area": "Phone/iPad",
+      "title": "Bộ lọc gọn và form có vùng cuộn/footer",
+      "v1": "V1 nhiều chip và các bước wizard.",
+      "v2": "V2 có các form lớn và filter bày sẵn.",
+      "v22": "Phone v2.2 có More cho tạo bài, Filters mở thêm, footer modal và nút Post/Save draft đọc được; các màn đã đo không tràn ngang. Chưa kiểm bàn phím ảo/thiết bị thật.",
+      "impact": "Phần giữ lại/bổ sung được ghi trong phạm vi UI và mã đã đọc; không suy ra backend hoàn chỉnh.",
+      "proposal": "Giữ các phần này khi xử lý thiếu hụt v1; không đưa toàn bộ UI về bản cũ.",
+      "images": [
+        [
+          "V1",
+          "v1-phone-baseline-feed.png"
+        ],
+        [
+          "V2",
+          "v2-phone-baseline-feed.png"
+        ],
+        [
+          "V2.2",
+          "v22-phone-responsive-feed-general.png"
+        ]
+      ],
+      "verification": "UI observed + Code only cho nhánh sâu",
+      "priority": "P2",
+      "note": ""
+    }
+  ],
+  "unclear": [
+    [
+      "UC01",
+      "Tài khoản/Điều khoản",
+      "V1 có guest signup, checkbox đủ 18 tuổi, điều khoản phiên bản và tái đồng ý. V2.2 mặc định tài khoản demo; không thấy luồng tương đương. Chưa chứng minh shell/auth bên ngoài có thay thế hay đã bỏ.",
+      "Cần xác nhận Community có phục vụ khách chưa đăng ký và consent được quản lý ở đâu."
+    ],
+    [
+      "UC02",
+      "Jobs / AI tuyển thợ",
+      "V1 owner có AI tech matches, điểm % và AI viết tin tuyển. V2.2 có Open in POS, Applicants và View profile. Đã thấy link đi POS Recruitment; chưa hoàn tất khảo sát trang POS để loại trừ đường thay thế toàn bộ.",
+      "Chưa kết luận mất AI tuyển dụng trên cả hệ thống."
+    ],
+    [
+      "UC03",
+      "Jobs / expiry và phone warning",
+      "Nguồn v1 có renew khi hết hạn, phone-warning/remove phone, tự ẩn tin. V2.2 chưa thấy counterpart trong form và mã workflow; chưa tạo trạng thái hết hạn theo thời gian thực hoặc chạy mọi kiểm tra nội dung.",
+      "Xác minh riêng yêu cầu/điều kiện và các nhánh hết hạn trước khi chốt hành vi."
+    ],
+    [
+      "UC04",
+      "Connect / voice, video, thiết bị",
+      "V1 chép lời tin thoại và dịch là dữ liệu giả lập. V2.2 có MediaRecorder cho voice và call UI mô phỏng; chưa cấp quyền mic/camera, ghi âm, nhận cuộc gọi từ thiết bị khác hoặc kiểm WebRTC.",
+      "Không coi thiếu đoạn AI mẫu là bằng chứng backend transcription đã bị xóa."
+    ],
+    [
+      "UC05",
+      "Tiền, GPS và thời gian ca",
+      "Chưa chuyển tiền, gửi chứng từ thật, kiểm GPS tại tiệm, chờ deadline, auto-confirm, auto-complete, refund hoặc tranh chấp hai bên.",
+      "Các số tiền/status hiển thị chỉ là dữ liệu prototype; không gọi là settlement đã chạy thật."
+    ],
+    [
+      "UC06",
+      "Deals / tích hợp thật",
+      "Claim đã tạo coupon local và mở modal save. Apple/Google Wallet, SMS/email, OAuth quảng cáo, POS redeem xuyên module, OneQR/check-in và số liệu doanh thu thật chưa kiểm chứng.",
+      "Giữ rõ mức UI observed/Code only; tránh báo PASS tích hợp từ một nút."
+    ],
+    [
+      "UC07",
+      "PO coupon hiện hành",
+      "Tài liệu dac-ta-coupon-hien-hanh.md trong gói v1 có quy tắc POS nguồn duy nhất, Deal khác Coupon và phân tầng kênh; prototype cũ không bao phủ hết và có phần mâu thuẫn. V2.2 có cả Post offer đơn giản lẫn form PO deep link.",
+      "Đây là khoảng cần đối chiếu PO riêng, không mặc định mọi chức năng trong mọi bản mẫu đều còn hiệu lực."
+    ],
+    [
+      "UC08",
+      "Bảng/empty/error/permissions",
+      "Đã mở 3 bảng Campaigns và sổ Zelle, đọc status và control; chưa tạo mọi trạng thái loading, quota/storage failure, expired PIN, race nhiều tab, denied permission, tất cả hàng và mọi quyền trong nhóm.",
+      "Các nhánh này là chưa kiểm chứng, không gộp vào PASS."
+    ],
+    [
+      "UC09",
+      "Learning / Events / Last minute",
+      "V1 gộp cũ có menu Learning/Events nhưng nội dung là placeholder giữ module cũ. V2 có Events/classes post. Last minute nằm ở các file bổ sung khác, không có trong entry v1 đã chọn.",
+      "Không báo “mất tính năng Learning/Events/Last minute đã hoạt động” từ các placeholder hoặc nguồn ngoài entry được chọn."
+    ],
+    [
+      "UC10",
+      "Thiết bị và ngôn ngữ",
+      "Đã khảo sát browser viewport 390×844, 820×1180, 1440×900. Không có phone/iPad vật lý; chưa kiểm iPad landscape, bàn phím ảo, screen reader, mọi tooltip focus/hover, mọi link ngoài và toàn bộ tiếng Việt.",
+      "Giới hạn này áp dụng cho mọi nhận xét responsive/usability trong báo cáo."
+    ]
+  ]
+}
