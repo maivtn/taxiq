@@ -52,6 +52,16 @@
     async function ensure(key,file){
       if(modules.has(key))return modules.get(key);
       const host=document.createElement('section');host.hidden=true;pane.append(host);
+      if(key==='food'||key==='realestate'){
+        // Embed the exact PO documents requested, including their own UI and flows.
+        host.style.cssText='height:100%;overflow:hidden';
+        const frame=document.createElement('iframe');frame.title=LABELS[key];frame.style.cssText='display:block;width:100%;height:100%;border:0;background:#fff';
+        const task=new Promise((resolve,reject)=>{
+          frame.onload=()=>resolve({root:{host,querySelector:selector=>frame.contentDocument?.querySelector(selector)},window:{NEXORA_COMMUNITY_MODULE:{setLanguage(value){const doc=frame.contentDocument;if(key==='realestate'){frame.contentWindow?.setLang?.(value);return;}if(value==='en'&&doc?.getElementById('lang-btn')?.textContent.trim()==='EN')doc.getElementById('lang-btn').click();},navigate(){frame.contentWindow?.scrollTo(0,0);},deactivate(){frame.contentWindow?.tourStop?.();}}}});
+          frame.onerror=()=>{modules.delete(key);host.remove();reject(new Error('Unable to load '+LABELS[key]));};
+        });
+        modules.set(key,task);frame.src=new URL('modules/'+key+'/po-'+key+'.html?v=20261107-po-embeds1',baseURL).href;host.append(frame);return task;
+      }
       const url=new URL(file,baseURL);
       for(const [key,value] of params)url.searchParams.set(key,value);
       for(const [key,value] of Object.entries(routeContext))if(value!=null)url.searchParams.set(key,value);
