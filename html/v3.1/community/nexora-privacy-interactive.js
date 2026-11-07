@@ -413,8 +413,9 @@
     renderConversationPreviews();
     renderConnections();changed();
   }
-  function hasConnection(person) {const identity=window.NEXORA_COMMUNITY_SHARED?.identity(person.name);return [person.id,...(identity?.legacyIds||[])].some(id=>state.connections.includes(id));}
+  function hasConnection(person) {if(window.NEXORA_COMMUNITY_SHARED?.connectedPeople(currentMember).includes(person.name))return true;const identity=window.NEXORA_COMMUNITY_SHARED?.identity(person.name);return [person.id,...(identity?.legacyIds||[])].some(id=>state.connections.includes(id));}
   function renderConnections() {
+    for(const name of window.NEXORA_COMMUNITY_SHARED?.connectedPeople(currentMember)||[]){if(!members.some(person=>person.name===name)){const identity=window.NEXORA_COMMUNITY_SHARED.identity(name);members.push({name,id:identity.id,handle:'@'+identity.nickname,detail:'source-'+encodeURIComponent(name)});}}
     for(const person of members)if(person.detail?.startsWith('source-')&&hasConnection(person)&&!state.sourceChats[person.detail])state.sourceChats[person.detail]={recipient:person.name,reference:person.handle,sourceId:person.id};
     const card = $('#connectionsCard');
     const connected = members.filter(member => hasConnection(member));
@@ -422,7 +423,7 @@
     $('#connectionCount').textContent = String(connected.length);
     $('#connectionRows').innerHTML = connected.map(member => {
       const initials = member.name.split(/\s+/).map(part => part[0]).slice(-2).join('').toUpperCase();
-      const detail = member.detail === 'request' && state.request === 'accepted' ? 'chat-mai' : member.detail;
+      const detail = member.detail === 'request' && hasConnection(member) ? 'chat-mai' : member.detail;
       return '<button class="row-button" data-detail="' + detail + '" data-initials="' + esc(initials) + '"><span><strong>' + esc(member.name) + '</strong><small>' + esc(member.handle) + ' · ' + esc(member.id) + '</small></span><span class="arrow">›</span></button>';
     }).join('');
   }
@@ -486,7 +487,7 @@
       $('#memberResults').innerHTML = title + found.map(member => {
         const initials = member.name.split(/\s+/).map(part => part[0]).slice(-2).join('').toUpperCase();
         const added = hasConnection(member);
-        const detail = member.detail === 'request' && state.request === 'accepted' ? 'chat-mai' : member.detail;
+        const detail = member.detail === 'request' && hasConnection(member) ? 'chat-mai' : member.detail;
         return '<div class="member-hit"><span class="member-hit-avatar" aria-hidden="true">' + esc(initials) + '</span><div class="member-hit-copy"><strong>' + esc(member.name) + '</strong><small>' + esc(member.handle) + ' · ' + esc(member.id) + '</small></div><div class="member-hit-actions"><button type="button" class="member-add' + (added ? ' is-added' : '') + '" data-add-member="' + esc(member.id) + '" aria-label="' + (added ? 'Already added ' : 'Add ') + esc(member.name) + ' to Connections"' + (added ? ' disabled' : '') + '>' + (added ? '✓ Added' : '+ Add') + '</button><button type="button" class="member-view" data-detail="' + detail + '" aria-label="' + (detail === 'request' ? 'View message request from ' : 'Chat with ') + esc(member.name) + '">' + (detail === 'request' ? 'View' : 'Chat') + '</button></div></div>';
       }).join('');
       return;
@@ -577,6 +578,7 @@
       if (!member || hasConnection(member)) return;
       state.connections.push(member.id);
       if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
+      const sharedContact=window.NEXORA_COMMUNITY_SHARED;if(sharedContact?.identity(member.name).kind==='business')sharedContact.saveBusinessContact(currentMember,member.name);
       renderConnections();
       $('#memberQuery').value = '';
       $('#memberQuery').blur();

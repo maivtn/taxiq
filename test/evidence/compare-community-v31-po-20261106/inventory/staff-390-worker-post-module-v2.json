@@ -1,0 +1,559 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/jobs.html?lang=en",
+  "title": "NEXORA TOUCH Community · Việc làm & Sang nhượng",
+  "lang": "vi",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ Demo · Posts and profiles stay in this browser. ✎ Edit page content directly ✎ Edit I want to work Find the right job, share when you are free for extra shifts, or show the services you offer. Connect directly with shops and businesses. ＋ Post your availability ✧ See my matches How would you like to start? Choose your path, then post or browse right away. ◉ I am looking for work Full-time or part-time work. Introduce your profile and skills. Post job search → ◷ I am free for a shift Share open hours for urgent, half-day or full-day shifts. Post availability → ✦ I offer services Choose a trade, subcategory and add your own skills. Post my services → ⌕ Explore ✧ Matches ◷ Schedule ⋯ More ◉ Profile ▤ Posts ♡ Saved ✉ Inbox NEW Messages & invitations Talk with businesses and track your invitations. Work invitations Luna Nail StudioPending View invite Hi Jenny, we need help Sunday 11:00–17:00. Are you available to discuss? Conversations Luna Nail Studio Thanks, I would be glad to discuss the shift. Luna Nail Studio Nail technician needed for Sunday shift Hi Jenny! Your profile looks like a good fit for our Sunday shift. Thanks, I would be glad to discuss the shift. Send Messages and invitations in this prototype are local demo data. Post work Step 1/3 VI × What kind of work are you looking for? ◉ Full-time Regular work ◉ Part-time Regular part-time hours ◷ Spare hours / Shifts A day, half-day or a few hours ✦ Offer services By task / project ✦ Ask AI Cancel Continue →",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✎ Edit",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "edit-start"
+          },
+          "rect": [
+            306,
+            49,
+            50,
+            30
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Post your availability",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "post"
+          },
+          "rect": [
+            26,
+            185,
+            158,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✧ See my matches",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "matches"
+          },
+          "rect": [
+            191,
+            185,
+            158,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post job search →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "career"
+          },
+          "rect": [
+            63,
+            355,
+            112,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post availability →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "shift"
+          },
+          "rect": [
+            63,
+            449,
+            114,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post my services →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "service"
+          },
+          "rect": [
+            63,
+            544,
+            120,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Explore",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "explore"
+          },
+          "rect": [
+            17,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✧ Matches",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "matches"
+          },
+          "rect": [
+            103,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◷ Schedule",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "availability"
+          },
+          "rect": [
+            190,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⋯ More",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "worknav-more"
+          },
+          "rect": [
+            276,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◉ Profile",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "profile"
+          },
+          "rect": [
+            17,
+            660,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▤ Posts",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "posts"
+          },
+          "rect": [
+            103,
+            660,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Saved",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "saved"
+          },
+          "rect": [
+            190,
+            660,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✉ Inbox NEW",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "inbox"
+          },
+          "rect": [
+            276,
+            660,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View invite",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-invite": "inv1"
+          },
+          "rect": [
+            246,
+            864,
+            89,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Luna Nail Studio Thanks, I would be glad to discuss the shift.",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-thread": "t1"
+          },
+          "rect": [
+            26,
+            1010,
+            323,
+            68
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": "Write a message",
+          "title": "",
+          "type": "text",
+          "name": "message",
+          "value": "",
+          "placeholder": "Write a message...",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "500"
+          },
+          "rect": [
+            43,
+            1370,
+            289,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Send",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            43,
+            1422,
+            65,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "VI",
+          "label": "Chuyển sang Tiếng Việt",
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "lang"
+          },
+          "rect": [
+            268,
+            121,
+            30,
+            30
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": "Close",
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-modal"
+          },
+          "rect": [
+            302,
+            121,
+            30,
+            30
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◉ Full-time Regular work",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment": "full"
+          },
+          "rect": [
+            43,
+            260,
+            289,
+            77
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◉ Part-time Regular part-time hours",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment": "part"
+          },
+          "rect": [
+            43,
+            346,
+            289,
+            77
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◷ Spare hours / Shifts A day, half-day or a few hours",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment": "temp"
+          },
+          "rect": [
+            43,
+            431,
+            289,
+            77
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Offer services By task / project",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment": "service"
+          },
+          "rect": [
+            43,
+            517,
+            289,
+            77
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Ask AI",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-from-form"
+          },
+          "rect": [
+            155,
+            629,
+            90,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-modal"
+          },
+          "rect": [
+            253,
+            629,
+            79,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Continue →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "wizard-next"
+          },
+          "rect": [
+            223,
+            681,
+            109,
+            42
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "staff-390-worker-post-module-v2",
+  "screenshot": "staff-390-worker-post-module-v2.png"
+}

@@ -1,13 +1,14 @@
 /* Extend the cloned v2 shell through its existing app menu. */
 (() => {
   'use strict';
-  const LABELS={food:'Food & Restaurants',realestate:'Real Estate',shop:'My storefront',transfer:'Salon transfers',reels:'Reels',live:'Livestream',news:'News & Blog',wallet:'NEXORA Points',wheel:'Lucky Wheel',meet:'NEXORA Meet',account:'Profile',assistant:'AI assistant',notifications:'Notifications'};
-  const ICONS={food:'Utensils',realestate:'House',shop:'Store',transfer:'Store',reels:'Clapperboard',live:'Video',news:'Newspaper',wallet:'WalletCards',wheel:'CircleDot',meet:'Video',account:'UserRound',assistant:'Sparkles',notifications:'Bell'};
+  const LABELS={food:'Food & Restaurants',realestate:'Real Estate',shop:'My storefront',transfer:'Salon transfers',reels:'Reels',live:'Livestream',news:'News & Blog',wallet:'NEXORA Points',wheel:'Lucky Wheel',meet:'NEXORA Meet',account:'Profile',assistant:'AI assistant',notifications:'Notifications',stories:'Story',people:'Find people',post:'Create post','page-tools':'Pages','group-tools':'Groups & Market','food-market':'Food & Restaurants',explore:'Explore Community'};
+  const ICONS={food:'Utensils',realestate:'House',shop:'Store',transfer:'Store',reels:'Clapperboard',live:'Video',news:'Newspaper',wallet:'WalletCards',wheel:'CircleDot',meet:'Video',account:'UserRound',assistant:'Sparkles',notifications:'Bell',stories:'Images',people:'UsersRound',post:'SquarePen','page-tools':'Store','group-tools':'UsersRound','food-market':'Utensils',explore:'LayoutGrid'};
   const supports=route=>Object.hasOwn(LABELS,route);
-  const TOOLS=new Set(['shop','reels','live','news']);
+  const TOOLS=new Set(['shop','reels','live','news','stories','people','post','page-tools','group-tools','food-market','explore']);
   function mount(root,options,original){
     const workspace=root.querySelector('.workspace'),frames=[root.getElementById('communityPane'),root.getElementById('connectPane')];
     const baseURL=options.baseURL,params=options.params||new URLSearchParams(location.search),modules=new Map();
+    window.NEXORA_COMMUNITY_PEOPLE=window.NEXORA_COMMUNITY_DIRECTORY.create(frames[1],baseURL,params);
     let current='',routeContext={},internal=false,generation=0;
     const notify=data=>options.notify?.(data);
     const styles=document.createElement('style');
@@ -29,7 +30,7 @@
     new MutationObserver(()=>more.setAttribute('aria-expanded',String(!menu.hidden))).observe(menu,{attributes:true,attributeFilter:['hidden']});
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!menu.hidden){root.getElementById('ecosystemButton').click();more.focus();}});
     document.addEventListener('click',event=>{const path=event.composedPath();if(!menu.hidden&&!path.includes(menu)&&!path.includes(more)&&!path.includes(root.getElementById('ecosystemButton')))menu.hidden=true;});
-    for(const [route,label] of Object.entries(LABELS)){
+    for(const [route,label] of Object.entries(LABELS)){if(['page-tools','group-tools','food-market'].includes(route))continue;
       const button=document.createElement('button');button.type='button';button.dataset.communityExtra=route;
       const definition=window.lucide?.icons[ICONS[route]];
       if(definition)button.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true'}));
@@ -39,7 +40,7 @@
       generation++;
       if(!current&&pane.hidden)return;
       for(const task of modules.values())task.then(api=>api.window.NEXORA_COMMUNITY_MODULE?.deactivate?.());
-      current='';pane.hidden=true;
+      current='';pane.hidden=true;document.body.classList.remove('community-extra-active');
       if(frames.every(frame=>frame.hidden))frames[0].hidden=false;
       root.querySelector('.community-heading h1').textContent='Community';
     }
@@ -83,7 +84,7 @@
       }
       if(current&&current!==route)for(const task of modules.values())task.then(api=>api.window.NEXORA_COMMUNITY_MODULE?.deactivate?.());
       internal=true;original.navigate('feed');internal=false;
-      current=route;routeContext=context||{};
+      current=route;routeContext=context||{};document.body.classList.add('community-extra-active');
       frames.forEach(frame=>{frame.hidden=true;});pane.hidden=false;
       root.getElementById('ecosystemMenu').hidden=true;root.getElementById('ecosystemButton').setAttribute('aria-expanded','false');
       root.querySelector('.community-heading h1').textContent=LABELS[route];
@@ -101,7 +102,8 @@
           const api=await ensure(key,'modules/'+(key==='tools'?'hub-tools':key)+'/index.html');
           if(request!==generation)return;
           api.window.NEXORA_COMMUNITY_MODULE?.setLanguage('en');
-          api.window.NEXORA_COMMUNITY_MODULE?.navigate?.(route,routeContext);
+          await api.window.NEXORA_COMMUNITY_MODULE?.navigate?.(route,routeContext);
+          if(request!==generation)return;
           api.root.host.hidden=false;
         }
         if(request!==generation)return;

@@ -1,0 +1,21 @@
+{
+  "results": [
+    {
+      "name": "original-direct-chat-and-call",
+      "pass": true
+    },
+    {
+      "name": "shared-friend-contact-opens-original-chat",
+      "pass": true
+    },
+    {
+      "name": "customer-business-contact-contract",
+      "pass": true
+    },
+    {
+      "name": "report-images-desktop-phone",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,492 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED ☷ All Community sections and post types 13 sections · 10 post types NEXORA COMMUNITY Reels Short videos from people and fanpages in the community. ▶ Create Reel Reels SAMPLE VIDEO 0 views Hoa Nail Studio Fresh nail set Reels SAMPLE VIDEO 0 views Bếp Việt Houston Today’s dish Sample videos are labeled. Views count plays in this browser only. Reel × Title (optional) Caption (optional) Area Video (up to 50 MB) This post is saved only in this browser prototype. Cancel Post in prototype Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "☷ All Community sections and post types 13 sections · 10 post types",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            15,
+            322,
+            789,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Feed",
+          "title": "Feed",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home"
+          },
+          "rect": [
+            22,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Pages",
+          "title": "Pages",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "pages"
+          },
+          "rect": [
+            178,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Store",
+          "title": "Store",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop"
+          },
+          "rect": [
+            334,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Deals",
+          "title": "Deals",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "deals"
+          },
+          "rect": [
+            491,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Reels",
+          "title": "Reels",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "reels",
+            "aria-current": "page"
+          },
+          "rect": [
+            647,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▶ Create Reel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "reel"
+          },
+          "rect": [
+            661,
+            522,
+            118,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Play Reel by Hoa Nail Studio",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-reel-play": "demo-reel-nail"
+          },
+          "rect": [
+            377,
+            1066,
+            65,
+            65
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Play Reel by Bếp Việt Houston",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-reel-play": "demo-reel-food"
+          },
+          "rect": [
+            377,
+            2002,
+            65,
+            65
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            633,
+            270,
+            37,
+            40
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "title",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "100"
+          },
+          "rect": [
+            150,
+            369,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "body",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "1600"
+          },
+          "rect": [
+            150,
+            452,
+            520,
+            135
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "area",
+          "value": "Houston, TX",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            150,
+            630,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "file",
+          "name": "media",
+          "value": "",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            150,
+            712,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            447,
+            800,
+            73,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post in prototype",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            528,
+            800,
+            142,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "owner-834-reel-create-v2",
+  "screenshot": "owner-834-reel-create-v2.png"
+}

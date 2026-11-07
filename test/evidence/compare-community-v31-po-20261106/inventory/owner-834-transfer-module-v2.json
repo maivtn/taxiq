@@ -1,0 +1,517 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/jobs.html?lang=en",
+  "title": "NEXORA TOUCH Community · Việc làm & Sang nhượng",
+  "lang": "vi",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ Demo · Posts and profiles stay in this browser. ✎ Edit page content directly ✎ Edit NEXORA TOUCH COMMUNITY Salon transfers Owners can list a salon for transfer. Buyers can browse or post what they are looking for. This section is separate from Jobs. ＋ List a salon ⌕ Post buying interest 🏪 List my salon Add details, photos and transfer terms. ✍️ Write salon story Build a draft from your details. 📚 View examples Start from a template, then add real details. 🗂️ My listings 0 active listings Listing templates for owners These templates guide your writing. Replace every [placeholder] with real details before saving. CONTENT TEMPLATE 💅 Nail salon A guide for nail services, location, equipment and transfer terms. Use this template → CONTENT TEMPLATE ✨ Spa / beauty A guide for a spa, hair salon or beauty business. Use this template → CONTENT TEMPLATE 🏪 Other shop A flexible guide for shops, restaurants and other trades. Use this template → Transfer and buying board Illustrations are labeled SAMPLE. Your listings stay in this browser. All For sale Buyers My listings ⌕ Search 🏪 For sale SAMPLE Nail salon for sale in Richmond ⌖ Richmond, TX Tiệm nail mẫu Richmond Nail salon Operating salon with regular customers and convenient parking. 👁 151 sample views $145,000 Details Demo contact 🏪 For sale SAMPLE Salon transfer in Sugar Land ⌖ Sugar Land, TX Tiệm nail mẫu Sugar Land Nail salon Spacious salon for a buyer who wants to continue operating an existing business. 👁 152 sample views $210,000 Details Demo contact 🏪 Looking to buy SAMPLE Looking to buy a nail salon in Houston ⌖ Houston, TX Nail salon Interested in an operating salon, preferably with an existing team. 👁 153 sample views Budget to discuss Details Demo contact 🏪 For sale SAMPLE Sample spa studio in Houston ⌖ Houston, TX Tiệm spa mẫu Spa / beauty A sample spa listing showing services, real photos, floor area, lease terms and contact details. 👁 154 sample views Sample asking price Details Demo contact Sample listings only demonstrate the interface. Verify pricing and details before any transaction. ✦ Ask AI assistant",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✎ Edit",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "edit-start"
+          },
+          "rect": [
+            728,
+            10,
+            60,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ List a salon",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "transfer-post"
+          },
+          "rect": [
+            42,
+            74,
+            125,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Post buying interest",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "transfer-wanted"
+          },
+          "rect": [
+            176,
+            74,
+            182,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏪 List my salon Add details, photos and transfer terms.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "transfer-post"
+          },
+          "rect": [
+            18,
+            158,
+            387,
+            90
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✍️ Write salon story Build a draft from your details.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "transfer-script"
+          },
+          "rect": [
+            414,
+            158,
+            387,
+            90
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📚 View examples Start from a template, then add real details.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "transfer-samples"
+          },
+          "rect": [
+            18,
+            257,
+            387,
+            90
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🗂️ My listings 0 active listings",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "transfer-mine"
+          },
+          "rect": [
+            414,
+            257,
+            387,
+            90
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Use this template →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-template": "nail"
+          },
+          "rect": [
+            33,
+            535,
+            144,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Use this template →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-template": "beauty"
+          },
+          "rect": [
+            297,
+            535,
+            144,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Use this template →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-template": "other"
+          },
+          "rect": [
+            561,
+            535,
+            144,
+            35
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": "Search salons",
+          "title": "",
+          "type": "text",
+          "name": "search",
+          "value": "",
+          "placeholder": "Search area, salon or keyword...",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            18,
+            684,
+            403,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-type": "all"
+          },
+          "rect": [
+            429,
+            688,
+            40,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "For sale",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-type": "sale"
+          },
+          "rect": [
+            477,
+            688,
+            71,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Buyers",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-type": "wanted"
+          },
+          "rect": [
+            556,
+            688,
+            66,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My listings",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "transfer-mine"
+          },
+          "rect": [
+            630,
+            688,
+            89,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Search",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            727,
+            689,
+            74,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-view": "tr1"
+          },
+          "rect": [
+            224,
+            1096,
+            60,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Demo contact",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-contact": "tr1"
+          },
+          "rect": [
+            289,
+            1096,
+            95,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-view": "tr2"
+          },
+          "rect": [
+            622,
+            1096,
+            60,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Demo contact",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-contact": "tr2"
+          },
+          "rect": [
+            687,
+            1096,
+            95,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-view": "tr3"
+          },
+          "rect": [
+            224,
+            1516,
+            60,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Demo contact",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-contact": "tr3"
+          },
+          "rect": [
+            289,
+            1516,
+            95,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-view": "tr4"
+          },
+          "rect": [
+            624,
+            1516,
+            60,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Demo contact",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-transfer-contact": "tr4"
+          },
+          "rect": [
+            624,
+            1555,
+            95,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Ask AI assistant",
+          "label": "Open AI assistant",
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-toggle"
+          },
+          "rect": [
+            631,
+            1046,
+            168,
+            48
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "owner-834-transfer-module-v2",
+  "screenshot": "owner-834-transfer-module-v2.png"
+}

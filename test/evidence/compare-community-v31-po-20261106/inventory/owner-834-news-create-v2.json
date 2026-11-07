@@ -1,0 +1,758 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED ☷ All Community sections and post types 13 sections · 10 post types 🗞️ News & Updates 📰 Blog NEXORA COMMUNITY · NEWSROOM News & Updates Read updates, guides and useful information in Community. Open the Blog tab for personal articles. ＋ Write a sample article ⌕ Search All Community Jobs Food Real Estate Guides Latest articles 3 articles 🗞️ Community 03/11/2026 👁 113 sample views SAMPLE Explore NEXORA Community sections A sample guide to groups, pages, jobs, storefronts, real estate and food. Read article → 🗞️ Jobs 03/11/2026 👁 114 sample views SAMPLE Details to include in a hiring post State the role, skills, location, schedule and pay period so applicants understand the job. Read article → 🗞️ Real Estate 03/11/2026 👁 115 sample views SAMPLE Preparing a Real Estate listing Basic details to help readers understand a sale or rental listing. Read article → Sample articles illustrate the interface. Your articles stay in this browser and are not published to live NEXORA TOUCH. Write a sample article × Topic Community Jobs Food Real Estate Guides Vietnamese title Vietnamese summary Vietnamese article English article fields English title * English summary * English article * Cover photo (optional, up to 1 MB) This is a prototype draft. It is saved only in your browser, not published to live Community. ✦ AI help Cancel Save sample article Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "☷ All Community sections and post types 13 sections · 10 post types",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            15,
+            322,
+            789,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🗞️ News & Updates",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-mode": "news"
+          },
+          "rect": [
+            21,
+            387,
+            162,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📰 Blog",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-mode": "blog"
+          },
+          "rect": [
+            190,
+            387,
+            83,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Write a sample article",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "news-compose"
+          },
+          "rect": [
+            587,
+            521,
+            187,
+            40
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": "Search news",
+          "title": "",
+          "type": "search",
+          "name": "search",
+          "value": "",
+          "placeholder": "Search news by title or content...",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            14,
+            649,
+            698,
+            47
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Search",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            720,
+            649,
+            85,
+            47
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-filter": "all"
+          },
+          "rect": [
+            14,
+            707,
+            42,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Community",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-filter": "community"
+          },
+          "rect": [
+            63,
+            707,
+            97,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Jobs",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-filter": "jobs"
+          },
+          "rect": [
+            167,
+            707,
+            56,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-filter": "food"
+          },
+          "rect": [
+            230,
+            707,
+            56,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Real Estate",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-filter": "realestate"
+          },
+          "rect": [
+            294,
+            707,
+            95,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Guides",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-filter": "guide"
+          },
+          "rect": [
+            395,
+            707,
+            69,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Read article →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-open": "sample-news-1"
+          },
+          "rect": [
+            31,
+            1109,
+            122,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Read article →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-open": "sample-news-2"
+          },
+          "rect": [
+            433,
+            1109,
+            122,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Read article →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-news-open": "sample-news-3"
+          },
+          "rect": [
+            31,
+            1487,
+            122,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            618,
+            61,
+            37,
+            40
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "text": "Community Jobs Food Real Estate Guides",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "category",
+          "value": "community",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "community",
+              "text": "Community",
+              "selected": true
+            },
+            {
+              "value": "jobs",
+              "text": "Jobs",
+              "selected": false
+            },
+            {
+              "value": "food",
+              "text": "Food",
+              "selected": false
+            },
+            {
+              "value": "realestate",
+              "text": "Real Estate",
+              "selected": false
+            },
+            {
+              "value": "guide",
+              "text": "Guides",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            150,
+            161,
+            505,
+            42
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "titleVi",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "130"
+          },
+          "rect": [
+            150,
+            241,
+            505,
+            45
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "summaryVi",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "320"
+          },
+          "rect": [
+            150,
+            323,
+            505,
+            92
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "bodyVi",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "8000"
+          },
+          "rect": [
+            150,
+            459,
+            505,
+            180
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "English article fields",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            163,
+            669,
+            479,
+            18
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "titleEn",
+          "value": "",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "130"
+          },
+          "rect": [
+            163,
+            723,
+            479,
+            45
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "summaryEn",
+          "value": "",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "320"
+          },
+          "rect": [
+            163,
+            805,
+            479,
+            92
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "bodyEn",
+          "value": "",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "8000"
+          },
+          "rect": [
+            163,
+            941,
+            479,
+            180
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "file",
+          "name": "cover",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            150,
+            1189,
+            505,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ AI help",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-open"
+          },
+          "rect": [
+            322,
+            1276,
+            87,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            417,
+            1276,
+            73,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Save sample article",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            498,
+            1276,
+            156,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "owner-834-news-create-v2",
+  "screenshot": "owner-834-news-create-v2.png"
+}

@@ -1,0 +1,326 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED ☷ All Community sections and post types 13 sections · 10 post types NEXORA COMMUNITY Messages & Calls See Page messages and friend requests with your NEXORA ID. 💬 Page inbox ♧ Requests 2 Friend requests Find people → Mai Võ @mai.diaoc Real estate · Houston, TX Confirm Delete SAMPLE Hùng Đỗ @hung.kinhdoanh Business owner · Houston, TX Confirm Delete SAMPLE ☎ Live calls and direct chat will appear when NEXORA services are connected. Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "☷ All Community sections and post types 13 sections · 10 post types",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            15,
+            322,
+            789,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Page inbox",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-message-tab": "pages"
+          },
+          "rect": [
+            14,
+            525,
+            103,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♧ Requests 2",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-message-tab": "requests"
+          },
+          "rect": [
+            123,
+            525,
+            112,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Find people →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "people-all"
+          },
+          "rect": [
+            720,
+            579,
+            85,
+            17
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Confirm",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-friend-accept": "person-5"
+          },
+          "rect": [
+            80,
+            677,
+            340,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Delete",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-friend-decline": "person-5"
+          },
+          "rect": [
+            426,
+            677,
+            340,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Confirm",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-friend-accept": "person-6"
+          },
+          "rect": [
+            80,
+            791,
+            340,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Delete",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-friend-decline": "person-6"
+          },
+          "rect": [
+            426,
+            791,
+            340,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "owner-834-message-requests-v2",
+  "screenshot": "owner-834-message-requests-v2.png"
+}

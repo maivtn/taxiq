@@ -1,0 +1,1800 @@
+{
+  "url": "http://127.0.0.1:5503/html/v3.1/staff-community.html?tab=realestate",
+  "title": "Nexora Touch - Staff Community",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "N2 nexora 2 Staff ID: NAIE5LMVX Dashboard Community Feed Groups & Market Pages Jobs Extra shifts Deals & Coupons Blog Messages & Calls One QR One QR Advertising Tip QR Accept Payment Referral Link My Workspace My Salons My Earnings My Reviews Report My Tickets 1 My Calendar Tips Transactions Profile Sign out v3.1 Switch to v2 → More",
+      "controls": [
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Dashboard",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/staff-dashboard.html",
+            "data-staff-nav": "dashboard"
+          },
+          "rect": [
+            -282,
+            122,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Community",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-group": "community",
+            "data-nav-group": ""
+          },
+          "rect": [
+            -282,
+            176,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "feed"
+          },
+          "rect": [
+            -239,
+            226,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Groups & Market",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "groups"
+          },
+          "rect": [
+            -239,
+            264,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "pages"
+          },
+          "rect": [
+            -239,
+            302,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Jobs",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "jobs"
+          },
+          "rect": [
+            -239,
+            340,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Extra shifts",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "shift"
+          },
+          "rect": [
+            -239,
+            378,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Deals & Coupons",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "deals"
+          },
+          "rect": [
+            -239,
+            416,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Blog",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "blog"
+          },
+          "rect": [
+            -239,
+            454,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Messages & Calls",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "connect"
+          },
+          "rect": [
+            -239,
+            492,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "One QR",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-group": "one-qr",
+            "data-nav-group": ""
+          },
+          "rect": [
+            -282,
+            540,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "One QR",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "one-qr",
+            "data-personal-qr-nav": "one-qr",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=one-qr"
+          },
+          "rect": [
+            -239,
+            590,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Advertising",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "advertising",
+            "data-personal-qr-nav": "advertising",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=advertising"
+          },
+          "rect": [
+            -239,
+            628,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Tip QR",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "tip-qr",
+            "data-personal-qr-nav": "tip-qr",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=tip-qr"
+          },
+          "rect": [
+            -239,
+            666,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Accept Payment",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "accept-payment",
+            "data-personal-qr-nav": "accept-payment",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=accept-payment"
+          },
+          "rect": [
+            -239,
+            704,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Referral Link",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "referral-link",
+            "data-personal-qr-nav": "referral-link",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=referral-link"
+          },
+          "rect": [
+            -239,
+            742,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My Workspace",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-group": "workspace",
+            "data-nav-group": ""
+          },
+          "rect": [
+            -282,
+            594,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "My Salons",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "my-salons",
+            "href": "http://127.0.0.1:5503/html/pages/my-salons.html"
+          },
+          "rect": [
+            -239,
+            644,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My Earnings",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-nav": "my-earnings"
+          },
+          "rect": [
+            -239,
+            682,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My Reviews",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-nav": "my-reviews"
+          },
+          "rect": [
+            -239,
+            720,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Report",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-nav": "report"
+          },
+          "rect": [
+            -239,
+            758,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "My Tickets 1",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/staff-work-orders.html",
+            "data-staff-nav": "my-tickets"
+          },
+          "rect": [
+            -282,
+            648,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "My Calendar",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/pos-calendar.html",
+            "data-staff-nav": "my-calendar"
+          },
+          "rect": [
+            -282,
+            702,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Tips",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "#",
+            "data-staff-nav": "tips"
+          },
+          "rect": [
+            -282,
+            756,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Transactions",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "#",
+            "data-staff-nav": "transactions"
+          },
+          "rect": [
+            -282,
+            810,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Profile",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/staff-profile.html?account=staff",
+            "data-staff-nav": "profile"
+          },
+          "rect": [
+            -282,
+            864,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Sign out",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            -282,
+            782,
+            248,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Open navigation menu",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-drawer-open": ""
+          },
+          "rect": [
+            12,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Search tech, station, review...",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            334,
+            10,
+            44,
+            44
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Switch to v2 →",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/staff-community.html?tab=feed"
+          },
+          "rect": [
+            185,
+            699,
+            124,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "More",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            316,
+            699,
+            53,
+            48
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "http://127.0.0.1:5503/html/assets/nexora-logo.svg",
+          "alt": "Nexora Logo",
+          "broken": false
+        }
+      ],
+      "tables": []
+    },
+    {
+      "scope": "main>DIV#community-hub.",
+      "text": ":host{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;color:#202b43;background:#f6f8fc} *{box-sizing:border-box}:host{margin:0}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid #a99fff;outline-offset:2px} .app{height:100dvh;min-height:520px;display:grid;grid-template-columns:212px minmax(0,1fr)} .sidebar{background:#192749;color:#d8def1;padding:20px 12px;display:flex;flex-direction:column;gap:20px;overflow:auto} .brand{display:flex;align-items:center;gap:9px;padding:8px 9px;color:#fff;font-size:13px;font-weight:850}.brand-mark{display:grid;place-items:center;width:29px;height:29px;border-radius:9px;background:linear-gradient(135deg,#465df4,#8153eb);color:#fff;font-weight:900} .side-label{padding:0 10px;color:#9aa8ca;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.side-link{display:flex;align-items:center;gap:10px;margin-top:6px;padding:11px 12px;border-radius:9px;background:linear-gradient(110deg,#4d5df1,#8252e9);color:#fff;font-size:13px;font-weight:800} .side-note{margin-top:auto;border:1px solid #425072;border-radius:11px;padding:11px;color:#b8c4e0;font-size:11px;line-height:1.5} .main{min-width:0;display:flex;flex-direction:column;overflow:hidden}.top{position:relative;z-index:10;flex:none;padding:17px 24px 0;background:#f6f8fc}.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.top h1{font-size:25px;letter-spacing:-.03em;line-height:1.15;margin:0}.top p{font-size:12px;color:#65728a;margin:3px 0 0}.top-actions{display:flex;align-items:center;gap:7px;flex:none}.small-action{min-height:34px;border:1px solid #dfe5f0;border-radius:9px;padding:6px 10px;background:#fff;color:#36466e;font-size:11px;font-weight:800;white-space:nowrap}.small-action:hover{background:#f0efff;border-color:#c7c4f4}.icon-action{position:relative;display:grid;place-items:center;width:36px;height:36px;min-height:36px;padding:0}.icon-action svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.badge[hidden],.header-menu[hidden]{display:none}.badge{position:absolute;top:-5px;right:-5px;display:grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border:2px solid #f6f8fc;border-radius:99px;background:#eb5765;color:#fff;font-size:10px}.language-action{min-width:38px;font-size:12px}.reset-action{font-size:19px;line-height:1}.header-menu{position:absolute;top:57px;right:24px;z-index:20;width:min(330px,calc(100vw - 26px));padding:14px;background:#fff;border:1px solid #dfe5f0;border-radius:14px;box-shadow:0 14px 40px #19274924}.header-menu h2{margin:0 0 10px;font-size:15px}.notification-item{display:flex;align-items:center;gap:10px;padding:11px;background:#f7f7ff;border-radius:10px}.notification-item p{margin:3px 0 0;font-size:12px;line-height:1.4}.notification-item strong{font-size:12px}.notification-item button{margin-left:auto}.notification-empty{margin:0;color:#65728a;font-size:12px}.notification-item[hidden],.notification-empty[hidden]{display:none}.language-menu{width:180px}.language-choice{display:block;width:100%;border:0;background:#fff;border-radius:8px;padding:9px 10px;text-align:left;color:#263254;font-size:12px;font-weight:700}.language-choice:hover,.language-choice[aria-checked=\"true\"]{background:#efedff;color:#514ac7} .tabs{display:flex;gap:7px;overflow-x:auto;padding:0 0 11px;scrollbar-width:thin;border-bottom:1px solid #dfe4ee}.tab{display:inline-flex;align-items:center;gap:7px;flex:none;border:1px solid #dfe4ee;background:#fff;border-radius:10px;padding:9px 13px;color:#4e5a73;font-size:12px;font-weight:800;white-space:nowrap}.tab:hover{border-color:#b7b3f4;color:#514ac7}.tab.active{background:linear-gradient(110deg,#4d5df1,#8252e9);border-color:transparent;color:#fff}.tab svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round} .workspace{flex:1;min-height:0;position:relative}.pane{position:absolute;inset:0;width:100%;height:100%;border:0;background:#f6f8fc}.pane[hidden]{display:none}.mobile-nav,.mobile-nav[hidden]{display:none}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)} @container community (max-width: 800px){.app{display:block}.sidebar{display:none}.main{height:100dvh}.top{padding:12px 15px 11px;background:#fff;border-bottom:1px solid #e5e9f2}.top-row{margin-bottom:0}.top h1{font-size:21px}.top p{display:none}.small-action{font-size:10px;padding:5px 7px}.icon-action{width:35px;height:35px;min-height:35px;padding:0}.header-menu{top:55px;right:13px}.top .tabs{display:none}.mobile-nav:not([hidden]){display:grid;grid-template-columns:repeat(var(--community-nav-count,6),minmax(0,1fr));align-items:stretch;gap:2px;flex:none;min-height:65px;padding:5px 5px calc(5px + env(safe-area-inset-bottom));border-top:1px solid #e5e9f2;background:#fff;box-shadow:0 -5px 22px #1d2a4810}.mobile-tab.tab{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;min-height:53px;padding:4px 2px;border:0;border-radius:12px;background:transparent;color:#65718a;font-size:10px;font-weight:750;line-height:1.1;text-align:center;white-space:normal;box-shadow:none}.mobile-tab.tab svg{width:20px;height:20px;flex:none}.mobile-tab.tab.active{background:#efedff;color:#5048cb}} @container community (max-width: 380px){.top-row{align-items:start}.top-actions{gap:4px}.top p{max-width:185px}.small-action{padding:5px 6px}.icon-action{padding:0}} /* Match the current NEXORA workspace shell. */ :host{color:#101828;background:#f8fafc} .app{grid-template-columns:288px minmax(0,1fr)} .sidebar{gap:13px;background:#081f49;padding:26px 20px 18px;color:#d9e1f0} .business-card{padding:10px;border:1px solid #3e5275;border-radius:12px;color:#fff} .business-head{display:flex;align-items:center;gap:9px;min-height:40px;font-size:12px} .business-head strong{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.business-head>span{font-size:18px;color:#a9b7d0} .business-logo{width:40px;height:40px;object-fit:contain;flex:none} .business-links{display:grid;gap:8px;margin-top:10px;padding:11px 5px 2px;border-top:1px solid #3e5275;color:#c4cfe2;font-size:11px} .sidebar-menu{overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:#50648a transparent} .side-item{display:flex;align-items:center;gap:12px;min-height:43px;margin:2px 0;padding:8px 12px;border-radius:9px;font-size:13px;font-weight:650;white-space:nowrap} .side-ico{display:grid;place-items:center;width:22px;flex:none;color:#aebcda;font-size:20px;line-height:1}.side-current{background:linear-gradient(100deg,#3f5cff,#7c4bf6);color:#fff}.side-current .side-ico{color:#fff}.side-ico svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.side-caret{margin-left:auto;font-size:17px} .sidebar-subnav{display:grid;gap:2px;margin:3px 0 8px 34px;padding-left:13px;border-left:1px solid #536888}.sidebar-subnav button{display:flex;align-items:center;gap:10px;border:0;border-radius:7px;background:transparent;color:#c8d1e5;padding:7px 9px;text-align:left;font-size:12px;font-weight:650}.sidebar-subnav button::before{content:\"\";width:6px;height:6px;flex:none;border-radius:50%;background:#62728e}.sidebar-subnav button.active,.sidebar-subnav button:hover{background:#ffffff1b;color:#42d5ef}.sidebar-subnav button.active::before{background:#42d5ef}.subnav-heading{margin:8px 0 2px;padding:0 9px;color:#8192b4;font-size:9px;font-weight:850;letter-spacing:.09em;text-transform:uppercase} .sidebar-bottom{margin-top:auto;padding-top:8px;border-top:1px solid #365078}.plan-card{display:flex;align-items:center;gap:8px;color:#dbe5fb;font-size:11px}.plan-card>span:first-child{font-size:17px}.manage-plan{margin-left:auto;color:#aabaff}.signout{display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:8px 0;border:0;background:transparent;color:#d5def1;font-size:12px;text-align:left}.preview-note{margin-top:12px;padding:10px;border:1px solid #375077;border-radius:9px;color:#afbdd7;font-size:10px;line-height:1.35}.preview-note button{display:block;margin-top:6px;padding:0;border:0;background:none;color:#bac7ff;font-size:10px;font-weight:700} .top{padding:0;background:#f8fafc}.system-bar{position:relative;display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 20px;border-bottom:1px solid #e2e8f0;background:#fff} .collapse-button{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 11px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#34405b;font-size:12px;font-weight:650}.collapse-button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round} .header-search{position:absolute;left:50%;transform:translateX(-50%);width:min(385px,32vw);height:36px}.header-search svg{position:absolute;top:9px;left:13px;width:18px;height:18px;fill:none;stroke:#8290a7;stroke-width:1.8;stroke-linecap:round}.header-search input{width:100%;height:36px;padding:0 13px 0 40px;border:0;border-radius:999px;background:#f2f5f9;color:#243047;font:inherit;font-size:12px;outline:0}.header-search input:focus{box-shadow:0 0 0 2px #aeb8ff} .top-actions{gap:12px}.account-action,.header-icon,.language-action{position:relative;display:grid;place-items:center;width:39px;height:39px;padding:0;border:0;background:transparent;color:#111827}.account-action img{width:38px;height:38px;object-fit:contain}.header-icon svg,.language-action svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.language-action{display:flex;flex-direction:column;justify-content:center;gap:0}.language-action svg{width:20px;height:20px}.language-action span{font-size:10px;font-weight:850;line-height:1}.ecosystem-action img{width:25px;height:25px;object-fit:contain}.top-actions button:hover{background:#f2f4fa;border-radius:8px}.badge{top:-2px;right:-3px;border-color:#fff} .community-heading{width:calc(100% - 56px);max-width:1140px;margin:32px auto 24px}.community-heading h1{margin:0;color:#0d172b;font-size:24px;letter-spacing:-.035em;font-weight:850}.community-heading p{margin:4px 0 0;color:#67758e;font-size:13px} .top .tabs{width:calc(100% - 56px);max-width:1140px;margin:0 auto;padding:0 0 17px;gap:8px;overflow:visible;flex-wrap:wrap;border-color:#e0e6ee}.top .tab{position:relative;min-height:42px;border-color:#dfe5ef;border-radius:15px;padding:10px 15px;color:#1d2738;font-size:13px;font-weight:700}.top .tab.active{border-color:transparent;color:#fff}.tab-new{position:absolute;top:-1px;right:3px;padding:2px 5px;border-radius:9px;background:#13b889;color:#fff;font-size:9px;font-weight:850;line-height:1} .tab-group{position:relative;display:flex;align-items:stretch}.tab-group>.tab{border-radius:15px 0 0 15px;padding-right:12px}.tab-sub-toggle{display:grid;place-items:center;min-width:32px;border:1px solid #dfe5ef;border-left:0;border-radius:0 15px 15px 0;background:#fff;color:#56617b}.tab-sub-toggle svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s ease}.tab-sub-toggle[aria-expanded=\"true\"] svg{transform:rotate(180deg)}.tab-group:has(>.tab.active) .tab-sub-toggle{background:#7053e9;border-color:#7053e9;color:#fff}.tab-sub-toggle:hover{background:#efedff;color:#514ac7}.tab-submenu{position:absolute;z-index:30;top:calc(100% + 7px);left:0;display:grid;gap:3px;min-width:192px;padding:6px;border:1px solid #dfe5f0;border-radius:13px;background:#fff;box-shadow:0 14px 30px #1d2c4a22}.tab-submenu[hidden]{display:none}.tab-submenu button{width:100%;min-height:39px;padding:9px 11px;border:0;border-radius:9px;background:#fff;color:#34415b;text-align:left;font-size:12px;font-weight:700}.tab-submenu button:hover,.tab-submenu button.active{background:#efedff;color:#5145bf} .pane{background:#f8fafc}.app-footer{display:flex;align-items:center;justify-content:space-between;flex:none;height:73px;padding:0 25px;border-top:1px solid #e2e8f0;background:#fff;color:#7d899a;font-size:11px}.store-badges{display:flex;gap:8px}.store-badges>span{display:grid;min-width:96px;padding:4px 9px;border:1px solid #dce3ec;border-radius:5px;color:#27344a}.store-badges small{font-size:7px}.store-badges strong{font-size:11px} .header-menu{top:57px;right:20px}.ecosystem-menu{display:grid;gap:3px}.ecosystem-menu[hidden]{display:none}.ecosystem-menu button{padding:9px 10px;border:0;border-radius:8px;background:#fff;color:#253450;text-align:left;font-size:12px;font-weight:700}.ecosystem-menu button:hover{background:#efedff;color:#514ac7} .top-leading{display:flex;align-items:center;gap:6px}.menu-back{width:100%;margin-top:8px;padding:8px 10px;border:0;border-top:1px solid #e5e9f2;background:#fff;color:#514ac7;text-align:left;font-size:12px;font-weight:750} .app.sidebar-collapsed{grid-template-columns:0 minmax(0,1fr)}.app.sidebar-collapsed .sidebar{display:none} @container community (max-width: 800px){.app{display:block;min-height:0}.sidebar{display:none}.app.nav-open .sidebar{display:flex;position:fixed;z-index:40;inset:0 auto 0 0;width:min(288px,87vw);box-shadow:0 0 0 100vmax #0b153895}.app.nav-open .sidebar-bottom{margin-top:auto}.main{height:100dvh}.top{padding:0;border:0;background:#f8fafc}.system-bar{height:60px;padding:0 12px}.collapse-button{width:37px;height:37px;padding:0;justify-content:center}.collapse-button span{display:none}.header-search{display:none}.top-actions{gap:2px}.account-action,.header-icon,.language-action{width:37px;height:37px}.account-action img{width:35px;height:35px}.community-heading{width:calc(100% - 28px);margin:11px auto 10px}.community-heading h1{font-size:19px}.community-heading p{display:none}.top .tabs{display:none}.app-footer{display:none}.header-menu{top:54px;right:12px}} @container community (max-width: 800px){.community-heading{margin:7px auto 6px}.community-heading h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}} @container community (max-width: 380px){.system-bar{padding:0 8px}.top-actions{gap:0}.account-action,.header-icon,.language-action{width:35px;height:35px}} /* Subtle depth and motion on actual navigation controls. */ .collapse-button,.top .tab,.sidebar-subnav button,.ecosystem-menu button,.top-actions button,.mobile-tab.tab{transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s ease,background-color .22s ease,color .22s ease} .top-actions button{transform-style:preserve-3d}.top-actions button svg,.top-actions button img{transition:transform .22s cubic-bezier(.2,.8,.2,1)} .top-actions button:active,.collapse-button:active,.ecosystem-menu button:active{transform:translateY(2px) scale(.94);box-shadow:inset 0 2px 5px #26376318} .top-actions button:active svg,.top-actions button:active img{transform:scale(.9) rotate(-5deg)} .top .tab.active{box-shadow:inset 0 1px 0 #ffffff70,0 3px 0 #5144ba,0 7px 15px #5148bd29} .top .tab:active,.sidebar-subnav button:active{transform:translateY(2px);box-shadow:inset 0 2px 5px #111a3d25} .badge:not([hidden]){animation:noticePop .5s cubic-bezier(.18,.9,.25,1.35) both} @keyframes noticePop{from{transform:scale(.5);opacity:0}70%{transform:scale(1.13);opacity:1}to{transform:scale(1)}} @media(hover:hover) and (pointer:fine){ .top-actions button:hover:not(:active){transform:perspective(500px) translateY(-2px) rotateX(8deg);box-shadow:0 5px 12px #2637631a} .top-actions button:hover:not(:active) svg,.top-actions button:hover:not(:active) img{transform:translateY(-1px) scale(1.08)} .collapse-button:hover:not(:active),.ecosystem-menu button:hover:not(:active),.sidebar-subnav button:hover:not(:active){transform:translateY(-2px);box-shadow:0 5px 11px #26376317} .top .tab:hover:not(:active){transform:perspective(600px) translateY(-2px) rotateX(4deg);box-shadow:0 5px 12px #26376318} } @container community (max-width: 800px){ .mobile-nav:not([hidden]){position:relative;z-index:2;box-shadow:0 -7px 22px #18274a15} .mobile-tab.tab{position:relative;transform-style:preserve-3d} .mobile-tab.tab svg{transition:transform .24s cubic-bezier(.2,.8,.2,1)} .mobile-tab.tab.active{background:linear-gradient(155deg,#f7f5ff,#e8e5ff);box-shadow:inset 0 1px 0 #fff,0 3px 0 #d2cdf6,0 6px 13px #5548c324;animation:navSelect .28s cubic-bezier(.2,.8,.2,1) backwards} .mobile-tab.tab.active svg{transform:translateY(-2px) translateZ(5px) scale(1.12)} .mobile-tab.tab:active{transform:perspective(500px) translateY(2px) rotateX(-4deg);box-shadow:inset 0 2px 5px #2637631c} .mobile-tab.tab:active svg{transform:translateY(0) scale(.94)} @keyframes navSelect{from{transform:perspective(500px) translateY(3px) rotateX(-5deg)}to{transform:perspective(500px) translateY(0) rotateX(0)}} } @media(prefers-reduced-motion:reduce){.collapse-button,.top .tab,.sidebar-subnav button,.ecosystem-menu button,.top-actions button,.top-actions button svg,.top-actions button img,.mobile-tab.tab,.mobile-tab.tab svg{animation:none!important;transition:none!important}.badge:not([hidden]){animation:none}.top-actions button:hover,.top-actions button:active,.top-actions button svg,.top-actions button img,.collapse-button:hover,.collapse-button:active,.top .tab:hover,.top .tab:active,.sidebar-subnav button:hover,.sidebar-subnav button:active,.ecosystem-menu button:hover,.ecosystem-menu button:active,.mobile-tab.tab:active,.mobile-tab.tab svg{transform:none!important}} /* Familiar NEXORA structure with a distinct accent for each Community destination. */ .tab[data-view=\"feed\"]{--nav-accent:#6850c9;--nav-tint:#f0edff;--nav-edge:#d5caf9;--nav-shadow:#6750c82a} .tab[data-view=\"market\"],.tab[data-view=\"groups\"]{--nav-accent:#946611;--nav-tint:#fff5d7;--nav-edge:#e8d4a0;--nav-shadow:#aa761d29} .tab[data-view=\"pages\"]{--nav-accent:#5648c7;--nav-tint:#f0edff;--nav-edge:#d9d1fa;--nav-shadow:#6453c929} .tab[data-view=\"jobs\"],.tab[data-view=\"daywork\"]{--nav-accent:#b4551e;--nav-tint:#fff0e2;--nav-edge:#f0cdb3;--nav-shadow:#b95b2429} .tab[data-view=\"deals\"]{--nav-accent:#b95721;--nav-tint:#fff0e4;--nav-edge:#f0d0bc;--nav-shadow:#ba602629} .tab[data-view=\"blog\"]{--nav-accent:#826700;--nav-tint:#fff8cc;--nav-edge:#e9de96;--nav-shadow:#9e841929} .tab[data-view=\"connect\"]{--nav-accent:#ad3d57;--nav-tint:#fff0f3;--nav-edge:#edc9d3;--nav-shadow:#ad455e29} @container community (max-width: 800px){ .mobile-tab.tab:not(.active) svg{color:var(--nav-accent)} .mobile-tab.tab.active{background:linear-gradient(155deg,#fff 0%,var(--nav-tint) 100%);color:var(--nav-accent);box-shadow:inset 0 1px 0 #fff,0 3px 0 var(--nav-edge),0 6px 13px var(--nav-shadow)} } .community-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.community-heading>div{min-width:0}.tour-launch{flex:none;min-height:33px;padding:7px 11px;border:1px solid #d9d2fa;border-radius:999px;background:#f3f0ff;color:#5848c5;font-size:11px;font-weight:850}.tour-launch:hover{background:#eae5ff}.tour-target{position:relative;outline:3px solid #7865f3!important;outline-offset:3px;animation:tourPulse 1.8s ease-in-out infinite}.tour-card[hidden]{display:none}.tour-card{position:fixed;z-index:60;top:clamp(205px,23vh,255px);right:24px;width:min(354px,calc(100vw - 24px));padding:17px;border:1px solid #dcd5fc;border-radius:18px;background:#fff;box-shadow:0 18px 50px #30407728;color:#202b43}.tour-card.menu-step{top:auto;bottom:24px}.tour-head{display:flex;align-items:center;gap:10px}.tour-mark{display:grid;place-items:center;width:38px;height:38px;flex:none;border:1px solid #e3dcfa;border-radius:12px;background:#f6f2ff}.tour-mark :is(svg,img){width:33px;height:33px;object-fit:contain}.tour-card h2{margin:2px 0 0;font-size:16px;line-height:1.2}.tour-card p{margin:12px 0 15px;color:#5b6780;font-size:12px;line-height:1.5}.tour-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.tour-actions button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;line-height:1.25;border:1px solid #dfe5f0;border-radius:9px;padding:6px 10px;background:#fff;color:#3b4561;font-size:11px;font-weight:800}.tour-actions button:hover{background:#f4f1ff}.tour-actions .tour-next{margin-left:auto;border-color:#6550df;background:#6550df;color:#fff}.tour-actions .tour-next:hover{background:#5542c4}.tour-track{height:4px;margin-top:14px;overflow:hidden;border-radius:99px;background:#eeeafe}.tour-fill{height:100%;width:0;background:linear-gradient(90deg,#3d60f1,#8550e8)}.tour-card.is-playing .tour-fill{animation:tourFill 5.2s linear forwards}.tour-card.is-paused .tour-fill{animation-play-state:paused}.tour-card button:focus-visible,.tour-launch:focus-visible{outline:3px solid #a99fff;outline-offset:2px}@keyframes tourPulse{50%{outline-color:#c6baff}}@keyframes tourFill{to{width:100%}} @container community (max-width: 800px){.community-heading{margin:7px auto 6px}.tour-launch{min-height:29px;padding:5px 9px;font-size:10px}.tour-card,.tour-card.menu-step{top:auto;right:12px;bottom:calc(78px + env(safe-area-inset-bottom));left:12px;width:auto;padding:14px;border-radius:16px}.tour-card p{margin:10px 0 12px}.tour-card h2{font-size:15px}} @container community (max-width: 800px){.mobile-tab.tab{font-size:9px;padding-inline:1px}.mobile-tab.tab svg{width:19px;height:19px}} @media(prefers-reduced-motion:reduce){.tour-target{animation:none}.tour-card.is-playing .tour-fill{animation:none;width:100%}} .tour-actions button svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round} #tourBack{border-color:#c9defb;background:#edf5ff;color:#245ca6}#tourBack:hover:not(:disabled){background:#e0edff}#tourBack:disabled{opacity:.45;cursor:default} #tourPause{border-color:#f1d792;background:#fff6dd;color:#8e5b00}#tourPause:hover{background:#ffedbd} #tourPause[data-tour-icon=\"play\"]{border-color:#b9e5d0;background:#e8f8f0;color:#137454}#tourPause[data-tour-icon=\"play\"]:hover{background:#d7f2e4} #tourSkip{border-color:#e0d8f6;background:#f4efff;color:#7358a6}#tourSkip:hover{background:#eae0ff} .tour-actions .tour-next{box-shadow:0 2px 0 #4f3ac1} @container community (max-width: 380px){.tour-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tour-actions .tour-next{margin-left:0}} .mobile-nav .tab[hidden]{display:none!important} @container community (max-width: 800px){.mobile-nav:not([hidden]){width:100%;grid-template-columns:repeat(var(--community-nav-count,6),minmax(0,1fr));justify-items:stretch}.mobile-tab.tab:not([hidden]){width:100%;height:100%}} /* The dashboard owns the workspace shell; the PO owns Community content. */ .community-back { display:none; } :host .app { grid-template-columns: minmax(0, 1fr); min-height: 0; } :host .app > .sidebar, :host .app-footer, :host #sidebarToggle, :host .header-search, :host #accountButton { display: none; } :host .system-bar { position: absolute; top: 18px; right: 24px; height: 38px; padding: 0; border: 0; background: transparent; } :host .community-heading { justify-content: flex-start; gap: 12px; margin: 24px auto 20px; padding-right: 176px; } :host .community-heading > div { min-width: 0; } :host .top-actions { gap: 3px; } :host .top-actions button { width: 34px; height: 34px; } :host .header-menu { top: 60px; } /* Split tabs share one active surface and elevation. */ .top .tab-group { border-radius: 15px; } .top .tab-group:has(> .tab.active) { background: linear-gradient(110deg, #4d5df1, #8252e9); box-shadow: inset 0 1px 0 #ffffff70, 0 3px 0 #5144ba, 0 7px 15px #5148bd29; } .top .tab-group:has(> .tab.active) > .tab.active, .top .tab-group:has(> .tab.active) > .tab-sub-toggle { border-color: transparent; background: transparent; box-shadow: none; } .top .tab-group > .tab:is(:hover, :active) { transform: none; box-shadow: none; } .top .tab-group > .tab-sub-toggle { position: relative; min-width: 48px; padding: 0; } .top .tab-group > .tab-sub-toggle svg { position: absolute; top: calc(50% - 8px); right: 16px; width: 16px; height: 16px; } /* Shared tab artwork uses generic product icons, never social-network marks. */ .community-nav-art { display:block; width:26px; height:26px; object-fit:contain; flex:none; } .top .tab { min-height:44px; gap:8px; } .top .tab-submenu button { min-height:44px; } .top .tab-submenu { max-height:min(420px,65dvh); overflow-y:auto; } :host { overflow:hidden; } :host .system-bar { display:none; } :host .community-heading { padding-right:0; } :host .community-heading > div { flex:1; } @container community (max-width: 800px) { .mobile-nav:not([hidden]) { align-items:stretch; padding-bottom:max(12px,env(safe-area-inset-bottom)); } .mobile-nav .mobile-tab.tab { display:grid; grid-template-rows:27px minmax(2.5em,auto); align-content:start; align-items:start; justify-items:center; } .mobile-nav .mobile-tab.tab > :is(svg,.community-nav-art) { display:block; width:27px; height:27px; transform:none; } .mobile-nav .mobile-tab.tab > span { min-height:2.5em; text-align:center; } :host .main { height:100dvh; min-height:0; } :host .top { flex:none; background:#fff; border-bottom:1px solid #e2e8f0; } :host .community-heading { width:calc(100% - 28px); min-height:44px; margin:3px auto; padding:0; gap:8px; } :host .community-heading h1 { font-size:18px; line-height:1.3; white-space:normal; } .community-heading > div { flex:1; } .community-heading .community-back { display:inline-flex; align-items:center; justify-content:center; flex:none; min-width:60px; height:44px; padding:0; border:0; border-radius:8px; background:transparent; color:#5445c6; font-size:11px; font-weight:700; } .community-back-face { display:inline-flex; align-items:center; justify-content:center; gap:4px; min-height:30px; padding:6px 8px; border:1px solid #d9d2fa; border-radius:8px; background:#f5f3ff; box-shadow:0 1px 2px #34226c0a; } .community-back svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; } .community-back:hover .community-back-face { background:#eee9ff; border-color:#bdb1f5; } .community-back:focus-visible { outline:0; } .community-back:focus-visible .community-back-face { outline:3px solid #aaa0ff; outline-offset:2px; } :host .tour-launch { display:inline-flex; align-items:center; justify-content:center; min-height:44px; height:44px; padding:0; border:0; background:transparent; font-size:10px; flex:none; } :host .tour-launch-face { display:inline-flex; align-items:center; min-height:30px; padding:5px 9px; border:1px solid #d9d2fa; border-radius:999px; background:#f3f0ff; line-height:1.2; } :host .tour-launch:hover .tour-launch-face { background:#eae5ff; } :host .header-menu { top:calc(100% + 4px); right:12px; max-height:calc(100dvh - 88px); overflow-y:auto; } :host .header-menu button { min-height:44px; } :host .mobile-nav:not([hidden]) { grid-template-columns:repeat(var(--community-nav-count,6),minmax(0,1fr)); gap:2px; padding:7px 5px max(12px,env(safe-area-inset-bottom)); border-top:1px solid #e2e8f0; box-shadow:0 -4px 18px #0f172a06; } :host .mobile-tab.tab { min-height:60px; padding:5px 2px; gap:4px; font-size:10px; line-height:1.25; box-shadow:none; } :host .mobile-tab.tab.active { background:linear-gradient(155deg,#fff 0%,var(--nav-tint) 100%); color:var(--nav-accent); box-shadow:inset 0 1px 0 #fff,inset 0 0 0 1px var(--nav-edge),0 3px 0 var(--nav-edge),0 6px 13px var(--nav-shadow); animation:none; } :host .mobile-tab.tab .community-nav-art { width:27px; height:27px; } :host .mobile-tab.tab > span { display:block; max-width:100%; overflow-wrap:normal; } :host .mobile-tab.tab:active { transform:none; } } @media (hover:none) { .top .tab:hover:not(:active),.top-actions button:hover:not(:active) { transform:none; } } /* One content width and gutter for Community navigation, PO views and dialogs. */ :host { --community-content-width: 1140px; --community-gutter: 24px; --community-dialog-gutter: 24px; } :host .top { padding-right: var(--community-scrollbar-width, 0px); } :host .community-heading, :host .top .tabs { width: calc(100% - 2 * var(--community-gutter)); max-width: var(--community-content-width); margin-inline: auto; padding-inline: 0; } :host .content, :host > .shell { width: 100%; max-width: calc(var(--community-content-width) + 2 * var(--community-gutter)); margin-inline: auto; padding-inline: var(--community-gutter); padding-top: 18px; } :host .connect-stage, :host .connect-stage .layout, :host[data-section=\"calls\"] .connect-stage, :host[data-section=\"calls\"] .connect-stage .layout, :host .page-tabs { width: 100%; max-width: none; margin-inline: 0; } :host .page-tabs { justify-content: flex-start; } :host .dialog .dialog-head, :host .dialog .dialog-body, :host .dialog .dialog-footer { padding-inline: var(--community-dialog-gutter); } :host .dialog .page-profile-head { margin-inline: 0; } @container community (min-width: 800px) { /* Reserve the conversation column only after a chat has been opened. */ :host:is([data-section=\"messages\"], [data-section=\"groups\"]) .connect-stage:not(.detail-open) { display: block; width: 100%; max-width: none; padding: 0; border: 0; background: transparent; } :host:is([data-section=\"messages\"], [data-section=\"groups\"]) .connect-stage:not(.detail-open) .global-search { width: 100%; max-width: none; margin: 0 0 14px; } :host:is([data-section=\"messages\"], [data-section=\"groups\"]) .connect-stage:not(.detail-open) .layout { display: block; width: 100%; max-width: none; margin: 0; } } @container community (max-width: 800px) { :host .app.detail-open .top { display:none; } :host { --community-gutter: 16px; --community-dialog-gutter: 16px; } :host .content { padding-top: 4px; } :host > .shell { padding-top: 14px; } :host.community-chat-open > .shell { padding-top: 12px; } } @media (max-height: 500px) and (pointer: coarse) { :host .app.detail-open .top { display:none; } } /* Sections with no supporting sidebar use the full content width. */ :host .feature-layout.community-single-column { grid-template-columns: minmax(0, 1fr); } :host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host .tour-card,:host .tour-card.menu-step{top:auto;}} BITCOIN NAIL BAR⌃SettingBusiness VerificationMy CertificationsLanguage: English ⌂Home ▦Dashboard ▤Payments & Payouts ☆Reviews ▦One QR ▣AI Hub ▧POS ⬡Gift Card Center Community⌃ FeedGroups & MarketPagesBlogJOBSJobsExtra shiftsDEAL & COUPONNearby dealsCONNECTMessages & Calls ◫Analytics Settings ▤News & Library Support ♛No Plan yetManage⇥Sign out Collapse menu1EN BackReal EstateShare, ask and trade with people in your trade✦ AI Tour NotificationsNew message requestMai Nguyễn asked about the white chairsViewNo new notifications. LanguageEnglish← Back NEXORAFeedGroups & MarketPagesBlogJobsExtra shiftsDeal & CouponMessages & CallsFood & RestaurantsReal EstateMy storefrontSalon transfersReelsLivestreamNews & BlogNEXORA PointsLucky WheelNEXORA MeetProfileAI assistantNotifications✦ AI Tour Feed Groups & MarketNEWGroupsBuy & sell Pages Deal & Coupon JobsJobsExtra shifts Blog Messages & CallsNEW © 2026 NEXORA Touch.GET IT ONGoogle PlayDOWNLOAD ON THEApp Store Feed Groups Pages Deal Jobs Messages .community-extra-pane{--hub-bg:#f7f9fc;--hub-surface:#fff;--hub-text:#0b1220;--hub-muted:#64748b;--hub-border:#dde5ef;--hub-brand:#4648d8;min-width:0;width:100%;height:100%;overflow:auto;color:var(--hub-text)}.community-extra-platform{max-width:1140px;margin:auto;padding:24px}.community-extra-pane>section{min-height:100%}.ecosystem-menu{max-height:min(640px,70vh);overflow-y:auto}.ecosystem-menu [data-community-extra]{display:flex;min-height:44px;align-items:center;gap:10px}.ecosystem-menu [data-community-extra] svg{flex:none;width:20px;height:20px}.community-extra-error{padding:24px;text-align:center}@container community (max-width:800px){.community-extra-platform{padding:16px}}.platform-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}.platform-heading h2{font-size:24px;margin:0}.platform-heading p{color:var(--hub-muted);line-height:1.6}.platform-card{background:#fff;border:1px solid var(--hub-border);border-radius:14px;padding:20px;margin-bottom:16px;min-width:0}.platform-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.platform-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.platform-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:10px 16px;border:1px solid var(--hub-border);border-radius:10px;background:#fff;color:var(--hub-text);font-weight:700;font-size:13px}.platform-button.primary{background:var(--hub-brand);color:#fff;border-color:var(--hub-brand)}.platform-button.danger{color:#b91c1c}.platform-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.platform-form label{display:grid;gap:7px;font-size:13px;font-weight:650}.platform-form input,.platform-form select,.platform-form textarea{width:100%;min-width:0;min-height:44px;padding:10px 12px;border:1px solid var(--hub-border);border-radius:9px;background:#fff;color:var(--hub-text)}.platform-form select{appearance:none;background:#fff url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\") no-repeat right 16px center;padding-right:44px}.platform-wide{grid-column:1/-1}.platform-check{display:flex!important;align-items:center;gap:9px!important}.platform-check input{width:18px;min-height:18px}.platform-table-scroll{overflow:auto}.platform-table{width:100%;border-collapse:collapse;font-size:13px}.platform-table th,.platform-table td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--hub-border);white-space:nowrap}.platform-table th{color:var(--hub-muted);font-size:11px}.platform-empty{padding:24px;text-align:center;color:var(--hub-muted);line-height:1.6}.platform-error{color:#b91c1c;min-height:20px}.platform-status{display:inline-flex;font-size:11px;font-weight:750;padding:5px 8px;border-radius:8px;background:#f0f1ff;color:var(--hub-brand)}.platform-balance{font-size:38px;font-weight:850}.platform-dialog{border:1px solid var(--hub-border);border-radius:16px;padding:24px;width:min(760px,calc(100% - 24px));max-height:calc(100dvh - 32px);overflow:auto;color:var(--hub-text)}.platform-dialog::backdrop{background:#0f172a88}.platform-dialog h3{margin-top:0}.meet-video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.meet-participant{min-height:135px;border-radius:12px;background:#16213a;color:#fff;display:grid;place-content:center;text-align:center;padding:12px}.meet-participant video{max-width:100%;max-height:220px}.meet-room[data-layout=\"speaker\"] .meet-participant:first-child{grid-column:1/-1}.meet-room[data-layout=\"list\"] .meet-video-grid{grid-template-columns:1fr}.wheel-disc{width:min(300px,80vw);aspect-ratio:1;border-radius:50%;border:10px solid #e4e3ff;background:conic-gradient(#4648d8 0 32deg,#d8b4fe 32deg 65deg,#4f8aed 65deg 98deg,#fbbf24 98deg 130deg,#34d399 130deg 163deg,#fb7185 163deg 196deg,#4648d8 196deg 229deg,#d8b4fe 229deg 262deg,#4f8aed 262deg 295deg,#fbbf24 295deg 328deg,#34d399 328deg);margin:20px auto;display:grid;place-items:center;transition:transform 3s cubic-bezier(.1,.75,.1,1)}.wheel-disc strong{display:grid;place-items:center;width:100px;height:100px;border-radius:50%;background:white;color:var(--hub-brand);text-align:center;font-size:18px;box-shadow:0 3px 16px #0002}.platform-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#17213b;color:#fff;padding:12px 18px;border-radius:10px;z-index:90;max-width:calc(100% - 24px)} @container community (max-width:800px){.platform-grid,.platform-form{grid-template-columns:1fr}.platform-heading h2{font-size:21px}.platform-card{padding:16px}}",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "communityBack",
+          "text": "Back",
+          "label": "Back",
+          "title": "Back",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            16,
+            68,
+            63,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "startTour",
+          "text": "✦ AI Tour",
+          "label": "Open AI Tour",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            308,
+            68,
+            66,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "feed",
+            "aria-current": "false"
+          },
+          "rect": [
+            5,
+            766,
+            62,
+            66
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Groups",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "market",
+            "aria-current": "false"
+          },
+          "rect": [
+            69,
+            766,
+            62,
+            66
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "pages",
+            "aria-current": "false"
+          },
+          "rect": [
+            132,
+            766,
+            62,
+            66
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Deal",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "deals",
+            "aria-current": "false"
+          },
+          "rect": [
+            196,
+            766,
+            62,
+            66
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Jobs",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "jobs",
+            "aria-current": "false"
+          },
+          "rect": [
+            260,
+            766,
+            62,
+            66
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Messages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "connect",
+            "aria-current": "false"
+          },
+          "rect": [
+            323,
+            766,
+            62,
+            66
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "http://127.0.0.1:5503/html/v3.1/community/nav-icons/feed.webp",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:5503/html/v3.1/community/nav-icons/groups.svg",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:5503/html/v3.1/community/nav-icons/pages.svg",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:5503/html/v3.1/community/nav-icons/deals.svg",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:5503/html/v3.1/community/nav-icons/jobs.svg",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "http://127.0.0.1:5503/html/v3.1/community/nav-icons/messages.svg",
+          "alt": "",
+          "broken": false
+        }
+      ],
+      "tables": []
+    },
+    {
+      "scope": "main>DIV#community-hub.>SECTION#.",
+      "text": ":host{ --bg:#f6f4ef; --surface:#ffffff; --surface2:#efece3; --ink:#14201d; --ink2:#43524d; --muted:#71807a; --line:#ddd8ca; --brand:#0b6b57; --brand-d:#084e3f; --accent:#c8841a; --accent-soft:#f7ead3; --teal-soft:#e2efe9; --danger:#b3261e; --danger-soft:#fbe9e7; --ok:#0b6b57; --radius:14px; --shadow:0 10px 30px rgba(20,32,29,.10); } @media (prefers-color-scheme: dark){ :host{ --bg:#101613; --surface:#1a211e; --surface2:#232c28; --ink:#eef2ee; --ink2:#c3cfc8; --muted:#8fa198; --line:#33403a; --brand:#2fae8f; --brand-d:#7fd3ba; --accent:#e0a03c; --accent-soft:#3a2f1a; --teal-soft:#1d2f29; --danger:#ff8a80; --danger-soft:#3a211f; --shadow:0 10px 30px rgba(0,0,0,.4);} } *{box-sizing:border-box} .native-html{scroll-behavior:smooth} .native-body{margin:0;font-family:\"Be Vietnam Pro\",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased} img{max-width:100%;display:block} button{font:inherit;cursor:pointer} input,select,textarea{font:inherit;color:var(--ink)} h1,h2,h3{line-height:1.2;margin:0} a{color:var(--brand)} .wrap{max-width:1180px;margin:0 auto;padding:0 18px} /* top bar */ .topbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)} .topbar-in{display:flex;align-items:center;gap:14px;padding:12px 0} .logo{font-weight:900;letter-spacing:.02em;font-size:1.05rem;color:var(--ink);text-decoration:none;white-space:nowrap} .logo span{color:var(--brand)} .crumb{color:var(--muted);font-size:.9rem;white-space:nowrap} .crumb b{color:var(--ink)} .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end} .lang-toggle{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)} .lang-toggle button{border:0;background:transparent;padding:7px 13px;font-weight:700;font-size:.85rem;color:var(--muted)} .lang-toggle button.on{background:var(--brand);color:#fff} .btn{border:0;border-radius:10px;padding:10px 18px;font-weight:700;background:var(--brand);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:8px;font-size:.95rem} .btn:hover{background:var(--brand-d)} .btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)} .btn.small{padding:8px 13px;font-size:.88rem} .btn.warn{background:var(--accent);color:#1c1405} /* hero */ .hero{padding:26px 0 8px} .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch} .hero-copy{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:30px 30px 26px;display:flex;flex-direction:column;justify-content:center} .hero-copy h1{font-family:\"Fraunces\",serif;font-size:2.35rem;font-weight:900;letter-spacing:-.01em} .hero-copy h1 em{font-style:normal;color:var(--brand)} .hero-copy p{color:var(--ink2);margin:14px 0 20px;max-width:52ch} .hero-photo{border-radius:20px;overflow:hidden;min-height:280px;position:relative;border:1px solid var(--line)} .hero-photo img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0} .hero-photo .cap{position:absolute;left:14px;bottom:14px;background:rgba(10,20,17,.78);color:#fff;padding:8px 13px;border-radius:9px;font-size:.83rem;font-weight:600} .searchbar{display:flex;gap:8px;flex-wrap:wrap} .searchbar input[type=search]{flex:1 1 220px;padding:13px 15px;border:1px solid var(--line);border-radius:11px;background:var(--bg)} .searchbar select{padding:13px 12px;border:1px solid var(--line);border-radius:11px;background:var(--bg)} .hero-notes{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px} .note-chip{font-size:.8rem;font-weight:600;background:var(--teal-soft);color:var(--brand-d);border-radius:999px;padding:6px 12px} @media (prefers-color-scheme: dark){.note-chip{color:var(--brand)}} /* type chips */ .types{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 4px} .tchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 17px;font-weight:700;font-size:.92rem;color:var(--ink2)} .tchip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)} .tchip .n{opacity:.65;font-weight:600;font-size:.8rem;margin-left:5px} /* layout */ .layout{display:grid;grid-template-columns:272px 1fr;gap:22px;margin:18px 0 10px;align-items:start} .filters{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:sticky;top:78px} .filters h3{font-size:1rem;margin-bottom:14px} .fgroup{margin-bottom:16px} .fgroup label{display:block;font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:7px} .frow{display:flex;gap:8px} .frow input,.frow select{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);font-size:.92rem} .checkline{display:flex;gap:9px;align-items:center;font-size:.92rem;font-weight:600} .checkline input{width:18px;height:18px;accent-color:var(--brand)} .filters .btn{width:100%;justify-content:center;margin-top:4px} .linkbtn{background:none;border:0;color:var(--brand);font-weight:700;padding:6px 0;font-size:.9rem} .results-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px} .results-head h2{font-size:1.3rem} .results-head .count{color:var(--muted);font-weight:600;font-size:.92rem} .results-head select{margin-left:auto;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface)} /* cards */ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:16px} .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .15s ease, box-shadow .15s ease} .card:hover{transform:translateY(-3px);box-shadow:var(--shadow)} .card .ph{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--surface2)} .card .ph img{width:100%;height:100%;object-fit:cover} .badges{position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap} .badge{font-size:.72rem;font-weight:800;padding:4px 9px;border-radius:999px;letter-spacing:.02em} .badge.verified{background:var(--brand);color:#fff} .badge.featured{background:var(--accent);color:#1c1405} .badge.type{background:rgba(10,20,17,.8);color:#fff} .badge.sample{background:#fff;color:#7a4d05;border:1.5px solid var(--accent);font-weight:900} .sample-note{background:var(--accent-soft);border:1px solid var(--accent);border-radius:11px;padding:12px 15px;font-size:.9rem;margin-bottom:14px;color:var(--ink)} .fav{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:1.05rem;line-height:1;color:#5a6a64} .fav.on{color:#c22f4e} .card .body{padding:15px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1} .price{font-size:1.28rem;font-weight:900} .price small{font-size:.85rem;font-weight:600;color:var(--muted)} .card h3{font-size:1rem;font-weight:700;cursor:pointer} .card h3:hover{color:var(--brand)} .specs{color:var(--ink2);font-size:.88rem;display:flex;gap:12px;flex-wrap:wrap} .loc{color:var(--muted);font-size:.86rem} .meta{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)} .meta time{color:var(--muted);font-size:.8rem} .meta button{background:none;border:0;color:var(--brand);font-weight:700;font-size:.88rem;padding:4px 0} .wanted-card .ph{display:flex;align-items:center;justify-content:center;background:var(--accent-soft);aspect-ratio:4/2.1} .wanted-card .ph .big{font-family:\"Fraunces\",serif;font-size:1.5rem;font-weight:900;color:var(--accent);text-align:center;padding:0 18px} .empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);padding:34px;text-align:center;color:var(--ink2)} /* AI strip */ .ai-strip{margin:26px 0 6px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:var(--radius);padding:20px 22px} .ai-strip h2{font-size:1.15rem} .ai-strip p{color:var(--ink2);margin:8px 0 0;max-width:78ch} .ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:16px} .ai-item{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:14px 15px} .ai-item b{display:block;margin-bottom:5px;font-size:.95rem} .ai-item p{font-size:.88rem;margin:0} /* sections */ section.block{margin:34px 0} section.block>h2{font-size:1.45rem;margin-bottom:6px} section.block>.sub{color:var(--ink2);margin:0 0 18px;max-width:75ch} .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:14px} .step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:19px} .step .num{font-family:\"Fraunces\",serif;font-size:1.6rem;font-weight:900;color:var(--brand)} .step h3{font-size:1rem;margin:6px 0} .step p{color:var(--ink2);font-size:.9rem;margin:0} .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px} .rule{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:19px} .rule h3{font-size:1rem;margin-bottom:7px} .rule p{color:var(--ink2);font-size:.9rem;margin:0} .crosslink{margin:30px 0;background:var(--teal-soft);border-radius:var(--radius);padding:22px;display:flex;gap:16px;align-items:center;flex-wrap:wrap} .crosslink h3{font-size:1.1rem} .crosslink p{color:var(--ink2);margin:4px 0 0;max-width:62ch} .disclaimer{border-top:1px solid var(--line);margin:36px 0 0;padding:20px 0 40px;color:var(--muted);font-size:.85rem;max-width:95ch} /* modal */ .modal-back{position:fixed;inset:0;background:rgba(8,14,12,.62);z-index:90;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:18px 12px} .modal-back.open{display:flex} .modal{background:var(--surface);border-radius:18px;max-width:860px;width:100%;padding:0;overflow:hidden;box-shadow:var(--shadow)} .modal .mhead{display:flex;align-items:center;gap:10px;padding:16px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2} .modal .mhead h3{font-size:1.1rem} .modal .x{margin-left:auto;border:0;background:var(--surface2);width:36px;height:36px;border-radius:50%;font-size:1.05rem;color:var(--ink)} .modal .mbody{padding:20px 22px 26px} .gallery{border-radius:14px;overflow:hidden;aspect-ratio:16/9;background:var(--surface2)} .gallery img{width:100%;height:100%;object-fit:cover} .dprice{font-size:1.7rem;font-weight:900;margin:16px 0 2px} .dspecs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0} .dspec{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:.9rem;font-weight:600} .rentline{font-size:.84rem;color:var(--ink2);margin-top:5px;line-height:1.5} .rentline.dim{color:var(--muted);font-size:.8rem;margin-top:2px} .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 22px;margin:14px 0;font-size:.94rem} .dgrid div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:7px 0} .dgrid span{color:var(--muted)} .notice{border-radius:11px;padding:13px 15px;font-size:.9rem;margin:14px 0} .notice.warn{background:var(--accent-soft);border:1px solid var(--accent)} .notice.danger{background:var(--danger-soft);border:1px solid var(--danger)} .contact-box{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0} .similar h4{margin:20px 0 10px} .similar .grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))} /* form */ .psteps{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap} .pstep{flex:1;min-width:110px;text-align:center;padding:9px 6px;border-radius:9px;background:var(--surface2);font-size:.83rem;font-weight:700;color:var(--muted)} .pstep.on{background:var(--brand);color:#fff} .pstep.done{background:var(--teal-soft);color:var(--brand-d)} .field{margin-bottom:15px} .field label{display:block;font-weight:700;font-size:.88rem;margin-bottom:6px} .field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)} .field textarea{min-height:110px;resize:vertical} .field .hint{font-size:.8rem;color:var(--muted);margin-top:5px} .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px} .typepick{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px} .typepick button{border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:14px;text-align:left;font-weight:700} .typepick button small{display:block;font-weight:500;color:var(--muted);margin-top:3px;font-size:.8rem} .typepick button.on{border-color:var(--brand);background:var(--teal-soft);box-shadow:inset 0 0 0 1px var(--brand)} .fh-alert{display:none;border-radius:11px;padding:13px 15px;font-size:.9rem;margin:10px 0;background:var(--danger-soft);border:1px solid var(--danger)} .fh-alert.show{display:block} .ai-box{display:none;border-radius:11px;padding:14px 15px;font-size:.92rem;margin:10px 0;background:var(--accent-soft);border:1px solid var(--accent)} .ai-box.show{display:block} .ai-box textarea{min-height:80px} .form-nav{display:flex;gap:10px;justify-content:space-between;margin-top:20px;flex-wrap:wrap} .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--bg);padding:13px 20px;border-radius:12px;font-weight:600;font-size:.92rem;z-index:120;transition:transform .25s ease;max-width:92vw;text-align:center;box-shadow:var(--shadow);pointer-events:none} .toast.show{transform:translateX(-50%) translateY(0)} .saved-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px} .saved-chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:.85rem;font-weight:600} .saved-chip b{color:var(--brand)} /* Smart Import */ .import-cta{margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--teal-soft);border:1px solid var(--brand);border-radius:12px;padding:13px 15px} .import-cta p{margin:0!important;font-size:.9rem;color:var(--ink2)} .import-cta p b{color:var(--ink)} .import-panel{border:1.5px solid var(--brand);background:var(--teal-soft);border-radius:14px;padding:16px 17px;margin-bottom:18px} .import-panel h4{margin:0 0 4px;font-size:1rem} .import-panel p{margin:0 0 12px;color:var(--ink2);font-size:.88rem} .import-row{display:flex;gap:8px;flex-wrap:wrap} .import-row input[type=url]{flex:1 1 260px;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);min-width:0} .import-sources{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0} .src-chip{font-size:.78rem;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--ink2)} .src-chip.on{border-color:var(--brand);color:var(--brand);background:#fff} .rights-line{display:flex;gap:9px;align-items:flex-start;font-size:.88rem;font-weight:600;margin:10px 0;line-height:1.45} .rights-line input{width:18px;height:18px;accent-color:var(--brand);flex:0 0 auto;margin-top:2px} .import-status{display:none;margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 13px;font-size:.88rem} .import-status.show{display:block} .import-status b{color:var(--brand)} .import-demo{margin-top:10px;font-size:.83rem;color:var(--muted)} .import-demo button{background:none;border:0;color:var(--brand);font-weight:700;text-decoration:underline;padding:2px 4px;font-size:.83rem} .import-how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px} .import-how .ih{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px} .import-how .ih b{display:block;margin-bottom:5px} .import-how .ih p{color:var(--ink2);font-size:.9rem;margin:0} .imported-badge{display:none;background:var(--brand);color:#fff;font-size:.75rem;font-weight:800;border-radius:999px;padding:4px 9px;margin-left:8px;vertical-align:middle} .imported-badge.show{display:inline-block} .ai-steps{list-style:none;margin:0;padding:0} .ai-steps li{padding:3px 0;color:var(--muted)} .ai-steps li.run{color:var(--ink);font-weight:700} .ai-steps li.done{color:var(--brand);font-weight:600} .ai-fields{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 4px} .ai-fields span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:.8rem;font-weight:700} /* AI Assistant (NEXI) */ .assistant{position:fixed;right:14px;bottom:14px;z-index:80;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none} .assist-panel,.assist-row{pointer-events:auto} .assist-bubble{display:none;max-width:252px;background:var(--surface);border:1px solid var(--line);border-radius:14px 14px 4px 14px;box-shadow:var(--shadow);padding:11px 32px 11px 13px;font-size:.86rem;font-weight:600;position:relative;cursor:pointer;line-height:1.45} .assist-bubble.show{display:block;pointer-events:auto;animation:bubbleIn .3s ease} @keyframes bubbleIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}} .assist-bubble.gone{display:none} .assist-bubble .bx{position:absolute;top:4px;right:6px;border:0;background:none;color:var(--muted);font-size:.85rem;line-height:1;padding:4px;cursor:pointer} .assist-row{display:flex;align-items:flex-end;gap:8px} .assist-sound{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);font-size:.95rem;line-height:1} .assist-avatar{width:80px;height:82px;border:0;background:none;padding:0;cursor:pointer;filter:drop-shadow(0 8px 14px rgba(20,32,29,.25))} .assist-mini{width:40px;height:41px;flex:0 0 auto;display:block} .assist-mini svg{width:100%;height:100%;display:block} .assist-picker{padding:10px 12px 12px;background:var(--surface);border-bottom:1px solid var(--line);flex:0 0 auto} .assist-picker-t{font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--brand-d);margin-bottom:8px} @media (prefers-color-scheme: dark){.assist-picker-t{color:var(--brand)}} .assist-picker-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px} .pick{border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:0} .pick.on{border-color:var(--brand);background:var(--teal-soft);box-shadow:0 0 0 1.5px var(--brand)} .pick-av{width:54px;height:62px;display:block} .pick-av svg{width:100%;height:100%;display:block} .pick-name{font-size:.74rem;font-weight:700;line-height:1.2;text-align:center;color:var(--ink2)} .assist-picker.flash{animation:pickerFlash 1.15s ease-in-out 2} @keyframes pickerFlash{0%,100%{background:var(--surface)}50%{background:var(--teal-soft)}} .assist-pickbtn{display:flex;align-items:center;gap:7px;border:1.5px solid var(--brand);background:var(--surface);color:var(--brand-d);border-radius:999px;padding:5px 13px 5px 6px;font-weight:800;font-size:.82rem;box-shadow:var(--shadow);cursor:pointer;line-height:1.1} @media (prefers-color-scheme: dark){.assist-pickbtn{color:var(--brand)}} .assist-pickbtn .pb-av{width:30px;height:32px;display:block;flex:0 0 auto} .assist-pickbtn .pb-av svg{width:100%;height:100%;display:block} .assist-pickbtn,.assist-avatar,.assist-sound,.assist-bubble,.assist-picker-row .pick{touch-action:manipulation;-webkit-tap-highlight-color:transparent} .assistant.open .assist-pickbtn{display:none} .assist-avatar.attn{animation:assistAttn .9s ease-in-out 3} @keyframes assistAttn{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}} .chip-group{flex:1 0 100%;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:5px} .assist-chips button.soon{border-style:dashed;color:var(--muted)} .assist-mic{width:46px;height:46px;border-radius:50%;border:1px solid var(--brand);background:var(--teal-soft);display:flex;align-items:center;justify-content:center;flex:0 0 auto;position:relative;color:var(--brand-d);cursor:pointer;touch-action:none} @media (prefers-color-scheme: dark){.assist-mic{color:var(--brand)}} .assist-mic svg{width:22px;height:22px} .assist-mic.live{background:var(--brand);color:#fff} .assist-mic.live::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--brand);animation:micPulse 1.1s ease-out infinite} @keyframes micPulse{0%{transform:scale(.82);opacity:.9}100%{transform:scale(1.35);opacity:0}} .assist-mic.off{opacity:.45} .assistant.listening .assist-char{animation-duration:.9s} .assist-voice-note{font-size:.78rem;color:var(--muted);padding:0 12px 9px;background:var(--surface);display:none;line-height:1.45;flex:0 0 auto} .assist-voice-note.show{display:block} .assist-avatar svg{width:100%;height:100%;overflow:visible;display:block} .char-wrap{position:relative;display:block;width:100%;height:100%;animation:assistBob 3.2s ease-in-out infinite} .assist-char-img{width:100%;height:100%;display:block;object-fit:contain} .char-blink{position:absolute;inset:0;opacity:0;pointer-events:none;transform:translateY(2.6%);clip-path:inset(var(--eye,29%) 0 calc(100% - var(--eye,29%) - 6.4%) 0);animation:charBlink var(--bd,5.6s) linear infinite;animation-delay:var(--bdel,0s)} @keyframes charBlink{0%,93.6%,100%{opacity:0}95.2%,96.8%{opacity:1}} .assistant.talking .char-wrap{animation:assistTalkImg .17s ease-in-out infinite alternate} @keyframes assistTalkImg{from{transform:scale(1) rotate(-1.1deg)}to{transform:scale(1.07) rotate(1.1deg)}} .assistant.listening .char-wrap{animation-duration:.9s} .assist-panel{display:none;width:min(392px,calc(100vw - 24px));height:min(700px,calc(100dvh - 112px));background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);flex-direction:column;overflow:hidden} .assistant.open .assist-panel{display:flex} .assist-head{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--teal-soft);flex:0 0 auto} .assist-head b{font-size:.95rem} .assist-head small{display:block;color:var(--ink2);font-weight:600;font-size:.76rem} .assist-head .hx{margin-left:auto;border:0;background:var(--surface);width:32px;height:32px;border-radius:50%;color:var(--ink);font-size:.95rem;flex:0 0 auto} .assist-msgs{flex:1 1 auto;min-height:46px;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:9px;background:var(--bg)} .msg{max-width:86%;padding:9px 12px;border-radius:13px;font-size:.9rem;line-height:1.5;white-space:pre-wrap} .msg.bot{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px;align-self:flex-start} .msg.me{background:var(--brand);color:#fff;border-bottom-right-radius:4px;align-self:flex-end} .msg.typing{color:var(--muted);font-style:italic} .assist-chips{display:flex;gap:6px;flex-wrap:wrap;padding:9px 12px;border-top:1px solid var(--line);background:var(--surface);max-height:104px;overflow-y:auto;flex:0 0 auto} @media (max-height:720px){ .assist-picker{max-height:32dvh;overflow-y:auto} .assist-chips{max-height:72px} .assist-note{max-height:40px} } .msg.wide{max-width:95%} .chat-cards{display:flex;flex-direction:column;gap:8px} .mini-card{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:10px 12px;font-size:.86rem;line-height:1.45} .mini-card b{display:block;font-size:.92rem;margin-bottom:2px} .mini-card .mc-meta{color:var(--ink2)} .mini-card .mc-price{font-weight:900;color:var(--brand-d);margin-top:3px} @media (prefers-color-scheme: dark){.mini-card .mc-price{color:var(--brand)}} .chat-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px} .assist-chips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 11px;font-size:.8rem;font-weight:700;color:var(--brand-d)} @media (prefers-color-scheme: dark){.assist-chips button{color:var(--brand)}} .assist-input{display:flex;gap:7px;padding:10px 12px;border-top:1px solid var(--line);background:var(--surface);flex:0 0 auto} .assist-input input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-width:0} .assist-note{font-size:.72rem;color:var(--muted);padding:2px 12px 10px;background:var(--surface);line-height:1.45;flex:0 0 auto;max-height:56px;overflow-y:auto} @keyframes assistBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}} @keyframes assistBlink{0%,91%,100%{transform:scaleY(1)}94.5%{transform:scaleY(.06)}98%{transform:scaleY(1)}} @keyframes assistWave{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-26deg)}} @keyframes assistTalk{from{transform:scaleY(.25)}to{transform:scaleY(1.2)}} .assist-char{animation:assistBob 3.2s ease-in-out infinite} .assist-eyes{transform-box:fill-box;transform-origin:center;animation:assistBlink 4.4s infinite} .assist-arm{transform-box:fill-box;transform-origin:12% 88%;animation:assistWave 1.7s ease-in-out infinite} .assist-mouth{transform-box:fill-box;transform-origin:center} .assistant.talking .assist-mouth{animation:assistTalk .16s ease-in-out infinite alternate} @media (prefers-reduced-motion: reduce){.assist-char,.assist-eyes,.assist-arm,.assistant.talking .assist-mouth,.assist-avatar.attn,.assist-picker.flash,.char-wrap,.char-blink,.assistant.talking .char-wrap{animation:none}} footer{padding-bottom:10px} @container module (max-width: 640px){ .searchbar select{flex:1 1 128px;min-width:0;padding:11px 9px;font-size:.93rem} .hero-notes{gap:6px} .note-chip{font-size:.78rem;padding:6px 10px} .assist-avatar{width:64px;height:66px} .assist-pickbtn{font-size:.78rem;padding:4px 11px 4px 5px} .assist-pickbtn .pb-av{width:26px;height:28px} .assist-sound{width:30px;height:30px;font-size:.85rem} } @container module (max-width: 900px){ .hero-grid{grid-template-columns:1fr} .hero-photo{min-height:210px} .layout{grid-template-columns:1fr} .filters{position:static} .hero-copy h1{font-size:1.85rem} .dgrid{grid-template-columns:1fr} .f2{grid-template-columns:1fr} .crumb{display:none} } /* V14 — visible, gentle motion for the original 12 mascot photos. */ .assist-avatar{width:96px;height:108px;filter:drop-shadow(0 8px 15px rgba(20,32,29,.22))} .assist-mini{width:43px;height:45px} .pick-av{width:62px;height:70px} .assist-pickbtn .pb-av{width:34px;height:37px} .char-wrap{overflow:hidden;border-radius:17px;background:#e9dfd5;transform-origin:50% 85%;animation:mascotSway 4.8s ease-in-out infinite;animation-delay:var(--phase,0s);will-change:transform} .assist-char-img{width:100%;height:100%;object-fit:cover;object-position:center 28%;transform:scale(1.12);animation:mascotLook 6.3s ease-in-out infinite;animation-delay:var(--phase,0s);will-change:transform} .assist-avatar .char-wrap{border-radius:21px} .assist-mini .char-wrap,.assist-pickbtn .char-wrap{border-radius:10px} .pick-av .char-wrap{border-radius:12px} .pick.on .char-wrap{animation-duration:3.1s} .pick:hover .char-wrap,.assist-avatar:hover .char-wrap{animation-duration:2.5s} @keyframes mascotSway{0%,100%{transform:translateY(2px) rotate(-2deg)}24%{transform:translateY(-5px) rotate(1.8deg)}51%{transform:translateY(0) rotate(2.5deg)}76%{transform:translateY(-4px) rotate(-1.3deg)}} @keyframes mascotLook{0%,13%,100%{transform:scale(1.12) translateX(0)}29%,43%{transform:scale(1.12) translateX(-2.7%)}62%,76%{transform:scale(1.12) translateX(2.7%)}} .assistant.talking .char-wrap{animation:mascotSpeak .24s ease-in-out infinite alternate} .assistant.talking .assist-char-img{animation:mascotLook 2s ease-in-out infinite} @keyframes mascotSpeak{from{transform:translateY(1px) rotate(-2deg) scale(.99)}to{transform:translateY(-4px) rotate(2deg) scale(1.04)}} .assistant.listening .char-wrap{animation-duration:2.1s} @container module (max-width: 640px){.assist-avatar{width:78px;height:88px}.pick-av{width:54px;height:61px}} @media(prefers-reduced-motion:reduce){.char-wrap,.assist-char-img,.assistant.talking .char-wrap,.assistant.talking .assist-char-img{animation:none!important;transform:none!important}} /* The supplied portraits are 1:2 static WebP images. Keep the complete art and its original background visible. */ .assist-picker{max-height:min(42dvh,370px);overflow-y:auto;overscroll-behavior:contain} .assist-picker-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px} .pick{padding:7px 4px 8px;background:var(--surface);min-height:155px} .pick-av{width:66px;height:125px;flex:none} .pick-name{font-size:.72rem} .assist-avatar{width:82px;height:150px} .assist-mini{width:30px;height:56px} .assist-pickbtn .pb-av{width:29px;height:55px} .char-wrap{overflow:visible;background:transparent;transform-origin:50% 75%;animation:mascotFloatV27 3.4s ease-in-out infinite;animation-delay:var(--phase,0s);will-change:transform} .assist-char-img{width:100%;height:100%;object-fit:contain;object-position:center;transform:none;border-radius:12px;animation:mascotBreathV27 3.4s ease-in-out infinite;animation-delay:var(--phase,0s);will-change:transform} .assist-avatar .assist-char-img{border-radius:18px} .pick.on .char-wrap{animation-duration:2.5s} .pick:hover .char-wrap,.assist-avatar:hover .char-wrap{animation-duration:1.9s} .assistant.talking .char-wrap{animation:mascotTalkV27 .35s ease-in-out infinite alternate} .assistant.talking .assist-char-img{animation:mascotBreathV27 1.1s ease-in-out infinite alternate} @keyframes mascotFloatV27{0%,100%{transform:translateY(3px) rotate(-2.2deg)}25%{transform:translateY(-5px) rotate(1.5deg)}50%{transform:translateY(0) rotate(2.2deg)}75%{transform:translateY(-4px) rotate(-1.2deg)}} @keyframes mascotBreathV27{0%,100%{transform:scale(.95)}50%{transform:scale(1)}} @keyframes mascotTalkV27{from{transform:translateY(2px) rotate(-3deg) scale(.98)}to{transform:translateY(-5px) rotate(3deg) scale(1.02)}} @container module (max-width: 640px){.assist-picker{max-height:35dvh}.pick-av{width:57px;height:108px}.pick{min-height:137px}.assist-avatar{width:68px;height:124px}.assist-mini{width:26px;height:49px}.assist-pickbtn .pb-av{width:25px;height:47px}} @media(prefers-reduced-motion:reduce){.char-wrap,.assist-char-img,.assistant.talking .char-wrap,.assistant.talking .assist-char-img{animation:none!important;transform:none!important}} .property-workbench{margin:22px 0 24px;padding:22px;border:1px solid #cde7dc;border-radius:20px;background:linear-gradient(135deg,#effaf5,#fff 62%);box-shadow:0 8px 24px rgba(13,89,72,.06)} .property-workbench *{box-sizing:border-box} .pb-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:16px} .pb-head h2{margin:0 0 5px;font-size:1.4rem;color:#12382f} .pb-head p{margin:0;color:#536960;font-size:.88rem;line-height:1.5} .pb-ask{border:0;border-radius:12px;background:#086b55;color:#fff;padding:11px 15px;font-weight:800;cursor:pointer;white-space:nowrap} .pb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px} .pb-task{display:flex;align-items:flex-start;gap:11px;text-align:left;width:100%;border:1px solid #d7e5de;border-radius:14px;background:#fff;padding:14px;cursor:pointer;min-width:0;box-shadow:0 2px 8px rgba(12,60,44,.04)} .pb-task:hover,.pb-task:focus-visible,.pb-template button:hover{border-color:#168a6f;background:#f4fcf8} .pb-icon{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:10px;background:#e9f7ef;font-size:20px} .pb-task strong{display:block;color:#163d32;font-size:.94rem;line-height:1.25} .pb-task small{display:block;color:#61766d;margin-top:4px;line-height:1.4} .pb-subhead{margin:23px 0 10px;font-size:1.08rem;color:#173d32} .pb-templates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px} .pb-template{border:1px solid #d7e5de;border-radius:14px;background:#fff;padding:14px;min-width:0} .pb-template .pb-label{display:block;color:#08775d;font-size:.7rem;font-weight:900;letter-spacing:.08em;margin-bottom:7px} .pb-template h3{margin:0 0 7px;color:#1b3d34;font-size:.96rem} .pb-template p{margin:0 0 11px;color:#5d7067;font-size:.8rem;line-height:1.5} .pb-template button{border:1px solid #d7e5de;background:#f9fcfa;color:#075e4b;border-radius:9px;padding:8px 10px;font-weight:800;cursor:pointer} .pb-note{margin:14px 0 0;color:#607269;font-size:.77rem;line-height:1.5} @container module (max-width: 860px){.pb-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pb-templates{grid-template-columns:1fr}} @container module (max-width: 570px){.property-workbench{margin:16px 0 19px;padding:15px;border-radius:15px}.pb-head{align-items:stretch;flex-direction:column}.pb-head h2{font-size:1.2rem}.pb-grid{grid-template-columns:1fr}.pb-task{padding:12px}.pb-ask{width:100%}} header,.sidebar,.bottom-nav,.live-links,.mobile-top,.mobile-nav,.social-rail,.ai-fab,.assistant-fab,.assist-bubble,.assist-panel,.assist-launch,.tour-banner,#tour-banner{display:none!important} .native-body{margin:0}.shell,.app,.layout{min-height:0}#page-view{width:100%;max-width:1140px;margin:auto}.main,main{margin-left:0!important}select{appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\");background-position:right 16px center;background-repeat:no-repeat;padding-right:44px!important} @container module (max-width: 767px){.owner-grid,.transfer-grid{grid-template-columns:1fr}.store-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}} :host{display:block;min-width:0;height:100%;overflow:auto;overscroll-behavior:contain;container:module / inline-size;contain:layout style;isolation:isolate}[hidden]{display:none!important}.native-head{display:none}.native-html,.native-body{min-height:100%;margin:0;box-sizing:border-box}.native-body{overflow-x:clip}*,*::before,*::after{box-sizing:border-box}img,video{max-width:100%}dialog{max-width:calc(100% - 24px)} NAILHUB.AI / Real Estate · Houston, TX VI EN Account: Poster Homes & spaces for the Vietnamese nail community in the U.S. Homes for sale, houses and rooms for rent, and commercial space for your salon — free to post, live as soon as the automated check passes. Starting in Houston, Texas. All states Texas California Florida Georgia Washington Virginia North Carolina All citiesHoustonKatySugar LandPearlandCypressSpringDallasAustinSan Antonio All areas Search Free to post Automated check — live when it passes Not a brokerage · No deposits held + Post a Listing ✦ Paste a link — AI fills it in Already listed on Zillow, Facebook or HAR? Paste the link and AI reads it and fills in price, rooms, area, photos & description — you just review it, then post. A Houston neighborhood — where nail professionals live and work What would you like to do in Real Estate? Pick a task. NEXI will ask step by step, find matching listings or draft a post. 🎙 Talk to NEXI 🔎Find a place to buy or rentNEXI asks about area, budget and needs, then shows matches. 🏠Sell a propertyTell NEXI the details to prepare a listing draft. 🔑Rent out a home or roomDraft a rental listing through guided questions. 📌Post buying or rental needsLet owners with relevant listings see your needs. 🔗Paste my listing linkOpen the draft importer for an existing listing link. 🗂️Browse listings and filtersBrowse sample listings, filter by area and save a search. Writing templates to get started CONTENT TEMPLATEHome for sale[Property type] in [area], [city]. [Beds] bedrooms, [sqft] square feet. Asking [price]. Describe condition, highlights and contact.Draft with NEXI → CONTENT TEMPLATERental listing[Home/room/space] for rent in [area]. [Price]/month, available [date]. Include amenities, lease terms, deposit and contact.Draft with NEXI → CONTENT TEMPLATELooking to buy or rentI want to [buy/rent] [property type] in [area], budget [range], with [beds/size]. Include timing and contact.Draft with NEXI → NEXI follows a guided demo script here; listings and matches are samples. Review all details before posting. All0Home for Sale0House for Rent0Room for Rent0Commercial Space0Wanted0 ✦ Suggested for You AI picks · based on areas and types you view New listings are automatically matched against Wanted posts and your saved searches — a strong match notifies you right away. Filters Price Range (USD) ZIP Code Bedrooms (min) —1+2+3+4+ Bathrooms (min) —1+2+3+ Min. area (sqft) Verified listings only Apply Filters Clear filters Save this search Live listings 0 listings Newest Price low → high Price high → low Largest area The listings below are sample listings for interface preview — not real posts yet. When the section officially opens, real community listings — typed in, or pasted via a link that AI Smart Import fills in from their existing posts (target: the first 30–50 in Houston) — will replace all samples. No listings yet — TexasNAILHUB.AI is live in Houston, Texas first and expanding state by state. There are no listings in this area yet — register for a notification and we will alert you the moment the first one appears.🔔 Notify me about this area Already posted elsewhere? Paste the link — AI fills it in within seconds No retyping. Paste your own listing link from Zillow, Facebook, HAR, Realtor.com… and AI reads the listing page, extracts price, rooms, area and photos, and drafts the title & description into the form. You review, edit and hit Post — NAILHUB.AI never copies someone else’s listing for you. 1 · Paste your linkCopy the link to the home, room or space you already posted elsewhere and paste it into AI Smart Import in the posting form — AI starts the moment you paste. 2 · AI fills it in for youAI extracts price, bedrooms/bathrooms, sqft, area, ZIP and photos, and drafts a neutral description already checked against Fair Housing wording rules. Anything AI cannot read, you fill in by hand as usual. 3 · You approve & postConfirm “this is my listing / I have permission to repost”, review it, and submit — it runs the automated check and goes live when it passes. ✦ Paste a link — AI fills it in Post and go live — no manual pre-approval wait Every listing runs through an automated check first. Clean listings go live within a minute; only flagged ones go to a human review queue. 1Paste a link, or fill in & add photosFast path: paste your existing Zillow/Facebook/HAR link and AI fills in the whole form. Or fill in by hand in 4 steps: type → details → photos & text → contact & preview. 2Automated check gateThe system checks minimum photos, address, Fair Housing language, scam patterns and duplicates. 3Live now, or reviewedPass → published instantly. Flagged → review queue; you get the result, with a reason if rejected. 4AI demand matchingNew listings are scored against Wanted posts and saved searches. A match of 70/100 or higher notifies the person looking. Safety for posters and viewers alike ✓ “Verified” is a separate document checkA for-sale listing can go live without documents, but the Verified badge is only added after an admin checks a deed, owner authorization, or broker license. Unverified listings always show a warning. ✓ Phone numbers are never exposed rawContact stays in-platform by default. Posters may choose to show their number after a viewer logs in — their choice, never a hard lock. ✓ The community can report bad listingsAnyone can report scams, wrong info, or discrimination. A listing with 3+ reports is auto-hidden pending review. Rental addresses show area + ZIP by default. Looking for a salon to buy or take over? NAILHUB.AI’s salon-transfer section runs separately on the same platform. Check homes here, then salons nearby — and back again. View Salon Transfers → NAILHUB.AI is a listing platform, not a real estate brokerage, and is not a party to transactions between users. Information is provided by the poster; please verify independently before transacting. NAILHUB.AI · Real Estate · Houston, Texas Listing details✕ + Post a Listing✕ ✦ AI Smart Import — Paste a link, AI fills the whole formAI ĐÃ ĐIỀN ✓ Paste your listing link from Zillow, Facebook Marketplace, HAR or Realtor.com — AI runs the moment you paste: it reads the page and fills in price, rooms, area, ZIP, title & description. Edit if needed, then continue. ✦ AI auto-fill Zillow Facebook Marketplace HAR.com Realtor.com Trang khác I confirm this is my listing, or the owner / original poster has given me permission to repost it on NAILHUB.AI. I am responsible for its content and photos. No link handy? Try it now with a sample link: Link Zillow (bán nhà) · Link Facebook (cho thuê phòng) · Link HAR (cho thuê nhà) 1 · Type 2 · Details 3 · Photos & text 4 · Contact & post Or pick a listing type and fill in by hand as usual — AI Smart Import above is just a shortcut, never required. Home for SaleNeeds 3+ photosHouse for RentWhole houseRoom for RentSingle roomCommercial SpaceFor businessWantedPost your need Listing title * Price (USD) * Price type / tháng (thuê)Tổng giá (bán)Thương lượng Bedrooms * Bathrooms * Area (sqft) ZIP * City HoustonKatySugar LandPearlandCypressSpring Area Photos * For-sale listings need at least 3 photos; other types at least 1. Max 20 photos. Description * (min. 30 characters) AI suggests a neutral rewrite: Use this version Keep mine Contact method In-platform only (recommended) Show phone number after viewer logs in Address display Area + ZIP only (recommended for rentals) Show full address Listings run 30 days. You get a renewal reminder 3 days before expiry. ← Back Continue → Đăng tin tiệm nail · Salon listing✕ Form mẫu theo mẫu form Địa ốc — bản thật dùng form đăng tin của mục Sang nhượng tiệm trên NAILHUB.AI. Tin đăng qua đây thuộc mục Sang tiệm, trang Địa ốc chỉ liên kết chéo hai chiều. Loại tin · Type Sang nhượng tiệm / Salon for transferCần mua tiệm / Salon wanted Tên tiệm · Salon name * Giá sang / Ngân sách (USD) * Thuê mặt bằng / tháng (USD) Số ghế · Chairs Số bàn · Tables Diện tích (sqft) ZIP Thành phố · City HoustonKatySugar LandPearlandCypressSpring Khu vực · Area Mô tả · Description Cách liên hệ · Contact Chỉ liên hệ trong nền tảng (khuyên dùng)Hiện số điện thoại sau khi khách đăng nhập Liên hệ luôn qua nền tảng — không hiển thị số điện thoại cá nhân công khai. Đóng Đăng tin tiệm → Đăng tin tuyển thợ✕ Form mẫu cho mục Việc làm của NAILHUB.AI — bản thật dùng dữ liệu Việc làm / Tìm thợ thật trên site. Liên hệ luôn qua nền tảng. Tên tiệm · Salon * Cần thợ · Skill needed Bột (Acrylic)DipGel / Gel-XChân tay nướcĐa năng Lương / ăn chia đề xuất · Pay * Tên hiển thị · Display name * Tay nghề · Skill Bột (Acrylic)DipGel / Gel-XChân tay nướcĐa năng Kinh nghiệm (năm) · Experience Thời gian làm được · Availability Thành phố · City HoustonKatySugar LandPearlandCypressSpring ZIP Khu vực · Area Mô tả · Description Đóng Đăng tin → NAILHUB AssistantNail Tech Girl · Online · one assistant for the whole NAILHUB.AI hub ✕ Pick your assistant — all 12 characters, tap to switch Nail Tech GirlNail CatNail HandNail BearNail BunnyNail CorgiNail FoxNail UnicornNail PenguinNail PigNail PandaNail Tech Guy Real EstateSell a homeRent out house / roomWanted: buy / rentFind a homePaste a Smart Import linkContact the posterSalon TransfersTransfer a nail salonBuy a nail salonJobs / Find a TechTech: find a jobOwner: find techsMore of the hubClasses · SoonProducts · SoonServices · Soon Send Demo: NEXI works from a script and speaks with the browser voice. Live version: greeting file in the cloned “Brian Nguyen 1” voice, a real conversational AI backend sharing the §12A AI layer, running on real data across the whole NAILHUB.AI hub (Real Estate · Salon Transfers · Jobs…) with two-way matching — techs ↔ job posts, listings ↔ wants — like §12A. Voice input: the web uses the Web Speech API (best on Chrome); the app uses native device speech recognition + the cloned greeting voice. Assistant artwork: the live version uses the team’s original mascot set; the character choice is saved to the NEXORA ID account. ✕ Hi! I’m NEXI — ask me about finding a home, renting a room, or posting a listing! Tap the “Change assistant · 12” button right below to see all 12 characters and pick one. Change assistant · 12 🔊",
+      "controls": [
+        {
+          "tag": "FORM",
+          "id": "",
+          "text": "All states Texas California Florida Georgia Washington Virginia North Carolina All cities Houston Katy Sugar Land Pearland Cypress Spring Dallas Austin San Antonio All areas Search",
+          "label": null,
+          "title": "",
+          "name": "",
+          "attrs": {
+            "data-act": "doSearch"
+          },
+          "rect": [
+            49,
+            437,
+            277,
+            163
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "q",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "search",
+          "name": "",
+          "value": "",
+          "placeholder": "Search by area, ZIP, street…",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "data-i18n-ph": "searchPh"
+          },
+          "rect": [
+            49,
+            437,
+            277,
+            53
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "qState",
+          "text": "All states Texas California Florida Georgia Washington Virginia North Carolina",
+          "label": "State",
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "TX",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "",
+              "text": "All states",
+              "selected": false
+            },
+            {
+              "value": "TX",
+              "text": "Texas",
+              "selected": true
+            },
+            {
+              "value": "CA",
+              "text": "California",
+              "selected": false
+            },
+            {
+              "value": "FL",
+              "text": "Florida",
+              "selected": false
+            },
+            {
+              "value": "GA",
+              "text": "Georgia",
+              "selected": false
+            },
+            {
+              "value": "WA",
+              "text": "Washington",
+              "selected": false
+            },
+            {
+              "value": "VA",
+              "text": "Virginia",
+              "selected": false
+            },
+            {
+              "value": "NC",
+              "text": "North Carolina",
+              "selected": false
+            }
+          ],
+          "attrs": {
+            "data-act": "stateChange"
+          },
+          "rect": [
+            49,
+            498,
+            135,
+            47
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "qCity",
+          "text": "All cities Houston Katy Sugar Land Pearland Cypress Spring Dallas Austin San Antonio",
+          "label": "City",
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "",
+              "text": "All cities",
+              "selected": true
+            },
+            {
+              "value": "Houston",
+              "text": "Houston",
+              "selected": false
+            },
+            {
+              "value": "Katy",
+              "text": "Katy",
+              "selected": false
+            },
+            {
+              "value": "Sugar Land",
+              "text": "Sugar Land",
+              "selected": false
+            },
+            {
+              "value": "Pearland",
+              "text": "Pearland",
+              "selected": false
+            },
+            {
+              "value": "Cypress",
+              "text": "Cypress",
+              "selected": false
+            },
+            {
+              "value": "Spring",
+              "text": "Spring",
+              "selected": false
+            },
+            {
+              "value": "Dallas",
+              "text": "Dallas",
+              "selected": false
+            },
+            {
+              "value": "Austin",
+              "text": "Austin",
+              "selected": false
+            },
+            {
+              "value": "San Antonio",
+              "text": "San Antonio",
+              "selected": false
+            }
+          ],
+          "attrs": {
+            "data-act": "cityChange"
+          },
+          "rect": [
+            192,
+            498,
+            135,
+            47
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "qArea",
+          "text": "All areas",
+          "label": "Area",
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "",
+              "text": "All areas",
+              "selected": true
+            }
+          ],
+          "attrs": {
+            "data-act": "renderNow"
+          },
+          "rect": [
+            49,
+            553,
+            181,
+            47
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Search",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-i18n": "searchBtn"
+          },
+          "rect": [
+            238,
+            553,
+            88,
+            47
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "+ Post a Listing",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "openPost",
+            "data-i18n": "postCta"
+          },
+          "rect": [
+            49,
+            722,
+            277,
+            38
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Paste a link — AI fills it in",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "openPostImport"
+          },
+          "rect": [
+            65,
+            790,
+            238,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🎙 Talk to NEXI",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "ask",
+            "data-pb-vi": "🎙 Nói / hỏi NEXI",
+            "data-pb-en": "🎙 Talk to NEXI"
+          },
+          "rect": [
+            34,
+            1379,
+            307,
+            47
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔎 Find a place to buy or rent NEXI asks about area, budget and needs, then shows matches.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "findHome"
+          },
+          "rect": [
+            34,
+            1442,
+            307,
+            86
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏠 Sell a property Tell NEXI the details to prepare a listing draft.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "sell"
+          },
+          "rect": [
+            34,
+            1538,
+            307,
+            86
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Rent out a home or room Draft a rental listing through guided questions.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "rent"
+          },
+          "rect": [
+            34,
+            1634,
+            307,
+            86
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📌 Post buying or rental needs Let owners with relevant listings see your needs.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "wanted"
+          },
+          "rect": [
+            34,
+            1730,
+            307,
+            86
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔗 Paste my listing link Open the draft importer for an existing listing link.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "import"
+          },
+          "rect": [
+            34,
+            1826,
+            307,
+            86
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🗂️ Browse listings and filters Browse sample listings, filter by area and save a search.",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "samples"
+          },
+          "rect": [
+            34,
+            1922,
+            307,
+            86
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Draft with NEXI →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "sell",
+            "data-pb-vi": "Soạn với NEXI →",
+            "data-pb-en": "Draft with NEXI →"
+          },
+          "rect": [
+            49,
+            2195,
+            162,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Draft with NEXI →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "rent",
+            "data-pb-vi": "Soạn với NEXI →",
+            "data-pb-en": "Draft with NEXI →"
+          },
+          "rect": [
+            49,
+            2396,
+            162,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Draft with NEXI →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-pb-action": "wanted",
+            "data-pb-vi": "Soạn với NEXI →",
+            "data-pb-en": "Draft with NEXI →"
+          },
+          "rect": [
+            49,
+            2598,
+            162,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All0",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            18,
+            2763,
+            68,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Home for Sale0",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            94,
+            2763,
+            151,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "House for Rent0",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            18,
+            2816,
+            157,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Room for Rent0",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            183,
+            2816,
+            152,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Commercial Space0",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            18,
+            2868,
+            184,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Wanted0",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            210,
+            2868,
+            105,
+            45
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMin",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "number",
+          "name": "",
+          "value": "",
+          "placeholder": "Min",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "min": "0"
+          },
+          "rect": [
+            39,
+            3248,
+            145,
+            45
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "fPriceMax",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "number",
+          "name": "",
+          "value": "",
+          "placeholder": "Max",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "min": "0"
+          },
+          "rect": [
+            192,
+            3248,
+            145,
+            45
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "fZip",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "",
+          "value": "",
+          "placeholder": "77042",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "5"
+          },
+          "rect": [
+            39,
+            3336,
+            297,
+            47
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "fBeds",
+          "text": "— 1+ 2+ 3+ 4+",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "0",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "0",
+              "text": "—",
+              "selected": true
+            },
+            {
+              "value": "1",
+              "text": "1+",
+              "selected": false
+            },
+            {
+              "value": "2",
+              "text": "2+",
+              "selected": false
+            },
+            {
+              "value": "3",
+              "text": "3+",
+              "selected": false
+            },
+            {
+              "value": "4",
+              "text": "4+",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            39,
+            3426,
+            297,
+            47
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "fBaths",
+          "text": "— 1+ 2+ 3+",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "0",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "0",
+              "text": "—",
+              "selected": true
+            },
+            {
+              "value": "1",
+              "text": "1+",
+              "selected": false
+            },
+            {
+              "value": "2",
+              "text": "2+",
+              "selected": false
+            },
+            {
+              "value": "3",
+              "text": "3+",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            39,
+            3516,
+            297,
+            47
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "fSqft",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "number",
+          "name": "",
+          "value": "",
+          "placeholder": "800",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "min": "0"
+          },
+          "rect": [
+            39,
+            3607,
+            297,
+            47
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "fVerified",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "checkbox",
+          "name": "",
+          "value": "on",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            43,
+            3672,
+            18,
+            18
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Apply Filters",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "applyFilters",
+            "data-i18n": "fApply"
+          },
+          "rect": [
+            39,
+            3713,
+            297,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Clear filters",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "clearFilters",
+            "data-i18n": "fClear"
+          },
+          "rect": [
+            39,
+            3757,
+            83,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Save this search",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "saveSearch",
+            "data-i18n": "saveSearch"
+          },
+          "rect": [
+            39,
+            3828,
+            297,
+            46
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "sortSel",
+          "text": "Newest Price low → high Price high → low Largest area",
+          "label": "Sort",
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "new",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "new",
+              "text": "Newest",
+              "selected": true
+            },
+            {
+              "value": "plo",
+              "text": "Price low → high",
+              "selected": false
+            },
+            {
+              "value": "phi",
+              "text": "Price high → low",
+              "selected": false
+            },
+            {
+              "value": "big",
+              "text": "Largest area",
+              "selected": false
+            }
+          ],
+          "attrs": {
+            "data-act": "renderNow"
+          },
+          "rect": [
+            179,
+            3964,
+            178,
+            47
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔔 Notify me about this area",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "notifyArea"
+          },
+          "rect": [
+            65,
+            4455,
+            245,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Paste a link — AI fills it in",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "openPostImport"
+          },
+          "rect": [
+            18,
+            5379,
+            238,
+            44
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "View Salon Transfers →",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "https://nailhub.ai/",
+            "data-i18n": "crossBtn"
+          },
+          "rect": [
+            126,
+            7308,
+            209,
+            44
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "http://127.0.0.1:5503/html/v3.1/community/modules/realestate/media/300cfdfefbac9fd0.jpg",
+          "alt": "Khu nhà ở tại Houston, Texas",
+          "broken": false
+        }
+      ],
+      "tables": []
+    }
+  ],
+  "key": "staff-390-realestate-v1",
+  "role": "staff",
+  "version": "v1",
+  "route": "realestate",
+  "viewport": [
+    390,
+    844
+  ],
+  "screenshot": "staff-390-realestate-v1.png"
+}

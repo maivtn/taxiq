@@ -1,0 +1,472 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/jobs.html?lang=en",
+  "title": "NEXORA TOUCH Community · Việc làm & Sang nhượng",
+  "lang": "vi",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ Demo · Posts and profiles stay in this browser. ✎ Edit page content directly ✎ Edit I want to work Find the right job, share when you are free for extra shifts, or show the services you offer. Connect directly with shops and businesses. ＋ Post your availability ✧ See my matches How would you like to start? Choose your path, then post or browse right away. ◉ I am looking for work Full-time or part-time work. Introduce your profile and skills. Post job search → ◷ I am free for a shift Share open hours for urgent, half-day or full-day shifts. Post availability → ✦ I offer services Choose a trade, subcategory and add your own skills. Post my services → ⌕ Explore ✧ Matches ◷ Schedule ⋯ More My availability Let businesses know when you can take a shift. ＋ Add availability Sun 11:00 17:00 Mon Not set Tue Not set Wed Not set Thu Not set Fri Not set Sat Not set Posted availability Repeats weekly · Sun 11:00–17:00 · Every week Remove Mon, Nov 9 09:00–13:00 · One time Remove Availability helps you connect. Both sides should agree on hours, scope and pay before confirming a shift. Add availability VI × Schedule type Specific date Repeat weekly Date Start End ✦ Ask AI Cancel Post availability",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✎ Edit",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "edit-start"
+          },
+          "rect": [
+            306,
+            49,
+            50,
+            30
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Post your availability",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "post"
+          },
+          "rect": [
+            26,
+            185,
+            158,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✧ See my matches",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "matches"
+          },
+          "rect": [
+            191,
+            185,
+            158,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post job search →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "career"
+          },
+          "rect": [
+            63,
+            355,
+            112,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post availability →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "shift"
+          },
+          "rect": [
+            63,
+            449,
+            114,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post my services →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "service"
+          },
+          "rect": [
+            63,
+            544,
+            120,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Explore",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "explore"
+          },
+          "rect": [
+            17,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✧ Matches",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "matches"
+          },
+          "rect": [
+            103,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◷ Schedule",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "availability"
+          },
+          "rect": [
+            190,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⋯ More",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "worknav-more"
+          },
+          "rect": [
+            276,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Add availability",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "add-availability"
+          },
+          "rect": [
+            240,
+            697,
+            109,
+            51
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Remove",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-remove-availability": "demo-sun"
+          },
+          "rect": [
+            263,
+            1068,
+            71,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Remove",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-remove-availability": "demo-once"
+          },
+          "rect": [
+            263,
+            1147,
+            71,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "VI",
+          "label": "Chuyển sang Tiếng Việt",
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "lang"
+          },
+          "rect": [
+            268,
+            177,
+            30,
+            30
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": "Close",
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-modal"
+          },
+          "rect": [
+            302,
+            177,
+            30,
+            30
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "availability-kind",
+          "text": "Specific date Repeat weekly",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "kind",
+          "value": "once",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "once",
+              "text": "Specific date",
+              "selected": true
+            },
+            {
+              "value": "weekly",
+              "text": "Repeat weekly",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            43,
+            268,
+            289,
+            39
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "date",
+          "name": "date",
+          "value": "2026-11-07",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "min": "2026-11-06"
+          },
+          "rect": [
+            43,
+            338,
+            289,
+            40
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "time",
+          "name": "start",
+          "value": "09:00",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            43,
+            408,
+            289,
+            41
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "time",
+          "name": "end",
+          "value": "17:00",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            43,
+            479,
+            289,
+            41
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Ask AI",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-from-form"
+          },
+          "rect": [
+            155,
+            573,
+            90,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-modal"
+          },
+          "rect": [
+            253,
+            573,
+            79,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post availability",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            194,
+            625,
+            138,
+            42
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "staff-390-availability-form-module-v2",
+  "screenshot": "staff-390-availability-form-module-v2.png"
+}

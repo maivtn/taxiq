@@ -1,0 +1,502 @@
+[
+  {
+    "id": "SS01",
+    "title": "Story: lối vào tạo và dải xem ngang",
+    "before": "owner-834-feed-v1",
+    "after": "owner-834-feed-v2",
+    "v1": "Feed chưa có dải Story.",
+    "v2": "PO có Create story, dải ngang, avatar, tên và nhãn SAMPLE.",
+    "area": "Feed / Story",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS02",
+    "title": "Story: nội dung 300 ký tự và ảnh",
+    "before": "owner-834-feed-v1",
+    "after": "owner-834-create-story-v2",
+    "v1": "Không có form Story tương ứng.",
+    "v2": "Story text maxlength 300, Photo, Cancel và Post story; chặn nội dung rỗng.",
+    "area": "Story",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS03",
+    "title": "Story: xem, tiếp theo, xóa và hạn 24 giờ",
+    "before": "owner-834-feed-v1",
+    "after": "owner-834-view-story-v2",
+    "v1": "Không có trình xem Story.",
+    "v2": "Ảnh/chữ/tác giả, Next story, Delete story cho Story tự tạo; nội dung lưu 24 giờ trên trình duyệt.",
+    "area": "Story",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS04",
+    "title": "Gợi ý kết bạn",
+    "before": "owner-834-connect-v1",
+    "after": "owner-834-people-v2",
+    "v1": "V1 có danh bạ/tìm thành viên và yêu cầu nhắn tin; chưa có bộ gợi ý và yêu cầu kết bạn PO này.",
+    "v2": "Card tên, @username, vai trò, khu vực, lý do gợi ý; Connect và mở hồ sơ.",
+    "area": "People",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS05",
+    "title": "Tìm người theo nhiều định danh",
+    "before": "owner-834-connect-v1",
+    "after": "owner-834-people-v2",
+    "v1": "V1 có danh bạ/tìm thành viên và yêu cầu nhắn tin; chưa có bộ gợi ý và yêu cầu kết bạn PO này.",
+    "v2": "Find people: tên, username, số điện thoại được phép tìm, NEXORA ID; danh sách kết quả và trạng thái rỗng.",
+    "area": "People",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS06",
+    "title": "Hồ sơ từ gợi ý",
+    "before": "owner-834-connect-v1",
+    "after": "owner-834-person-profile-v2",
+    "v1": "V1 có danh bạ/tìm thành viên và yêu cầu nhắn tin; chưa có bộ gợi ý và yêu cầu kết bạn PO này.",
+    "v2": "Ảnh, tên, handle, vai trò/khu vực, lý do; All people, Connect/Request sent, Hide.",
+    "area": "People",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS07",
+    "title": "Yêu cầu kết bạn đến và đã gửi",
+    "before": "owner-834-connect-v1",
+    "after": "owner-834-friend-inbox-v2",
+    "v1": "V1 có danh bạ/tìm thành viên và yêu cầu nhắn tin; chưa có bộ gợi ý và yêu cầu kết bạn PO này.",
+    "v2": "Danh sách received/sent; Accept, Decline, Cancel request; Friends/Respond/Sent trên card.",
+    "area": "People",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS08",
+    "title": "Phạm vi xem bài Public / Friends / Only me",
+    "before": "owner-834-post-composer-v1",
+    "after": "owner-834-post-visibility-v2",
+    "v1": "Chọn đích Feed/Group, chưa có ba mức audience.",
+    "v2": "Bộ chọn Public, Friends, Only me và nhãn audience trên bài.",
+    "area": "Feed",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS09",
+    "title": "Video trực tiếp trong bài Feed",
+    "before": "owner-834-post-composer-v1",
+    "after": "owner-834-post-composer-v2",
+    "v1": "Composer cũ có ảnh, chưa có trường video cho bài thường.",
+    "v2": "Video upload (giới hạn mẫu 50 MB) và trình phát trong bài; khác với Reel đã có.",
+    "area": "Feed",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS10",
+    "title": "Giới hạn ảnh Feed mở rộng và GIF",
+    "before": "owner-834-post-composer-v1",
+    "after": "owner-834-post-composer-v2",
+    "v1": "Composer V1 giới hạn 6 ảnh.",
+    "v2": "PO cho tối đa 20 ảnh; input nhận ảnh/GIF. Giới hạn được đối chiếu thêm trong mã nguồn.",
+    "area": "Feed",
+    "status": "UI đã quan sát; giới hạn tệp đối chiếu mã PO"
+  },
+  {
+    "id": "SS11",
+    "title": "Tag people",
+    "before": "owner-834-post-composer-v1",
+    "after": "owner-834-post-tag-v2",
+    "v1": "Composer chưa có thao tác này.",
+    "v2": "Nút Tag people chèn ký hiệu @ vào nội dung, chưa phải hệ thống mention backend.",
+    "area": "Feed",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS12",
+    "title": "Feeling",
+    "before": "owner-834-post-composer-v1",
+    "after": "owner-834-post-feeling-v2",
+    "v1": "Composer chưa có thao tác này.",
+    "v2": "Nút Feeling chèn emoji vào nội dung.",
+    "area": "Feed",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS13",
+    "title": "Check in",
+    "before": "owner-834-post-composer-v1",
+    "after": "owner-834-post-checkin-v2",
+    "v1": "Composer chưa có thao tác này.",
+    "v2": "Nút Check in chèn ký hiệu vị trí và khu vực vào nội dung.",
+    "area": "Feed",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS14",
+    "title": "Lối vào nhanh Photo/video, Reel và Live trong Feed",
+    "before": "owner-834-feed-v1",
+    "after": "owner-834-feed-v2",
+    "v1": "Các module Reel/Live đã có trong menu chung.",
+    "v2": "PO thêm các lối vào ngay composer Feed; không coi Reel/Live là tính năng hoàn toàn mới.",
+    "area": "Feed",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS15",
+    "title": "Chia sẻ và sao chép liên kết bài",
+    "before": "owner-834-feed-v1",
+    "after": "owner-834-feed-v2",
+    "v1": "Menu tương tác cũ chưa có thao tác Share tương đương trên mỗi bài thường.",
+    "v2": "PO có Share, sao chép liên kết/nội dung; không chứng minh xuất bản ra mạng xã hội.",
+    "area": "Feed",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS16",
+    "title": "Lượt xem và nhãn trạng thái bài",
+    "before": "owner-834-feed-v1",
+    "after": "owner-834-feed-v2",
+    "v1": "Like/comment có sẵn; chưa có view counter của PO.",
+    "v2": "Bổ sung lượt xem; dữ liệu mẫu được ghi sample views, không là lượt xem thật.",
+    "area": "Feed",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS17",
+    "title": "Ghim, lưu và tạm dừng bài",
+    "before": "owner-834-feed-v1",
+    "after": "owner-834-post-more-v2",
+    "v1": "Menu cũ có edit/boost/delete/report.",
+    "v2": "Menu bài tự tạo trong mã PO có pin/pause/save/copy; ảnh More là menu tạo nội dung gần nhất, chưa chụp menu bài sau tạo.",
+    "area": "Feed",
+    "status": "Đối chiếu mã PO; thiếu ảnh menu bài đúng trạng thái"
+  },
+  {
+    "id": "SS18",
+    "title": "Quyền riêng tư nhóm",
+    "before": "owner-834-create-group-v1",
+    "after": "owner-834-create-group-v2",
+    "v1": "Form nhóm cũ có tên/ngành/loại/khu vực/mô tả/nội quy, chưa có phần mới này.",
+    "v2": "Public / Private trong form nhóm.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS19",
+    "title": "Duyệt bài thành viên",
+    "before": "owner-834-create-group-v1",
+    "after": "owner-834-create-group-v2",
+    "v1": "Form nhóm cũ có tên/ngành/loại/khu vực/mô tả/nội quy, chưa có phần mới này.",
+    "v2": "Checkbox Admin approves member posts; mặc định bật trong PO.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS20",
+    "title": "Ảnh bìa nhóm",
+    "before": "owner-834-create-group-v1",
+    "after": "owner-834-create-group-v2",
+    "v1": "Form nhóm cũ có tên/ngành/loại/khu vực/mô tả/nội quy, chưa có phần mới này.",
+    "v2": "Cover photo optional trong form, ảnh hiển thị trong chi tiết.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS21",
+    "title": "Nhóm ngành mở rộng",
+    "before": "owner-834-create-group-v1",
+    "after": "owner-834-create-group-v2",
+    "v1": "Form nhóm cũ có tên/ngành/loại/khu vực/mô tả/nội quy, chưa có phần mới này.",
+    "v2": "Nail trade, Trades & services, Food, Community market, Other; V1 đang thiên ngành beauty.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS22",
+    "title": "Tìm nhóm và chuyển Discover / My groups",
+    "before": "owner-834-groups-v1",
+    "after": "owner-834-groups-v2",
+    "v1": "Có bộ lọc/khu vực và Join/Leave; chưa có cùng search và hai chế độ này.",
+    "v2": "Input tìm nhóm/items, Search, Discover, My groups, Market.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS23",
+    "title": "Danh sách Members và vai trò quản trị",
+    "before": "owner-834-group-detail-v1",
+    "after": "owner-834-group-members-v2",
+    "v1": "Chi tiết cũ tập trung bài và thành viên qua luồng nhóm đang chạy.",
+    "v2": "Tab Members; phân biệt admin/moderator/member; nâng/hạ moderator và remove trong nhóm tự quản.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS24",
+    "title": "Hàng chờ yêu cầu vào nhóm",
+    "before": "owner-834-group-detail-v1",
+    "after": "owner-834-group-admin-v2",
+    "v1": "Chưa có bảng Admin PO với yêu cầu chờ.",
+    "v2": "Join requests có số đếm, tên, Approve/Decline.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS25",
+    "title": "Hàng chờ duyệt bài nhóm",
+    "before": "owner-834-group-detail-v1",
+    "after": "owner-834-group-admin-v2",
+    "v1": "Chưa có danh sách pending bài nhóm PO.",
+    "v2": "Pending posts, tác giả, nội dung, Approve post/Decline, số lượng trên Admin.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS26",
+    "title": "Tạm dừng và mở lại nhóm",
+    "before": "owner-834-group-detail-v1",
+    "after": "owner-834-group-admin-v2",
+    "v1": "Chưa có Pause group trong công cụ quản trị cũ.",
+    "v2": "Edit group, Pause group và trạng thái reopened; lưu local.",
+    "area": "Groups",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS27",
+    "title": "Page: email",
+    "before": "owner-834-create-page-v1",
+    "after": "owner-834-create-page-v2",
+    "v1": "Form Page cũ chưa có trường/lựa chọn tương ứng.",
+    "v2": "Trường Email bổ sung bên cạnh Phone.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS28",
+    "title": "Page: địa chỉ cụ thể",
+    "before": "owner-834-create-page-v1",
+    "after": "owner-834-create-page-v2",
+    "v1": "Form Page cũ chưa có trường/lựa chọn tương ứng.",
+    "v2": "Trường Address bổ sung, tách với Area.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS29",
+    "title": "Page: website và Visit website",
+    "before": "owner-834-create-page-v1",
+    "after": "owner-834-create-page-v2",
+    "v1": "Form Page cũ chưa có trường/lựa chọn tương ứng.",
+    "v2": "Website và tùy chọn CTA Visit website; không bỏ Message/Call đang có.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS30",
+    "title": "Page: sáu nhóm phân loại",
+    "before": "owner-834-create-page-v1",
+    "after": "owner-834-create-page-v2",
+    "v1": "Form Page cũ chưa có trường/lựa chọn tương ứng.",
+    "v2": "Business, Nail salon, Restaurant, Service, Creator, Community; khác danh mục 3 ngành V1.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS31",
+    "title": "Page Services công khai",
+    "before": "owner-834-page-detail-v1",
+    "after": "owner-834-page-services-v2",
+    "v1": "Chưa có tab catalog dịch vụ PO.",
+    "v2": "Services & products; thêm tên, giá, mô tả và remove trong Page tự quản; khách xem danh sách.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS32",
+    "title": "Page Studio gom công cụ quản lý",
+    "before": "owner-834-page-detail-v1",
+    "after": "owner-834-page-manage-v2",
+    "v1": "V1 có tạo/sửa Page, nội dung/media/quảng cáo ở luồng cũ.",
+    "v2": "Tab Manage, thông tin Posts/Post views/Sample chats; các lối tắt ảnh/details, post, service, promotion, inbox.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS33",
+    "title": "Page access: người quản lý và vai trò",
+    "before": "owner-834-page-detail-v1",
+    "after": "owner-834-page-manage-v2",
+    "v1": "Chưa có danh sách Page access của PO.",
+    "v2": "Add person, role, remove; PO nói rõ chỉ lưu trên thiết bị, không cấp quyền thật sang tài khoản khác.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS34",
+    "title": "Page Inbox demo theo Page",
+    "before": "owner-834-connect-v1",
+    "after": "owner-834-page-inbox-v2",
+    "v1": "Tin nhắn trực tiếp cũ có sẵn và phải giữ nguyên.",
+    "v2": "PO thêm hội thoại trong Page Inbox, nhập và gửi trả lời local; không thay Messages/Calls cũ.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS35",
+    "title": "Đăng bài với danh tính Page từ composer",
+    "before": "owner-834-post-composer-v1",
+    "after": "owner-834-own-page-v2",
+    "v1": "Đăng Page ở luồng riêng đã có.",
+    "v2": "PO thêm lựa chọn Post as owned Page; đồng bộ cùng bản ghi Page.",
+    "area": "Pages",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS36",
+    "title": "Danh bạ thợ dành cho tiệm",
+    "before": "owner-834-jobs-v1",
+    "after": "owner-834-workers-module-v2",
+    "v1": "V1 xem người qua hồ sơ ứng viên/tin tìm việc.",
+    "v2": "PO có Find workers, card kỹ năng/kinh nghiệm/khu vực/giờ rảnh và Invite to discuss.",
+    "area": "Jobs",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS37",
+    "title": "Bộ lọc danh bạ thợ",
+    "before": "owner-834-jobs-v1",
+    "after": "owner-834-workers-module-v2",
+    "v1": "Chưa có bộ lọc cùng danh bạ mới.",
+    "v2": "Search, Clear, All trades, Nail technicians, Other work; chip kỹ năng.",
+    "area": "Jobs",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS38",
+    "title": "Invites & messages theo vai trò",
+    "before": "owner-834-jobs-v1",
+    "after": "owner-834-owner-invites-module-v2",
+    "v1": "V1 có apply/invite trong các luồng hiện hữu.",
+    "v2": "PO thêm lối vào tập trung Invitations & messages; không thay engine ứng tuyển/nhắn tin hiện tại.",
+    "area": "Jobs",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS39",
+    "title": "Offer services: lối đăng dịch vụ cá nhân",
+    "before": "staff-390-jobs-v1",
+    "after": "staff-390-worker-post-module-v2",
+    "v1": "V1 có seeking/hiring và extra shifts.",
+    "v2": "PO bổ sung nhánh Offer services theo task/project cùng Full-time/Part-time/Spare hours.",
+    "area": "Jobs",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS40",
+    "title": "Bộ kỹ năng 10 nhóm ngành",
+    "before": "staff-390-jobs-v1",
+    "after": "staff-390-profile-form-module-v2",
+    "v1": "Profile cũ có bộ kỹ năng nhưng chưa đủ các nhóm PO.",
+    "v2": "Nail, Home & Construction, Electrical & Plumbing, Cleaning & Maintenance, Food & Events, Auto & Mobile Services, Care & Family, Salon operations & support, Other beauty services, Office & Technology.",
+    "area": "Jobs",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS41",
+    "title": "Kỹ năng tự nhập",
+    "before": "staff-390-jobs-v1",
+    "after": "staff-390-profile-form-module-v2",
+    "v1": "Chưa có Custom skills bổ sung trực tiếp vào catalog PO.",
+    "v2": "Custom skills và Add; giữ checkbox chọn kỹ năng.",
+    "area": "Jobs",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS42",
+    "title": "Lịch rảnh dạng tuần 7 ngày",
+    "before": "staff-390-jobs-v1",
+    "after": "staff-390-availability-module-v2",
+    "v1": "Availability đã có dạng danh sách.",
+    "v2": "PO thêm Sun–Sat, giờ rảnh hoặc Not set; vẫn giữ danh sách các lịch đã đăng.",
+    "area": "Jobs",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS43",
+    "title": "Ngày cụ thể hoặc lặp hằng tuần",
+    "before": "staff-390-jobs-v1",
+    "after": "staff-390-availability-form-module-v2",
+    "v1": "Form cũ chưa ẩn/hiện cùng logic PO.",
+    "v2": "Schedule type: Specific date / Repeat weekly; đổi Date sang weekday, Start/End.",
+    "area": "Jobs",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS44",
+    "title": "Sang nhượng: ba mẫu nội dung",
+    "before": "owner-834-transfer-v1",
+    "after": "owner-834-transfer-post-module-v2",
+    "v1": "Board và form transfer đã có.",
+    "v2": "Mẫu Nail salon, Spa / beauty, Other shop; điền sẵn cấu trúc, thay placeholder bằng thông tin thật.",
+    "area": "Transfers",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS45",
+    "title": "Sang nhượng: Build draft từ chi tiết",
+    "before": "owner-834-transfer-v1",
+    "after": "owner-834-transfer-post-module-v2",
+    "v1": "Chưa có bộ dựng mô tả tương ứng.",
+    "v2": "Build draft ghép salon, area, stations, lease, assets, reason và asking price từ form; không gọi AI/backend.",
+    "area": "Transfers",
+    "status": "Đã quan sát UI; giới hạn prototype local"
+  },
+  {
+    "id": "SS46",
+    "title": "Food: tìm món và gian hàng",
+    "before": "owner-834-food-v1",
+    "after": "owner-834-food-supplement-v2",
+    "v1": "V1 có Food module độc lập; chưa có phần khám phá bổ sung này của shell PO.",
+    "v2": "Input tìm dishes/storefronts cùng trạng thái rỗng.",
+    "area": "Food",
+    "status": "Quan sát bổ sung: gọi openFood() nguyên bản sau khi route shell lỗi; không sửa DOM/source PO"
+  },
+  {
+    "id": "SS47",
+    "title": "Food: khu vực Houston",
+    "before": "owner-834-food-v1",
+    "after": "owner-834-food-supplement-v2",
+    "v1": "V1 có Food module độc lập; chưa có phần khám phá bổ sung này của shell PO.",
+    "v2": "All Houston, Bellaire / Little Saigon, Katy, Sugar Land, Spring Branch, Houston; chip khu vực; Other areas Coming later.",
+    "area": "Food",
+    "status": "Quan sát bổ sung: gọi openFood() nguyên bản sau khi route shell lỗi; không sửa DOM/source PO"
+  },
+  {
+    "id": "SS48",
+    "title": "Food: loại món và vùng miền",
+    "before": "owner-834-food-v1",
+    "after": "owner-834-food-supplement-v2",
+    "v1": "V1 có Food module độc lập; chưa có phần khám phá bổ sung này của shell PO.",
+    "v2": "Dish type All/Main dish/Dessert/Beverage/Snack và Cuisine region All/North/Central/South.",
+    "area": "Food",
+    "status": "Quan sát bổ sung: gọi openFood() nguyên bản sau khi route shell lỗi; không sửa DOM/source PO"
+  },
+  {
+    "id": "SS49",
+    "title": "Food: gian hàng dùng chung",
+    "before": "owner-834-food-v1",
+    "after": "owner-834-food-supplement-v2",
+    "v1": "V1 có Food module độc lập; chưa có phần khám phá bổ sung này của shell PO.",
+    "v2": "Community storefronts, Open my storefront/Create storefront, card gian hàng và View storefront/Message; giữ cùng shop state.",
+    "area": "Food",
+    "status": "Quan sát bổ sung: gọi openFood() nguyên bản sau khi route shell lỗi; không sửa DOM/source PO"
+  },
+  {
+    "id": "SS50",
+    "title": "Food: review sao và card món",
+    "before": "owner-834-food-v1",
+    "after": "owner-834-food-supplement-v2",
+    "v1": "V1 có Food module độc lập; chưa có phần khám phá bổ sung này của shell PO.",
+    "v2": "Review mẫu gồm người viết, tiệm, khu vực, sao và nội dung; món gồm ảnh/giá/tiệm/loại/vùng/trạng thái; chưa là đặt món/thanh toán.",
+    "area": "Food",
+    "status": "Quan sát bổ sung: gọi openFood() nguyên bản sau khi route shell lỗi; không sửa DOM/source PO"
+  }
+]

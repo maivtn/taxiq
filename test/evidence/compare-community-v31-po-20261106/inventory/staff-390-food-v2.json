@@ -1,0 +1,341 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "N 2 EN Community ⌖ Houston, TX ⌄ Find people ＋ Create 🪧 Feed 👥 Groups 📣 Pages 💼 Jobs More ⌄ NEXORA COMMUNITY Food & Restaurants The full original Food Community appears first; the Houston companion follows below. Listings, prices and messages in these modules are sample data for preview. Houston companion Houston sample storefronts and dishes in Community.",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-menu",
+          "text": "",
+          "label": "Open account menu",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-account-open": "1"
+          },
+          "rect": [
+            8,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "N",
+          "label": "NEXORA Community, back to Feed",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home"
+          },
+          "rect": [
+            52,
+            6,
+            53,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-bell",
+          "text": "2",
+          "label": "2 new friend requests",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-notifications-open": "1"
+          },
+          "rect": [
+            193,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-chat",
+          "text": "",
+          "label": "Community messages",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "messages"
+          },
+          "rect": [
+            237,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            281,
+            6,
+            42,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-apps",
+          "text": "",
+          "label": "Open all Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-apps-open": "1"
+          },
+          "rect": [
+            326,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "community-area-chip",
+          "text": "⌖ Houston, TX ⌄",
+          "label": "Change area",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "change-area"
+          },
+          "rect": [
+            12,
+            101,
+            102,
+            18
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "header-find-friends",
+          "text": "Find people",
+          "label": "Find people",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "people-all"
+          },
+          "rect": [
+            185,
+            77,
+            100,
+            34
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            291,
+            76,
+            72,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🪧 Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home",
+            "aria-current": "false"
+          },
+          "rect": [
+            12,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "👥 Groups",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "groups",
+            "aria-current": "false"
+          },
+          "rect": [
+            83,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📣 Pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "pages",
+            "aria-current": "false"
+          },
+          "rect": [
+            154,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💼 Jobs",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "jobs",
+            "aria-current": "false"
+          },
+          "rect": [
+            226,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "More ⌄",
+          "label": "More Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            297,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "IFRAME",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "Food & Restaurants",
+          "name": "",
+          "attrs": {},
+          "rect": [
+            13,
+            295,
+            349,
+            589
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            314,
+            781,
+            53,
+            53
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    },
+    {
+      "scope": "main>iframe:",
+      "text": "",
+      "controls": [],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "staff-390-food-v2",
+  "role": "staff",
+  "version": "v2",
+  "route": "food",
+  "viewport": [
+    390,
+    844
+  ],
+  "screenshot": "staff-390-food-v2.png"
+}

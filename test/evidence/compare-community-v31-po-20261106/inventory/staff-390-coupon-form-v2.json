@@ -1,0 +1,676 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "N 2 EN Community ⌖ Houston, TX ⌄ Find people ＋ Create 🪧 Feed 👥 Groups 📣 Pages 💼 Jobs More ⌄ NEXORA COMMUNITY Deals & Coupons Browse offers, save what interests you or post your own. ＋ Post an offer All Nail Food Community Saved 💅 Hoa Nail Studio · SAMPLE Nail service offer Sample offer card for a nail salon. Page owners can create their own deal post in the Feed. ☆ Save Explore → 🍜 Bếp Việt Houston · SAMPLE Food offer Explore sample food offers and dishes in Food & Restaurants. ☆ Save Explore → ✦ NEXORA Community · SAMPLE Community offer A sample spot for offers posted by members or storefronts. ☆ Save Explore → Sample offer cards are labeled; no real coupon codes are available. Deal × Title (optional) Content * Area This post is saved only in this browser prototype. Cancel Post in prototype",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-menu",
+          "text": "",
+          "label": "Open account menu",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-account-open": "1"
+          },
+          "rect": [
+            8,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "N",
+          "label": "NEXORA Community, back to Feed",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home"
+          },
+          "rect": [
+            52,
+            6,
+            53,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-bell",
+          "text": "2",
+          "label": "2 new friend requests",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-notifications-open": "1"
+          },
+          "rect": [
+            193,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-chat",
+          "text": "",
+          "label": "Community messages",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "messages"
+          },
+          "rect": [
+            237,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            281,
+            6,
+            42,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-apps",
+          "text": "",
+          "label": "Open all Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-apps-open": "1"
+          },
+          "rect": [
+            326,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "community-area-chip",
+          "text": "⌖ Houston, TX ⌄",
+          "label": "Change area",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "change-area"
+          },
+          "rect": [
+            12,
+            101,
+            102,
+            18
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "header-find-friends",
+          "text": "Find people",
+          "label": "Find people",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "people-all"
+          },
+          "rect": [
+            185,
+            77,
+            100,
+            34
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            291,
+            76,
+            72,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🪧 Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home",
+            "aria-current": "false"
+          },
+          "rect": [
+            12,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "👥 Groups",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "groups",
+            "aria-current": "false"
+          },
+          "rect": [
+            83,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📣 Pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "pages",
+            "aria-current": "false"
+          },
+          "rect": [
+            154,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💼 Jobs",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "jobs",
+            "aria-current": "false"
+          },
+          "rect": [
+            226,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "More ⌄",
+          "label": "More Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            297,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Post an offer",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "coupon"
+          },
+          "rect": [
+            27,
+            295,
+            128,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-deal-filter": "all"
+          },
+          "rect": [
+            12,
+            359,
+            34,
+            31
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Nail",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-deal-filter": "nail"
+          },
+          "rect": [
+            52,
+            359,
+            40,
+            31
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-deal-filter": "food"
+          },
+          "rect": [
+            98,
+            359,
+            46,
+            31
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Community",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-deal-filter": "community"
+          },
+          "rect": [
+            150,
+            359,
+            80,
+            31
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Saved",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-deal-filter": "saved"
+          },
+          "rect": [
+            236,
+            359,
+            52,
+            31
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "☆ Save",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-deal-save": "deal-nail"
+          },
+          "rect": [
+            27,
+            507,
+            158,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Explore →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-nail"
+          },
+          "rect": [
+            191,
+            507,
+            158,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "☆ Save",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-deal-save": "deal-food"
+          },
+          "rect": [
+            27,
+            669,
+            158,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Explore →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food"
+          },
+          "rect": [
+            191,
+            669,
+            158,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "☆ Save",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-deal-save": "deal-community"
+          },
+          "rect": [
+            27,
+            815,
+            158,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Explore →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop"
+          },
+          "rect": [
+            191,
+            815,
+            158,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            300,
+            180,
+            37,
+            40
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "title",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "100"
+          },
+          "rect": [
+            38,
+            279,
+            299,
+            45
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "body",
+          "value": "",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "1600"
+          },
+          "rect": [
+            38,
+            362,
+            299,
+            135
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "area",
+          "value": "Houston, TX",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            38,
+            540,
+            299,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            114,
+            622,
+            73,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post in prototype",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            195,
+            622,
+            142,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            314,
+            781,
+            53,
+            53
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "staff-390-coupon-form-v2",
+  "screenshot": "staff-390-coupon-form-v2.png"
+}

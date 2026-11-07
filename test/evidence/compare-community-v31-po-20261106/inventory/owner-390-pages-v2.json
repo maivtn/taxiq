@@ -1,0 +1,1240 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "N 2 EN Community ⌖ Houston, TX ⌄ Find people ＋ Create 🪧 Feed 👥 Groups 📣 Pages 💼 Jobs More ⌄ NEXORA COMMUNITY Pages & Fanpages Create a business Page, post and manage content in Community. ＋ Create page ⌕ Search All My pages Nail salons Food Community Discover pages 4 pages ↔ Swipe pages · scroll down for posts 💅 Hoa Nail Studio SAMPLE PAGE Nail salon · Sugar Land, TX Sample nail salon page with services, bookings and fresh nail designs. View page → ＋ Follow 🍜 Bếp Việt Houston SAMPLE PAGE Restaurant · Houston, TX Sample restaurant page with Vietnamese dishes, menus and weekly offers. View page → ＋ Follow 👥 Hội thợ Việt Houston SAMPLE PAGE Community · Houston, TX Sample community page for skills, questions and local work connections. View page → ＋ Follow ☕ Mây Cafe & Bakery SAMPLE PAGE Cafe & bakery · Katy, TX Sample cafe page with new treats, photos and shop updates. View page → ＋ Follow Recent page posts 5 posts 💅 Hoa Nail Studio Nov 3, 2026 · Sugar Land, TX SAMPLE Fresh nails for the weekend Sample post: show a new nail design and invite customers to ask about appointments. 👁 75 sample views ♡ Like 💬 Comment Share 🍜 Bếp Việt Houston Nov 3, 2026 · Houston, TX SAMPLE Hot pho today Sample post: today’s dish, photo, location and an invitation to visit. 👁 79 sample views ♡ Like 💬 Comment Share 👥 Hội thợ Việt Houston Nov 2, 2026 · Houston, TX SAMPLE Share work and experience Sample post: ask questions, share experience or introduce services to the local community. 👁 220 sample views ♡ Like 💬 Comment Share ☕ Mây Cafe & Bakery Nov 2, 2026 · Katy, TX SAMPLE A morning coffee moment Sample post: share cafe photos, new treats and details for visitors. 👁 54 sample views ♡ Like 💬 Comment Share 🍜 Bếp Việt Houston DEAL Nov 1, 2026 · Houston, TX SAMPLE Dessert after dinner Sample offer: a restaurant can post a featured dish, dates and clear terms. 👁 80 sample views ♡ Like 💬 Comment Share Sample pages and posts are labeled. Your content stays in this browser.",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-menu",
+          "text": "",
+          "label": "Open account menu",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-account-open": "1"
+          },
+          "rect": [
+            8,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "N",
+          "label": "NEXORA Community, back to Feed",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home"
+          },
+          "rect": [
+            52,
+            6,
+            53,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-bell",
+          "text": "2",
+          "label": "2 new friend requests",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-notifications-open": "1"
+          },
+          "rect": [
+            193,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-chat",
+          "text": "",
+          "label": "Community messages",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "messages"
+          },
+          "rect": [
+            237,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            281,
+            6,
+            42,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-apps",
+          "text": "",
+          "label": "Open all Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-apps-open": "1"
+          },
+          "rect": [
+            326,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "community-area-chip",
+          "text": "⌖ Houston, TX ⌄",
+          "label": "Change area",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "change-area"
+          },
+          "rect": [
+            12,
+            101,
+            102,
+            18
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "header-find-friends",
+          "text": "Find people",
+          "label": "Find people",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "people-all"
+          },
+          "rect": [
+            185,
+            77,
+            100,
+            34
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            291,
+            76,
+            72,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🪧 Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home",
+            "aria-current": "false"
+          },
+          "rect": [
+            12,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "👥 Groups",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "groups",
+            "aria-current": "false"
+          },
+          "rect": [
+            83,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📣 Pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "pages",
+            "aria-current": "page"
+          },
+          "rect": [
+            154,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💼 Jobs",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "jobs",
+            "aria-current": "false"
+          },
+          "rect": [
+            226,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "More ⌄",
+          "label": "More Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            297,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Feed",
+          "title": "Feed",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home"
+          },
+          "rect": [
+            18,
+            198,
+            63,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Pages",
+          "title": "Pages",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "pages",
+            "aria-current": "page"
+          },
+          "rect": [
+            87,
+            198,
+            63,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Store",
+          "title": "Store",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop"
+          },
+          "rect": [
+            156,
+            198,
+            63,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Deals",
+          "title": "Deals",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "deals"
+          },
+          "rect": [
+            225,
+            198,
+            63,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Reels",
+          "title": "Reels",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "reels"
+          },
+          "rect": [
+            294,
+            198,
+            63,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Create page",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "page-compose"
+          },
+          "rect": [
+            27,
+            369,
+            98,
+            35
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": "Search pages",
+          "title": "",
+          "type": "text",
+          "name": "query",
+          "value": "",
+          "placeholder": "Search pages, shops, restaurants...",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            12,
+            430,
+            273,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Search",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            292,
+            430,
+            71,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-filter": "all"
+          },
+          "rect": [
+            12,
+            484,
+            40,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-filter": "mine"
+          },
+          "rect": [
+            59,
+            484,
+            83,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Nail salons",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-filter": "salon"
+          },
+          "rect": [
+            149,
+            484,
+            91,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-filter": "food"
+          },
+          "rect": [
+            247,
+            484,
+            54,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Community",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-filter": "community"
+          },
+          "rect": [
+            309,
+            484,
+            95,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "View page Hoa Nail Studio",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-nail"
+          },
+          "rect": [
+            11,
+            603,
+            275,
+            105
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View page →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-nail"
+          },
+          "rect": [
+            25,
+            823,
+            94,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Follow",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-follow": "sample-nail"
+          },
+          "rect": [
+            125,
+            823,
+            72,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "View page Bếp Việt Houston",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-food"
+          },
+          "rect": [
+            298,
+            603,
+            275,
+            105
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View page →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-food"
+          },
+          "rect": [
+            312,
+            823,
+            94,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Follow",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-follow": "sample-food"
+          },
+          "rect": [
+            412,
+            823,
+            72,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "View page Hội thợ Việt Houston",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-community"
+          },
+          "rect": [
+            586,
+            603,
+            275,
+            105
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View page →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-community"
+          },
+          "rect": [
+            600,
+            823,
+            94,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Follow",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-follow": "sample-community"
+          },
+          "rect": [
+            700,
+            823,
+            72,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "View page Mây Cafe & Bakery",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-cafe"
+          },
+          "rect": [
+            873,
+            603,
+            275,
+            105
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View page →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-cafe"
+          },
+          "rect": [
+            887,
+            823,
+            94,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Follow",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-follow": "sample-cafe"
+          },
+          "rect": [
+            987,
+            823,
+            72,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Hoa Nail Studio",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-nail"
+          },
+          "rect": [
+            76,
+            953,
+            110,
+            21
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Like",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-like": "page-post-nail-1"
+          },
+          "rect": [
+            25,
+            1318,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Comment",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-comment": "page-post-nail-1"
+          },
+          "rect": [
+            134,
+            1318,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Share",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-share": "page-post-nail-1"
+          },
+          "rect": [
+            244,
+            1318,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Bếp Việt Houston",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-food"
+          },
+          "rect": [
+            76,
+            1391,
+            125,
+            21
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Like",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-like": "page-post-food-1"
+          },
+          "rect": [
+            25,
+            1822,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Comment",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-comment": "page-post-food-1"
+          },
+          "rect": [
+            134,
+            1822,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Share",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-share": "page-post-food-1"
+          },
+          "rect": [
+            244,
+            1822,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Hội thợ Việt Houston",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-community"
+          },
+          "rect": [
+            76,
+            1895,
+            148,
+            21
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Like",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-like": "page-post-community-1"
+          },
+          "rect": [
+            25,
+            2052,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Comment",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-comment": "page-post-community-1"
+          },
+          "rect": [
+            134,
+            2052,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Share",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-share": "page-post-community-1"
+          },
+          "rect": [
+            244,
+            2052,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Mây Cafe & Bakery",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-cafe"
+          },
+          "rect": [
+            76,
+            2125,
+            134,
+            21
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Like",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-like": "page-post-cafe-1"
+          },
+          "rect": [
+            25,
+            2527,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Comment",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-comment": "page-post-cafe-1"
+          },
+          "rect": [
+            134,
+            2527,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Share",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-share": "page-post-cafe-1"
+          },
+          "rect": [
+            244,
+            2527,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Bếp Việt Houston",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-open": "sample-food"
+          },
+          "rect": [
+            76,
+            2599,
+            125,
+            21
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Like",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-like": "page-post-food-2"
+          },
+          "rect": [
+            25,
+            3271,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Comment",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-comment": "page-post-food-2"
+          },
+          "rect": [
+            134,
+            3271,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Share",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-share": "page-post-food-2"
+          },
+          "rect": [
+            244,
+            3271,
+            106,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            314,
+            781,
+            53,
+            53
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "[inline media omitted; sha256 cc088bb05ef36c5cdb151fb93b95bd667a65f0bfbc47e23e3a67c864f1160220]",
+          "alt": "Fresh nails for the weekend",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 0e3e315b1821d81aa96a088fc51261104c9d4cbe9c7dee17e607c459e264d159]",
+          "alt": "Hot pho today",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 058802b6a09e174e7a78700f0472c9c69a6c8a3bc52729fa3def85087c846bfb]",
+          "alt": "A morning coffee moment",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 52b68a7a8394d5e405fd8b2d06b1317b065a8c1350e87153da86a20e1be8655e]",
+          "alt": "Dessert after dinner",
+          "broken": false
+        }
+      ],
+      "tables": []
+    }
+  ],
+  "key": "owner-390-pages-v2",
+  "role": "owner",
+  "version": "v2",
+  "route": "pages",
+  "viewport": [
+    390,
+    844
+  ],
+  "screenshot": "owner-390-pages-v2.png"
+}

@@ -1,0 +1,869 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/food.html?lang=en",
+  "title": "Food Community — NEXORA Community · Prototype tương tác",
+  "lang": "vi",
+  "overflow": true,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "🍜 FOOD COMMUNITY MỘT PHẦN CỦA NEXORA COMMUNITY 🔎 ⭐ NEXORA Points : 1,280 VI Sign in with NEXORA ID PROTOTYPE TƯƠNG TÁC · DỮ LIỆU MINH HỌA Great food anywhere — ask the local community first. One community per region: locals review real places, share cooking tips, hunt deals. Contribute well — earn NEXORA points. Explore dishes + Create a Page / Group 🌍 Communities by region 📍 Sài Gòn 48,2K thành viên 📍 Thủ Đức 12,6K thành viên 📍 Hà Nội 35,9K thành viên 📍 Houston, TX 9,4K thành viên 📍 Little Saigon, CA 15,1K thành viên 📍 Toàn cầu — thành viên 🏠 Featured pages & groups Phở Hòa Pasteur Trang quán · 8,2K theo dõi Tham gia Mẹo Nấu Ăn Tại Gia Nhóm · 21K thành viên Đã tham gia Bánh & Cà Phê Sáng Trang quán · 3,1K theo dõi Tham gia + Create your page / group Owners create restaurant pages · Home cooks create recipe groups · Anyone can, free. Sài Gòn Thủ Đức Hà Nội Houston, TX Little Saigon, CA Toàn cầu Chị Tư (người Thủ Đức) Thủ Đức · ★★★★★ REVIEW Về Thủ Đức đừng bỏ qua tô phở này — nước dùng trong, nạm gầu giòn, rau thơm đầy ắp. Dân địa phương ăn ở đây hơn chục năm rồi. 🎟️ Ưu đãi cộng đồng: giảm 10% khi check-in bằng OneQR (minh họa) ❤️ 248 Thích 💬 2 Bình luận ↗️ Chia sẻ Bếp Nhà Ken Toàn cầu · MẸO NẤU ĂN Mẹo luộc gà da vàng giòn: cho nghệ + gừng vào nước, gà chín vớt ra ngâm ngay nước đá 5 phút. Da căng bóng, không nứt. Ai làm thử đăng hình dưới bình luận nha! ❤️ 512 Thích 💬 1 Bình luận ↗️ Chia sẻ Anh Ba Houston Houston, TX · ★★★★☆ REVIEW Burger ở Houston mà vị gợi nhớ Sài Gòn: sốt mayo sriracha tự pha, dưa chua nhà làm. Điểm trừ nhẹ: cuối tuần chờ hơi lâu. 🎟️ Deal: mua 1 tặng 1 thứ Ba (minh họa) ❤️ 96 Thích 💬 1 Bình luận ↗️ Chia sẻ Trang quán · Bánh & Cà Phê Sáng Thủ Đức · DEAL Cuối tuần này quán ra món pancake mật ong + cà phê trứng. Thành viên Food Community check-in được giảm 15% — ghé quán ủng hộ nha mọi người! 🎟️ Giảm 15% cho thành viên cộng đồng (minh họa) ❤️ 187 Thích 💬 0 Bình luận ↗️ Chia sẻ Cô Sáu Hà Nội Hà Nội · ★★★★★ MÓN NGON Gỏi cuốn Hà Nội phiên bản ăn hoài không ngán: rau thơm vườn nhà, nước chấm pha chua ngọt vừa miệng. Công thức chi tiết mình để ở bình luận đầu tiên. ❤️ 340 Thích 💬 1 Bình luận ↗️ Chia sẻ 🔥 Deal hôm nay Pizza lò củi — mua 1 tặng 1 Quận 1, Sài Gòn -50% cho thành viên Kem dừa non — phần thứ 2 nửa giá Thủ Đức -25% cho thành viên Cơm tấm sườn bì — combo trưa Houston, TX -15% cho thành viên ⭐ Contribute = earn NEXORA points ✍️ Write a review +20 💬 Helpful comment +5 🏠 Create a page / group +50 🍳 Share a cooking tip +15 ✍️ Write a review now 📺 Creator kết nối kênh Have a YouTube / TikTok / Facebook channel? Attach it to your page — new videos appear in your region's community automatically. Kết nối kênh của tôi Food Community — một phần của NEXORA Community · Một NEXORA ID dùng chung toàn hệ · Điểm NEXORA dùng chung, không tách ví riêng Prototype tương tác để xem luồng sản phẩm — bản chạy thật cần backend (tài khoản, dữ liệu trang/nhóm/bình luận lưu trên server). Create your page / group Owners create pages for menus + deals. Cooks & creators create groups to build their own community. It appears in the left column instantly. Type 🏠 Fanpage (quán ăn / thương hiệu) 👥 Nhóm cộng đồng Page / group name Region Sài Gòn Thủ Đức Hà Nội Houston, TX Little Saigon, CA Cancel Create now · +50 pts",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "lang-btn",
+          "text": "VI",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            452,
+            35,
+            36,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "login-btn",
+          "text": "Sign in with NEXORA ID",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-i18n": "login"
+          },
+          "rect": [
+            503,
+            10,
+            92,
+            82
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "cta-explore",
+          "text": "Explore dishes",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-i18n": "explore"
+          },
+          "rect": [
+            18,
+            -301,
+            132,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "cta-create",
+          "text": "+ Create a Page / Group",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-i18n": "createpage"
+          },
+          "rect": [
+            161,
+            -301,
+            190,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Tham gia",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-join": "0"
+          },
+          "rect": [
+            254,
+            218,
+            77,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Đã tham gia",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-join": "1"
+          },
+          "rect": [
+            238,
+            271,
+            93,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Tham gia",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-join": "2"
+          },
+          "rect": [
+            254,
+            342,
+            77,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "create-open",
+          "text": "+ Create your page / group",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-i18n": "create2"
+          },
+          "rect": [
+            36,
+            397,
+            303,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Sài Gòn",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-region": "sg"
+          },
+          "rect": [
+            18,
+            516,
+            83,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Thủ Đức",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-region": "td"
+          },
+          "rect": [
+            110,
+            516,
+            89,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Hà Nội",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-region": "hn"
+          },
+          "rect": [
+            208,
+            516,
+            75,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Houston, TX",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-region": "htx"
+          },
+          "rect": [
+            18,
+            558,
+            112,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Little Saigon, CA",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-region": "ls"
+          },
+          "rect": [
+            139,
+            558,
+            140,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Toàn cầu",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-region": "all"
+          },
+          "rect": [
+            18,
+            600,
+            91,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "❤️ 248 Thích",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "like"
+          },
+          "rect": [
+            19,
+            1180,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 2 Bình luận",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "cmt"
+          },
+          "rect": [
+            131,
+            1180,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗️ Chia sẻ",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "share"
+          },
+          "rect": [
+            244,
+            1180,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "❤️ 512 Thích",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "like"
+          },
+          "rect": [
+            19,
+            1736,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 1 Bình luận",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "cmt"
+          },
+          "rect": [
+            131,
+            1736,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗️ Chia sẻ",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "share"
+          },
+          "rect": [
+            244,
+            1736,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "❤️ 96 Thích",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "like"
+          },
+          "rect": [
+            19,
+            2313,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 1 Bình luận",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "cmt"
+          },
+          "rect": [
+            131,
+            2313,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗️ Chia sẻ",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "share"
+          },
+          "rect": [
+            244,
+            2313,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "❤️ 187 Thích",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "like"
+          },
+          "rect": [
+            19,
+            2923,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 0 Bình luận",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "cmt"
+          },
+          "rect": [
+            131,
+            2923,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗️ Chia sẻ",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "share"
+          },
+          "rect": [
+            244,
+            2923,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "❤️ 340 Thích",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "like"
+          },
+          "rect": [
+            19,
+            3479,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 1 Bình luận",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "cmt"
+          },
+          "rect": [
+            131,
+            3479,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗️ Chia sẻ",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-act": "share"
+          },
+          "rect": [
+            244,
+            3479,
+            112,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "review-open",
+          "text": "✍️ Write a review now",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-i18n": "writereview"
+          },
+          "rect": [
+            36,
+            4065,
+            303,
+            41
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "creator-btn",
+          "text": "Kết nối kênh của tôi",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            36,
+            4274,
+            303,
+            36
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "f-type",
+          "text": "🏠 Fanpage (quán ăn / thương hiệu) 👥 Nhóm cộng đồng",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "page",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "page",
+              "text": "🏠 Fanpage (quán ăn / thương hiệu)",
+              "selected": true
+            },
+            {
+              "value": "group",
+              "text": "👥 Nhóm cộng đồng",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            42,
+            365,
+            291,
+            40
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "f-name",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "",
+          "value": "",
+          "placeholder": "VD: Phở Ngon Thủ Đức · Nhóm Mẹo Nấu Ăn Houston",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            42,
+            439,
+            291,
+            38
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "f-region",
+          "text": "Sài Gòn Thủ Đức Hà Nội Houston, TX Little Saigon, CA",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "sg",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "sg",
+              "text": "Sài Gòn",
+              "selected": true
+            },
+            {
+              "value": "td",
+              "text": "Thủ Đức",
+              "selected": false
+            },
+            {
+              "value": "hn",
+              "text": "Hà Nội",
+              "selected": false
+            },
+            {
+              "value": "htx",
+              "text": "Houston, TX",
+              "selected": false
+            },
+            {
+              "value": "ls",
+              "text": "Little Saigon, CA",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            42,
+            511,
+            291,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-close": "",
+            "data-i18n": "cancel"
+          },
+          "rect": [
+            42,
+            568,
+            142,
+            50
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "create-submit",
+          "text": "Create now · +50 pts",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-i18n": "createbtn"
+          },
+          "rect": [
+            194,
+            568,
+            140,
+            50
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "[inline media omitted; sha256 457168556042a4660edc7ebf2c6def3247b21b187f14a2d9de74bf915db9b93a]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 0e3e315b1821d81aa96a088fc51261104c9d4cbe9c7dee17e607c459e264d159]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 2f1898032f49ec76bc75dbcd6abe1f9844790c37065aceeee13e32fbc01b5bb9]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 0e3e315b1821d81aa96a088fc51261104c9d4cbe9c7dee17e607c459e264d159]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 3dab9c61e298739d9344a2f00ccb0d787c44fc3df8c4107514c8206686a4969f]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 058802b6a09e174e7a78700f0472c9c69a6c8a3bc52729fa3def85087c846bfb]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 3dab9c61e298739d9344a2f00ccb0d787c44fc3df8c4107514c8206686a4969f]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 0e3e315b1821d81aa96a088fc51261104c9d4cbe9c7dee17e607c459e264d159]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 06ba88f90115faf7d7f16cbc94ca31868d761646e4cd29c1b5ad4a6e9d33c732]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 3dab9c61e298739d9344a2f00ccb0d787c44fc3df8c4107514c8206686a4969f]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 770a11bcb57d4dd152a4b1737c47cd688c2aab23c4bc0d08f16c4249fcbf461c]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 770a11bcb57d4dd152a4b1737c47cd688c2aab23c4bc0d08f16c4249fcbf461c]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 058802b6a09e174e7a78700f0472c9c69a6c8a3bc52729fa3def85087c846bfb]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 823d26224bd0f8585b3d3150e8417004d8f447efcd0ff9f0725d592d271b7b12]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 bd22fd0e50cfe737d50a7bde5d0046b0f5f68676d9d861009f20a690271e824b]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 bd22fd0e50cfe737d50a7bde5d0046b0f5f68676d9d861009f20a690271e824b]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 8fc8a200fdc6c1d27721998a9ea6b5ea04796cbe8fbbffbcc50f29dcb702cda6]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 52b68a7a8394d5e405fd8b2d06b1317b065a8c1350e87153da86a20e1be8655e]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 df1d78edc2540851e7b3758bcfe08f8fae49dd9605485c5a045708146afc40ba]",
+          "alt": "",
+          "broken": false
+        }
+      ],
+      "tables": []
+    }
+  ],
+  "key": "staff-390-food-create-module-v2",
+  "screenshot": "staff-390-food-create-module-v2.png"
+}

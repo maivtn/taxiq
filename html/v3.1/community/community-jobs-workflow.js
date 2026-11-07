@@ -622,7 +622,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if(typeof view==='object'){context=view;view=context.jobsTab||'browse';}
       if(view==='jobs')view=context.jobsTab||'browse';
       view=({Jobs:'browse',JobsMyPosts:'myPosts',JobsApplied:'applied',StaffJobProfile:'profile',jobsMyPosts:'myPosts',jobsApplied:'applied',staffJobProfile:'profile'})[view]||view;
-      if(['browse','myPosts','applied','profile','matched','availability','services','transfer'].includes(view))tab=view;
+      if(['browse','myPosts','applied','profile','matched','availability','services','transfer','workers','invites','offering'].includes(view))tab=view;
       if(role()==='owner'&&['applied','profile'].includes(tab))tab='browse';
       if(context.profileRequired&&context.jobId)pendingJob=context.jobId;
       render();notifyState();
@@ -747,7 +747,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     document.addEventListener('change',onChange);
     document.addEventListener('keydown',onKeydown,true);
     window.addEventListener('storage',onStorage);
-    extras=window.NEXORA_COMMUNITY_JOBS_EXTRAS?.mount({adapter,role,member,esc,po,getJobs,getProfile,readState,transact,showDialog,render,chat,date,active,card});
+    extras=window.NEXORA_COMMUNITY_JOBS_EXTRAS?.mount({adapter,role,member,esc,po,getJobs,getProfile,readState,transact,showDialog,render,chat,date,active,card,publicCandidate,openInvite,openJob});
     seedDemo();render();
     return {onDialogClosed:()=>{detailId=null;},render,enhance:render,openJob,navigate,openEditor,enhanceForm,afterSave,getProfile:()=>getProfile(),saveProfile,savePrivacy,eligibility,apply,cancelApplication,applicants,applicantProfile,publicCandidate,isVisible,isActive:active,displayName:postingName,invite,respondInvite,saveJob,closeJob,toggleSaved,reset,destroy,listApplications:()=>clone((readState()?.applications||[]).filter(row=>row.applicantUserId===member())),listInvites:()=>clone((readState()?.invites||[]).filter(row=>row.from===member()||row.to===member()))};
   }

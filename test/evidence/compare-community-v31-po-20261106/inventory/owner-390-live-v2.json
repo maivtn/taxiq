@@ -1,0 +1,419 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "N 2 EN Community ⌖ Houston, TX ⌄ Find people ＋ Create 🪧 Feed 👥 Groups 📣 Pages 💼 Jobs More ⌄ 🔴 NEXORA COMMUNITY Livestream & Video Show products, talk with the community and share expertise. Create a room to preview your camera and pin a storefront item. 🔴 Go live in Feed 🛍️ Live shopping ▶ Post a video ⓘ Camera preview is visible only to you. Demo rooms and chat do not broadcast to real viewers. Community rooms Sample rooms are labeled; rooms you create stay in this browser. 🔴 SAMPLE ROOM Live shopping · Houston, TX Sample storefront product showcase A sample room showing pinned products and chat. No real live video is playing. Open room → 🔴 SAMPLE ROOM Discussion · Houston, TX Nail trade conversation in Community A sample room for tips and questions from the trade. Open room →",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-menu",
+          "text": "",
+          "label": "Open account menu",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-account-open": "1"
+          },
+          "rect": [
+            8,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "N",
+          "label": "NEXORA Community, back to Feed",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home"
+          },
+          "rect": [
+            52,
+            6,
+            53,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-bell",
+          "text": "2",
+          "label": "2 new friend requests",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-notifications-open": "1"
+          },
+          "rect": [
+            193,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-chat",
+          "text": "",
+          "label": "Community messages",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "messages"
+          },
+          "rect": [
+            237,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            281,
+            6,
+            42,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "mobile-header-apps",
+          "text": "",
+          "label": "Open all Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-mobile-apps-open": "1"
+          },
+          "rect": [
+            326,
+            8,
+            41,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "community-area-chip",
+          "text": "⌖ Houston, TX ⌄",
+          "label": "Change area",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "change-area"
+          },
+          "rect": [
+            12,
+            101,
+            102,
+            18
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "header-find-friends",
+          "text": "Find people",
+          "label": "Find people",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "people-all"
+          },
+          "rect": [
+            185,
+            77,
+            100,
+            34
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            291,
+            76,
+            72,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🪧 Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home",
+            "aria-current": "false"
+          },
+          "rect": [
+            12,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "👥 Groups",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "groups",
+            "aria-current": "false"
+          },
+          "rect": [
+            83,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📣 Pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "pages",
+            "aria-current": "false"
+          },
+          "rect": [
+            154,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💼 Jobs",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "jobs",
+            "aria-current": "false"
+          },
+          "rect": [
+            226,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "More ⌄",
+          "label": "More Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            297,
+            130,
+            66,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔴 Go live in Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "live-social-compose"
+          },
+          "rect": [
+            28,
+            324,
+            113,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🛍️ Live shopping",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "live-compose"
+          },
+          "rect": [
+            147,
+            324,
+            110,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▶ Post a video",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "video"
+          },
+          "rect": [
+            28,
+            363,
+            96,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Open room →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-live-open": "sample-live-shop"
+          },
+          "rect": [
+            29,
+            886,
+            116,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Open room →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-live-open": "sample-live-talk"
+          },
+          "rect": [
+            29,
+            1251,
+            116,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            314,
+            781,
+            53,
+            53
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "owner-390-live-v2",
+  "role": "owner",
+  "version": "v2",
+  "route": "live",
+  "viewport": [
+    390,
+    844
+  ],
+  "screenshot": "owner-390-live-v2.png"
+}

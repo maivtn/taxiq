@@ -1,0 +1,402 @@
+{
+  "engine": "webkit",
+  "rows": [
+    {
+      "name": "layout owner 834 feed",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 groups",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 market",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 pages",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 deals",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 jobs",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 shift",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 connect",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 blog",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 food",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 realestate",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 shop",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 transfer",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 reels",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 live",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 news",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 wallet",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 wheel",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 meet",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 account",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 notifications",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 stories",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 people",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 post",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 explore",
+      "pass": true
+    },
+    {
+      "name": "layout owner 834 food-market",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 feed",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 groups",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 market",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 pages",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 deals",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 jobs",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 shift",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 connect",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 blog",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 food",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 realestate",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 shop",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 transfer",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 reels",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 live",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 news",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 wallet",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 wheel",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 meet",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 account",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 notifications",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 stories",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 people",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 post",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 explore",
+      "pass": true
+    },
+    {
+      "name": "layout owner 390 food-market",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 feed",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 groups",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 market",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 pages",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 deals",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 jobs",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 shift",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 connect",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 blog",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 food",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 realestate",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 shop",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 transfer",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 reels",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 live",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 news",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 wallet",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 wheel",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 meet",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 account",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 notifications",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 stories",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 people",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 post",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 explore",
+      "pass": true
+    },
+    {
+      "name": "layout staff 390 food-market",
+      "pass": true
+    },
+    {
+      "name": "Story create validation save reload next delete",
+      "pass": true
+    },
+    {
+      "name": "People search public private phone sent cancel received",
+      "pass": false,
+      "error": "No retained people",
+      "screenshot": "People-search-public-private-phone-sent-cancel-received.png"
+    },
+    {
+      "name": "Classic Page new fields categories and shared tools",
+      "pass": false,
+      "error": "frame.evaluate: Frame was detached",
+      "screenshot": "Classic-Page-new-fields-categories-and-shared-tools.png"
+    },
+    {
+      "name": "Page services add reload and visitor visibility",
+      "pass": true
+    },
+    {
+      "name": "Page sample inbox reply persists",
+      "pass": true
+    },
+    {
+      "name": "Page sample manager role add and remove",
+      "pass": true
+    },
+    {
+      "name": "New group privacy cover and approval shared",
+      "pass": true
+    },
+    {
+      "name": "Group approve foreign post accept request promote remove member",
+      "pass": true
+    },
+    {
+      "name": "Group search and joined filter retained",
+      "pass": true
+    },
+    {
+      "name": "Classic Feed audience tag feeling check-in video and reload",
+      "pass": true
+    },
+    {
+      "name": "Feed pin save pause share and persistence",
+      "pass": true
+    },
+    {
+      "name": "Owner worker directory filters and invite UI",
+      "pass": true
+    },
+    {
+      "name": "Staff availability week grid conditional fields",
+      "pass": true
+    },
+    {
+      "name": "Staff trade catalogue and custom skills",
+      "pass": true
+    },
+    {
+      "name": "Staff service-offer form and owner discoverability",
+      "pass": true
+    },
+    {
+      "name": "Transfer templates and generated description",
+      "pass": true
+    },
+    {
+      "name": "Food storefront filters shared shop review and dish forms",
+      "pass": true
+    },
+    {
+      "name": "Real Estate wizard step two stays in viewport",
+      "pass": true
+    },
+    {
+      "name": "New post shortcut saves into the retained Feed",
+      "pass": true
+    }
+  ],
+  "errors": [
+    "ResizeObserver loop completed with undelivered notifications.",
+    "ResizeObserver loop completed with undelivered notifications."
+  ],
+  "pass": false
+}

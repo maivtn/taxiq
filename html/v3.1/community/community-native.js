@@ -39,7 +39,7 @@
     for (const attribute of parsed.body.attributes) if (attribute.name !== 'class') body.setAttribute(attribute.name, attribute.value);
     body.append(...parsed.body.childNodes); html.append(head, body);
     const style = document.createElement('style');
-    style.textContent = styles.join('\n') + '\n:host{display:block;min-width:0;height:100%;overflow:auto;overscroll-behavior:contain;container:module / inline-size;contain:layout style;isolation:isolate}[hidden]{display:none!important}.native-head{display:none}.native-html,.native-body{min-height:100%;margin:0;box-sizing:border-box}.native-body{overflow-x:clip}*,*::before,*::after{box-sizing:border-box}img,video{max-width:100%}dialog{max-width:calc(100% - 24px)}';
+    style.textContent = styles.join('\n') + '\n:host{display:block;min-width:0;height:100%;overflow:hidden;overscroll-behavior:contain;container:module / inline-size;contain:layout style;isolation:isolate}[hidden]{display:none!important}.native-head{display:none}.native-html,.native-body{min-height:100%;margin:0;box-sizing:border-box}.native-html{height:100%}.native-body{height:100%;overflow-x:clip;overflow-y:auto}*,*::before,*::after{box-sizing:border-box}img,video{max-width:100%}dialog{max-width:calc(100% - 24px)}@container module (max-width:600px){input,select,textarea{font-size:16px!important}}';
     root.append(style, html);
     const events = new EventTarget(), variables = Object.create(null), regionID=crypto.randomUUID();
     const listeners = [], timers = new Set();
@@ -121,7 +121,7 @@
       dispatchEvent(event){return events.dispatchEvent(event);},
       receiveMessage(data,source=parent){const event=new Event('message');Object.defineProperties(event,{data:{value:data},source:{value:source},origin:{value:browser.location.origin}});events.dispatchEvent(event);},
       postMessage(data){windowAPI.receiveMessage(data,parent);},
-      scrollTo(...args){host.scrollTo(...args);},
+      scrollTo(...args){body.scrollTo(...args);},
       setInterval(fn, delay, ...args){const id=browser.setInterval(fn,delay,...args);timers.add(id);return id;},
       setTimeout(fn, delay, ...args){const id=browser.setTimeout(fn,delay,...args);timers.add(id);return id;},
       NEXORA_NATIVE:browser.NEXORA_NATIVE,

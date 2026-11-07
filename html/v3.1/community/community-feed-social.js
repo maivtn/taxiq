@@ -57,8 +57,8 @@
     const opened=new Set(),threads=new Set(),limits=new Map(),replyLimits=new Map(),replyTargets=new Map(),drafts=new Map();
     let modal=null,returnFocus=null,sequence=0,destroyed=false,swipeStart=null;
     const id=prefix=>prefix+'-'+Date.now()+'-'+(++sequence)+'-'+Math.random().toString(36).slice(2,8);
-    const postBody=post=>post.steps||post.details||post.description||'';
-    const bodyKey=post=>'steps' in post?'steps':'details' in post?'details':'description';
+    const postBody=post=>post.steps||post.details||post.description||post.body||'';
+    const bodyKey=post=>'steps' in post?'steps':'details' in post?'details':'body' in post?'body':'description';
     const date=value=>{const parsed=new Date(value);return Number.isNaN(parsed.getTime())?'':parsed.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
     function ensurePost(post) {
       const key=String(post.id);
@@ -108,19 +108,25 @@
     const button=(action,label,postId,extra='',className='community-social-link')=>`<button type="button" class="${className}" data-social-action="${action}"${attr(postId,extra)}>${label}</button>`;
     const icon=kind=>`<svg class="community-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${kind==='heart'?'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>':'<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/>'}</svg>`;
     const threadKey=(postId,rootId)=>postId+':'+rootId;
-    const isVisible=post=>!(own(post)&&state.deletedPostIds.includes(String(post.id)));
+    const isVisible=post=>!['pending','removed'].includes(post.groupStatus)&&!(own(post)&&state.deletedPostIds.includes(String(post.id)))&&(!post.paused||own(post));
     const commentCount=post=>ensurePost(post).comments.length;
+    const seenPosts=new Set();
+    const viewObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{for(const item of entries){if(!item.isIntersecting)continue;const key=item.target.dataset.feedPostId||item.target.dataset.postId;if(!key||seenPosts.has(key)||!findPost(key))continue;seenPosts.add(key);change(next=>{next.posts[key].views=(Number(next.posts[key].views)||0)+1;});const counter=item.target.querySelector('[data-po-views]');if(counter)counter.textContent=String(ensurePost(findPost(key)).views||0)+' '+tView();}},{threshold:.35}):null;
+    const tView=()=>document.documentElement.lang==='vi'?'lượt xem':'views';
+    function poMarkup(post){const entry=ensurePost(post),visibility=post.visibility||'public';return '<div class="community-po-post-meta" data-social-ui="po-meta"><span data-po-views>'+String(entry.views||0)+' '+tView()+'</span>'+(visibility!=='public'?'<span class="chip">'+esc(visibility==='friends'?'Friends':'Only me')+'</span>':'')+(post.pinned?'<span class="chip">Pinned</span>':'')+(entry.savedBy?.includes(member)?'<span class="chip">Saved</span>':'')+(post.paused?'<span class="chip">Post paused</span>':'')+'</div>'+(post.poVideoId?'<video controls playsinline data-po-video="'+esc(post.poVideoId)+'" data-social-ui="po-video"></video>':'');}
+    function sharePost(post){const text=[post.title,postBody(post)].filter(Boolean).join('\n\n');adapter.openDialog?.('<div class="overlay" data-social-overlay><section class="dialog" role="dialog" aria-modal="true"><div class="dialog-head"><h2>Share post</h2>'+button('close','×',post.id,' aria-label="Close"','icon-btn')+'</div><div class="dialog-body"><p>Review and copy this post to send to others.</p><textarea class="field" data-po-share-text readonly rows="7">'+esc(text)+'</textarea><div class="listing-actions">'+button('share-native','Share to app',post.id,'','btn primary')+button('share-copy','Copy post text',post.id,'','btn')+'</div></div></section></div>');}
     function actionsMarkup(post) {
       const entry=ensurePost(post),liked=entry.likedBy.includes(member),count=entry.baseLikes+entry.likedBy.length;
-      return `<div class="community-social-actions" data-social-ui="actions">${button('like',icon('heart')+`<span>${esc(t('like'))} · ${count}</span>`,post.id,` aria-pressed="${liked}" title="${esc(t(liked?'unlike':'like'))}"`)}${button('comments',icon('message-circle')+`<span>${esc(t('comments',{count:commentCount(post)}))}</span>`,post.id,` aria-expanded="${opened.has(String(post.id))}"`)}</div>`;
+      return `<div class="community-social-actions" data-social-ui="actions">${button('like',icon('heart')+`<span>${esc(t('like'))} · ${count}</span>`,post.id,` aria-pressed="${liked}" title="${esc(t(liked?'unlike':'like'))}"`)}${button('comments',icon('message-circle')+`<span>${esc(t('comments',{count:commentCount(post)}))}</span>`,post.id,` aria-expanded="${opened.has(String(post.id))}"`)}${button('share-post','Share',post.id)}</div>`;
     }
     function menuMarkup(post) {
       const owner=own(post);
-      return `<div class="community-social-menu-wrap" data-social-ui="menu">${button('menu','<span aria-hidden="true">···</span>',post.id,` aria-label="${esc(t('more'))}" aria-haspopup="menu" aria-expanded="false"`,'community-social-menu-toggle')}<div class="community-social-menu" role="menu" hidden>${owner?button('edit-post',esc(t('edit')),post.id,' role="menuitem"')+button('boost-post',esc(t(ensurePost(post).featuredPreview?'extend':'boost')),post.id,' role="menuitem"')+button('delete-post',esc(t('remove')),post.id,' role="menuitem"','community-social-link is-danger'):button('report-post',esc(t('report')),post.id,' role="menuitem"')}</div></div>`;
+      return `<div class="community-social-menu-wrap" data-social-ui="menu">${button('menu','<span aria-hidden="true">···</span>',post.id,` aria-label="${esc(t('more'))}" aria-haspopup="menu" aria-expanded="false"`,'community-social-menu-toggle')}<div class="community-social-menu" role="menu" hidden>${owner?button('edit-post',esc(t('edit')),post.id,' role="menuitem"')+button('boost-post',esc(t(ensurePost(post).featuredPreview?'extend':'boost')),post.id,' role="menuitem"')+button('delete-post',esc(t('remove')),post.id,' role="menuitem"','community-social-link is-danger')+button('pin-post',esc(post.pinned?'Unpin post':'Pin post'),post.id,' role="menuitem"')+button('pause-post',esc(post.paused?'Show post again':'Pause post'),post.id,' role="menuitem"'):button('report-post',esc(t('report')),post.id,' role="menuitem"')}${button('save-post',esc(ensurePost(post).savedBy?.includes(member)?'Remove saved post':'Save post'),post.id,' role="menuitem"')}${button('copy-link','Copy link',post.id,' role="menuitem"')}</div></div>`;
     }
     function authorHeaderMarkup(post) {
       const language=document.documentElement.lang==='en'?'en':'vi',labels=headerWords[language],owner=String(post.owner||''),groups=adapter.getGroups?.()||[],kind=post.kind||(post.type?'market':'general');
-      const initials=owner.trim().split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]).join('').toLocaleUpperCase();
+      const author=adapter.getPage?.(post.pageId)?.title||owner;
+      const initials=author.trim().split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]).join('').toLocaleUpperCase();
       const avatar=safeImages({photo:adapter.avatarFor?.(owner)||post.authorAvatarUrl||post.avatar})[0];
       const business=Boolean(adapter.isBusiness?adapter.isBusiness(owner):post.isAuthorBusiness);
       const destinations=post.destinations,names=[];
@@ -135,7 +141,7 @@
       }
       const distinctNames=names.filter((destination,index)=>names.findIndex(item=>item.name===destination.name)===index);
       const created=post.createdAt||post.publishedAt;
-      return `<header class="community-feed-post-header" data-social-ui="header"><span class="community-feed-post-avatar" aria-hidden="true">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(initials)}</span><div class="community-feed-post-author-info"><div class="community-feed-post-name-row"><strong class="community-feed-post-author" title="${esc(owner)}" data-community-authored>${esc(owner)}</strong>${business?`<span class="community-feed-post-business">${esc(labels.business)}</span>`:''}</div><div class="community-feed-post-tags"><span class="community-feed-post-type" data-post-kind="${esc(kind)}">${esc(postTypes[language][kind]||postTypes[language].general)}</span>${post.resolved?`<span class="community-feed-post-resolved">${esc(labels.resolved)}</span>`:''}${isMarket(post)&&!isOpen(post)?`<span class="community-feed-post-market-status">${esc(t(post.status==='bought'?'bought':'sold'))}</span>`:''}</div><div class="community-feed-post-meta">${created||post.lastEditedAt?`<div class="community-feed-post-byline">${created?`<time datetime="${esc(created)}">${esc(date(created))}</time>`:''}${post.lastEditedAt?`<span>${created?' · ':''}${esc(t('edited'))}</span>`:''}</div>`:''}${distinctNames.length?`<div class="community-feed-post-destinations" aria-label="${esc(labels.destinations)}">${distinctNames.map(destination=>`<button type="button" class="community-feed-post-destination" data-social-action="destination"${attr(post.id,` data-social-scope="${esc(destination.scope)}"`)}${destination.authored?' data-community-authored':''}>${esc(destination.name)}</button>`).join('')}</div>`:''}</div></div>${menuMarkup(post)}</header>`;
+      return `<header class="community-feed-post-header" data-social-ui="header"><span class="community-feed-post-avatar" aria-hidden="true">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(initials)}</span><div class="community-feed-post-author-info"><div class="community-feed-post-name-row"><strong class="community-feed-post-author" title="${esc(owner)}" data-community-authored>${esc(author)}</strong>${business?`<span class="community-feed-post-business">${esc(labels.business)}</span>`:''}</div><div class="community-feed-post-tags"><span class="community-feed-post-type" data-post-kind="${esc(kind)}">${esc(postTypes[language][kind]||postTypes[language].general)}</span>${post.resolved?`<span class="community-feed-post-resolved">${esc(labels.resolved)}</span>`:''}${post.sample?'<span class="community-feed-post-type">SAMPLE</span>':''}${isMarket(post)&&!isOpen(post)?`<span class="community-feed-post-market-status">${esc(t(post.status==='bought'?'bought':'sold'))}</span>`:''}</div><div class="community-feed-post-meta">${created||post.lastEditedAt?`<div class="community-feed-post-byline">${created?`<time datetime="${esc(created)}">${esc(date(created))}</time>`:''}${post.lastEditedAt?`<span>${created?' · ':''}${esc(t('edited'))}</span>`:''}</div>`:''}${distinctNames.length?`<div class="community-feed-post-destinations" aria-label="${esc(labels.destinations)}">${distinctNames.map(destination=>`<button type="button" class="community-feed-post-destination" data-social-action="destination"${attr(post.id,` data-social-scope="${esc(destination.scope)}"`)}${destination.authored?' data-community-authored':''}>${esc(destination.name)}</button>`).join('')}</div>`:''}</div></div>${menuMarkup(post)}</header>`;
     }
     function marketplaceMarkup(post) {
       if(!isMarket(post))return '';
@@ -169,10 +175,11 @@
         for(const element of card.querySelectorAll('[data-social-ui]'))element.remove();
         for(const element of card.querySelectorAll(':scope > .kind, :scope > .meta'))element.remove();
         // The base prototype's single image is replaced by the same post's gallery.
-        if(safeImages(post).length)for(const image of card.querySelectorAll(':scope > .blog-cover, :scope > .blog-card-cover, :scope > img, :scope > .community-feed-photo'))image.remove();
+        if(safeImages(post).length&&!card.classList.contains('page-detail-post'))for(const image of card.querySelectorAll(':scope > .blog-cover, :scope > .blog-card-cover, :scope > img, :scope > .community-feed-photo'))image.remove();
         card.insertAdjacentHTML('afterbegin',authorHeaderMarkup(post)+previewMarkup(post));
-        if(safeImages(post).length){const existingActions=card.querySelector(':scope > .listing-actions');if(existingActions)existingActions.insertAdjacentHTML('beforebegin',galleryMarkup(post));else card.insertAdjacentHTML('beforeend',galleryMarkup(post));}
-        card.insertAdjacentHTML('beforeend',marketplaceMarkup(post)+actionsMarkup(post)+(opened.has(String(post.id))?commentsMarkup(post,card.closest('[data-social-post-detail]')?'detail':'card'):''));
+        if(safeImages(post).length&&!card.classList.contains('page-detail-post')){const existingActions=card.querySelector(':scope > .listing-actions');if(existingActions)existingActions.insertAdjacentHTML('beforebegin',galleryMarkup(post));else card.insertAdjacentHTML('beforeend',galleryMarkup(post));}
+        card.insertAdjacentHTML('beforeend',poMarkup(post)+marketplaceMarkup(post)+actionsMarkup(post)+(opened.has(String(post.id))?commentsMarkup(post,card.closest('[data-social-post-detail]')?'detail':'card'):''));
+        viewObserver?.observe(card);window.NEXORA_COMMUNITY_PO?.hydrateVideos(card);
         const market=card.querySelector(':scope > .community-social-market');
         const marketActions=market?.querySelector('.community-social-market-actions');
         if(marketActions){
@@ -275,6 +282,13 @@
       const entry=ensurePost(post),comment=entry.comments.find(row=>row.id===commentId);
       if(action==='menu') {const menu=target.nextElementSibling,wasOpen=!menu.hidden;closeMenus();menu.hidden=wasOpen;target.setAttribute('aria-expanded',String(!wasOpen));if(!wasOpen)menu.querySelector('button')?.focus({preventScroll:true});return;}
       closeMenus();
+      if(action==='pin-post'&&own(post)){post.pinned=!post.pinned;adapter.save?.();change(next=>{next.posts[postId].pinned=post.pinned;});adapter.render?.();return;}
+      if(action==='pause-post'&&own(post)){post.paused=!post.paused;adapter.save?.();adapter.render?.();return;}
+      if(action==='save-post'){change(next=>{const row=next.posts[postId];row.savedBy||=[];row.savedBy=row.savedBy.includes(member)?row.savedBy.filter(name=>name!==member):[...row.savedBy,member];});adapter.render?.();return;}
+      if(action==='copy-link'){const link=new URL(parent.location.href);link.searchParams.set('tab','feed');link.searchParams.set('postId',postId);navigator.clipboard?.writeText(link.href).then(()=>tell('Post link copied.')).catch(()=>tell('Could not copy automatically.'));return;}
+      if(action==='share-post'){sharePost(post);return;}
+      if(action==='share-copy'){const text=document.querySelector('[data-po-share-text]');navigator.clipboard?.writeText(text?.value||'').then(()=>tell('Post text copied.')).catch(()=>{text?.select();tell('Could not copy automatically.');});return;}
+      if(action==='share-native'){const text=document.querySelector('[data-po-share-text]')?.value||'';if(navigator.share)navigator.share({title:'Community post',text}).catch(()=>{});else tell('This browser cannot share to apps. Use Copy post text.');return;}
       if(action==='destination'){const scope=target.dataset.socialScope;if(scope){modal=null;adapter.closeDialog?.();if(adapter.navigateFeed)adapter.navigateFeed(scope);else window.NEXORA_COMMUNITY_GROUPS?.navigate(scope);}return;}
       if(action==='contact-seller'&&isMarket(post)&&!own(post)&&isOpen(post)){modal=null;adapter.closeDialog?.();adapter.contactPost?.(post);return;}
       if(action==='mark-sold'&&typeof adapter.markSold==='function'&&isMarket(post)&&own(post)&&isOpen(post)){subDialog('mark-sold',post);return;}
@@ -362,7 +376,7 @@
       if(nextForm)for(const [name,value] of values)if(nextForm.elements[name])nextForm.elements[name].value=value;
     }
     const languageObserver=new MutationObserver(languageChanged);
-    function destroy() {destroyed=true;document.removeEventListener('click',onClick);document.removeEventListener('submit',onSubmit);document.removeEventListener('input',onInput);document.removeEventListener('pointerdown',onPointerDown);document.removeEventListener('pointerup',onPointerUp);document.removeEventListener('pointercancel',onPointerCancel);document.removeEventListener('keydown',onKeyDown,true);languageObserver.disconnect();}
+    function destroy() {destroyed=true;viewObserver?.disconnect();document.removeEventListener('click',onClick);document.removeEventListener('submit',onSubmit);document.removeEventListener('input',onInput);document.removeEventListener('pointerdown',onPointerDown);document.removeEventListener('pointerup',onPointerUp);document.removeEventListener('pointercancel',onPointerCancel);document.removeEventListener('keydown',onKeyDown,true);languageObserver.disconnect();}
     applyDeleted();for(const post of getFeed())if(post.kind!=='deal')ensurePost(post);persist(state);
     document.addEventListener('click',onClick);document.addEventListener('submit',onSubmit);document.addEventListener('input',onInput);document.addEventListener('pointerdown',onPointerDown);document.addEventListener('pointerup',onPointerUp);document.addEventListener('pointercancel',onPointerCancel);document.addEventListener('keydown',onKeyDown,true);languageObserver.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
     const refreshOpenPost=()=>{if(modal?.kind==='post'&&document.querySelector('[data-social-post-detail]'))openPost(modal.id,{...modal,preserveOpen:true});};

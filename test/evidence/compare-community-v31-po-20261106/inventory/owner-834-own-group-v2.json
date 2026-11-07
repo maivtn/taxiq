@@ -1,0 +1,445 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED ☷ All Community sections and post types 13 sections · 10 post types ← Groups & Market 💅 YOUR GROUP QA Community group 2 members · Nail trade · Public ⚙ Manage group ✍ Write post Posts Members About Admin 2 Join requests 1 M Minh Trần Sample account Approve Decline Pending posts 1 Linh Nguyễn SAMPLE POST Glad to join this group. Looking forward to sharing ideas! Approve post Decline Group settings Admins manage group details, member roles and group status. Moderators help review posts and join requests. Edit group Pause group Prototype: group roles, members and posts are saved only in this browser. Demo group created. Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "☷ All Community sections and post types 13 sections · 10 post types",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            15,
+            322,
+            789,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "← Groups & Market",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-back": "1"
+          },
+          "rect": [
+            14,
+            380,
+            143,
+            49
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⚙ Manage group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-detail-tab": "admin"
+          },
+          "rect": [
+            33,
+            773,
+            149,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✍ Write post",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-compose": "group-1793984220848"
+          },
+          "rect": [
+            190,
+            773,
+            127,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Posts",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-detail-tab": "posts"
+          },
+          "rect": [
+            18,
+            847,
+            192,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Members",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-detail-tab": "members"
+          },
+          "rect": [
+            215,
+            847,
+            192,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "About",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-detail-tab": "about"
+          },
+          "rect": [
+            412,
+            847,
+            192,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Admin 2",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-detail-tab": "admin"
+          },
+          "rect": [
+            609,
+            847,
+            192,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Approve",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-request-accept": "group-1793984220848:person-2"
+          },
+          "rect": [
+            670,
+            970,
+            58,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Decline",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-request-decline": "group-1793984220848:person-2"
+          },
+          "rect": [
+            737,
+            970,
+            53,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Approve post",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-post-approve": "group-demo-group-1793984220848"
+          },
+          "rect": [
+            40,
+            1187,
+            85,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Decline",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-post-reject": "group-demo-group-1793984220848"
+          },
+          "rect": [
+            131,
+            1187,
+            53,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Edit group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-edit": "group-1793984220848"
+          },
+          "rect": [
+            29,
+            1349,
+            82,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Pause group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-archive": "group-1793984220848"
+          },
+          "rect": [
+            117,
+            1349,
+            94,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "screenshot": "owner-834-own-group-v2.png"
+}

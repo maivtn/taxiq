@@ -1,0 +1,513 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED ☷ All Community sections and post types 13 sections · 10 post types 🔴 NEXORA COMMUNITY Livestream & Video Show products, talk with the community and share expertise. Create a room to preview your camera and pin a storefront item. 🔴 Go live in Feed 🛍️ Live shopping ▶ Post a video 🔴 LIVE Community prototype ⓘ Camera preview is visible only to you. Demo rooms and chat do not broadcast to real viewers. Community rooms Sample rooms are labeled; rooms you create stay in this browser. 🔴 SAMPLE ROOM Live shopping · Houston, TX Sample storefront product showcase A sample room showing pinned products and chat. No real live video is playing. Open room → 🔴 SAMPLE ROOM Discussion · Houston, TX Nail trade conversation in Community A sample room for tips and questions from the trade. Open room → Demo live shopping × Room title * Purpose Live shopping Discussion Q&A Area Description Pin an item from My storefront No pinned item Your storefront has no items yet; you can add them later. Cover photo (optional, up to 1 MB) This is a demo room. Camera preview stays on your device and is not broadcast to the community. ✦ AI help Cancel Create demo room Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "☷ All Community sections and post types 13 sections · 10 post types",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            15,
+            322,
+            789,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔴 Go live in Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "live-social-compose"
+          },
+          "rect": [
+            45,
+            556,
+            142,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🛍️ Live shopping",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "live-compose"
+          },
+          "rect": [
+            196,
+            556,
+            139,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▶ Post a video",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "video"
+          },
+          "rect": [
+            344,
+            556,
+            122,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Open room →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-live-open": "sample-live-shop"
+          },
+          "rect": [
+            31,
+            1074,
+            116,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Open room →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-live-open": "sample-live-talk"
+          },
+          "rect": [
+            433,
+            1074,
+            116,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            633,
+            230,
+            37,
+            40
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "title",
+          "value": "",
+          "placeholder": "Example: New products at my shop",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "100"
+          },
+          "rect": [
+            150,
+            329,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "text": "Live shopping Discussion Q&A",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "purpose",
+          "value": "sale",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "sale",
+              "text": "Live shopping",
+              "selected": true
+            },
+            {
+              "value": "talk",
+              "text": "Discussion",
+              "selected": false
+            },
+            {
+              "value": "qa",
+              "text": "Q&A",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            150,
+            412,
+            254,
+            42
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "city",
+          "value": "Houston, TX",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            416,
+            412,
+            254,
+            45
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "description",
+          "value": "",
+          "placeholder": "What will you show or discuss?",
+          "required": false,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "800"
+          },
+          "rect": [
+            150,
+            494,
+            520,
+            112
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "text": "No pinned item",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "productId",
+          "value": "",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "",
+              "text": "No pinned item",
+              "selected": true
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            150,
+            650,
+            520,
+            42
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "file",
+          "name": "cover",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            150,
+            752,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ AI help",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-open"
+          },
+          "rect": [
+            343,
+            840,
+            87,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            439,
+            840,
+            73,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Create demo room",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            520,
+            840,
+            150,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "owner-834-live-shopping-v2",
+  "screenshot": "owner-834-live-shopping-v2.png"
+}

@@ -1,0 +1,833 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED ☷ All Community sections and post types 13 sections · 10 post types NEXORA COMMUNITY Groups & Market Create trade groups, manage members, post and shop nearby. ＋ Create group ⌕ Search Discover My groups Market Groups for you Swipe to explore ↔ 💅 SAMPLE GROUP Houston Nail Community Nail trade · 2.4K sample members View group ＋ Join 🛠️ SAMPLE GROUP Houston Vietnamese Trades Trades & services · 1.8K sample members View group ＋ Join 🍜 SAMPLE GROUP Houston Food & Restaurants Food · 1.2K sample members View group ＋ Join 🛍️ SAMPLE GROUP Salon & Community Market Buying & selling · 860 sample members View group ＋ Join New group posts 💅 Houston Nail Community Nov 3, 2026 · Houston, TX SAMPLE What are you creating this weekend? Share nail designs or ask others in the trade. This is a sample group post. 👁 175 sample views ♡ Like 💬 Comment Share Sample groups and listings are labeled. Groups, posts and listings you create stay in this browser. Create group × Group name * Category Nail trade Trades & services Food Community market Other About the group * Privacy Public Private Admin approves member posts Cover photo (optional) This demo group is saved in this browser and is not live on NEXORA TOUCH. Cancel Create group Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "☷ All Community sections and post types 13 sections · 10 post types",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            15,
+            322,
+            789,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Create group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-create": "1"
+          },
+          "rect": [
+            662,
+            427,
+            122,
+            38
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": "Search groups or items",
+          "title": "",
+          "type": "text",
+          "name": "query",
+          "value": "",
+          "placeholder": "Search groups or items...",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            43,
+            524,
+            664,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Search",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            727,
+            523,
+            78,
+            47
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Discover",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-groups-tab": "discover"
+          },
+          "rect": [
+            18,
+            586,
+            258,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My groups",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-groups-tab": "joined"
+          },
+          "rect": [
+            280,
+            586,
+            258,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Market",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-groups-tab": "market"
+          },
+          "rect": [
+            543,
+            586,
+            258,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "View group Houston Nail Community",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-open": "nail"
+          },
+          "rect": [
+            15,
+            690,
+            248,
+            112
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-open": "nail"
+          },
+          "rect": [
+            26,
+            899,
+            110,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Join",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-join": "nail"
+          },
+          "rect": [
+            142,
+            899,
+            110,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "View group Houston Vietnamese Trades",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-open": "trade"
+          },
+          "rect": [
+            277,
+            690,
+            248,
+            112
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-open": "trade"
+          },
+          "rect": [
+            288,
+            899,
+            110,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Join",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-join": "trade"
+          },
+          "rect": [
+            404,
+            899,
+            110,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "View group Houston Food & Restaurants",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-open": "food"
+          },
+          "rect": [
+            539,
+            690,
+            248,
+            112
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-open": "food"
+          },
+          "rect": [
+            550,
+            899,
+            110,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Join",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-join": "food"
+          },
+          "rect": [
+            666,
+            899,
+            110,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "View group Salon & Community Market",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-open": "market"
+          },
+          "rect": [
+            801,
+            690,
+            248,
+            112
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-open": "market"
+          },
+          "rect": [
+            812,
+            899,
+            110,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Join",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-join": "market"
+          },
+          "rect": [
+            928,
+            899,
+            110,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Like",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-like": "group-preview-nail"
+          },
+          "rect": [
+            31,
+            1629,
+            247,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Comment",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-comment": "group-preview-nail"
+          },
+          "rect": [
+            286,
+            1629,
+            247,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Share",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-share": "group-preview-nail"
+          },
+          "rect": [
+            541,
+            1629,
+            247,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": "Close",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            633,
+            223,
+            37,
+            40
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "name",
+          "value": "",
+          "placeholder": "Example: Houston Nail Community",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "75"
+          },
+          "rect": [
+            150,
+            322,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "text": "Nail trade Trades & services Food Community market Other",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "kind",
+          "value": "nail",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "nail",
+              "text": "Nail trade",
+              "selected": true
+            },
+            {
+              "value": "trade",
+              "text": "Trades & services",
+              "selected": false
+            },
+            {
+              "value": "food",
+              "text": "Food",
+              "selected": false
+            },
+            {
+              "value": "market",
+              "text": "Community market",
+              "selected": false
+            },
+            {
+              "value": "other",
+              "text": "Other",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            150,
+            405,
+            520,
+            42
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "about",
+          "value": "",
+          "placeholder": "Who is this group for, and what will members share?",
+          "required": true,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "700"
+          },
+          "rect": [
+            150,
+            485,
+            520,
+            112
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "text": "Public Private",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "privacy",
+          "value": "public",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "public",
+              "text": "Public",
+              "selected": true
+            },
+            {
+              "value": "private",
+              "text": "Private",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            150,
+            640,
+            520,
+            42
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "checkbox",
+          "name": "approval",
+          "value": "on",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": true,
+          "attrs": {},
+          "rect": [
+            154,
+            707,
+            17,
+            17
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "file",
+          "name": "cover",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            150,
+            759,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            474,
+            847,
+            73,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Create group",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            555,
+            847,
+            114,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "[inline media omitted; sha256 cc088bb05ef36c5cdb151fb93b95bd667a65f0bfbc47e23e3a67c864f1160220]",
+          "alt": "What are you creating this weekend?",
+          "broken": false
+        }
+      ],
+      "tables": []
+    }
+  ],
+  "key": "owner-834-create-group-v2",
+  "screenshot": "owner-834-create-group-v2.png"
+}

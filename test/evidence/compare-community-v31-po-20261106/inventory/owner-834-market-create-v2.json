@@ -1,0 +1,785 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED ☷ All Community sections and post types 13 sections · 10 post types NEXORA COMMUNITY Groups & Market Create trade groups, manage members, post and shop nearby. ＋ Create group ⌕ Search Discover My groups Market Marketplace near you ＋ Sell All Nail salon Food Other items SAMPLE $35 Decorated nail sample set Sugar Land, TX ♡ Save SAMPLE $28 Weekend Vietnamese food combo Houston, TX ♡ Save SAMPLE $15 Bakery and coffee to go Katy, TX ♡ Save 🪑 SAMPLE $120 Nail salon chair for sale Houston, TX ♡ Save Sample groups and listings are labeled. Groups, posts and listings you create stay in this browser. List in Market × Item title * Price * Category Nail salon items Food Other items Area * Description * Item photo (optional) This listing stays in this browser. Cancel Save sample listing Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "☷ All Community sections and post types 13 sections · 10 post types",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            15,
+            322,
+            789,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Create group",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-group-create": "1"
+          },
+          "rect": [
+            662,
+            427,
+            122,
+            38
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": "Search groups or items",
+          "title": "",
+          "type": "text",
+          "name": "query",
+          "value": "",
+          "placeholder": "Search groups or items...",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            43,
+            524,
+            664,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Search",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            727,
+            523,
+            78,
+            47
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Discover",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-groups-tab": "discover"
+          },
+          "rect": [
+            18,
+            586,
+            258,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My groups",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-groups-tab": "joined"
+          },
+          "rect": [
+            280,
+            586,
+            258,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Market",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-groups-tab": "market"
+          },
+          "rect": [
+            543,
+            586,
+            258,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Sell",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-compose": "1"
+          },
+          "rect": [
+            733,
+            650,
+            72,
+            41
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-category": "all"
+          },
+          "rect": [
+            14,
+            701,
+            39,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Nail salon",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-category": "nail"
+          },
+          "rect": [
+            60,
+            701,
+            80,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-category": "food"
+          },
+          "rect": [
+            147,
+            701,
+            52,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Other items",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-category": "other"
+          },
+          "rect": [
+            206,
+            701,
+            91,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "SAMPLE",
+          "label": "View listing Decorated nail sample set",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-open": "nails"
+          },
+          "rect": [
+            15,
+            750,
+            188,
+            150
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Save",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-save": "nails"
+          },
+          "rect": [
+            25,
+            986,
+            56,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "SAMPLE",
+          "label": "View listing Weekend Vietnamese food combo",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-open": "food"
+          },
+          "rect": [
+            216,
+            750,
+            188,
+            150
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Save",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-save": "food"
+          },
+          "rect": [
+            226,
+            1001,
+            56,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "SAMPLE",
+          "label": "View listing Bakery and coffee to go",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-open": "cafe"
+          },
+          "rect": [
+            416,
+            750,
+            188,
+            150
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Save",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-save": "cafe"
+          },
+          "rect": [
+            426,
+            986,
+            56,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🪑 SAMPLE",
+          "label": "View listing Nail salon chair for sale",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-open": "chair"
+          },
+          "rect": [
+            617,
+            750,
+            188,
+            150
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Save",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-market-save": "chair"
+          },
+          "rect": [
+            627,
+            980,
+            56,
+            29
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": "Close",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            633,
+            200,
+            37,
+            40
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "title",
+          "value": "",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "90"
+          },
+          "rect": [
+            150,
+            299,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "price",
+          "value": "",
+          "placeholder": "$120",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {
+            "maxlength": "35"
+          },
+          "rect": [
+            150,
+            382,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "text": "Nail salon items Food Other items",
+          "label": null,
+          "title": "",
+          "type": "select-one",
+          "name": "category",
+          "value": "nail",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "nail",
+              "text": "Nail salon items",
+              "selected": true
+            },
+            {
+              "value": "food",
+              "text": "Food",
+              "selected": false
+            },
+            {
+              "value": "other",
+              "text": "Other items",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            150,
+            464,
+            520,
+            42
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "text",
+          "name": "area",
+          "value": "Houston, TX",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            150,
+            544,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "textarea",
+          "name": "description",
+          "value": "",
+          "placeholder": "",
+          "required": true,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "1200"
+          },
+          "rect": [
+            150,
+            627,
+            520,
+            112
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "file",
+          "name": "image",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            150,
+            782,
+            520,
+            45
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            433,
+            870,
+            73,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Save sample listing",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            514,
+            870,
+            155,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "[inline media omitted; sha256 cc088bb05ef36c5cdb151fb93b95bd667a65f0bfbc47e23e3a67c864f1160220]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 0e3e315b1821d81aa96a088fc51261104c9d4cbe9c7dee17e607c459e264d159]",
+          "alt": "",
+          "broken": false
+        },
+        {
+          "src": "[inline media omitted; sha256 058802b6a09e174e7a78700f0472c9c69a6c8a3bc52729fa3def85087c846bfb]",
+          "alt": "",
+          "broken": false
+        }
+      ],
+      "tables": []
+    }
+  ],
+  "key": "owner-834-market-create-v2",
+  "screenshot": "owner-834-market-create-v2.png"
+}

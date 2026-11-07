@@ -1,0 +1,187 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "note": "Original PO openFood() invoked after normal navigate(food) throws; no source/DOM content altered.",
+  "surfaces": [
+    {
+      "scope": "food-root",
+      "text": "FOOD COMMUNITY · HOUSTON, TEXAS\nFood & Restaurants inside Community\n\nFind dishes, explore storefronts and share experiences in Houston. Sample content is clearly labeled.\n\n＋ Post a dish\n✎ Write a review\nSearch dishes or storefronts\nHouston area\nAll Houston\nBellaire / Little Saigon\nKaty\nSugar Land\nSpring Branch\nHouston\nDish type\nAll\nMain dish\nDessert\nBeverage\nSnack\nCuisine region\nAll\nNorth\nCentral\nSouth\nAll Houston\nBellaire / Little Saigon\nKaty\nSugar Land\nSpring Branch\nHouston\nOther areas · Coming later\nCommunity storefronts\n\nOne shared storefront system; the two below are examples.\n\nOpen my storefront\n\nCreate your storefront before posting a dish. It also appears under My storefront.\n\n＋ Create storefront\nSAMPLE STOREFRONT\nHouston sample storefront 01\n⌖ Bellaire / Little Saigon\n\nIllustrative Houston storefront.\n\nView storefront\n✉ Message\nSAMPLE STOREFRONT\nHouston sample storefront 02\n⌖ Katy\n\nIllustrative Houston storefront.\n\nView storefront\n✉ Message\nHouston dishes · 3\n\nFilter by area, dish type and cuisine region.\n\nSAMPLE\n$14\nSample beef pho\nHouston sample storefront 01 · Bellaire / Little Saigon\nMain dish · North · Available today\n\nIllustrative dish using a photo from the original Food Community.\n\nView storefront\nSAMPLE\n$13\nSample broken rice plate\nHouston sample storefront 02 · Katy\nMain dish · South · Available today\n\nIllustrative dish; price and storefront are sample data.\n\nView storefront\nSAMPLE\n$7\nSample coconut dessert\nHouston sample storefront 01 · Bellaire / Little Saigon\nDessert · South · Preorder\n\nIllustrative dish adapted from Food Community content.\n\nView storefront\nReviews · 1\n\nDiners can share experiences and rate a place.\n\n＋ Write review\nAnh Ba Houston (sample)\nHouston sample storefront 02 · Houston\nSAMPLE\n★★★★☆\n\nHouston burger with sriracha mayo and house pickles; weekends can be busy.\n\nPOS ordering and payment, livestream, and areas outside Houston: coming later. Sample data is for preview only.",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "＋ Post a dish",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "✎ Write a review",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "",
+          "id": "food-search",
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "text": "All Houston\nBellaire / Little Saigon\nKaty\nSugar Land\nSpring Branch\nHouston",
+          "name": "",
+          "id": "food-area",
+          "value": "all",
+          "options": [
+            "All Houston",
+            "Bellaire / Little Saigon",
+            "Katy",
+            "Sugar Land",
+            "Spring Branch",
+            "Houston"
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "text": "All\nMain dish\nDessert\nBeverage\nSnack",
+          "name": "",
+          "id": "food-type",
+          "value": "all",
+          "options": [
+            "All",
+            "Main dish",
+            "Dessert",
+            "Beverage",
+            "Snack"
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "text": "All\nNorth\nCentral\nSouth",
+          "name": "",
+          "id": "food-cuisine",
+          "value": "all",
+          "options": [
+            "All",
+            "North",
+            "Central",
+            "South"
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "text": "All Houston",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Bellaire / Little Saigon",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Katy",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Sugar Land",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Spring Branch",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Houston",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Other areas · Coming later",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "＋ Create storefront",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "View storefront",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "✉ Message",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "View storefront",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "✉ Message",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "View storefront",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "View storefront",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "View storefront",
+          "name": "",
+          "id": "",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "text": "＋ Write review",
+          "name": "",
+          "id": "",
+          "value": ""
+        }
+      ]
+    }
+  ]
+}

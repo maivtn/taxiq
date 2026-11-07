@@ -1,0 +1,1229 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED DN What’s on your mind? Live video Photo/video Reel ＋ More: tips, Q&A, polls, selling… Story Swipe to explore ↔ ＋ Create story H SAMPLE Hoa Nail Studio B SAMPLE Bếp Việt Houston H SAMPLE Hội thợ Việt Houston M SAMPLE Mây Cafe & Bakery NEXORA COMMUNITY Explore Community Open a group, choose a section, then collapse it when done. ＋ Create a post 👥 Community & Pages 4 sections ⌄ 🪧 Feed 👥 Groups & Market 📣 Pages & Fanpages 💬 Messages 💼 Jobs & Business 4 sections ⌄ 🍜 Food & Deals 2 sections ⌄ 🔴 Video & News 3 sections ⌄ ⌖ Houston, TX Change area Feed Posts, jobs and listings in one place. Nearby posts appear first. Filter posts: All Jobs Status Photo/video Reels For sale Deals ♧ My groups → Recent posts GC Garden Cafe JOBS · HIRING Nov 3, 2026 · Houston, TX SAMPLE Hiring a morning barista in Spring Branch We need someone familiar with coffee counter work and POS who can maintain a steady schedule. Reference rate is 20 USD/hour, tips discussed separately. Time provided to learn the menu before taking charge of the counter. 👁 142 sample views 3 comments ♡ Like 💬 Comment Share People you may know Sample suggestions by trade and area Find people → SAMPLE Linh Nguyễn @linh.nail.houston Nail technician · Houston, TX ✦ Nail trade Connect ↗ SAMPLE Minh Trần @minh.chef Chef · Houston, TX ✦ Nearby Connect ↗ SAMPLE Cô Lan Phạm @colan.shop Shop owner · Sugar Land, TX ✦ Same community Connect ↗ SAMPLE Tuấn Lê @tuan.dien Electrician · Katy, TX ✦ Nearby Connect ↗ SAMPLE Mai Võ @mai.diaoc Real estate · Houston, TX ✦ Same community Respond ↗ SAMPLE Hùng Đỗ @hung.kinhdoanh Business owner · Houston, TX ✦ Nearby Respond ↗ Reels Short videos in Community See all → ＋ Create Reel 0 views SAMPLE Hoa Nail Studio Fresh nail set 0 views SAMPLE Bếp Việt Houston Today’s dish 🔴 Livestream in Community Show products, share tips or talk with others. Explore livestream → 🗞️ NEWS & UPDATES · SAMPLE Explore NEXORA Community sections Read news → Interactive prototype · Sample posts are labeled; your content stays in this browser. Create post × DN My business Houston, TX 🌐 Public ▾ Add to your post 🖼️ Photos 🎬 Video ＋ More options Choose up to 20 photos or one video under 50 MB. Tag people, add feelings and other post types under More options. Prototype: this post and audience choice stay in this browser. Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "What’s on your mind?",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "post"
+          },
+          "rect": [
+            93,
+            339,
+            691,
+            50
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Live video",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "live-social-compose"
+          },
+          "rect": [
+            35,
+            416,
+            246,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Photo/video",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "photos"
+          },
+          "rect": [
+            287,
+            416,
+            246,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Reel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "reel"
+          },
+          "rect": [
+            538,
+            416,
+            246,
+            42
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ More: tips, Q&A, polls, selling…",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            35,
+            480,
+            749,
+            18
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Create story",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "story-compose"
+          },
+          "rect": [
+            16,
+            551,
+            112,
+            158
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "H SAMPLE Hoa Nail Studio",
+          "label": "View story from Hoa Nail Studio",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-story-open": "sample-story-0"
+          },
+          "rect": [
+            138,
+            551,
+            112,
+            158
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "B SAMPLE Bếp Việt Houston",
+          "label": "View story from Bếp Việt Houston",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-story-open": "sample-story-1"
+          },
+          "rect": [
+            260,
+            551,
+            112,
+            158
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "H SAMPLE Hội thợ Việt Houston",
+          "label": "View story from Hội thợ Việt Houston",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-story-open": "sample-story-2"
+          },
+          "rect": [
+            382,
+            551,
+            112,
+            158
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "M SAMPLE Mây Cafe & Bakery",
+          "label": "View story from Mây Cafe & Bakery",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-story-open": "sample-story-3"
+          },
+          "rect": [
+            504,
+            551,
+            112,
+            158
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Create a post",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "post"
+          },
+          "rect": [
+            637,
+            780,
+            147,
+            45
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "👥 Community & Pages 4 sections ⌄",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            36,
+            842,
+            367,
+            66
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🪧 Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home"
+          },
+          "rect": [
+            48,
+            908,
+            168,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "👥 Groups & Market",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "groups"
+          },
+          "rect": [
+            223,
+            908,
+            168,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📣 Pages & Fanpages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "pages"
+          },
+          "rect": [
+            48,
+            958,
+            168,
+            43
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Messages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "messages"
+          },
+          "rect": [
+            223,
+            958,
+            168,
+            43
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "💼 Jobs & Business 4 sections ⌄",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            416,
+            842,
+            367,
+            66
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "🍜 Food & Deals 2 sections ⌄",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            36,
+            1027,
+            367,
+            66
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "🔴 Video & News 3 sections ⌄",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            416,
+            1027,
+            367,
+            66
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Change area",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "change-area"
+          },
+          "rect": [
+            159,
+            1152,
+            83,
+            20
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "feed-filter",
+          "text": "All Jobs Status Photo/video Reels For sale Deals",
+          "label": "Filter posts",
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "all",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "all",
+              "text": "All",
+              "selected": true
+            },
+            {
+              "value": "job",
+              "text": "Jobs",
+              "selected": false
+            },
+            {
+              "value": "post",
+              "text": "Status",
+              "selected": false
+            },
+            {
+              "value": "photos",
+              "text": "Photo/video",
+              "selected": false
+            },
+            {
+              "value": "reel",
+              "text": "Reels",
+              "selected": false
+            },
+            {
+              "value": "sale",
+              "text": "For sale",
+              "selected": false
+            },
+            {
+              "value": "coupon",
+              "text": "Deals",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            103,
+            1296,
+            270,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♧ My groups →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "groups"
+          },
+          "rect": [
+            670,
+            1296,
+            135,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "3 comments",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-comment": "sample-feed-0"
+          },
+          "rect": [
+            723,
+            1558,
+            65,
+            25
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡ Like",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-like": "sample-feed-0"
+          },
+          "rect": [
+            31,
+            1593,
+            247,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Comment",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-comment": "sample-feed-0"
+          },
+          "rect": [
+            286,
+            1593,
+            247,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Share",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-share": "sample-feed-0"
+          },
+          "rect": [
+            541,
+            1593,
+            247,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Find people →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "people-all"
+          },
+          "rect": [
+            699,
+            1672,
+            91,
+            19
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Connect",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-connect": "person-1"
+          },
+          "rect": [
+            40,
+            1899,
+            101,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗",
+          "label": "View profile of Linh Nguyễn",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-view": "person-1"
+          },
+          "rect": [
+            146,
+            1899,
+            28,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Connect",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-connect": "person-2"
+          },
+          "rect": [
+            205,
+            1899,
+            101,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗",
+          "label": "View profile of Minh Trần",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-view": "person-2"
+          },
+          "rect": [
+            311,
+            1899,
+            28,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Connect",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-connect": "person-3"
+          },
+          "rect": [
+            370,
+            1899,
+            101,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗",
+          "label": "View profile of Cô Lan Phạm",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-view": "person-3"
+          },
+          "rect": [
+            476,
+            1899,
+            28,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Connect",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-connect": "person-4"
+          },
+          "rect": [
+            535,
+            1899,
+            101,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗",
+          "label": "View profile of Tuấn Lê",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-view": "person-4"
+          },
+          "rect": [
+            641,
+            1899,
+            28,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Respond",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-friend-inbox": "1"
+          },
+          "rect": [
+            700,
+            1899,
+            101,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗",
+          "label": "View profile of Mai Võ",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-view": "person-5"
+          },
+          "rect": [
+            806,
+            1899,
+            28,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Respond",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-friend-inbox": "1"
+          },
+          "rect": [
+            865,
+            1899,
+            101,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "↗",
+          "label": "View profile of Hùng Đỗ",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-person-view": "person-6"
+          },
+          "rect": [
+            971,
+            1899,
+            28,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "See all →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "reels"
+          },
+          "rect": [
+            727,
+            2019,
+            63,
+            19
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Create Reel",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-feed-kind": "reel"
+          },
+          "rect": [
+            30,
+            2064,
+            150,
+            230
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Play Reel by Hoa Nail Studio",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-reel-play": "demo-reel-nail"
+          },
+          "rect": [
+            243,
+            2158,
+            42,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Play Reel by Bếp Việt Houston",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-reel-play": "demo-reel-food"
+          },
+          "rect": [
+            402,
+            2158,
+            42,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Explore livestream →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "live"
+          },
+          "rect": [
+            617,
+            2376,
+            166,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🗞️ NEWS & UPDATES · SAMPLE Explore NEXORA Community sections Read news →",
+          "label": "Read news: Explore NEXORA Community sections",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "news"
+          },
+          "rect": [
+            14,
+            2455,
+            791,
+            82
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": "Close",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-dialog"
+          },
+          "rect": [
+            636,
+            299,
+            34,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "social-visibility-button",
+          "text": "🌐 Public ▾",
+          "label": "Choose who can see this post",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "social-visibility-toggle"
+          },
+          "rect": [
+            200,
+            413,
+            113,
+            29
+          ]
+        },
+        {
+          "tag": "TEXTAREA",
+          "id": "",
+          "text": "",
+          "label": "Post content",
+          "title": "",
+          "type": "textarea",
+          "name": "body",
+          "value": "@",
+          "placeholder": "What’s on your mind?",
+          "required": false,
+          "disabled": false,
+          "attrs": {
+            "maxlength": "1600"
+          },
+          "rect": [
+            148,
+            457,
+            524,
+            190
+          ]
+        },
+        {
+          "tag": "LABEL",
+          "id": "",
+          "text": "🖼️ Photos",
+          "label": "Choose photos",
+          "title": "Choose photos",
+          "attrs": {},
+          "rect": [
+            161,
+            712,
+            161,
+            39
+          ]
+        },
+        {
+          "tag": "LABEL",
+          "id": "",
+          "text": "🎬 Video",
+          "label": "Choose a video",
+          "title": "Choose a video",
+          "attrs": {},
+          "rect": [
+            329,
+            712,
+            161,
+            39
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ More options",
+          "label": "More post options",
+          "title": "More post options",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "social-more-toggle"
+          },
+          "rect": [
+            498,
+            712,
+            161,
+            39
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "post-media",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "file",
+          "name": "media",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            148,
+            790,
+            1,
+            1
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "post-video",
+          "text": "",
+          "label": null,
+          "title": "",
+          "type": "file",
+          "name": "video",
+          "value": "",
+          "placeholder": "",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            148,
+            790,
+            1,
+            1
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "screenshot": "owner-834-post-tag-v2.png"
+}

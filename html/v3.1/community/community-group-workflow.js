@@ -24,7 +24,7 @@
     const city=group=>String(group.city||group.region||'');
     const topic=group=>String(group.topic||group.industry||'');
     const notifyError=()=>adapter.toast?.(t('error'));
-    let dialogGroup=null,dialogKind=null,returnFocus=null,destroyed=false,sequence=0,filtersOpen=false;
+    let dialogGroup=null,dialogKind=null,returnFocus=null,destroyed=false,sequence=0,filtersOpen=false,groupSearch='',onlyJoined=false;
     const selections={city:'',topic:'',type:''};
     const fresh=()=>({version:1,groups:Object.create(null),invitations:[],deletedGroupIds:[]});
     function read() {
@@ -107,7 +107,7 @@
       if(!current||typeof adapter.saveGroups!=='function')return false;
       const group={...clone(values),id:values.id||'group-'+Date.now()+'-'+(++sequence),owner:current,createdAt:values.createdAt||new Date().toISOString()};
       if(!title(group).trim()||sourceGroups().some(row=>String(row.id)===String(group.id)))return false;
-      return transaction(state=>{state.groups[String(group.id)]={members:[current],removed:[]};state.deletedGroupIds=state.deletedGroupIds.filter(id=>id!==String(group.id));return group;},()=>adapter.saveGroups([...clone(sourceGroups()),group]));
+      return transaction(state=>{state.groups[String(group.id)]={members:group.poSamples?[current,'Linh Nguyễn']:[current],removed:[],requests:group.poSamples?[{id:'person-2',name:'Minh Trần',sample:true}]:[]};state.deletedGroupIds=state.deletedGroupIds.filter(id=>id!==String(group.id));return group;},()=>adapter.saveGroups([...clone(sourceGroups()),group]));
     }
     function update(groupId,values) {
       const group=find(groupId);if(!group||!canManage(groupId)||typeof adapter.saveGroups!=='function')return false;
@@ -125,6 +125,7 @@
       return posts.filter(post=>{
         const dest=destinations(post),ids=dest.ids.filter(id=>valid.has(id));
         if(!dest.main&&dest.ids.length&&!ids.length)return false;
+        if(['pending','removed'].includes(post.groupStatus))return false;
         if(String(scope).startsWith('group:'))return ids.includes(String(scope).slice(6));
         if(['main','scope:main'].includes(scope))return dest.main;
         if(['joined','scope:joined'].includes(scope))return ids.some(id=>myGroups.has(id));
@@ -132,7 +133,7 @@
         return dest.main||ids.some(id=>myGroups.has(id));
       }).filter((post,index,rows)=>rows.findIndex(row=>String(row.id)===String(post.id))===index);
     }
-    function groupPosts(groupId){return filter(sourceFeed(),'group:'+groupId).filter(post=>post.status!=='draft'&&!post.isDraft).sort((a,b)=>new Date(b.createdAt||b.publishedAt||0)-new Date(a.createdAt||a.publishedAt||0));}
+    function groupPosts(groupId){return filter(sourceFeed(),'group:'+groupId).filter(post=>post.status!=='draft'&&!post.isDraft&&!['pending','removed'].includes(post.groupStatus)).sort((a,b)=>new Date(b.createdAt||b.publishedAt||0)-new Date(a.createdAt||a.publishedAt||0));}
     function deleteGroup(groupId) {
       const group=find(groupId);if(!group||!canManage(groupId)||typeof adapter.saveGroups!=='function')return false;
       const original=clone(sourceGroups()),originalFeed=clone(sourceFeed());
@@ -156,8 +157,8 @@
     const button=(action,label,groupId,extra='',className='btn small')=>`<button type="button" class="${className}" data-community-group-action="${action}" data-community-group-id="${esc(groupId)}"${extra}>${esc(label)}</button>`;
     const membershipButton=group=>button('membership',t(joined(group.id)?'leave':'join'),group.id,` aria-pressed="${joined(group.id)}"${canManage(group.id)?' disabled':''}`,'btn small '+(joined(group.id)?'':'primary'));
     function directoryMarkup() {
-      const rows=groups().filter(group=>(!selections.city||city(group)===selections.city)&&(!selections.topic||topic(group)===selections.topic)&&(!selections.type||groupType(group)===selections.type));
-      return ['Community','Marketplace'].map(type=>{const matches=rows.filter(group=>groupType(group)===type);return matches.length?`<section class="community-group-section"><h3>${esc(t(type==='Community'?'community':'marketplace'))}</h3>${matches.map(group=>`<article class="panel content-card community-group-card" data-community-group-card="${esc(group.id)}"><div class="community-group-card-heading"><h3 data-community-authored>${esc(title(group))}</h3><span class="community-group-free">${esc(t('free'))}</span></div><div class="meta" data-community-authored>${esc([topic(group),city(group)].filter(Boolean).join(' · '))}</div>${group.description?`<p data-community-authored>${esc(group.description)}</p>`:''}${group.rules?`<p class="community-group-inline-rules"><strong>${esc(t('rules'))}:</strong> <span data-community-authored>${esc(group.rules)}</span></p>`:''}<div class="chips"><span class="chip">${esc(t('members',{count:memberCount(group).toLocaleString('en-US')}))}</span>${joined(group.id)?`<span class="chip">${esc(t('joined'))}</span>`:''}</div><div class="listing-actions">${button('detail',t('view'),group.id,'','btn small soft')}${membershipButton(group)}</div></article>`).join('')}</section>`:'';}).join('');
+      const rows=groups().filter(group=>(!groupSearch||(title(group)+' '+group.description+' '+city(group)).toLowerCase().includes(groupSearch.toLowerCase()))&&(!onlyJoined||joined(group.id))&&(!selections.city||city(group)===selections.city)&&(!selections.topic||topic(group)===selections.topic)&&(!selections.type||groupType(group)===selections.type));
+      return ['Community','Marketplace'].map(type=>{const matches=rows.filter(group=>groupType(group)===type);return matches.length?`<section class="community-group-section"><h3>${esc(t(type==='Community'?'community':'marketplace'))}</h3>${matches.map(group=>`<article class="panel content-card community-group-card" data-community-group-card="${esc(group.id)}">${group.cover?`<img src="${esc(group.cover)}" alt="" style="width:100%;height:140px;object-fit:cover;border-radius:10px;margin-bottom:12px">`:''}<div class="community-group-card-heading"><h3 data-community-authored>${esc(title(group))}</h3><span class="community-group-free">${esc(t('free'))}</span></div><div class="meta" data-community-authored>${esc([topic(group),city(group)].filter(Boolean).join(' · '))}</div>${group.description?`<p data-community-authored>${esc(group.description)}</p>`:''}${group.rules?`<p class="community-group-inline-rules"><strong>${esc(t('rules'))}:</strong> <span data-community-authored>${esc(group.rules)}</span></p>`:''}<div class="chips"><span class="chip">${esc(t('members',{count:memberCount(group).toLocaleString('en-US')}))}</span>${joined(group.id)?`<span class="chip">${esc(t('joined'))}</span>`:''}${group.privacy?`<span class="chip">${group.privacy==='private'?'Private':'Public'}</span>`:''}${group.archived?'<span class="chip">Paused</span>':''}</div><div class="listing-actions">${button('detail',t('view'),group.id,'','btn small soft')}${membershipButton(group)}</div></article>`).join('')}</section>`:'';}).join('');
     }
     function filtersMarkup() {
       const options=(name,rows)=>`<label><span>${esc(t(name))}</span><select class="select" data-community-group-filter="${name}"><option value="">${esc(t('all'))}</option>${unique(rows).sort((a,b)=>a.localeCompare(b)).map(value=>`<option value="${esc(value)}"${selections[name]===value?' selected':''}>${esc(value)}</option>`).join('')}</select></label>`;
@@ -168,7 +169,7 @@
       const cards=root.querySelector?.('#groupCards')||(root.id==='groupCards'?root:null);if(!cards)return;
       // Filters belong to the list column, beside the existing PO sidebar.
       cards.parentElement.querySelector(':scope > [data-community-group-filters]')?.remove();
-      cards.innerHTML=filtersMarkup()+directoryMarkup();cards.classList.add('community-group-directory');
+      cards.innerHTML='<div class="community-group-search"><input type="search" class="field" data-po-group-search placeholder="Search groups or items..." value="'+esc(groupSearch)+'"><button type="button" class="btn small" data-po-my-groups aria-pressed="'+onlyJoined+'">'+(onlyJoined?'Discover':'My groups')+'</button></div>'+filtersMarkup()+directoryMarkup();cards.classList.add('community-group-directory');
       const toggle=document.querySelector('.community-group-filter-toggle'),count=document.querySelector('[data-group-filter-count]'),active=Object.values(selections).filter(Boolean).length;document.getElementById('groupsView')?.classList.toggle('group-filters-open',filtersOpen);toggle?.setAttribute('aria-expanded',String(filtersOpen));if(count){count.hidden=!active;count.textContent=String(active);}
     }
     function showDialog(group,body,footer,heading=title(group)) {
@@ -190,6 +191,7 @@
     }
     function refresh(){adapter.render?.();enhance();if(dialogGroup&&dialogKind==='detail')openGroup(dialogGroup);}
     function onClick(event) {
+      if(event.target.closest?.('[data-po-my-groups]')){onlyJoined=!onlyJoined;enhance();return;}
       const target=event.target.closest?.('[data-community-group-action]');
       if(!target){if(event.target.matches?.('[data-community-group-overlay]'))closeDialog();return;}
       event.preventDefault();event.stopPropagation();
@@ -228,8 +230,8 @@
     function reset(){try{localStorage.removeItem(STORAGE_KEY);}catch{notifyError();return false;}dialogGroup=null;dialogKind=null;enhance();return true;}
     function destroy(){destroyed=true;document.removeEventListener('click',onClick);document.removeEventListener('change',onChange);document.removeEventListener('submit',onSubmit);document.removeEventListener('keydown',onKeyDown,true);window.removeEventListener('storage',onStorage);observer.disconnect();}
     function onStorage(event){if(event.key===STORAGE_KEY||event.key==='nexora-community-templates-v1')refresh();}
-    if(!options.storeOnly){document.addEventListener('click',onClick);document.addEventListener('change',onChange);document.addEventListener('submit',onSubmit);document.addEventListener('keydown',onKeyDown,true);window.addEventListener('storage',onStorage);observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});}
-    const store={groups,members,memberRecords:groupId=>members(groupId).map(name=>({id:name,name,role:canManage(groupId,name)?'owner':'member'})),invitations,invite,respond,remove,leave,join,joined,canManage,create,update,deleteGroup,groupType,publishToGroups,read:()=>clone(read())};
+    if(!options.storeOnly){document.addEventListener('click',onClick);document.addEventListener('change',onChange);document.addEventListener('input',event=>{if(!event.target.matches('[data-po-group-search]'))return;groupSearch=event.target.value;const caret=event.target.selectionStart;enhance();const input=document.querySelector('[data-po-group-search]');input?.focus();input?.setSelectionRange(caret,caret);});document.addEventListener('submit',onSubmit);document.addEventListener('keydown',onKeyDown,true);window.addEventListener('storage',onStorage);observer.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});}
+    const store={groups,members,memberRecords:groupId=>members(groupId).map(name=>({id:name,name,role:canManage(groupId,name)?'owner':read().groups[groupId]?.moderators?.includes(name)?'moderator':'member'})),invitations,invite,respond,remove,leave,join,joined,canManage,create,update,deleteGroup,groupType,publishToGroups,read:()=>clone(read())};
     const instance={enhance,openGroup,navigate,filter,groupPosts,store,reset,destroy,onDialogClosed:()=>{dialogGroup=null;dialogKind=null;},isGroupVisible:group=>!!find(group.id)};
     if(!options.storeOnly)mounted=instance;return instance;
   }

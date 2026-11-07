@@ -10,7 +10,7 @@
   }
   async function mount(host,options={}){
     if(host.communityHub)return host.communityHub;
-    const url=new URL('nexora-community-complete.html?v=20261106-v31-po6',BASE_URL);
+    const url=new URL('nexora-community-complete.html?v=20261107-po-delta1',BASE_URL);
     const parsed=new DOMParser().parseFromString(await read(url),'text/html');
     const styles=await Promise.all([...parsed.head.querySelectorAll('style,link[rel="stylesheet"]')].map(async node=>{const source=node.tagName==='STYLE'?url:new URL(node.getAttribute('href'),url);return scopedCSS(node.tagName==='STYLE'?node.textContent:await read(source),source);}));
     parsed.body.querySelectorAll('script').forEach(node=>node.remove());
@@ -152,7 +152,7 @@
       root.getElementById('viewNotification').addEventListener('click',()=>{pendingRequest=true;connectSection='messages';setView('connect');if(connectLoaded){sendToFrame(connect,{type:'nexora-open-request'});pendingRequest=false;}});
       window.addEventListener('resize',()=>{updateMobileHeading();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}});
 
-      function syncPaneGutter(){const frame=view==='connect'?connect:community;const element=frame.contentDocument?.documentElement;if(element)nativeApp.style.setProperty('--community-scrollbar-width',Math.max(0,frame.clientWidth-element.clientWidth)+'px');}
+      function syncPaneGutter(){const frame=view==='connect'?connect:community;const element=frame.contentDocument?.documentElement;if(element){const value=Math.max(0,frame.clientWidth-element.clientWidth)+'px';if(nativeApp.style.getPropertyValue('--community-scrollbar-width')!==value)nativeApp.style.setProperty('--community-scrollbar-width',value);}}
       function ensurePane(frame){if(!frame.hasAttribute('src'))frame.src=(frame===community?communitySource:connectSource).href;requestAnimationFrame(syncPaneGutter);}
       function receiveHost(data){
         if(data?.type==='nexora-community-language'){
@@ -168,8 +168,8 @@
           else sendToFrame(community,{type:'nexora-close-modal'});
         }
       }
-      for(const frame of [community,connect])frame.addEventListener('load',()=>{const element=frame.contentDocument?.documentElement;if(element&&window.ResizeObserver)new ResizeObserver(syncPaneGutter).observe(element);syncPaneGutter();});
-      if(context.native&&window.ResizeObserver)new ResizeObserver(()=>{updateMobileHeading();syncPaneGutter();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}}).observe(root.host);
+      for(const frame of [community,connect])frame.addEventListener('load',()=>{const element=frame.contentDocument?.documentElement;if(element&&window.ResizeObserver)new ResizeObserver(()=>requestAnimationFrame(syncPaneGutter)).observe(element);syncPaneGutter();});
+      if(context.native&&window.ResizeObserver)new ResizeObserver(()=>requestAnimationFrame(()=>{updateMobileHeading();syncPaneGutter();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}})).observe(root.host);
       const communitySource=new URL(community.dataset.src,BASE_URL);
       for(const key of ['dealTab','member','role','account','post','postId','comment','commentId','thread','threadId','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','pageId','pageMode','pageTab','pageScope'])if(params.get(key))communitySource.searchParams.set(key,params.get(key));
       const connectSource=new URL(connect.dataset.src,BASE_URL);

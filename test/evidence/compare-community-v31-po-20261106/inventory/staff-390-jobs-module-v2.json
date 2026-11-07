@@ -1,0 +1,1127 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/jobs.html?lang=en",
+  "title": "NEXORA TOUCH Community · Việc làm & Sang nhượng",
+  "lang": "vi",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ Demo · Posts and profiles stay in this browser. ✎ Edit page content directly ✎ Edit I want to work Find the right job, share when you are free for extra shifts, or show the services you offer. Connect directly with shops and businesses. ＋ Post your availability ✧ See my matches How would you like to start? Choose your path, then post or browse right away. ◉ I am looking for work Full-time or part-time work. Introduce your profile and skills. Post job search → ◷ I am free for a shift Share open hours for urgent, half-day or full-day shifts. Post availability → ✦ I offer services Choose a trade, subcategory and add your own skills. Post my services → ⌕ Explore ✧ Matches ◷ Schedule ⋯ More ☷ Job filters ⌄ Open jobs 8 results Best match Soonest date Quick search Nail Acrylic Gel-X Part-time Hourly More ⌄ All trades Nail technicians Other work All arrangements More ⌄ LN ⚡ Temporary / Hourly Urgent Nail technician needed for Sunday shift Luna Nail Studio · Richmond, TX ♡ ◷ Sun, Nov 8 · 11:00–17:00 ＄ Discuss before shift 👁 129 sample views Salon seeks a technician experienced in acrylic and pedicures for a weekend shift. End time can be flexible. Acrylic Pedicure Gel-X 100% Matching skills: Acrylic, Pedicure, Gel-X · same area · availability overlaps View details Message I’m interested BB Full-time Full-time nail technician Bloom Beauty Lounge · Sugar Land, TX ♡ ◷ Full-time ＄ Negotiable + tips 👁 130 sample views Seeking a long-term team member who is great with clients and offers multiple services. Manicure Pedicure Dip powder 32% Matching skills: Pedicure Not in your profile: Manicure, Dip powder View details Message I’m interested HH Specific task Electrician for lights and outlets Harbor Home Services · Richmond, TX ♡ ◷ Tue, Nov 10 ＄ Quote per project 👁 131 sample views Install four fixtures and inspect outlets in a home. Confirm scope before accepting. Electrical wiring Lighting & outlets 30% No matching skill yet · same area Not in your profile: Electrical wiring, Lighting & outlets View details Message I’m interested MB ⚡ Temporary / Hourly Urgent Half-day salon cleaning help Mira Beauty Bar · Richmond, TX ♡ ◷ Sun, Nov 8 · 08:00–12:00 ＄ $90 / half day 👁 132 sample views Clean workstations, product shelves and reception area before opening. Salon cleaning Deep cleaning 20% No matching skill yet · same area Not in your profile: Salon cleaning, Deep cleaning View details Message I’m interested GH Temporary / Hourly One-day event crew needed The Gather House · Richmond, TX ♡ ◷ Mon, Nov 16 · 10:00–18:00 ＄ $160 / day 👁 136 sample views Help set up, serve guests and clean up after an event. Event support Serving 20% No matching skill yet · same area Not in your profile: Event support, Serving View details Message I’m interested OR Specific task Painter and tile installer needed Oakline Renovations · Katy, TX ♡ ◷ Sat, Nov 14 ＄ Quote after site visit 👁 133 sample views Small living room renovation. You may take one or both tasks. Painting Tile installation 10% No matching skill yet Not in your profile: Painting, Tile installation View details Message I’m interested PC Part-time Part-time server Pho & Co. · Houston, TX ♡ ◷ Evenings, 3–4 days/week ＄ $16–20 / hour + tips 👁 134 sample views Restaurant seeks evening servers; Vietnamese and English communication is a plus. Serving 10% No matching skill yet Not in your profile: Serving View details Message I’m interested GP Specific task Plumbing and water heater repair Greenway Property · Sugar Land, TX ♡ ◷ Wed, Nov 11 ＄ Quote after inspection 👁 135 sample views Inspect a leak and repair a water heater at an apartment. Plumbing repair Water heater 10% No matching skill yet Not in your profile: Plumbing repair, Water heater View details Message I’m interested",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✎ Edit",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "edit-start"
+          },
+          "rect": [
+            306,
+            49,
+            50,
+            30
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Post your availability",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "post"
+          },
+          "rect": [
+            26,
+            185,
+            158,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✧ See my matches",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "matches"
+          },
+          "rect": [
+            191,
+            185,
+            158,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post job search →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "career"
+          },
+          "rect": [
+            63,
+            355,
+            112,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post availability →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "shift"
+          },
+          "rect": [
+            63,
+            449,
+            114,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Post my services →",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-post-type": "service"
+          },
+          "rect": [
+            63,
+            544,
+            120,
+            28
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Explore",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "explore"
+          },
+          "rect": [
+            17,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✧ Matches",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "matches"
+          },
+          "rect": [
+            103,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◷ Schedule",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-view": "availability"
+          },
+          "rect": [
+            190,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⋯ More",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "worknav-more"
+          },
+          "rect": [
+            276,
+            603,
+            82,
+            53
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "☷ Job filters ⌄",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            11,
+            671,
+            353,
+            42
+          ]
+        },
+        {
+          "tag": "SELECT",
+          "id": "sort",
+          "text": "Best match Soonest date",
+          "label": "Sort",
+          "title": "",
+          "type": "select-one",
+          "name": "",
+          "value": "match",
+          "required": false,
+          "disabled": false,
+          "options": [
+            {
+              "value": "match",
+              "text": "Best match",
+              "selected": true
+            },
+            {
+              "value": "date",
+              "text": "Soonest date",
+              "selected": false
+            }
+          ],
+          "attrs": {},
+          "rect": [
+            258,
+            748,
+            106,
+            30
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Nail",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-personal-keyword": "nail"
+          },
+          "rect": [
+            21,
+            823,
+            32,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Acrylic",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-personal-keyword": "acrylic"
+          },
+          "rect": [
+            57,
+            823,
+            47,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Gel-X",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-personal-keyword": "gelx"
+          },
+          "rect": [
+            108,
+            823,
+            40,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Part-time",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-personal-keyword": "part"
+          },
+          "rect": [
+            152,
+            823,
+            58,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Hourly",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-personal-keyword": "temp"
+          },
+          "rect": [
+            214,
+            823,
+            45,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "More ⌄",
+          "label": "More keywords",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job-more": "keywords"
+          },
+          "rect": [
+            299,
+            822,
+            55,
+            31
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All trades",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job-group": "all"
+          },
+          "rect": [
+            12,
+            870,
+            59,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Nail technicians",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job-group": "nail"
+          },
+          "rect": [
+            76,
+            870,
+            88,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Other work",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job-group": "other"
+          },
+          "rect": [
+            169,
+            870,
+            66,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All arrangements",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment-filter": "all"
+          },
+          "rect": [
+            12,
+            903,
+            94,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "More ⌄",
+          "label": "More work arrangements",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job-more": "arrangements"
+          },
+          "rect": [
+            111,
+            903,
+            53,
+            27
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡",
+          "label": "Save job",
+          "title": "Save job",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-save": "j1"
+          },
+          "rect": [
+            317,
+            956,
+            32,
+            32
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job": "j1"
+          },
+          "rect": [
+            26,
+            1257,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Message",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-chat-job": "j1"
+          },
+          "rect": [
+            136,
+            1257,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "I’m interested",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-apply": "j1"
+          },
+          "rect": [
+            245,
+            1257,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡",
+          "label": "Save job",
+          "title": "Save job",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-save": "j2"
+          },
+          "rect": [
+            317,
+            1337,
+            32,
+            32
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job": "j2"
+          },
+          "rect": [
+            26,
+            1638,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Message",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-chat-job": "j2"
+          },
+          "rect": [
+            136,
+            1638,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "I’m interested",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-apply": "j2"
+          },
+          "rect": [
+            245,
+            1638,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡",
+          "label": "Save job",
+          "title": "Save job",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-save": "j3"
+          },
+          "rect": [
+            317,
+            1718,
+            32,
+            32
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job": "j3"
+          },
+          "rect": [
+            26,
+            2033,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Message",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-chat-job": "j3"
+          },
+          "rect": [
+            136,
+            2033,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "I’m interested",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-apply": "j3"
+          },
+          "rect": [
+            245,
+            2033,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡",
+          "label": "Save job",
+          "title": "Save job",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-save": "j4"
+          },
+          "rect": [
+            317,
+            2113,
+            32,
+            32
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job": "j4"
+          },
+          "rect": [
+            26,
+            2414,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Message",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-chat-job": "j4"
+          },
+          "rect": [
+            136,
+            2414,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "I’m interested",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-apply": "j4"
+          },
+          "rect": [
+            245,
+            2414,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡",
+          "label": "Save job",
+          "title": "Save job",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-save": "j8"
+          },
+          "rect": [
+            317,
+            2494,
+            32,
+            32
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job": "j8"
+          },
+          "rect": [
+            26,
+            2778,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Message",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-chat-job": "j8"
+          },
+          "rect": [
+            136,
+            2778,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "I’m interested",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-apply": "j8"
+          },
+          "rect": [
+            245,
+            2778,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡",
+          "label": "Save job",
+          "title": "Save job",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-save": "j5"
+          },
+          "rect": [
+            317,
+            2858,
+            32,
+            32
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job": "j5"
+          },
+          "rect": [
+            26,
+            3159,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Message",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-chat-job": "j5"
+          },
+          "rect": [
+            136,
+            3159,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "I’m interested",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-apply": "j5"
+          },
+          "rect": [
+            245,
+            3159,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡",
+          "label": "Save job",
+          "title": "Save job",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-save": "j6"
+          },
+          "rect": [
+            317,
+            3239,
+            32,
+            32
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job": "j6"
+          },
+          "rect": [
+            26,
+            3540,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Message",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-chat-job": "j6"
+          },
+          "rect": [
+            136,
+            3540,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "I’m interested",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-apply": "j6"
+          },
+          "rect": [
+            245,
+            3540,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "♡",
+          "label": "Save job",
+          "title": "Save job",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-save": "j7"
+          },
+          "rect": [
+            317,
+            3620,
+            32,
+            32
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "View details",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-job": "j7"
+          },
+          "rect": [
+            26,
+            3903,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Message",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-chat-job": "j7"
+          },
+          "rect": [
+            136,
+            3903,
+            104,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "I’m interested",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-apply": "j7"
+          },
+          "rect": [
+            245,
+            3903,
+            104,
+            36
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "staff-390-jobs-module-v2",
+  "screenshot": "staff-390-jobs-module-v2.png"
+}

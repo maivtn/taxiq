@@ -1,0 +1,857 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/jobs.html?lang=en",
+  "title": "NEXORA TOUCH Community · Việc làm & Sang nhượng",
+  "lang": "vi",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ Demo · Posts and profiles stay in this browser. ✎ Edit page content directly ✎ Edit NEXORA TOUCH COMMUNITY · JOBS Find people for your business Hire nail technicians full-time, part-time or by the hour. Post needs for management, cleaning, electrical and plumbing work, or other tasks here too. ＋ Post a hiring need ◷ Need day or hourly help ⌕ Find workers ＋ Post a job ▤ My hiring posts ✉ Invites & messages Acrylic Gel-X Manager Reception Salon cleaning Electrician Plumber Tiling Bed assembly Workers available now Review skills and open hours to find a suitable worker. ⌕ Search Clear All trades Nail technicians Other work JN Jenny Nguyễn Nail technician · 5 years · Richmond, TX · Temporary / Hourly Acrylic Gel-X Pedicure ◷ Available Sunday 11:00–17:00 Invite to discuss MT Mai Trần Nail technician for extra shifts · Sugar Land, TX · Temporary / Hourly Manicure Dip powder Pedicure ◷ Available Saturday afternoons Invite to discuss HP Hùng Phạm Electrician and home repair · Richmond, TX · Specific task Electrical wiring Lighting & outlets Painting ◷ Available by day or hour Invite to discuss LV Lan Võ Part-time salon manager / receptionist · Richmond, TX · Part-time Salon manager Receptionist Supplies & stocking ◷ Mornings, 4 days/week Invite to discuss AL An Lê Salon cleaning and deep cleaning · Katy, TX · Temporary / Hourly Salon cleaning Deep cleaning ◷ By day or a few hours Invite to discuss MĐ Minh Đỗ Tiling and furniture assembly · Houston, TX · Specific task Tile installation Bed assembly Furniture assembly ◷ Available by project Invite to discuss BP Bình Phan Plumbing and water heater repair · Sugar Land, TX · Specific task Plumbing repair Water heater ◷ Available weekdays Invite to discuss Your hiring posts Regular roles and short shifts both live under Jobs. ＋ Post a shift You have no hiring posts yet Start with a regular role or an hourly shift. ＋ Post a hiring need ◷ Post an hourly shift Invitations & messages No invitations yet. Choose a worker and click Invite to discuss to start. ✦ Ask AI assistant Post a hiring need Step 1/3 VI × What kind of help do you need? ◉ Full-time Hire regular staff ◉ Part-time Hire part-time staff ◷ Temporary / Hourly A day, half-day or a few hours ✦ Specific task Electrical, plumbing, tiling... ✦ Ask AI Cancel Continue",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✎ Edit",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "edit-start"
+          },
+          "rect": [
+            728,
+            65,
+            60,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Post a hiring need",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-post": "career"
+          },
+          "rect": [
+            42,
+            277,
+            170,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◷ Need day or hourly help",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-post": "shift"
+          },
+          "rect": [
+            221,
+            277,
+            207,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Find workers",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-jump": "workers"
+          },
+          "rect": [
+            30,
+            365,
+            128,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Post a job",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-post": "career"
+          },
+          "rect": [
+            162,
+            365,
+            113,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▤ My hiring posts",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-jump": "posts"
+          },
+          "rect": [
+            279,
+            365,
+            149,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✉ Invites & messages",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-jump": "invites"
+          },
+          "rect": [
+            432,
+            365,
+            172,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Acrylic",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "acrylic"
+          },
+          "rect": [
+            608,
+            357,
+            66,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Gel-X",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "gelx"
+          },
+          "rect": [
+            681,
+            357,
+            58,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Manager",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "manager"
+          },
+          "rect": [
+            745,
+            357,
+            77,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Reception",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "reception"
+          },
+          "rect": [
+            829,
+            357,
+            84,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Salon cleaning",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "salonclean"
+          },
+          "rect": [
+            920,
+            357,
+            111,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Electrician",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "wiring"
+          },
+          "rect": [
+            1039,
+            357,
+            88,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Plumber",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "plumbing"
+          },
+          "rect": [
+            1133,
+            357,
+            74,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Tiling",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "tile"
+          },
+          "rect": [
+            1215,
+            357,
+            57,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Bed assembly",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-keyword": "bedassembly"
+          },
+          "rect": [
+            1279,
+            357,
+            108,
+            35
+          ]
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "text": "",
+          "label": "Search workers",
+          "title": "",
+          "type": "text",
+          "name": "workerQuery",
+          "value": "",
+          "placeholder": "Name, trade, skill, area...",
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "attrs": {},
+          "rect": [
+            18,
+            547,
+            637,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⌕ Search",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            663,
+            547,
+            74,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Clear",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "reset-worker-search"
+          },
+          "rect": [
+            745,
+            547,
+            56,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "All trades",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-group": "all"
+          },
+          "rect": [
+            18,
+            593,
+            82,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Nail technicians",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-group": "nail"
+          },
+          "rect": [
+            107,
+            593,
+            120,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Other work",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-group": "other"
+          },
+          "rect": [
+            233,
+            593,
+            91,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Invite to discuss",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-contact": "w1"
+          },
+          "rect": [
+            37,
+            843,
+            120,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Invite to discuss",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-contact": "w2"
+          },
+          "rect": [
+            435,
+            865,
+            120,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Invite to discuss",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-contact": "w3"
+          },
+          "rect": [
+            37,
+            1135,
+            120,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Invite to discuss",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-contact": "w4"
+          },
+          "rect": [
+            435,
+            1157,
+            120,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Invite to discuss",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-contact": "w5"
+          },
+          "rect": [
+            37,
+            1449,
+            120,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Invite to discuss",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-contact": "w6"
+          },
+          "rect": [
+            435,
+            1427,
+            120,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Invite to discuss",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-worker-contact": "w7"
+          },
+          "rect": [
+            37,
+            1741,
+            120,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Post a shift",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-post": "shift"
+          },
+          "rect": [
+            694,
+            1844,
+            107,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Post a hiring need",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-post": "career"
+          },
+          "rect": [
+            231,
+            2026,
+            170,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◷ Post an hourly shift",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-owner-post": "shift"
+          },
+          "rect": [
+            411,
+            2025,
+            177,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Ask AI assistant",
+          "label": "Open AI assistant",
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-toggle"
+          },
+          "rect": [
+            631,
+            1046,
+            168,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "VI",
+          "label": "Chuyển sang Tiếng Việt",
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "lang"
+          },
+          "rect": [
+            662,
+            364,
+            36,
+            35
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "×",
+          "label": "Close",
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-modal"
+          },
+          "rect": [
+            708,
+            364,
+            38,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◉ Full-time Hire regular staff",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment": "full"
+          },
+          "rect": [
+            74,
+            507,
+            218,
+            77
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◉ Part-time Hire part-time staff",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment": "part"
+          },
+          "rect": [
+            301,
+            507,
+            218,
+            77
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "◷ Temporary / Hourly A day, half-day or a few hours",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment": "temp"
+          },
+          "rect": [
+            528,
+            507,
+            218,
+            77
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Specific task Electrical, plumbing, tiling...",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-employment": "service"
+          },
+          "rect": [
+            74,
+            593,
+            218,
+            77
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✦ Ask AI",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-from-form"
+          },
+          "rect": [
+            468,
+            704,
+            90,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Cancel",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "close-modal"
+          },
+          "rect": [
+            566,
+            704,
+            79,
+            44
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Continue",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "wizard-next"
+          },
+          "rect": [
+            653,
+            704,
+            92,
+            44
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "key": "owner-834-owner-post-module-v2",
+  "screenshot": "owner-834-owner-post-module-v2.png"
+}

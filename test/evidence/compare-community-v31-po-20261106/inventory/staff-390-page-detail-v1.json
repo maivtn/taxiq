@@ -1,0 +1,615 @@
+{
+  "url": "http://127.0.0.1:5503/html/v3.1/staff-community.html?tab=pages&pageId=p1&pageMode=view&pageTab=posts&pageScope=discover",
+  "title": "Nexora Touch - Staff Community",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "N2 nexora 2 Staff ID: NAIE5LMVX Dashboard Community Feed Groups & Market Pages Jobs Extra shifts Deals & Coupons Blog Messages & Calls One QR One QR Advertising Tip QR Accept Payment Referral Link My Workspace My Salons My Earnings My Reviews Report My Tickets 1 My Calendar Tips Transactions Profile Sign out v3.1 Switch to v2 →",
+      "controls": [
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Dashboard",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/staff-dashboard.html",
+            "data-staff-nav": "dashboard"
+          },
+          "rect": [
+            -282,
+            122,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Community",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-group": "community",
+            "data-nav-group": ""
+          },
+          "rect": [
+            -282,
+            176,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Feed",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "feed"
+          },
+          "rect": [
+            -239,
+            226,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Groups & Market",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "groups"
+          },
+          "rect": [
+            -239,
+            264,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "pages",
+            "aria-current": "page"
+          },
+          "rect": [
+            -239,
+            302,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Jobs",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "jobs"
+          },
+          "rect": [
+            -239,
+            340,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Extra shifts",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "shift"
+          },
+          "rect": [
+            -239,
+            378,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Deals & Coupons",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "deals"
+          },
+          "rect": [
+            -239,
+            416,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Blog",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "blog"
+          },
+          "rect": [
+            -239,
+            454,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Messages & Calls",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-tab": "connect"
+          },
+          "rect": [
+            -239,
+            492,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "One QR",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-group": "one-qr",
+            "data-nav-group": ""
+          },
+          "rect": [
+            -282,
+            540,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "One QR",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "one-qr",
+            "data-personal-qr-nav": "one-qr",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=one-qr"
+          },
+          "rect": [
+            -239,
+            590,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Advertising",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "advertising",
+            "data-personal-qr-nav": "advertising",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=advertising"
+          },
+          "rect": [
+            -239,
+            628,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Tip QR",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "tip-qr",
+            "data-personal-qr-nav": "tip-qr",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=tip-qr"
+          },
+          "rect": [
+            -239,
+            666,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Accept Payment",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "accept-payment",
+            "data-personal-qr-nav": "accept-payment",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=accept-payment"
+          },
+          "rect": [
+            -239,
+            704,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Referral Link",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "referral-link",
+            "data-personal-qr-nav": "referral-link",
+            "href": "http://127.0.0.1:5503/html/pages/oneqr-staff.html?tab=referral-link"
+          },
+          "rect": [
+            -239,
+            742,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My Workspace",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-group": "workspace",
+            "data-nav-group": ""
+          },
+          "rect": [
+            -282,
+            594,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "My Salons",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "data-staff-nav": "my-salons",
+            "href": "http://127.0.0.1:5503/html/pages/my-salons.html"
+          },
+          "rect": [
+            -239,
+            644,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My Earnings",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-nav": "my-earnings"
+          },
+          "rect": [
+            -239,
+            682,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "My Reviews",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-nav": "my-reviews"
+          },
+          "rect": [
+            -239,
+            720,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Report",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-staff-nav": "report"
+          },
+          "rect": [
+            -239,
+            758,
+            190,
+            36
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "My Tickets 1",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/staff-work-orders.html",
+            "data-staff-nav": "my-tickets"
+          },
+          "rect": [
+            -282,
+            648,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "My Calendar",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/pos-calendar.html",
+            "data-staff-nav": "my-calendar"
+          },
+          "rect": [
+            -282,
+            702,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Tips",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "#",
+            "data-staff-nav": "tips"
+          },
+          "rect": [
+            -282,
+            756,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Transactions",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "#",
+            "data-staff-nav": "transactions"
+          },
+          "rect": [
+            -282,
+            810,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Profile",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/staff-profile.html?account=staff",
+            "data-staff-nav": "profile"
+          },
+          "rect": [
+            -282,
+            864,
+            233,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Sign out",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            -282,
+            782,
+            248,
+            34
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Open navigation menu",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-shell-drawer-open": ""
+          },
+          "rect": [
+            12,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Search tech, station, review...",
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            334,
+            10,
+            44,
+            44
+          ]
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Switch to v2 →",
+          "label": null,
+          "title": "",
+          "type": "",
+          "name": "",
+          "attrs": {
+            "href": "http://127.0.0.1:5503/html/pages/staff-community.html?tab=pages&pageId=p1&pageMode=view&pageTab=posts&pageScope=discover"
+          },
+          "rect": [
+            245,
+            699,
+            124,
+            48
+          ]
+        }
+      ],
+      "images": [
+        {
+          "src": "http://127.0.0.1:5503/html/assets/nexora-logo.svg",
+          "alt": "Nexora Logo",
+          "broken": false
+        }
+      ],
+      "tables": []
+    }
+  ],
+  "key": "staff-390-page-detail-v1",
+  "screenshot": "staff-390-page-detail-v1.png"
+}

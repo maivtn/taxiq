@@ -1,0 +1,806 @@
+{
+  "url": "http://127.0.0.1:5503/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html",
+  "title": "NEXORA Community · Mobile V111 · 7 languages",
+  "lang": "en",
+  "overflow": false,
+  "surfaces": [
+    {
+      "scope": "main",
+      "text": "✦ NEXORA Points : 1,280 ▣ Business EN Community Share, ask and trade with people in your trade ＋ Create 🏬 My storefront Manage your storefront → 🔑 Salon transfers Buy or sell a salon → 🏘️ Real Estate Property listings → Food & Restaurants Food · deals · fanpages → FEATURED ☷ All Community sections and post types 13 sections · 10 post types ← All pages QA QA Comparison Page Business · Houston, TX YOUR PAGE A local comparison page. ＋ Create post ⚙ Manage Posts About Photos Videos Services Inbox Manage ✍ Post ▣ Photo/video 🛍 Services ▤ Inbox ⚙ Tools PAGE STUDIO Manage your Page Your Page tools in one place. ✎ Edit Page 0 Posts 0 Post views 1 Sample chats ▣ Photos & details Cover, avatar, contact ▤ Photos/video Post photos or video ✍ Create post Status, photos, video 🛍 Services Add what you offer 📣 Promote Create a draft 💬 Inbox Read and reply Page access ＋ Add person N You Page owner · current NEXORA ID Roles added here stay on this device and do not grant access to another account. Promotion drafts ＋ New draft No drafts yet. No ads or charges have been created. NEXORA connections 🏬 My storefront → 💬 Page messages → Interactive prototype: ads, payments and multiple real accounts are not connected. Sample pages and posts are labeled. Your content stays in this browser. Demo Page created. Talk to AI",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "id": "role-button",
+          "text": "▣ Business",
+          "label": null,
+          "title": "Chuyển vai trò bản mẫu",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            674,
+            1,
+            86,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "lang-button",
+          "text": "EN",
+          "label": "Choose language",
+          "title": "English",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {},
+          "rect": [
+            767,
+            -9,
+            38,
+            53
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "＋ Create",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            721,
+            66,
+            84,
+            36
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront Manage your storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🔑 Salon transfers Buy or sell a salon →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "transfer",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            136,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏘️ Real Estate Property listings →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "realestate",
+            "aria-current": "false"
+          },
+          "rect": [
+            14,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Food & Restaurants Food · deals · fanpages → FEATURED",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "food",
+            "aria-current": "false"
+          },
+          "rect": [
+            415,
+            230,
+            391,
+            84
+          ]
+        },
+        {
+          "tag": "SUMMARY",
+          "id": "",
+          "text": "☷ All Community sections and post types 13 sections · 10 post types",
+          "label": null,
+          "title": "",
+          "attrs": {},
+          "rect": [
+            15,
+            322,
+            789,
+            42
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Feed",
+          "title": "Feed",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "home"
+          },
+          "rect": [
+            22,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Pages",
+          "title": "Pages",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "pages",
+            "aria-current": "page"
+          },
+          "rect": [
+            178,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Store",
+          "title": "Store",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "shop"
+          },
+          "rect": [
+            334,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Deals",
+          "title": "Deals",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "deals"
+          },
+          "rect": [
+            491,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "",
+          "label": "Reels",
+          "title": "Reels",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-section": "reels"
+          },
+          "rect": [
+            647,
+            388,
+            150,
+            54
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "← All pages",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "pages-back"
+          },
+          "rect": [
+            14,
+            469,
+            104,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Create post",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-post": "page-1793984222515"
+          },
+          "rect": [
+            51,
+            871,
+            121,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⚙ Manage",
+          "label": null,
+          "title": "",
+          "type": "submit",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "manage"
+          },
+          "rect": [
+            179,
+            871,
+            91,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Posts",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "posts"
+          },
+          "rect": [
+            14,
+            942,
+            74,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "About",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "about"
+          },
+          "rect": [
+            92,
+            942,
+            74,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Photos",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "photos"
+          },
+          "rect": [
+            170,
+            942,
+            74,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Videos",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "videos"
+          },
+          "rect": [
+            248,
+            942,
+            74,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Services",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "services"
+          },
+          "rect": [
+            326,
+            942,
+            77,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Inbox",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "inbox"
+          },
+          "rect": [
+            407,
+            942,
+            74,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "Manage",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "manage"
+          },
+          "rect": [
+            485,
+            942,
+            74,
+            48
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✍ Post",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-post": "page-1793984222515"
+          },
+          "rect": [
+            14,
+            1001,
+            153,
+            62
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▣ Photo/video",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-photo": "page-1793984222515"
+          },
+          "rect": [
+            174,
+            1001,
+            153,
+            62
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🛍 Services",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-service-add": "page-1793984222515"
+          },
+          "rect": [
+            333,
+            1001,
+            153,
+            62
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▤ Inbox",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "inbox"
+          },
+          "rect": [
+            493,
+            1001,
+            153,
+            62
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "⚙ Tools",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "manage"
+          },
+          "rect": [
+            652,
+            1001,
+            153,
+            62
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✎ Edit Page",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-edit": "page-1793984222515"
+          },
+          "rect": [
+            683,
+            1111,
+            105,
+            40
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▣ Photos & details Cover, avatar, contact",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-edit": "page-1793984222515"
+          },
+          "rect": [
+            31,
+            1263,
+            375,
+            88
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "▤ Photos/video Post photos or video",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-photo": "page-1793984222515"
+          },
+          "rect": [
+            414,
+            1263,
+            375,
+            88
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "✍ Create post Status, photos, video",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-post": "page-1793984222515"
+          },
+          "rect": [
+            31,
+            1358,
+            375,
+            88
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🛍 Services Add what you offer",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-service-add": "page-1793984222515"
+          },
+          "rect": [
+            414,
+            1358,
+            375,
+            88
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "📣 Promote Create a draft",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-promo": "page-1793984222515"
+          },
+          "rect": [
+            31,
+            1454,
+            375,
+            88
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Inbox Read and reply",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "inbox"
+          },
+          "rect": [
+            414,
+            1454,
+            375,
+            88
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ Add person",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-team-add": "page-1793984222515"
+          },
+          "rect": [
+            689,
+            1573,
+            99,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "＋ New draft",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-promo": "page-1793984222515"
+          },
+          "rect": [
+            698,
+            1716,
+            90,
+            33
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "🏬 My storefront →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-go-shop": "page-1793984222515"
+          },
+          "rect": [
+            31,
+            1840,
+            375,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "text": "💬 Page messages →",
+          "label": null,
+          "title": "",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-page-tab": "inbox"
+          },
+          "rect": [
+            413,
+            1840,
+            375,
+            37
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "ai-fab",
+          "text": "Talk to AI",
+          "label": "Tap to talk with the AI assistant",
+          "title": "Tap to talk with the AI assistant",
+          "type": "button",
+          "name": "",
+          "value": "",
+          "disabled": false,
+          "attrs": {
+            "data-action": "ai-talk-open"
+          },
+          "rect": [
+            648,
+            1022,
+            151,
+            70
+          ]
+        }
+      ],
+      "images": [],
+      "tables": []
+    }
+  ],
+  "screenshot": "owner-834-page-manage-v2.png"
+}

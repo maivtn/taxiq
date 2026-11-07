@@ -1,0 +1,87 @@
+{
+  "engine": "webkit",
+  "rows": [
+    {
+      "name": "Story create validation save reload next delete",
+      "pass": true
+    },
+    {
+      "name": "People search public private phone sent cancel received",
+      "pass": true
+    },
+    {
+      "name": "Classic Page new fields categories and shared tools",
+      "pass": true
+    },
+    {
+      "name": "Page services add reload and visitor visibility",
+      "pass": true
+    },
+    {
+      "name": "Page sample inbox reply persists",
+      "pass": true
+    },
+    {
+      "name": "Page sample manager role add and remove",
+      "pass": true
+    },
+    {
+      "name": "New group privacy cover and approval shared",
+      "pass": true
+    },
+    {
+      "name": "Group approve foreign post accept request promote remove member",
+      "pass": true
+    },
+    {
+      "name": "Group search and joined filter retained",
+      "pass": true
+    },
+    {
+      "name": "Classic Feed audience tag feeling check-in video and reload",
+      "pass": true
+    },
+    {
+      "name": "Feed pin save pause share and persistence",
+      "pass": true
+    },
+    {
+      "name": "Owner worker directory filters and invite UI",
+      "pass": true
+    },
+    {
+      "name": "Staff availability week grid conditional fields",
+      "pass": true
+    },
+    {
+      "name": "Staff trade catalogue and custom skills",
+      "pass": true
+    },
+    {
+      "name": "Staff service-offer form and owner discoverability",
+      "pass": true
+    },
+    {
+      "name": "Transfer templates and generated description",
+      "pass": true
+    },
+    {
+      "name": "Food storefront filters shared shop review and dish forms",
+      "pass": true
+    },
+    {
+      "name": "Real Estate wizard step two stays in viewport",
+      "pass": true
+    },
+    {
+      "name": "New post shortcut saves into the retained Feed",
+      "pass": true
+    },
+    {
+      "name": "Demo role switch touch controls narrow and wide",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "pass": true
+}

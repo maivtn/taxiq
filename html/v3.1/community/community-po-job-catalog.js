@@ -1,0 +1,13 @@
+/* PO Jobs trade and skill labels. */
+window.NEXORA_PO_JOB_CATALOG=[
+    {id:'nail',group:'nail',name:['Nail / Thợ nail','Nail / Nail technicians'],skills:[['manicure','Làm móng tay','Manicure'],['pedicure','Chăm sóc chân','Pedicure'],['acrylic','Acrylic','Acrylic'],['dip','Dip powder','Dip powder'],['gelx','Gel-X','Gel-X'],['nailart','Vẽ móng','Nail art'],['nailcare','Chăm sóc móng','Nail care']]},
+    {id:'home',group:'other',name:['Nhà cửa & Xây dựng','Home & Construction'],skills:[['painting','Sơn nhà','Painting'],['tile','Lót gạch','Tile installation'],['carpentry','Mộc','Carpentry'],['drywall','Sửa tường','Drywall repair'],['roofing','Lợp mái','Roofing'],['bedassembly','Lắp ráp giường','Bed assembly'],['furniture','Lắp ráp nội thất','Furniture assembly']]},
+    {id:'electrical',group:'other',name:['Điện & Ống nước','Electrical & Plumbing'],skills:[['wiring','Lắp đặt điện','Electrical wiring'],['fixture','Lắp đèn / ổ cắm','Lighting & outlets'],['plumbing','Sửa ống nước','Plumbing repair'],['waterheater','Máy nước nóng','Water heater']]},
+    {id:'cleaning',group:'other',name:['Dọn dẹp & Bảo trì','Cleaning & Maintenance'],skills:[['salonclean','Dọn tiệm','Salon cleaning'],['houseclean','Dọn nhà','House cleaning'],['deepclean','Vệ sinh chuyên sâu','Deep cleaning'],['yard','Chăm sóc sân vườn','Yard work']]},
+    {id:'food',group:'other',name:['Nhà hàng & Sự kiện','Food & Events'],skills:[['server','Phục vụ','Serving'],['cook','Nấu ăn','Cooking'],['barista','Pha chế','Barista'],['event','Phụ sự kiện','Event support']]},
+    {id:'auto',group:'other',name:['Xe & Dịch vụ lưu động','Auto & Mobile Services'],skills:[['mechanic','Sửa xe','Auto repair'],['detail','Chăm sóc xe','Auto detailing'],['driver','Lái xe','Driving']]},
+    {id:'care',group:'other',name:['Chăm sóc & Gia đình','Care & Family'],skills:[['childcare','Trông trẻ','Childcare'],['seniorcare','Chăm sóc người lớn tuổi','Senior care'],['pets','Chăm sóc thú cưng','Pet care']]},
+    {id:'salonOps',group:'other',name:['Vận hành tiệm & Hỗ trợ','Salon operations & support'],skills:[['manager','Quản lý tiệm','Salon manager'],['reception','Lễ tân','Receptionist'],['supplies','Lấy hàng / bổ sung vật tư','Supplies & stocking'],['salonassistant','Phụ tiệm','Salon assistant']]},
+    {id:'beauty',group:'other',name:['Làm đẹp khác','Other beauty services'],skills:[['hair','Làm tóc','Hair styling'],['spa','Spa / chăm sóc da','Spa / skincare']]},
+    {id:'digital',group:'other',name:['Văn phòng & Kỹ thuật','Office & Technology'],skills:[['admin','Hành chính','Administration'],['design','Thiết kế','Design'],['it','Hỗ trợ kỹ thuật','IT support'],['marketing','Tiếp thị','Marketing']]}
+  ];
