@@ -1,5 +1,17 @@
 # Quy tắc chung của dự án
 
+
+## Quy ước phiên bản tài liệu Community
+
+Khi người dùng nhắc Community (kể cả cách viết “comunity”) v1, v2 hoặc v3, hiểu là các gói tài liệu PO sau. Đường dẫn tính từ gốc workspace:
+
+| Phiên bản | Thư mục tài liệu PO |
+| --- | --- |
+| Community v1 | `from-po/NEXORA-Community` |
+| Community v2 | `from-po/NEXORA-Community-Dev-Package 16-10 v2` |
+| Community v3 | `goi-community-giao-dev` |
+
+
 ## IMPORTANT — Làm trực tiếp cho HTML prototype demo
 
 - Đây là dự án HTML prototype/demo. Ưu tiên triển khai trực tiếp giao diện và luồng demo theo yêu cầu; không áp dụng quy trình tài liệu nặng như dự án production.
