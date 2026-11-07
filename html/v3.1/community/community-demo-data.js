@@ -9,35 +9,40 @@
   };
   const at = (daysAgo, hour = 10, minute = 0) => new Date(Math.min(new Date(`${date(-daysAgo)}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`).getTime(), Date.now() - 300000)).toISOString();
   const images = {
-    salon: '../community-staging/b01d42a22a326284.jpg',
-    blush: '../community-staging/0ceedf379b114cef.jpg',
-    bridal: '../community-staging/d9eec1576f9a7c06.jpg',
-    blue: '../community-staging/a063fabd5fc4a64e.jpg',
-    floral: '../community-staging/970211a12ea5b9ec.png',
-    workshop: '../community-staging/6b8147d2de80d807.png',
-    reception: '../nexora-welcome/industry-nail.jpg',
-    restaurant: '../nexora-welcome/industry-restaurant.jpg',
-    spa: '../nexora-welcome/industry-spa.jpg',
-    barber: '../nexora-welcome/industry-hair.jpg',
-    retail: '../nexora-welcome/industry-retail.jpg',
-    cafe: '../nexora-welcome/industry-food.jpg',
+    salon: '/html/v3.1/community-staging/b01d42a22a326284.jpg',
+    blush: '/html/v3.1/community-staging/0ceedf379b114cef.jpg',
+    bridal: '/html/v3.1/community-staging/d9eec1576f9a7c06.jpg',
+    blue: '/html/v3.1/community-staging/a063fabd5fc4a64e.jpg',
+    floral: '/html/v3.1/community-staging/970211a12ea5b9ec.png',
+    workshop: '/html/v3.1/community-staging/6b8147d2de80d807.png',
+    reception: '/html/v3.1/nexora-welcome/industry-nail.jpg',
+    restaurant: '/html/v3.1/nexora-welcome/industry-restaurant.jpg',
+    spa: '/html/v3.1/nexora-welcome/industry-spa.jpg',
+    barber: '/html/v3.1/nexora-welcome/industry-hair.jpg',
+    retail: '/html/v3.1/nexora-welcome/industry-retail.jpg',
+    cafe: '/html/v3.1/nexora-welcome/industry-food.jpg',
     // Product photos used only in fictional market listings. Original source pages:
     // https://www.greiner-gmbh.de/hairline/produkte/wartestuehle/wartestuhl-35.html
-    marketChair:'market-photos/waiting-chair.jpg',
+    marketChair:'/html/v3.1/community/market-photos/waiting-chair.jpg',
     // https://ongle24.com/collections/lampes-uv
-    marketLamp:'market-photos/gel-lamp.jpg',
+    marketLamp:'/html/v3.1/community/market-photos/gel-lamp.jpg',
     // https://www.walmart.com/ip/7564165266
-    marketTrolley:'market-photos/salon-trolley.jpg',
+    marketTrolley:'/html/v3.1/community/market-photos/salon-trolley.jpg',
     // https://rustydesign.com/collections/30-x-30-restaurant-cafe-tables
-    marketTable:'market-photos/bistro-table.jpg'
+    marketTable:'/html/v3.1/community/market-photos/bistro-table.jpg'
   };
-  const allowedImages = new Set([...Object.values(images), 'nexora-bitcoin-nailbar.png']);
+  const legacyImages = new Map(Object.entries(images).map(([key, value]) => [
+    key.startsWith('market') ? 'market-photos/' + value.split('/').pop() : value.replace('/html/v3.1/', '../'), value
+  ]));
+  const salonLogo = '/html/v3.1/community/nexora-bitcoin-nailbar.png';
+  legacyImages.set('nexora-bitcoin-nailbar.png', salonLogo);
+  const allowedImages = new Set([...Object.values(images), salonLogo]);
   function mediaURL(value) {
     if (typeof value !== 'string') return '';
-    return allowedImages.has(value) || /^data:image\/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '';
+    return legacyImages.get(value) || (allowedImages.has(value) || /^data:image\/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '');
   }
-  const videos = {weekend:'page-videos/nail-weekend.mp4',colors:'page-videos/nail-colors.mp4'};
-  const videoURL = value => Object.values(videos).includes(value) ? value : '';
+  const videos = {weekend:'/html/v3.1/community/page-videos/nail-weekend.mp4',colors:'/html/v3.1/community/page-videos/nail-colors.mp4'};
+  const videoURL = value => Object.values(videos).includes(value) ? value : Object.values(videos).find(path => value === 'page-videos/' + path.split('/').pop()) || '';
 
   const market = [
     {id:'s1',photo:images.marketChair,type:'sale',owner:'BITCOIN NAIL BAR',industry:'Nail & làm đẹp',title:'12 white waiting chairs — salon furniture update',category:'Nội thất tiệm',qty:12,price:100,basis:'item',split:true,condition:'Đã qua sử dụng',city:'Houston',state:'TX',description:'We are switching to bench seating and selling 12 white chairs used for about 8 months. Sturdy frames with a few minor scratches on the legs. Minimum purchase of 2 chairs; view and collect in Bellaire after 6 PM.',status:'open',icon:'chair',createdAt:at(1,10,20)},
