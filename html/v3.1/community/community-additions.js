@@ -12,7 +12,7 @@
     let current='',routeContext={},internal=false,generation=0;
     const notify=data=>options.notify?.(data);
     const styles=document.createElement('style');
-    styles.textContent='.community-extra-pane{--hub-bg:#f7f9fc;--hub-surface:#fff;--hub-text:#0b1220;--hub-muted:#64748b;--hub-border:#dde5ef;--hub-brand:#4648d8;min-width:0;width:100%;height:100%;overflow:auto;color:var(--hub-text)}.community-extra-pane.community-tools-aligned{max-width:1200px;margin-inline:auto}.community-extra-platform{max-width:1140px;margin:auto;padding:24px}.community-extra-pane>section{min-height:100%}.community-extra-pane>[hidden]{display:none!important}.ecosystem-menu{max-height:min(640px,70vh);overflow-y:auto}.ecosystem-menu [data-community-extra]{display:flex;min-height:44px;align-items:center;gap:10px}.ecosystem-menu [data-community-extra] svg{flex:none;width:20px;height:20px}.community-extra-error{padding:24px;text-align:center}@container community (max-width:800px){.community-extra-platform{padding:16px}}';
+    styles.textContent='.community-extra-pane{--hub-bg:#f7f9fc;--hub-surface:#fff;--hub-text:#0b1220;--hub-muted:#64748b;--hub-border:#dde5ef;--hub-brand:#4648d8;position:relative;min-width:0;width:100%;height:100%;overflow:auto;color:var(--hub-text)}.community-extra-pane.community-tools-aligned{max-width:1200px;margin-inline:auto}.community-extra-platform{max-width:1140px;margin:auto;padding:24px}.community-extra-pane>section{min-height:100%}.community-extra-pane>[hidden]{display:none!important}.community-route-loading{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:12px;background:#f7f9fc;color:#43516b;font-size:15px;font-weight:700}.community-route-loading::before{content:"";width:24px;height:24px;border:3px solid #ddd9fa;border-top-color:#6552e7;border-radius:50%;animation:community-loading-spin .8s linear infinite}@keyframes community-loading-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.community-route-loading::before{animation:none}}.ecosystem-menu{max-height:min(640px,70vh);overflow-y:auto}.ecosystem-menu [data-community-extra]{display:flex;min-height:44px;align-items:center;gap:10px}.ecosystem-menu [data-community-extra] svg{flex:none;width:20px;height:20px}.community-extra-error{padding:24px;text-align:center}@container community (max-width:800px){.community-extra-platform{padding:16px}}';
     root.append(styles);
     const platformStyles=document.createElement('style');
     window.NEXORA_NATIVE.read(new URL('community-shell-v31.css',baseURL).href).then(css=>{
@@ -21,6 +21,7 @@
     }).catch(()=>{});
     root.append(platformStyles);
     const pane=document.createElement('section');pane.className='community-extra-pane';pane.hidden=true;workspace.append(pane);
+    const loading=document.createElement('div');loading.className='community-route-loading';loading.setAttribute('role','status');loading.setAttribute('aria-live','polite');loading.textContent='Loading Real Estate…';loading.hidden=true;pane.append(loading);
     const menu=root.getElementById('ecosystemMenu');
     const heading=root.querySelector('.community-heading h1');
     const back=document.createElement('button');back.type='button';back.className='community-back-to-feed';back.hidden=true;
@@ -51,7 +52,7 @@
       generation++;
       if(!current&&pane.hidden)return;
       for(const task of modules.values())task.then(api=>api.window.NEXORA_COMMUNITY_MODULE?.deactivate?.());
-      current='';pane.hidden=true;back.hidden=true;root.querySelector('.app').classList.remove('community-extra-open');queueMicrotask(refreshFeed);document.body.classList.remove('community-extra-active');
+      current='';loading.hidden=true;pane.removeAttribute('aria-busy');pane.hidden=true;back.hidden=true;root.querySelector('.app').classList.remove('community-extra-open');queueMicrotask(refreshFeed);document.body.classList.remove('community-extra-active');
       if(frames.every(frame=>frame.hidden))frames[0].hidden=false;
       root.querySelector('.community-heading h1').textContent='Community';
     }
@@ -128,6 +129,8 @@
       root.querySelector('.mobile-nav').style.setProperty('--community-nav-count','6');
       pane.querySelector('.community-extra-platform')?.remove();pane.querySelector('.community-extra-error')?.remove();
       for(const element of pane.children)element.hidden=true;
+      pane.removeAttribute('aria-busy');
+      if(route==='realestate'){loading.hidden=false;pane.setAttribute('aria-busy','true');}
       try{
         if(['wallet','account','assistant','notifications'].includes(route)){
           const panel=document.createElement('section');panel.className='community-extra-platform';pane.append(panel);
@@ -145,10 +148,11 @@
           api.root.host.hidden=false;
         }
         if(request!==generation)return;
-        pane.scrollTop=0;
+        loading.hidden=true;pane.removeAttribute('aria-busy');pane.scrollTop=0;
         if(!fromHost){notify({type:'nexora-community-route',route});if(Object.keys(routeContext).length)notify({type:'nexora-community-context',context:routeContext});}
       }catch(error){
         if(request!==generation)return;
+        loading.hidden=true;pane.removeAttribute('aria-busy');
         const panel=document.createElement('section');panel.className='community-extra-error';
         const text=document.createElement('p');text.setAttribute('role','alert');text.textContent='Something went wrong. Please try again.';
         const retry=document.createElement('button');retry.type='button';retry.className='small-action';retry.textContent='Try again';retry.addEventListener('click',()=>navigate(route,context,fromHost));
