@@ -267,3 +267,12 @@ body:not(.checkout-mode) #collapse-ticket{display:none}
 .receipt-grand-total{padding-top:6px;border-top:1px solid #d7d7d7;font-size:13px;font-weight:800}
 .receipt-thanks{margin:20px 0 0;text-align:center}
 @media print{.receipt-preview .print-pages{padding:0}.checkout-receipt{width:100%;padding:0;break-after:auto}}
+.cash-payment-panel{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:12px;padding:12px;border:1px solid #dce4f1;border-radius:10px;background:#f8faff}
+.cash-payment-panel>label{color:#52617a;font-size:13px;font-weight:800}
+.cash-amount-field{position:relative;display:block;width:155px;max-width:100%}
+.cash-amount-field>span{position:absolute;inset:0 auto 0 12px;display:flex;align-items:center;color:#596985;font-size:16px;pointer-events:none}
+.cash-amount-field input{width:100%;height:44px;border:1px solid #cfd9eb;border-radius:8px;background:#fff;padding:0 12px 0 29px;color:#142033;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+.cash-difference{display:flex;align-items:baseline;gap:8px;margin-left:auto;color:#52617a;font-size:13px;font-weight:700}
+.cash-difference strong{color:#142033;font-size:16px;font-variant-numeric:tabular-nums}
+.cash-difference.underpaid,.cash-difference.underpaid strong{color:#c43d58}
+@media(max-width:650px){.cash-difference{width:100%;margin-left:0;justify-content:space-between}}

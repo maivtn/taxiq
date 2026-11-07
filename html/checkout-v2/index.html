@@ -56,6 +56,11 @@
               <h2>PAYMENT METHOD</h2>
               <div id="payment-methods" class="payment-methods" role="group" aria-label="Payment method"></div>
               <div id="payment-extra" class="payment-extra" hidden></div>
+              <div id="cash-payment-panel" class="cash-payment-panel" hidden>
+                <label for="cash-amount">Cash received</label>
+                <span class="cash-amount-field"><span aria-hidden="true">$</span><input id="cash-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00"></span>
+                <div id="cash-difference" class="cash-difference" aria-live="polite"><span id="cash-difference-label">Change due</span><strong id="cash-difference-value">$0.00</strong></div>
+              </div>
               <div class="receipt-row"><strong>RECEIPT</strong><div id="receipt-choices" role="group" aria-label="Receipt"></div><button id="receipt-print-preview" class="text-link" type="button">Print preview</button></div>
             </section>
 

@@ -37,7 +37,7 @@
         line('test', '', 2, '', [], true),
       ] },
     ],
-    activeGroup: 'andy', category: 'All', search: '', paymentMethod: null, hasPendingChanges: true,
+    activeGroup: 'andy', category: 'All', search: '', paymentMethod: null, cashAmount: '', cashEdited: false, hasPendingChanges: true,
     receipt: 'No Receipt', tip: 0, tipType: 'amount', tipChoice: null,
     discountAll: false, showMore: false, collapsed: false, replacingLineId: null, addonTargetLineId: null, pendingRemoveLineId: null,
     addServicesGroupId: null, addServicesTargetLineId: null, addServicesCategoryIndex: 0, addServicesSearch: '', addServicesQuantities: {},
@@ -55,6 +55,23 @@
   const lineTotal = item => filled(item) ? item.price - item.discount + visibleAddons(item).reduce((sum, addon) => sum + addon.price - (addon.discount || 0), 0) : 0;
   const subtotal = () => allLines().reduce((sum, item) => sum + lineTotal(item), 0);
   const total = () => subtotal() + state.tip;
+  const cashReceived = () => Number(state.cashAmount.replace(/,/g, '')) || 0;
+  const formatCashAmount = amount => money(amount).slice(1);
+  function sanitizeCashAmount(raw) {
+    const stripped = raw.replace(/,/g, '').replace(/[^0-9.]/g, '');
+    if (!stripped) return '';
+    const dot = stripped.indexOf('.');
+    const integer = dot === -1 ? stripped : stripped.slice(0, dot);
+    const decimals = dot === -1 ? '' : stripped.slice(dot + 1).replace(/\./g, '').slice(0, 2);
+    const formatted = Math.min(Number(integer || 0), Number.MAX_SAFE_INTEGER).toLocaleString('en-US');
+    return dot === -1 ? formatted : `${formatted}.${decimals}`;
+  }
+  function renderCashDifference() {
+    const difference = Math.round((cashReceived() - total()) * 100) / 100;
+    $('cash-difference-label').textContent = difference >= 0 ? 'Change due' : 'Amount remaining';
+    $('cash-difference-value').textContent = money(Math.abs(difference));
+    $('cash-difference').classList.toggle('underpaid', difference < 0);
+  }
   const missingTech = () => state.groups.some(group => !group.tech && group.lines.some(filled));
   const count = () => allLines().filter(filled).length + allLines().reduce((sum, item) => sum + visibleAddons(item).length, 0);
   const findLine = id => { for (const group of state.groups) { const item = group.lines.find(line => line.id === id); if (item) return { group, item }; } return null; };
@@ -155,6 +172,12 @@
     $('payment-methods').innerHTML = methods.map(([id, label, icon]) => `<button type="button" data-method="${id}" class="${state.paymentMethod === id ? 'selected' : ''}" aria-pressed="${state.paymentMethod === id}"><img src="${asset}${icon}" alt="">${label}</button>`).join('') + `<button type="button" data-more="1" aria-expanded="${state.showMore}">··· ${state.showMore ? 'Less' : 'More'}</button>`;
     $('payment-extra').hidden = !state.showMore;
     $('payment-extra').innerHTML = extraMethods.map(([id, label, icon]) => `<button type="button" data-method="${id}" class="${state.paymentMethod === id ? 'selected' : ''}" aria-pressed="${state.paymentMethod === id}"><img src="${asset}${icon}" alt="">${label}</button>`).join('');
+    $('cash-payment-panel').hidden = state.paymentMethod !== 'cash';
+    if (state.paymentMethod === 'cash') {
+      if (!state.cashEdited) state.cashAmount = formatCashAmount(total());
+      $('cash-amount').value = state.cashAmount;
+      renderCashDifference();
+    }
     $('receipt-choices').innerHTML = ['No Receipt', 'Send SMS', 'Print'].map(choice => `<button type="button" data-receipt="${choice}" class="${state.receipt === choice ? 'selected' : ''}" aria-pressed="${state.receipt === choice}">${choice}</button>`).join('');
     $('payment-lines').innerHTML = state.groups.filter(group => visibleLines(group).length).map(group => {
       const itemCount = visibleLines(group).reduce((sum, item) => sum + 1 + visibleAddons(item).length, 0);
@@ -191,7 +214,7 @@
       editButton.setAttribute('aria-disabled', String(editButton.disabled || missingTech()));
     } else {
       button.textContent = `Pay · ${money(total())}`;
-      button.disabled = !state.paymentMethod || missingTech() || !allLines().some(filled);
+      button.disabled = !state.paymentMethod || (state.paymentMethod === 'cash' && Math.round(cashReceived() * 100) < Math.round(total() * 100)) || missingTech() || !allLines().some(filled);
       button.setAttribute('aria-disabled', String(button.disabled));
     }
   }
@@ -206,7 +229,7 @@
 
   function setMode(mode) {
     state.mode = mode;
-    if (mode === 'checkout') state.paymentMethod = null;
+    if (mode === 'checkout') { state.paymentMethod = null; state.cashAmount = ''; state.cashEdited = false; }
     if (mode === 'edit') state.collapsed = false;
     const url = new URL(location.href);
     url.searchParams.delete('mode');
@@ -223,6 +246,8 @@
     state.search = '';
     state.hasPendingChanges = false;
     state.paymentMethod = null;
+    state.cashAmount = '';
+    state.cashEdited = false;
     state.receipt = 'No Receipt';
     state.tip = 0;
     state.tipType = 'amount';
@@ -490,7 +515,7 @@
     if (button.dataset.paymentRemoveAddon) { const [id, index] = button.dataset.paymentRemoveAddon.split('|'); const found = findLine(id); if (found) found.item.addons.splice(Number(index), 1); render(); return; }
     if (button.dataset.addOn) { const found = findLine(button.dataset.addOn); if (found) openAddServices(found.group.id, found.item.id); return; }
     if (button.dataset.changeService) { openChangeService(button.dataset.changeService); return; }
-    if (button.dataset.method) { state.paymentMethod = button.dataset.method; renderPayment(); renderAction(); return; }
+    if (button.dataset.method) { if (button.dataset.method === 'cash' && state.paymentMethod !== 'cash') { state.cashAmount = formatCashAmount(total()); state.cashEdited = false; } state.paymentMethod = button.dataset.method; renderPayment(); renderAction(); return; }
     if (button.dataset.more) { state.showMore = !state.showMore; renderPayment(); return; }
     if (button.dataset.receipt) { state.receipt = button.dataset.receipt; renderPayment(); return; }
     if (button.dataset.tipType) { state.tipType = button.dataset.tipType; state.tipChoice = null; renderTipValues(); return; }
@@ -525,6 +550,8 @@
   $('change-service-search').addEventListener('input', event => { state.changeServiceSearch = event.target.value; renderChangeServices(); });
   $('discount-values').addEventListener('input', event => { if (event.target.id === 'discount-custom-value') { const value = Number(event.target.value); state.discountValue = event.target.value === '' || !Number.isFinite(value) || value < 0 ? null : value; $('save-discount').disabled = state.discountValue === null; } });
   $('tip-values').addEventListener('input', () => { state.tipChoice = null; updateTipSave(); });
+  $('cash-amount').addEventListener('input', event => { state.cashEdited = true; state.cashAmount = sanitizeCashAmount(event.target.value); event.target.value = state.cashAmount; renderCashDifference(); renderAction(); });
+  $('cash-amount').addEventListener('blur', event => { if (state.cashAmount) { state.cashAmount = formatCashAmount(cashReceived()); event.target.value = state.cashAmount; } });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') closeTechMenu();
     const modalItem = event.target.closest('[data-modal-item]');
@@ -560,7 +587,7 @@
   }
   window.addEventListener('popstate', () => {
     state.mode = new URLSearchParams(location.search).get('orderMode') === 'checkout' ? 'checkout' : 'edit';
-    if (state.mode === 'checkout') state.paymentMethod = null;
+    if (state.mode === 'checkout') { state.paymentMethod = null; state.cashAmount = ''; state.cashEdited = false; }
     if (state.mode === 'edit') state.collapsed = false;
     render();
   });
