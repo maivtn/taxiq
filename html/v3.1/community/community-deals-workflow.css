@@ -19,3 +19,13 @@
 
 /* Owner-only entry points retain the existing Deal modules. */
 .community-deals-business{display:flex;gap:7px;flex-wrap:wrap;width:100%;padding:10px 0;border-top:1px solid #e1e5ee}.community-deals-business .community-deals-tab{min-height:44px;flex:0 1 auto}.community-deals-business [aria-pressed="true"]{background:#eceaff;color:#4338a0;border-color:#b9b1eb}@media(max-width:850px){.community-deals-business{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.community-deals-business .community-deals-tab{white-space:normal;text-align:center;justify-content:center;min-width:0}}@media(max-width:480px){.community-deals-business{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Keep every deal destination available while giving the results room on phones. */
+@media(max-width:480px){
+ .community-deals-nav{gap:8px;margin-bottom:10px;padding-bottom:10px}
+ .community-deals-nav-tabs,.community-deals-business{display:flex;flex-wrap:nowrap;width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+ .community-deals-nav-tabs{gap:6px;padding-bottom:5px}
+ .community-deals-business{gap:6px;padding:8px 0 5px}
+ .community-deals-tab,.community-deals-business .community-deals-tab{flex:0 0 auto;min-height:42px;white-space:nowrap;justify-content:center;scroll-snap-align:start}
+ .community-deals-post{min-height:42px}
+}

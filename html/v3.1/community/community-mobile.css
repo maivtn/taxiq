@@ -616,3 +616,8 @@ body #feedView .feed-action[data-blog-create] .feed-icon .community-action-icon 
   body.embedded #pagesView .page-searchbar { margin-bottom:8px; }
   body.embedded #blogView > .feature-layout { margin-top:8px!important; }
 }
+
+@media(max-width:350px){
+ body.embedded #feedView #feedActions > .feed-action{flex-direction:column;justify-content:center;min-height:54px;gap:2px}
+ body.embedded #feedView #feedActions > .feed-action > span:last-child{width:100%;text-align:center;white-space:nowrap;font-size:10px}
+}

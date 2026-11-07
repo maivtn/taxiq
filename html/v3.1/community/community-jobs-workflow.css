@@ -143,3 +143,15 @@
 .jobs-inline-mic{display:inline-flex;vertical-align:middle;margin:0 2px}.jobs-inline-mic .community-action-icon{width:16px;height:16px;flex:none}
 
 .po-availability-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;overflow:auto;margin-bottom:16px}.po-availability-week>div{min-width:64px;padding:9px;border:1px solid #e6e8f0;border-radius:10px;text-align:center}.po-availability-week small{display:block;margin-top:6px}[data-po-trade-catalog] details{padding:10px 0}[data-po-trade-catalog] label{display:flex;gap:6px;padding:8px;font-size:14px}.jobs-field[hidden]{display:none!important}
+
+/* One scrollable row keeps the job destinations reachable on narrow screens. */
+@media(max-width:767px){
+ .jobs-workflow-head .jobs-nav{display:flex;flex-wrap:nowrap;width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+ .jobs-workflow-head .jobs-tab{flex:0 0 auto;min-height:44px;flex-direction:row;gap:5px;padding:8px 10px;white-space:nowrap;scroll-snap-align:start}
+ .jobs-workflow-head .jobs-tab span{white-space:nowrap}
+}
+@media(max-width:767px){
+ body.embedded #jobsView .jobs-workflow-head .jobs-nav{display:flex;grid-template-columns:none;grid-auto-flow:initial;flex-wrap:nowrap;overflow-x:auto;width:100%;gap:4px;padding:4px}
+ body.embedded #jobsView .jobs-workflow-head .jobs-tab{flex:0 0 auto;min-height:44px;flex-direction:row;gap:5px;padding:8px 10px;white-space:nowrap}
+ body.embedded #jobsView .jobs-workflow-head .jobs-tab span{white-space:nowrap}
+}
