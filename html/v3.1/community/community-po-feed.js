@@ -6,11 +6,19 @@
   function slots(){
     const feed=document.getElementById('feedView'),composer=document.getElementById('feedComposerCard');
     if(!feed||!composer)return null;
+    let shortcuts=document.getElementById('communityPOShortcuts');
+    if(!shortcuts){
+      shortcuts=document.createElement('nav');shortcuts.id='communityPOShortcuts';shortcuts.className='community-po-shortcuts';shortcuts.setAttribute('aria-label','Community features');
+      const items=[['shop','🏬','My storefront','Manage your storefront'],['transfer','🔑','Salon transfers','Buy or sell a salon'],['realestate','🏘️','Real Estate','Property listings'],['food','🍜','Food & Restaurants','Food · deals · fanpages']];
+      for(const [name,icon,title,description] of items){const button=document.createElement('button');button.type='button';button.dataset.communityShortcut=name;button.className='community-po-shortcut'+(name==='food'?' community-po-shortcut-food':'');button.innerHTML='<span class="community-po-shortcut-icon" aria-hidden="true">'+(name==='food'?'':icon)+'</span><span class="community-po-shortcut-copy"><strong>'+title+'</strong><small>'+description+'</small></span><span class="community-po-shortcut-arrow" aria-hidden="true">→</span>'+(name==='food'?'<span class="community-po-shortcut-badge">FEATURED</span>':'');shortcuts.append(button);}
+      composer.before(shortcuts);
+    }
     let stories=document.getElementById('communityPOStories'),people=document.getElementById('communityPOPeople');
     if(!stories){stories=document.createElement('div');stories.id='communityPOStories';stories.className='community-po-feed';stories.hidden=true;composer.after(stories);}
     if(!people){people=document.createElement('div');people.id='communityPOPeople';people.className='community-po-feed';people.hidden=true;}
     if(people.previousElementSibling!==stories)stories.after(people);
     const visible=!feed.classList.contains('hide')&&!feed.classList.contains('deal-mode');
+    shortcuts.hidden=!visible;
     stories.hidden=!visible||!stories.firstElementChild;people.hidden=!visible||!people.firstElementChild;
     return {feed,stories,people,visible};
   }
@@ -29,6 +37,7 @@
   }
   function schedule(){clearTimeout(timer);timer=setTimeout(refresh,80);}
   document.addEventListener('click',async event=>{
+    const shortcut=event.target.closest('[data-community-shortcut]');if(shortcut){event.preventDefault();route(shortcut.dataset.communityShortcut);return;}
     const root=event.target.closest('#communityPOStories,#communityPOPeople');if(!root)return;
     const button=event.target.closest('button');if(!button)return;
     event.preventDefault();event.stopPropagation();

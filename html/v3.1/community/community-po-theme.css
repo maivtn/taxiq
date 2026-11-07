@@ -1,5 +1,19 @@
 /* Visual tokens and controls from the retained Community prototype.
    Scoped to added PO modules; content, state and navigation stay with each module. */
+.community-po-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0 18px}
+.community-po-shortcuts[hidden]{display:none!important}
+.community-po-shortcut{position:relative;display:flex;align-items:center;gap:10px;min-width:0;min-height:74px;padding:11px 13px;border:1px solid #dde3ee;border-radius:14px;background:#fff;color:#27314a;text-align:left;box-shadow:0 4px 13px #25304709;cursor:pointer;font:inherit}
+.community-po-shortcut-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:11px;background:#f1eeff;font-size:21px}
+.community-po-shortcut-copy{flex:1;min-width:0}.community-po-shortcut-copy strong{display:block;font-size:13px;line-height:1.35;font-weight:750}.community-po-shortcut-copy small{display:block;margin-top:2px;font-size:11px;line-height:1.35;color:#737a8d}
+.community-po-shortcut-arrow{flex:none;color:#7951ec;font-size:20px}
+.community-po-shortcut:hover{border-color:#b7ace9}.community-po-shortcut:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
+.community-po-shortcut-food{border-color:#ef995f;background:linear-gradient(112deg,#fff8ee,#fff0df 62%,#ffdcc4);box-shadow:0 8px 20px #c75b251c}
+.community-po-shortcut-food .community-po-shortcut-icon{width:43px;height:43px;background:#f0d2b9 url("modules/hub-tools/media/dbaf5871be9452a3.jpg") center/cover no-repeat}
+.community-po-shortcut-food strong{color:#8a3b17}.community-po-shortcut-food small{color:#a35a37;font-weight:700}
+.community-po-shortcut-food .community-po-shortcut-arrow{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e66f2e;color:#fff;line-height:1}
+.community-po-shortcut-badge{position:absolute;top:-8px;right:11px;border-radius:999px;padding:2px 7px;background:#e66f2e;color:#fff;font-size:9px;font-weight:900;letter-spacing:.06em}
+@media(max-width:1023px){.community-po-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.community-po-shortcuts{gap:8px;margin-bottom:14px}.community-po-shortcut{min-height:72px;padding:9px 8px;gap:7px;border-radius:10px}.community-po-shortcut-icon{width:28px;height:28px;font-size:19px}.community-po-shortcut-copy strong{font-size:11px}.community-po-shortcut-copy small{font-size:10px}.community-po-shortcut-arrow{font-size:16px}.community-po-shortcut-food .community-po-shortcut-icon{width:34px;height:38px}.community-po-shortcut-food .community-po-shortcut-arrow{width:19px;height:19px}.community-po-shortcut-badge{font-size:8px}}
 :host,.native-html {
   --ink:#20243a;--ink2:#44516a;--muted:#737a8d;--mut:#737a8d;
   --line:#e6e8f0;--bg:#f7f8fc;--surface:#fff;--surface2:#f3f5fa;
