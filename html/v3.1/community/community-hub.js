@@ -176,7 +176,7 @@
       connectSource.searchParams.set('section',connectSection);for(const key of ['member','role','account'])if(params.get(key))connectSource.searchParams.set(key,params.get(key));
       ensurePane(view==='connect'?connect:community);
       applyLanguage();notifyRequest();setView(view,false);notifyHost({type:'nexora-community-ready'});if(!context.suppressAutoTour&&!localStorage.getItem(tourSeenKey()))setTimeout(()=>{if(!context.extraActive?.()&&!tourState.active&&!communityModalOpen)startTour();},800);
-      return {navigate:(route,routeContext)=>receiveHost({type:'nexora-community-navigate',route,context:routeContext}),setLanguage:language=>receiveHost({type:'nexora-community-language',language}),closeDetail:()=>receiveHost({type:'nexora-community-close-detail'})};
+      return {restoreFeed:()=>setView('feed',false),navigate:(route,routeContext)=>receiveHost({type:'nexora-community-navigate',route,context:routeContext}),setLanguage:language=>receiveHost({type:'nexora-community-language',language}),closeDetail:()=>receiveHost({type:'nexora-community-close-detail'})};
   }
   window.NEXORA_COMMUNITY_HUB={mount,start};
   if(document.getElementById('communityPane')&&document.getElementById('connectPane'))start(document);

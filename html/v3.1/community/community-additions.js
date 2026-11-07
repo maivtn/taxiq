@@ -24,7 +24,11 @@
     const menu=root.getElementById('ecosystemMenu');
     const heading=root.querySelector('.community-heading h1');
     const back=document.createElement('button');back.type='button';back.className='community-back-to-feed';back.hidden=true;
-    back.textContent='← Back to Feed';back.addEventListener('click',()=>navigate('feed'));
+    back.textContent='← Back to Feed';back.addEventListener('click',()=>{
+      // Update the shell route even if its initial module mount is still finishing.
+      window.navigateCommunityHub?.('feed');
+      if(current)navigate('feed',{},true);
+    });
     root.querySelector('.community-heading').prepend(back);
     styles.textContent+=' .community-back-to-feed{display:inline-flex;align-items:center;justify-content:center;flex:none;min-height:44px;padding:9px 13px;border:1px solid #dedcf1;border-radius:9px;background:#fff;color:#5548c8;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.community-back-to-feed[hidden]{display:none!important}.community-back-to-feed:hover{background:#efedff}.community-back-to-feed:focus-visible{outline:3px solid #a99fff;outline-offset:2px}@container community (max-width:650px){.community-back-to-feed{font-size:12px;padding:8px 10px}}';
     styles.textContent+=' .app.community-extra-open .top{position:relative;flex:0 0 auto;z-index:10}.app.community-extra-open .workspace{flex:1 1 0%;min-height:0;overflow:hidden}.app.community-extra-open .community-back{display:none!important}.community-extra-pane.community-document-pane{overflow:hidden}.community-document-pane>section{height:100%;min-height:0;overflow:hidden}.community-document-pane iframe{display:block;width:100%;height:100%;border:0}';
@@ -104,7 +108,8 @@
     async function navigate(route,context={},fromHost=false){
       const request=++generation;
       if(!supports(route)){
-        deactivate();original.navigate(route,context);return;
+        deactivate();if(route==='feed')original.restoreFeed();else original.navigate(route,context);
+        if(!fromHost)notify({type:'nexora-community-route',route});return;
       }
       if(route==='transfer'){
         deactivate();original.navigate('jobs',{...context,jobsTab:'transfer'});return;
