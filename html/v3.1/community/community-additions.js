@@ -113,6 +113,9 @@
           api.window.NEXORA_COMMUNITY_MODULE?.setLanguage('en');
           await api.window.NEXORA_COMMUNITY_MODULE?.navigate?.(route,routeContext);
           if(request!==generation)return;
+          // The tools module is reused for Photo/video, Reels and Live video.
+          // Reset its own scroll area as well as the outer pane on each route.
+          api.root.querySelector('.native-body')?.scrollTo(0,0);
           api.root.host.hidden=false;
         }
         if(request!==generation)return;
