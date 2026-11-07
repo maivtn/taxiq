@@ -3,7 +3,7 @@
 
   const initialParams = new URLSearchParams(location.search);
   const initialMode = initialParams.get('orderMode') || initialParams.get('mode');
-  const asset = '../../assets/pos-payment/';
+  const asset = '../assets/pos-payment/';
   const catalog = [
     { category: 'Pedicure', items: [['President 7 Star', 499, 70], ['Bitcoin 24k Gold', 99, 75], ['Paris Pearl', 75, 60], ['Milk and Honey', 55, 45], ['Classic Pedicure', 40, 30]] },
     { category: 'Manicure', items: [['Milk & Honey', 50, 30], ['Gel Shellac Manicure', 45, 30], ['Deluxe Manicure', 35, 30], ['Classic Manicure', 25, 30]] },
