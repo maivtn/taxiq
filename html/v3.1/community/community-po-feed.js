@@ -8,7 +8,8 @@
     if(!feed||!composer)return null;
     let stories=document.getElementById('communityPOStories'),people=document.getElementById('communityPOPeople');
     if(!stories){stories=document.createElement('div');stories.id='communityPOStories';stories.className='community-po-feed';stories.hidden=true;composer.after(stories);}
-    if(!people){people=document.createElement('div');people.id='communityPOPeople';people.className='community-po-feed';people.hidden=true;const posts=document.getElementById('feedPosts');(posts||stories).before(people);}
+    if(!people){people=document.createElement('div');people.id='communityPOPeople';people.className='community-po-feed';people.hidden=true;}
+    if(people.previousElementSibling!==stories)stories.after(people);
     const visible=!feed.classList.contains('hide')&&!feed.classList.contains('deal-mode');
     stories.hidden=!visible||!stories.firstElementChild;people.hidden=!visible||!people.firstElementChild;
     return {feed,stories,people,visible};

@@ -1,0 +1,26 @@
+/* Photo fallbacks for prototype avatars; inline or uploaded images keep priority. */
+:root,:host{--community-avatar-sheet:url('/html/v3.1/community/modules/hub-tools/media/ef1114d98bfcaca6.jpg')}
+:is(.feed-avatar,.compose-avatar,.post-avatar,.community-feed-post-avatar,.community-social-comment-avatar,
+.story-avatar,.group-member-avatar,.page-person-avatar,.page-follower-avatar,.message-avatar,
+.social-live-avatar,.jobs-avatar,.member-hit-avatar,.chat-avatar,.call-avatar,.chat-inline-avatar,
+.nexora-drawer-avatar,.deal-card-avatar,.page-avatar,.page-detail-avatar,.page-preview-avatar,
+#privacyPanel .person .avatar):not([style*="url("]){
+  background-image:var(--community-avatar-sheet)!important;
+  background-size:300% 200%!important;
+  background-position:var(--sample-avatar-x,0%) var(--sample-avatar-y,0%)!important;
+  background-repeat:no-repeat!important;
+  color:transparent!important;
+  font-size:0!important;
+  overflow:hidden;
+}
+.community-feed-post-avatar,.post-avatar,.story-avatar{--sample-avatar-x:50%;--sample-avatar-y:0%}
+.community-social-comment-avatar,.group-member-avatar,.page-follower-avatar{--sample-avatar-x:100%;--sample-avatar-y:0%}
+.jobs-avatar,.member-hit-avatar{--sample-avatar-x:0%;--sample-avatar-y:100%}
+.chat-avatar,.call-avatar,.message-avatar,.chat-inline-avatar{--sample-avatar-x:50%;--sample-avatar-y:100%}
+.deal-card-avatar,.page-avatar,.page-detail-avatar,.page-preview-avatar,.nexora-drawer-avatar,.social-live-avatar{--sample-avatar-x:100%;--sample-avatar-y:100%}
+.story-tile:nth-child(6n+2) .story-avatar,.feed-post:nth-child(6n+1) .post-avatar{--sample-avatar-x:0%;--sample-avatar-y:0%}
+.story-tile:nth-child(6n+3) .story-avatar,.feed-post:nth-child(6n+2) .post-avatar{--sample-avatar-x:50%;--sample-avatar-y:0%}
+.story-tile:nth-child(6n+4) .story-avatar,.feed-post:nth-child(6n+3) .post-avatar{--sample-avatar-x:100%;--sample-avatar-y:0%}
+.story-tile:nth-child(6n+5) .story-avatar,.feed-post:nth-child(6n+4) .post-avatar{--sample-avatar-x:0%;--sample-avatar-y:100%}
+.story-tile:nth-child(6n+6) .story-avatar,.feed-post:nth-child(6n+5) .post-avatar{--sample-avatar-x:50%;--sample-avatar-y:100%}
+.story-tile:nth-child(6n+1) .story-avatar,.feed-post:nth-child(6n+6) .post-avatar{--sample-avatar-x:100%;--sample-avatar-y:100%}

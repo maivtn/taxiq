@@ -11,3 +11,4 @@
 
 /* Username typography from the PO friend-request component. */
 .community-po-feed .people-handle,.community-po-feed .person-profile-handle{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#6655c9;font-size:10px;font-weight:750;line-height:1.3}.community-po-feed .people-handle{margin:0 0 4px}
+#communityPOPeople .people-section{margin-top:0}
