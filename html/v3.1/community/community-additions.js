@@ -56,7 +56,7 @@
       for(const [key,value] of params)url.searchParams.set(key,value);
       for(const [key,value] of Object.entries(routeContext))if(value!=null)url.searchParams.set(key,value);
       url.searchParams.set('embedded','1');url.searchParams.set('lang','en');url.searchParams.set('section',current);
-      const task=window.NEXORA_NATIVE.mount(host,url,{onMessage:receive,navigate:url=>location.assign(url)})
+      const task=window.NEXORA_NATIVE.mount(host,url,{stylesheet:new URL('community-po-theme.css?v=20261107-ui-sync1',baseURL).href,onMessage:receive,navigate:url=>location.assign(url)})
         .catch(error=>{modules.delete(key);host.remove();throw error;});
       modules.set(key,task);return task;
     }

@@ -27,6 +27,11 @@
       const base = node.tagName === 'STYLE' ? url : new URL(node.getAttribute('href'), url);
       return css(node.tagName === 'STYLE' ? node.textContent : await read(base.href), base);
     }));
+    // Apply the retained Community visual language after the PO's component styles.
+    if (options.stylesheet) {
+      const themeURL = new URL(options.stylesheet, url);
+      styles.push(css(await read(themeURL.href), themeURL));
+    }
     const sources = await Promise.all(scripts.map(async node => {
       const scriptURL = node.src ? new URL(node.getAttribute('src'), url) : url;
       return {url: scriptURL.href, code: node.src ? await read(scriptURL.href) : node.textContent};
