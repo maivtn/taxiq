@@ -155,3 +155,19 @@
  body.embedded #jobsView .jobs-workflow-head .jobs-tab{flex:0 0 auto;min-height:44px;flex-direction:row;gap:5px;padding:8px 10px;white-space:nowrap}
  body.embedded #jobsView .jobs-workflow-head .jobs-tab span{white-space:nowrap}
 }
+
+.jobs-matchline{display:flex;align-items:flex-start;gap:10px;margin:12px 0;padding:10px 12px;border-radius:10px;background:#eef7f1;color:#357351;font-size:11px;line-height:1.45}
+.jobs-matchline.medium{background:#fff6e5;color:#8e6627}
+.jobs-matchline strong{font-size:14px;white-space:nowrap}
+.jobs-matchline span{min-width:0;overflow-wrap:anywhere}
+.jobs-worker-keywords{display:flex;gap:6px;overflow-x:auto;padding:8px 0 10px;scrollbar-width:thin}
+.jobs-worker-keywords .btn{flex:none;white-space:nowrap}
+.jobs-worker-keywords [aria-pressed="true"]{background:#eee9ff;border-color:#cfc2ff;color:#6540c8}
+.jobs-transfer-templates{margin:0 0 16px}
+.jobs-transfer-templates h3{font-size:17px;margin:0 0 4px}
+.jobs-transfer-templates>p{font-size:12px;color:#64708a;margin:0 0 10px}
+.jobs-transfer-templates>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.jobs-transfer-templates article{padding:14px;min-width:0}
+.jobs-transfer-templates h4{margin:0 0 6px;font-size:14px}
+.jobs-transfer-templates article p{font-size:11px;min-height:50px}
+@media(max-width:700px){.jobs-transfer-templates>div{grid-template-columns:1fr}.jobs-transfer-templates article p{min-height:0}}
