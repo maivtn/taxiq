@@ -24,10 +24,12 @@
     const menu=root.getElementById('ecosystemMenu');
     const heading=root.querySelector('.community-heading h1');
     const back=document.createElement('button');back.type='button';back.className='community-back-to-feed';back.hidden=true;
-    back.textContent='← Back to Feed';back.addEventListener('click',()=>{
-      // Update the shell route even if its initial module mount is still finishing.
+    back.textContent='← Back to Feed';back.addEventListener('click',event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      // Close the active module first, then synchronize the outer URL and sidebar.
+      navigate('feed',{},true);
       window.navigateCommunityHub?.('feed');
-      if(current)navigate('feed',{},true);
     });
     root.querySelector('.community-heading').prepend(back);
     styles.textContent+=' .community-back-to-feed{display:inline-flex;align-items:center;justify-content:center;flex:none;min-height:44px;padding:9px 13px;border:1px solid #dedcf1;border-radius:9px;background:#fff;color:#5548c8;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.community-back-to-feed[hidden]{display:none!important}.community-back-to-feed:hover{background:#efedff}.community-back-to-feed:focus-visible{outline:3px solid #a99fff;outline-offset:2px}@container community (max-width:650px){.community-back-to-feed{font-size:12px;padding:8px 10px}}';
