@@ -1260,8 +1260,9 @@ function pageCard(p){return `<article class="page-card card"><button type="butto
     function storyItems(){
       const now=Date.now();
       const mine=state.stories.filter(story=>Number(story.expiresAt)>now).map(story=>({...story,sample:false}));
-      const samples=samplePages.slice(0,4).map((page,index)=>({id:'sample-story-'+index,name:page.name,body:page.aboutVi,bodyEn:page.aboutEn,image:page.cover,sample:true}));
-      return [...mine,...samples];
+      const samples=samplePages.map((page,index)=>({id:'sample-story-'+index,name:page.name,body:page.aboutVi,bodyEn:page.aboutEn,image:page.cover,sample:true}));
+      const pagePosts=samplePagePosts().map(post=>({id:'sample-story-'+post.id,name:post.author,body:post.body,bodyEn:post.body,image:post.image||samplePages.find(page=>page.id===post.pageId)?.cover,sample:true}));
+      return [...mine,...samples,...pagePosts];
     }
     function storyRail(){
       const items=storyItems();
