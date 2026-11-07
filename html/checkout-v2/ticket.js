@@ -26,7 +26,7 @@
   let nextId = 1;
   const line = (name, category, price, status = '', addons = [], custom = false) => ({ id: `line-${nextId++}`, name, category, price, status, addons: addons.map(([name, price]) => ({ name, price, discount: 0, custom: false })), custom, discount: 0 });
   const state = {
-    mode: initialMode === 'checkout' ? 'checkout' : 'edit',
+    mode: initialMode === 'checkout' || initialMode === 'success' ? initialMode : 'edit',
     groups: [
       { id: 'andy', tech: 'ANDY', lines: [
         line('Paris Pearl', 'Pedicure', 75, '', [['Hot Stone Massage Added on', 10]]),
@@ -37,7 +37,7 @@
         line('test', '', 2, '', [], true),
       ] },
     ],
-    activeGroup: 'andy', category: 'All', search: '', paymentMethod: null, cashAmount: '', cashEdited: false, hasPendingChanges: true,
+    activeGroup: 'andy', category: 'All', search: '', paymentMethod: initialMode === 'success' ? 'cash' : null, cashAmount: '', cashEdited: false, hasPendingChanges: true,
     receipt: 'No Receipt', tip: 0, tipType: 'amount', tipChoice: null,
     discountAll: false, showMore: false, collapsed: false, replacingLineId: null, addonTargetLineId: null, pendingRemoveLineId: null,
     addServicesGroupId: null, addServicesTargetLineId: null, addServicesCategoryIndex: 0, addServicesSearch: '', addServicesQuantities: {},
@@ -219,8 +219,30 @@
     }
   }
 
+  function renderSuccess() {
+    const discount = allLines().filter(filled).reduce((sum, item) => sum + item.discount + visibleAddons(item).reduce((addonSum, addon) => addonSum + (addon.discount || 0), 0), 0);
+    const payment = [...methods, ...extraMethods].find(method => method[0] === state.paymentMethod)?.[1] || 'Cash';
+    const receipt = state.receipt;
+    const customer = 'MAI TEST UPLOAD IMAGE 1';
+    const printIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>';
+    const receiptIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 2v20l4-2 4 2 4-2 4 2V2l-4 2-4-2-4 2-4-2Z"/><path d="M8 10h8M8 14h8"/></svg>';
+    const smsIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8A8.5 8.5 0 0 1 12.5 20a8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9 8.4 8.4 0 0 1 12.5 3h.5a8.5 8.5 0 0 1 8 8v.5Z"/></svg>';
+    const items = state.groups.flatMap(group => visibleLines(group).flatMap(item => {
+      const name = item.custom ? escape(item.name) : `<span class="success-category">${escape(item.category)} · </span>${escape(item.name)}`;
+      const main = `<div class="success-item"><div><strong>${name}</strong><small>Tech. ${escape(group.tech || 'Technician needed')}</small></div><b>${money(item.price)}</b></div>`;
+      const addons = visibleAddons(item).map(addon => `<div class="success-item success-addon"><div><strong>↳ ${escape(addon.name)}</strong></div><b>${money(addon.price)}</b></div>`).join('');
+      return main + addons;
+    })).join('');
+    $('success-workspace').innerHTML = `<div class="success-grid"><section class="success-card success-result"><span class="success-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><p class="success-eyebrow">Checkout complete</p><h1>Payment complete</h1><p class="success-subtitle">${customer}'s ticket is ready to close.</p><strong class="success-amount">${money(total())}</strong><dl class="success-facts"><div><dt>Payment</dt><dd>${escape(payment)}</dd></div><div><dt>Receipt</dt><dd>${escape(receipt)}</dd></div><div><dt>Ticket</dt><dd>#1</dd></div></dl><div class="success-actions"><button id="success-print" type="button">${printIcon} Print Receipt</button><button id="success-view" type="button">${receiptIcon} View saved receipt</button><button id="success-sms" type="button">${smsIcon} SMS</button><button id="success-next" type="button">Start next checkout <span aria-hidden="true">→</span></button></div></section><section class="success-card success-receipt" aria-label="Customer receipt"><header><div><p class="success-eyebrow">Customer receipt</p><h2>Quan Salon</h2><p>10401 LA VITA CT SAN DIEGO, Houston, Texas 300000, US</p><p>(111) 111-1111</p></div><span class="success-logo" aria-hidden="true">QS</span></header><dl class="success-receipt-facts"><div><dt>Customer</dt><dd>${customer}</dd></div><div><dt>Ticket</dt><dd>#1</dd></div><div><dt>Payment</dt><dd>${escape(payment)}</dd></div><div><dt>Status</dt><dd class="paid">Paid</dd></div></dl><div class="success-items-heading"><span>Service</span><span>Price</span></div><div class="success-items">${items}</div><dl class="success-totals"><div><dt>Subtotal</dt><dd>${money(subtotal() + discount)}</dd></div><div><dt>Discount</dt><dd class="discount">-${money(discount)}</dd></div><div><dt>Tip</dt><dd>${money(state.tip)}</dd></div><div><dt>Sales tax</dt><dd>$0.00</dd></div><div class="success-total"><dt>Total paid</dt><dd>${money(total())}</dd></div></dl><footer>Thank you for visiting!</footer></section></div>`;
+  }
+
   function render() {
+    const isSuccess = state.mode === 'success';
     document.body.classList.toggle('checkout-mode', state.mode === 'checkout');
+    $('ticket-workspace').hidden = isSuccess;
+    $('success-workspace').hidden = !isSuccess;
+    document.body.classList.toggle('success-mode', isSuccess);
+    if (isSuccess) { renderSuccess(); return; }
     $('back-button').querySelector('span').textContent = state.mode === 'checkout' ? 'Back to Edit' : 'Back';
     $('back-button').hidden = state.mode !== 'checkout';
     $('payment-area').hidden = state.mode !== 'checkout';
@@ -236,7 +258,7 @@
     url.searchParams.set('orderMode', mode);
     history.pushState({ mode }, '', url);
     render();
-    document.querySelector('.ticket-workspace').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    $(mode === 'success' ? 'success-workspace' : 'ticket-workspace').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function clearTicketData() {
@@ -269,7 +291,7 @@
     $('service-search').value = '';
     document.querySelector('.note-card textarea').value = '';
     document.querySelector('.reward-card input').value = '';
-    if (state.mode === 'checkout') setMode('edit');
+    if (state.mode !== 'edit') setMode('edit');
     else render();
   }
 
@@ -535,8 +557,14 @@
     if (button.id === 'receipt-print-preview') { renderReceiptPreview(); $('print-dialog').showModal(); return; }
     if (button.classList.contains('close-print')) { $('print-dialog').close(); return; }
     if (button.id === 'print-now') { window.print(); return; }
-    if (button.id === 'confirm-pay') { $('confirm-dialog').close(); return; }
+    if (button.id === 'confirm-pay') { $('confirm-dialog').close(); setMode('success'); return; }
     if (button.classList.contains('close-confirm')) { $('confirm-dialog').close(); return; }
+    if (button.id === 'success-print') { renderReceiptPreview(); $('print-dialog').showModal(); requestAnimationFrame(() => window.print()); return; }
+    if (button.id === 'success-view') { renderReceiptPreview(); $('print-dialog').showModal(); return; }
+    if (button.id === 'success-sms') { $('sms-message').textContent = `Thanks for visiting Quan Salon! Ticket #1: ${total().toFixed(2)} USD. Receipt: https://taxiq-nexora-touch.vercel.app/html/checkout-v2/index.html?orderMode=success`; $('sms-status').textContent = ''; $('send-sms-demo').disabled = false; $('sms-dialog').showModal(); return; }
+    if (button.id === 'success-next') { clearTicketData(); return; }
+    if (button.classList.contains('close-sms')) { $('sms-dialog').close(); return; }
+    if (button.id === 'send-sms-demo') { $('sms-status').textContent = 'SMS sent.'; button.disabled = true; return; }
   });
   document.addEventListener('change', event => {
     const field = event.target;
@@ -586,8 +614,10 @@
     history.replaceState({ mode: state.mode }, '', canonicalUrl);
   }
   window.addEventListener('popstate', () => {
-    state.mode = new URLSearchParams(location.search).get('orderMode') === 'checkout' ? 'checkout' : 'edit';
+    const nextMode = new URLSearchParams(location.search).get('orderMode');
+    state.mode = nextMode === 'checkout' || nextMode === 'success' ? nextMode : 'edit';
     if (state.mode === 'checkout') { state.paymentMethod = null; state.cashAmount = ''; state.cashEdited = false; }
+    if (state.mode === 'success' && !state.paymentMethod) state.paymentMethod = 'cash';
     if (state.mode === 'edit') state.collapsed = false;
     render();
   });

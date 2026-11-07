@@ -12,7 +12,7 @@
 </head>
 <body>
   <main class="page">
-    <section class="ticket-workspace" aria-label="Ticket #1">
+    <section id="ticket-workspace" class="ticket-workspace" aria-label="Ticket #1">
       <div class="workspace-heading">
         <button id="back-button" class="back-button" type="button">← <span>Back</span></button>
         <h1>Ticket #1</h1>
@@ -76,6 +76,7 @@
         </div>
       </div>
     </section>
+    <section id="success-workspace" class="success-workspace" aria-label="Payment complete" hidden></section>
   </main>
 
   <dialog id="add-services-dialog" class="add-services-dialog" aria-labelledby="add-services-title">
@@ -105,6 +106,7 @@
   <dialog id="tip-dialog" class="tip-dialog" aria-labelledby="tip-title"><div class="tip-content"><div class="tip-heading"><h2 id="tip-title">Tip</h2><div><button id="hand-to-customer" type="button">Hand to customer</button><button id="close-tip" type="button" aria-label="Close">×</button></div></div><div id="customer-tip-title" class="customer-tip-title" hidden><strong>Add a tip</strong></div><div class="tip-field"><strong>TIP AS</strong><div id="tip-type" class="tip-type"><button type="button" data-tip-type="amount" aria-pressed="true">Amount</button><button type="button" data-tip-type="percent" aria-pressed="false">Percent</button></div></div><div class="tip-field"><strong>VALUE</strong><div id="tip-values" class="tip-values"></div></div><div id="tip-calculated" class="tip-calculated" hidden></div><div class="tip-footer"><button id="remove-tip" type="button" hidden>No Tip</button><button id="save-tip" type="button" disabled>Add Tip</button></div></div></dialog>
   <dialog id="print-dialog" class="print-dialog" aria-labelledby="print-dialog-title"><div class="print-dialog-header"><div><small>PRINT PREVIEW</small><h2 id="print-dialog-title">Print Ticket</h2></div><button type="button" class="close-print" aria-label="Close">×</button></div><div id="print-pages" class="print-pages"></div><div class="print-dialog-footer"><button type="button" class="close-print">Close</button><button type="button" id="print-now">Print Ticket</button></div></dialog>
   <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title"><div><button class="close-confirm" type="button" aria-label="Close">×</button><h2 id="confirm-title">Payment summary</h2><p id="confirm-method"></p><strong id="confirm-total"></strong><div class="confirm-actions"><button class="close-confirm" type="button">Back</button><button id="confirm-pay" type="button">Pay</button></div></div></dialog>
+  <dialog id="sms-dialog" class="sms-dialog" aria-labelledby="sms-title"><div><header><div><p>MAI TEST UPLOAD IMAGE 1</p><h2 id="sms-title">Send receipt to (•••) •••-1111</h2></div><button class="close-sms" type="button" aria-label="Close">×</button></header><p>Review the message and phone number before sending.</p><section aria-label="Message preview"><strong>Message preview</strong><p id="sms-message"></p></section><p id="sms-status" role="status"></p><footer><button class="close-sms" type="button">Back to receipt</button><button id="send-sms-demo" type="button">Send receipt</button></footer></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
