@@ -1,0 +1,49 @@
+{
+  "results": [
+    {
+      "name": "Feed Story People owner 834",
+      "pass": true
+    },
+    {
+      "name": "Feed Story People owner 390",
+      "pass": true
+    },
+    {
+      "name": "Feed Story People staff 375",
+      "pass": true
+    },
+    {
+      "name": "Feed Story People staff 430",
+      "pass": true
+    },
+    {
+      "name": "Create Story from Feed and return",
+      "pass": true
+    },
+    {
+      "name": "Story shared to personal Feed and owner delete protected",
+      "pass": true
+    },
+    {
+      "name": "Feed story sample cover URL loads",
+      "pass": true
+    },
+    {
+      "name": "Connect and open profile directly from Feed suggestions",
+      "pass": true
+    },
+    {
+      "name": "Find people dialog directly from Feed",
+      "pass": true
+    },
+    {
+      "name": "Notifications accepts shared friend request",
+      "pass": true
+    },
+    {
+      "name": "Jobs invites respond using original workflow",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

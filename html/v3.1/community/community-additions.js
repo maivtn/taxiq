@@ -40,7 +40,7 @@
       generation++;
       if(!current&&pane.hidden)return;
       for(const task of modules.values())task.then(api=>api.window.NEXORA_COMMUNITY_MODULE?.deactivate?.());
-      current='';pane.hidden=true;document.body.classList.remove('community-extra-active');
+      current='';pane.hidden=true;queueMicrotask(refreshFeed);document.body.classList.remove('community-extra-active');
       if(frames.every(frame=>frame.hidden))frames[0].hidden=false;
       root.querySelector('.community-heading h1').textContent='Community';
     }
@@ -60,6 +60,15 @@
         .catch(error=>{modules.delete(key);host.remove();throw error;});
       modules.set(key,task);return task;
     }
+    window.NEXORA_COMMUNITY_FEED={async preview(){
+      if(current&&current!=='notifications')return null;
+      await window.NEXORA_COMMUNITY_PEOPLE.ready();
+      const api=await ensure('tools','modules/hub-tools/index.html');
+      if(current&&current!=='notifications')return null;
+      api.window.NEXORA_COMMUNITY_MODULE.setLanguage('en');return api.window.NEXORA_COMMUNITY_MODULE.feedPreview();
+    },request:id=>window.NEXORA_COMMUNITY_PEOPLE.request(id)};
+    function refreshFeed(){frames[0].contentWindow?.dispatchEvent(new Event('nexora-po-feed-refresh'));}
+    window.addEventListener('nexora-community-shared-changed',refreshFeed);
     function contact(data){
       navigate(data.type==='nexora-open-community-group'?'chatgroups':'connect');
       const frame=frames[1],send=()=>frame.contentWindow.postMessage(data.type==='nexora-open-community-group'?data:{type:'nexora-open-contact',contact:data.contact},location.origin);

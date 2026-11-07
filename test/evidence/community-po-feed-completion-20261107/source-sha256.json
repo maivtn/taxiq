@@ -1,0 +1,20 @@
+{
+  "html/v3.1/community-integration.js": "073c419bc8f87be82b3d51b8ec7d313a7278f9cc7c74cff05b753eb680ff3c94",
+  "html/v3.1/community.html": "67afb25544a1afb9c4fe6c60cc5e5911f395e1115517b52e4b0ab848e10aa23e",
+  "html/v3.1/community/community-additions.js": "17f4dc5afc6ebb14b41532a38af0c2d68db4ffc8e64c27bff5c93bb74eb44cc1",
+  "html/v3.1/community/community-group-workflow.js": "6c3e7b97b8a0bfae34ea167d6b7fa1f6e727309a580a60c9b2fbec554b4871df",
+  "html/v3.1/community/community-hub.js": "66b49b6c452870cac9fa922d7b8a8fb58f9719de275e9ea93e7c8213c7a0b7e7",
+  "html/v3.1/community/community-jobs-expansion.js": "280e7c6787354b6e7058092734d505d4afb2055aa207439f288b8d69c9434c34",
+  "html/v3.1/community/community-native.js": "c47bbd0da90c9b85a061db6b45d1bc38d6d82c0d46e32bf1e4b0c85c17aa48c3",
+  "html/v3.1/community/community-platform.js": "baa0cfbabaf85291f45df513766d5adbf50727b652c56c0cbd265c48b85ea733",
+  "html/v3.1/community/community-po-controls.js": "d2b6c03bf10e26956ebca9771a5970928bf2429b7227768cd18fe20195cf79cc",
+  "html/v3.1/community/modules/hub-tools/community-po-bridge.js": "3f429d5ffe9cdaeced2ba12cd0657011506d1377e0c429e72b5d18eb01f3f037",
+  "html/v3.1/community/modules/hub-tools/index.html": "7cc5f0da415c20562a4420624a2b7b14918570d1c6526eb5cc402453ce2e4b38",
+  "html/v3.1/community/nexora-community-complete.html": "26776cc4bfa853c9538fc58a61fa958c354a17b52e22dc6036d9a86b386dde9e",
+  "html/v3.1/community/nexora-community-prototype.html": "1dd3f02eecd2678ababe62588e0926871b55ba7151c955e82e55cae7e503cc87",
+  "html/v3.1/community/nexora-privacy-qr-layout.html": "c30afbfac86680b531068b7ccc1e389392d00c177d376b49198f44add69e7fae",
+  "html/v3.1/staff-community.html": "481ed1374019cdffa0ec37bc67022b74e4dc388b1f1f589891d2ddc3edce55f7",
+  "html/v3.1/community/community-po-feed.css": "8c68c4c1fa6698121ad23caef592982e22e53ae93208d462663d52bebda5fb7c",
+  "html/v3.1/community/community-po-feed.js": "6f00b416a80b9bb98ae530efa633a6f1e19c4b263d75b9a73b9e845d080cd691",
+  "tests/html/v3.1/community-po-feed.cjs": "10653fe7aa5ac456b5b92e9d6e0edf531cf1656e81ab3f716173d57cfeaed48f"
+}

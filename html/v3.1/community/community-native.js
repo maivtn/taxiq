@@ -72,6 +72,7 @@
           if (value && !/^(?:#|data:|blob:|javascript:|mailto:|tel:|sms:)/i.test(value)) node.setAttribute(attribute, new URL(value, url).href);
         }
       }
+      for(const node of [element,...element.querySelectorAll?.('[style]')||[]]){const value=node.getAttribute?.('style');if(value&&value.includes('url('))node.setAttribute('style',value.replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,quote,path)=>/^(?:data:|blob:|https?:|#)/.test(path)?all:'url("'+new URL(path,url).href+'")'));}
       for(const node of [element,...element.querySelectorAll?.('[onclick],[onchange],[oninput],[onsubmit]')||[]])for(const attribute of ['onclick','onchange','oninput','onsubmit']){
         const code=node.getAttribute?.(attribute);if(!code)continue;node.dataset.nativeAction=code;node.removeAttribute(attribute);node.addEventListener(attribute.slice(2),event=>{const result=scope.invoke?.(code,event,node);if(result===false){event.preventDefault();event.stopPropagation();}});
       }
