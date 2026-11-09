@@ -90,6 +90,28 @@ const server = http.createServer(async (request, response) => {
           assert.equal(await more.getAttribute('aria-expanded'), 'false');
           assert.equal(await more.evaluate(node => node.getRootNode().activeElement === node), true);
         });
+        await check('Blog and Messages live in More and retain their destinations', async () => {
+          const tabs = host.locator('.top .tabs');
+          assert.equal(await tabs.locator('[data-view="blog"],[data-view="connect"]').count(), 0);
+          for (const [view, route, destination] of [['blog','blog','#communityPane #blogView'],['connect','connect','#connectPane #messagesPanel']]) {
+            await more.click();
+            await menu.waitFor();
+            const item = menu.locator(`[data-quick-view="${view}"]`);
+            assert.equal(await item.count(), 1);
+            await item.click();
+            await page.waitForURL(url => url.searchParams.get('tab') === route);
+            await host.locator(destination).waitFor();
+            await menu.waitFor({state:'hidden'});
+            assert.equal(await more.getAttribute('aria-current'), 'page');
+            assert.equal(await tabs.locator('[data-view="blog"],[data-view="connect"]').count(), 0);
+            await page.reload();
+            await host.locator(destination).waitFor();
+            assert.equal(await more.getAttribute('aria-current'), 'page');
+          }
+          await tabs.locator('[data-view="feed"]').click();
+          await page.waitForURL(url => url.searchParams.get('tab') === 'feed');
+          assert.equal(await more.getAttribute('aria-current'), 'false');
+        });
         await check('outside click closes More and destinations still navigate', async () => {
           await more.click();
           await menu.waitFor();
