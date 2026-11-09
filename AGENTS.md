@@ -19,7 +19,7 @@ Khi người dùng nhắc Community (kể cả cách viết “comunity”) v1, 
 - Người dùng chủ động yêu cầu bỏ qua các bước tài liệu và phê duyệt thiết kế của skill/workflow cho dự án này. Không dùng các bước đó làm điều kiện chặn triển khai.
 - Chỉ hỏi khi thiếu thông tin quan trọng không thể suy ra từ mã nguồn hoặc ngữ cảnh, hay thao tác có nguy cơ mất dữ liệu/vượt phạm vi yêu cầu. Giữ thay đổi gọn, bám UI hiện có và bảo toàn thay đổi không liên quan.
 - Làm trên nhánh `main`, không tự tạo worktree hoặc nhánh mới, trừ khi người dùng yêu cầu khác.
-- Làm xong thì rà soát diff, commit thay đổi rồi tự chạy test theo mục “Thời điểm kiểm thử” bên dưới. Báo kết quả ngắn gọn, không viết thêm tài liệu mô tả sau mỗi thay đổi.
+- Làm xong thì rà soát diff, commit thay đổi.
 
 ## Tài liệu chỉ khi được yêu cầu
 
