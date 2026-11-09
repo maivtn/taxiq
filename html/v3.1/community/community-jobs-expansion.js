@@ -65,7 +65,7 @@ if(action==='new-service-offer')editor('service-offer');if(action==='new-transfe
       const score=row=>role()==='staff'?match(row).value:0;
       return rows.filter(row=>(!city||row.city===city)&&(!skill||String(row.skills).includes(skill))&&(!day||(row.availability||row.date)===day)).sort((a,b)=>sort==='date'?String(a.availability||a.date||'9999').localeCompare(String(b.availability||b.date||'9999')):score(b)-score(a));
     }
-    return {special,card,open,filter,match,render:renderExtra,label:key=>names[key]?po(...names[key]):null,tabs:()=>[...(role()==='staff'?[['matched','Sparkles'],['availability','calendar-days'],['offering','Wrench']]:[['workers','users-round']]),['invites','mail'],['services','Wrench'],['transfer','Store']]};
+    return {special,card,open,filter,match,render:renderExtra,label:key=>names[key]?po(...names[key]):null,tabs:()=>[...(role()==='staff'?[['matched','sparkles'],['availability','calendar-days'],['offering','wrench']]:[['workers','users-round']]),['invites','mail'],['services','wrench'],['transfer','store']]};
   }
   window.NEXORA_COMMUNITY_JOBS_EXTRAS={mount};
 })();
