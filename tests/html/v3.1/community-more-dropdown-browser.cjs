@@ -103,9 +103,13 @@ const server = http.createServer(async (request, response) => {
         });
         await open('feed');
         await check('Feed spacing and compact area regression', async () => {
-          await host.locator('.community-header-location').waitFor();
-          const area = await host.locator('.community-header-location').boundingBox();
-          if (width <= 800) assert.ok(area.width <= 125);
+          const location = host.locator(width <= 800 ? '#communityLocation' : '.community-header-location');
+          await location.waitFor();
+          const area = await location.boundingBox();
+          if (width <= 800) {
+            assert.ok(area.width <= 125);
+            assert.equal(await host.locator('.community-heading-tools').isVisible(), false);
+          }
           if (width > 800) {
             await page.frameLocator('#communityPane').locator('#feedTitle').waitFor();
             const tabs = await host.locator('.top .tabs').boundingBox();
