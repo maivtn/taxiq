@@ -61,7 +61,7 @@
     workspace.addEventListener('scroll',event=>{
       const scroller=event.target;
       if(!scroller.matches('.workspace,.native-body,.community-extra-pane')||scroller.closest('[hidden]'))return;
-      mobileNav.classList.toggle('is-docked',scroller.scrollTop>=mobileNav.offsetHeight&&mobileNav.offsetHeight>0);
+      mobileNav.classList.toggle('is-docked',scroller.scrollTop>=heading.offsetHeight+mobileNav.offsetHeight&&mobileNav.offsetHeight>0);
       mobileNav.style.setProperty('--community-nav-scroll',-Math.min(Math.max(0,scroller.scrollTop-heading.offsetHeight),mobileNav.offsetHeight)+'px');
       heading.style.setProperty('--community-header-scroll',-Math.min(Math.max(0,scroller.scrollTop),heading.offsetHeight)+'px');
     },{capture:true,passive:true});
