@@ -160,6 +160,7 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      if(account==='business'){
       const filters=jobs.locator('.jobs-worker-filters');await filters.locator('.ts-control').first().waitFor();
       assert.equal(await filters.locator('.ts-control svg').count(),2);
+      const arrows=await filters.locator('.ts-control').evaluateAll(nodes=>nodes.map(node=>{const style=getComputedStyle(node,'::after');return {content:style.content,right:style.right,width:style.width,padding:getComputedStyle(node).paddingRight};}));assert.ok(arrows.every(arrow=>arrow.content==='""'&&arrow.right==='16px'&&arrow.width==='16px'&&parseFloat(arrow.padding)>=44),JSON.stringify(arrows));
       const filterBox=await filters.boundingBox();assert.ok(filterBox.height<=40,JSON.stringify(filterBox));
       const choose=async(id,value)=>{await filters.locator('[data-worker-filter="'+id+'"] .ts-control').click();const option=filters.locator('.ts-dropdown .option[data-value="'+value+'"]');await option.waitFor();assert.equal(await option.locator('svg').count(),1);await option.click();};
       await choose('poWorkerGroup','nail');assert.equal(await jobs.locator('#poWorkerGroup').inputValue(),'nail');
@@ -189,8 +190,9 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      await editor.locator('[data-action=close-dialog]').first().click();
      await page.waitForFunction(()=>!document.querySelector('.community-extra-pane.community-composer-overlay'));
      await openComposer();await editor.locator('.social-add-more').click();await editor.locator('[data-action=social-more-live]').click();
-     await editor.locator('.social-live-avatar').waitFor();assert.equal((await editor.locator('.social-live-avatar').evaluate(node=>getComputedStyle(node).backgroundImage)).includes('nexora-bitcoin-nailbar.png'),account==='business');
-     await editor.locator('[data-action=close-dialog]').first().click();
+     await editor.locator('.social-live-avatar,[data-live-po-form=setup]').first().waitFor();
+     if(await editor.locator('[data-live-po-form=setup]').count())await editor.locator('[data-live-po=close]').click();
+     else{assert.equal((await editor.locator('.social-live-avatar').evaluate(node=>getComputedStyle(node).backgroundImage)).includes('nexora-bitcoin-nailbar.png'),account==='business');await editor.locator('[data-action=close-dialog]').first().click();}
      await page.waitForFunction(()=>!document.querySelector('.community-extra-pane.community-composer-overlay'));
      await open('privacy');const profile=hub.locator('#connectPane #privacyPanel .person .avatar');await profile.waitFor();
      assert.equal((await profile.evaluate(node=>getComputedStyle(node).backgroundImage)).includes('nexora-bitcoin-nailbar.png'),account==='business');
@@ -209,8 +211,15 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
       await open('reels');await nav.waitFor();
      }
     });
-    await check('Community rooms samples open chat and return',async()=>{
-     await open('live');const extra=hub.locator('.community-extra-pane'),cards=extra.locator('.live-card');await cards.first().waitFor();
+    await check('Community sample rooms open and return',async()=>{
+     await open('live');const extra=hub.locator('.community-extra-pane');await extra.locator('.live-card,.lv-directory-card').first().waitFor();
+     // The PO livestream directory replaces the older chat-only sample room screen.
+     if(await extra.locator('.lv-directory-card').count()){
+      const rooms=extra.locator('.lv-directory-card');assert.ok(await rooms.count()>=7);assert.ok((await rooms.allTextContents()).every(text=>text.includes('Sample')));
+      for(const index of [0,1]){const title=await rooms.nth(index).locator('strong').innerText();await rooms.nth(index).locator('[data-live-po=open]').click();await extra.locator('.lv-top h1').waitFor();assert.equal(await extra.locator('.lv-top h1').innerText(),title);await extra.locator('[data-live-po=back]').click();await rooms.first().waitFor();}
+      await extra.locator('[data-live-po=start]').click();await extra.locator('[data-live-po-form=setup]').waitFor();await extra.locator('[data-live-po=close]').click();await page.screenshot({path:path.join(output,`${width}-${account}-live.png`)});return;
+     }
+     const cards=extra.locator('.live-card');
      assert.equal(await cards.count(),7);assert.equal(await extra.getByText('No live rooms yet. Create a room.',{exact:true}).count(),0);
      await extra.locator('.live-hero [data-feed-kind=video]').click();const videoForm=extra.locator('#feed-form');await videoForm.waitFor();
      assert.equal(await videoForm.locator('[name=kind]').inputValue(),'video');

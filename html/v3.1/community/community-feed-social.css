@@ -155,4 +155,6 @@ body .dialog.community-social-lightbox .dialog-footer .btn{min-width:0;white-spa
 
 .community-feed-post-location{overflow-wrap:anywhere}
 
-body.embedded #feedView .community-social-card>p:has(+.community-po-post-meta){margin-bottom:4px}
+body.embedded #feedView .community-social-card>p:has(+.community-po-post-meta),body.embedded #feedView .community-social-card>p:has(+.listing-actions:empty+.community-po-post-meta){margin-bottom:4px}
+
+.community-social-card>.listing-actions:empty{display:none}
