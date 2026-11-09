@@ -26,7 +26,7 @@ const results=[],errors=[];
      await open('account','personal');const form=page.locator('[data-platform-profile]');await form.waitFor();
      const before=await page.evaluate(()=>window.NEXORA_COMMUNITY_SHARED.me());
      await form.locator('[name=name]').fill('Brian Nguyen');await form.locator('[name=displayNickname]').fill('Brian Nguyễn AI');await form.locator('[name=bio]').fill('Founder VLINKPAY');
-     const image=path.resolve(__dirname,'../../../..','html/assets/icon-oneqr/issue-2040-oneqr-camera-3d.png');
+     const image=path.resolve(__dirname,'../../..','html/assets/icon-oneqr/issue-2040-oneqr-camera-3d.png');
      for(const field of ['avatar','cover']){const chooser=page.waitForEvent('filechooser');await form.locator('[data-profile-pick='+field+']').click();await (await chooser).setFiles(image);}
      await form.locator('[type=submit]').click();await page.waitForFunction(()=>document.querySelector('[data-platform-profile] [role=status]')?.textContent.includes('saved'));
      await page.reload();await form.waitFor();assert.equal(await form.locator('[name=displayNickname]').inputValue(),'Brian Nguyễn AI');
@@ -63,7 +63,7 @@ const results=[],errors=[];
      const checks=await setup.locator('[name=destinations]').evaluateAll(nodes=>nodes.map(n=>n.checked));assert.ok(checks.length>=2&&checks.every(Boolean));
      await setup.locator('[name=title]').fill('PO Live '+width);await setup.locator('[data-live-po=purpose]').click();await page.locator('[data-live-po=pick-purpose][data-live-value=tutorial]').click();await page.locator('[data-live-po=return-setup]').click();await setup.locator('[type=submit]').click();
      await page.locator('.lv-stage').waitFor();await page.screenshot({path:path.join(output,width+'-live-host.png')});
-     await page.locator('[data-live-po=panel][data-live-value=tools]').click();await page.locator('.lv-dialog').waitFor();assert.ok((await page.locator('.lv-dialog').innerText()).includes('Poll'));await page.locator('[data-live-po=close]').click();
+     await page.locator('[data-live-po=panel][data-live-value=tools]').click();await page.locator('.lv-dialog').waitFor();assert.ok((await page.locator('.lv-dialog').innerText()).toLowerCase().includes('poll'));await page.locator('[data-live-po=close]').click();
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     });
    }finally{await context.close();}

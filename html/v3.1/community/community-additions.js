@@ -456,6 +456,7 @@
       if(route==='post'&&context.modal==='1'&&!current)return openFeedComposer(context);
       closeComposer();
       const request=++generation;
+      if(route==='pages'&&context.pageId){deactivate();notify({type:'nexora-community-page-navigate',pageId:context.pageId,pageMode:context.pageMode||'view',pageTab:context.pageTab||'posts'});return;}
       if(!supports(route)){
         deactivate();if(route==='feed'){original.restoreFeed();if(Object.keys(context).length)original.navigate(route,context);}else original.navigate(route,context);
         if(!fromHost)notify({type:'nexora-community-route',route});return;
