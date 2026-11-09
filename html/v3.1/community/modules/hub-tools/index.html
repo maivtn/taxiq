@@ -1574,5 +1574,15 @@ function groupsPage(){
 <!-- module tach rieng: xem file module tuong ung -->
 <script src="food-market.js?v=20261107-ui-sync1"></script>
 <script src="adapter.js?v=20261109-storefront1"></script>
-<script src="community-po-bridge.js?v=20261109-ai-contacts1"></script><script src="../../community-storefront-polish.js?v=20261109-storefront-icons3"></script></body>
+<script src="community-po-bridge.js?v=20261109-ai-contacts1"></script>
+<script src="../../community-storefront-demo.js?v=20261109-storefront-data1"></script>
+<script>
+(() => {
+  const demo=window.NEXORA_STOREFRONT_DEMO,previousRender=render;
+  render=function(){demo.localize(state,state.lang);return previousRender();};
+  if(demo.seed(state,window.NEXORA_COMMUNITY_SHARED))save();
+  render();
+})();
+</script>
+<script src="../../community-storefront-polish.js?v=20261109-storefront-icons3"></script></body>
 </html>
