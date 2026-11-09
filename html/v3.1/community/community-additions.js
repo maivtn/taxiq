@@ -271,6 +271,7 @@
         modules.set(key,task);frame.src=new URL('modules/'+key+'/po-'+key+'.html?v=20261107-po-embeds1',baseURL).href;host.append(frame);return task;
       }
       const url=new URL(file,baseURL);
+      url.searchParams.set('v','20261109-feed-order1');
       for(const [key,value] of params)url.searchParams.set(key,value);
       for(const [key,value] of Object.entries(routeContext))if(value!=null)url.searchParams.set(key,value);
       url.searchParams.set('embedded','1');url.searchParams.set('lang','en');url.searchParams.set('section',current);
