@@ -101,6 +101,10 @@
       .community-menu-heading{position:sticky;top:-14px;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 10px;background:#fff;border-bottom:1px solid #e5e9f2}
       .community-menu-heading h2{margin:0}
       .ecosystem-menu .community-menu-close{display:grid;place-items:center;flex:none;width:40px;min-height:40px;padding:0;font-size:24px;line-height:1}
+      .ecosystem-menu .ecosystem-item{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;text-align:left}
+      .ecosystem-item-icon{display:grid;place-items:center;flex:0 0 20px;width:20px;height:20px}
+      .ecosystem-item-icon svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+      .ecosystem-item-label{min-width:0;line-height:1.4;overflow-wrap:anywhere}
       .community-nav-more:focus-visible,.ecosystem-menu button:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
     `;
     for(const nav of [root.querySelector('.top .tabs'),root.querySelector('.mobile-nav')]){
@@ -133,6 +137,15 @@
       const definition=window.lucide?.icons[ICONS[route]];
       if(definition)button.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true'}));
       button.append(document.createTextNode(label));menu.insertBefore(button,root.getElementById('menuStartTour'));
+    }
+    const menuIcons={feed:'LayoutList',market:'UsersRound',pages:'Building2',blog:'Newspaper',jobs:'BriefcaseBusiness',daywork:'CalendarDays',deals:'Ticket',connect:'MessageCircle',...ICONS};
+    for(const button of menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')){
+      const label=document.createElement('span');label.className='ecosystem-item-label';label.textContent=button.textContent.trim().replace(/^✦\s*/,'');
+      if(button.dataset.i18n){label.dataset.i18n=button.dataset.i18n;delete button.dataset.i18n;}
+      const icon=document.createElement('span');icon.className='ecosystem-item-icon';icon.setAttribute('aria-hidden','true');
+      const name=button.id==='menuStartTour'?'Sparkles':menuIcons[button.dataset.quickView||button.dataset.communityExtra],definition=window.lucide?.icons[name];
+      const svg=button.querySelector('svg')||(definition&&window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true',focusable:'false'}));
+      if(svg)icon.append(svg);button.classList.add('ecosystem-item');button.replaceChildren(icon,label);
     }
     function deactivate(){
       closeAssistant();
