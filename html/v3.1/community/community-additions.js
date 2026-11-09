@@ -241,6 +241,16 @@
       const route=button.dataset.quickView||button.dataset.communityExtra;
       (route==='post'?createItems:toolRoutes.has(route)||button.id==='menuStartTour'?toolItems:businessRoutes.has(route)?businessItems:exploreRoutes.has(route)?exploreItems:communityItems).append(button);
     }
+    // Keep the NEXORA directory tiles visible while their destinations are paused.
+    for(const button of toolItems.children){
+      button.disabled=true;
+      button.setAttribute('aria-disabled','true');
+      button.dataset.communityMenuInactive='true';
+    }
+    menu.addEventListener('click',event=>{
+      if(event.target.closest('[data-community-menu-inactive]')){event.preventDefault();event.stopImmediatePropagation();}
+    },true);
+    styles.textContent+='.ecosystem-menu .ecosystem-item[data-community-menu-inactive]{opacity:1;cursor:default}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]:is(:hover,:active){background:#fff;border-color:#dfe2f0;transform:none}';
     // Match the PO directory order while retaining every existing destination.
     for(const [items,routes] of [[communityItems,['connect','feed','market','pages','friends']],[businessItems,['shop','transfer','realestate','jobs','daywork']],[exploreItems,['food','deals','live','reels','news','blog','stories','explore']]]){
       for(const route of routes){const button=[...items.children].find(button=>(button.dataset.quickView||button.dataset.communityExtra)===route);if(button)items.append(button);}

@@ -39,6 +39,18 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await groups.screenshot({path:path.join(output,`${width}-${account}-groups.png`)});
      await hub.locator('.community-nav-more:visible').first().click();const menu=hub.locator('#ecosystemMenu');await menu.waitFor();
      assert.equal(await menu.locator('[data-community-extra="people"]').count(),0);
+     const tools=menu.locator('[data-community-menu-group=tools] .ecosystem-item');
+     assert.equal(await tools.count(),7);
+     const menuURL=page.url();
+     for(const tile of await tools.all()){
+      assert.equal(await tile.isDisabled(),true);assert.equal(await tile.getAttribute('aria-disabled'),'true');
+      assert.equal(await tile.locator('img').count(),1);assert.ok((await tile.innerText()).trim());
+      await tile.scrollIntoViewIfNeeded();const box=await tile.locator('.ecosystem-item-icon').boundingBox();
+      await page.mouse.click(box.x+box.width/2,box.y+box.height/2);
+      assert.equal(page.url(),menuURL);assert.equal(await menu.isVisible(),true);
+     }
+     assert.equal(await hub.locator('#tourCard:visible,.community-assistant-overlay:visible').count(),0);
+
      await menu.locator('[data-community-extra="friends"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='friends');await menu.waitFor({state:'hidden'});
     });
     await check('market sell save persistence and two columns',async()=>{
