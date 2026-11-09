@@ -113,6 +113,9 @@
       .ecosystem-item-icon{display:grid;place-items:center;flex:0 0 20px;width:20px;height:20px}
       .ecosystem-item-icon svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
       .ecosystem-item-label{min-width:0;line-height:1.4;overflow-wrap:anywhere}
+      .community-menu-group,.community-menu-group-items{display:grid;gap:3px;min-width:0}
+      .community-menu-group+.community-menu-group{margin-top:8px;padding-top:10px;border-top:1px solid #e5e9f2}
+      .community-menu-group-title{margin:0 0 3px;padding:4px 10px;color:#62708c;font-size:10px;line-height:1.4;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
       .community-nav-more:focus-visible,.ecosystem-menu button:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
     `;
     for(const nav of [root.querySelector('.top .tabs'),root.querySelector('.mobile-nav')]){
@@ -132,7 +135,7 @@
       menu.setAttribute('role',compact?'dialog':'menu');
       if(compact)menu.setAttribute('aria-modal','true');else menu.removeAttribute('aria-modal');
       for(const button of [...navMore,ecosystemButton])button.setAttribute('aria-haspopup',compact?'dialog':'menu');
-      for(const button of menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')){if(compact)button.removeAttribute('role');else button.setAttribute('role','menuitem');}
+      for(const button of menu.querySelectorAll('[data-quick-view],[data-community-extra],[data-community-compose],#menuStartTour')){if(compact)button.removeAttribute('role');else button.setAttribute('role','menuitem');}
       if(compact||menu.hidden)return;
       const trigger=navMore.find(button=>!button.classList.contains('mobile-tab'))||ecosystemButton;
       const bounds=app.getBoundingClientRect(),anchor=trigger.getBoundingClientRect(),width=Math.min(300,bounds.width-24);
@@ -177,6 +180,53 @@
       const svg=button.querySelector('svg')||(definition&&window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true',focusable:'false'}));
       if(svg)icon.append(svg);button.classList.add('ecosystem-item');button.replaceChildren(icon,label);
     }
+    function menuGroup(name,label){
+      const section=document.createElement('section');section.className='community-menu-group';section.dataset.communityMenuGroup=name;section.setAttribute('role','group');
+      const title=document.createElement('h3');title.className='community-menu-group-title';title.id=menu.id+'-'+name+'-title';title.textContent=label;section.setAttribute('aria-labelledby',title.id);
+      const items=document.createElement('div');items.className='community-menu-group-items';section.append(title,items);menu.append(section);return items;
+    }
+    const existingMenuItems=[...menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')];
+    const sectionItems=menuGroup('sections','Go to a Community section'),createItems=menuGroup('create','Create a post'),toolItems=menuGroup('tools','NEXORA');
+    const toolRoutes=new Set(['wallet','wheel','meet','account','assistant','notifications']);
+    for(const button of existingMenuItems){
+      const route=button.dataset.quickView||button.dataset.communityExtra;
+      (route==='post'?createItems:toolRoutes.has(route)||button.id==='menuStartTour'?toolItems:sectionItems).append(button);
+    }
+    const postItems=document.createElement('div');postItems.className='community-menu-group-items';createItems.append(postItems);
+    // Reuse the Feed's role-filtered actions, labels and permission checks.
+    const postSources=[
+      ['photos','#feedMoreActions [data-po-route="post"]','Images'],
+      ['tips','#feedActions [data-template="tip"]','Lightbulb'],
+      ['ask','#feedActions [data-template="question"]','CircleHelp'],
+      ['poll','#feedActions [data-template="poll"]','ChartNoAxesColumn'],
+      ['events','#feedActions [data-template="event"]','CalendarDays'],
+      ['sale','#feedActions [data-market-kind="sale"]','Tag'],
+      ['job','#feedActions [data-template="hiring"],#feedActions [data-template="seeking"]','BriefcaseBusiness'],
+      ['blog','#feedActions [data-blog-create]','NotebookPen'],
+      ['wanted','#feedActions [data-market-kind="want"]','Search'],
+      ['deal','#feedActions [data-template="deal"]','TicketPercent']
+    ];
+    let postMenuObserver,postMenuSignature='';
+    function refreshPostMenu(){
+      const source=frames[0].contentDocument;
+      const entries=postSources.flatMap(([kind,selector,icon])=>{const button=source?.querySelector(selector);if(!button||button.hidden)return [];const label=button.querySelector(':scope > span:last-child')?.textContent.trim()||button.textContent.trim();return label?[{kind,selector,label,disabled:button.disabled,icon:button.dataset.template==='seeking'?'UserRoundSearch':icon}]:[];});
+      const signature=JSON.stringify(entries);if(signature===postMenuSignature)return;postMenuSignature=signature;
+      postItems.replaceChildren(...entries.map(entry=>{
+        const button=document.createElement('button');button.type='button';button.className='ecosystem-item';button.dataset.communityCompose=entry.kind;button.disabled=entry.disabled;
+        const icon=document.createElement('span');icon.className='ecosystem-item-icon';icon.setAttribute('aria-hidden','true');const definition=window.lucide?.icons[entry.icon];if(definition)icon.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true',focusable:'false'}));
+        const label=document.createElement('span');label.className='ecosystem-item-label';label.textContent=entry.label;button.append(icon,label);
+        button.addEventListener('click',()=>{const source=frames[0].contentDocument?.querySelector(entry.selector);if(!source||source.hidden||source.disabled)return;menu.hidden=true;navigate('feed');frames[0].contentDocument?.querySelector(entry.selector)?.click();});
+        return button;
+      }));
+      updateMenuLayout();
+    }
+    function bindPostMenu(){
+      postMenuObserver?.disconnect();postMenuSignature='';refreshPostMenu();
+      const actions=frames[0].contentDocument?.getElementById('feedActions');if(!actions)return;
+      postMenuObserver=new MutationObserver(refreshPostMenu);postMenuObserver.observe(actions,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['disabled','hidden']});
+    }
+    frames[0].addEventListener('load',bindPostMenu);bindPostMenu();
+    window.addEventListener('pagehide',()=>postMenuObserver?.disconnect(),{once:true});
     updateMenuLayout();window.addEventListener('resize',updateMenuLayout);
     if(window.ResizeObserver)new ResizeObserver(updateMenuLayout).observe(root.host||app);
     function deactivate(){
