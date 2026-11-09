@@ -102,12 +102,10 @@ const server = http.createServer(async (request, response) => {
           await menu.waitFor({state:'hidden'});
         });
         await open('feed');
-        await check('Feed spacing and compact area regression', async () => {
-          const location = host.locator(width <= 800 ? '#communityLocation' : '.community-header-location');
-          await location.waitFor();
-          const area = await location.boundingBox();
+        await check('Feed spacing after discovery toolbar removal', async () => {
+          await page.locator('#communityPane').locator('#feedTitle').waitFor();
+          assert.equal(await host.locator('#localDiscovery,.community-header-location').count(),0);
           if (width <= 800) {
-            assert.ok(area.width <= 125);
             assert.equal(await host.locator('.community-heading-tools').isVisible(), false);
           }
           if (width > 800) {

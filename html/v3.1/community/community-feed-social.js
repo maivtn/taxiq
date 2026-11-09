@@ -392,7 +392,15 @@
     applyDeleted();for(const post of getFeed())if(post.kind!=='deal')ensurePost(post);persist(state);
     document.addEventListener('click',onClick);document.addEventListener('submit',onSubmit);document.addEventListener('input',onInput);document.addEventListener('pointerdown',onPointerDown);document.addEventListener('pointerup',onPointerUp);document.addEventListener('pointercancel',onPointerCancel);document.addEventListener('keydown',onKeyDown,true);languageObserver.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
     const refreshOpenPost=()=>{if(modal?.kind==='post'&&document.querySelector('[data-social-post-detail]'))openPost(modal.id,{...modal,preserveOpen:true});};
-    mounted={enhance,openPost,isVisible,onDialogClosed,refreshOpenPost,reset,destroy};return mounted;
+    function findPosts(query='',likedOnly=false){
+      const normal=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),needle=normal(query);
+      return getFeed().filter(post=>post.kind!=='deal'&&audiencePermits(post)&&isVisible(post)&&
+        (!post.groupId&&post.destinations?.includeMainFeed!==false||own(post))&&
+        (!likedOnly||state.posts[String(post.id)]?.likedBy?.includes(member))&&
+        (!needle||normal([post.owner,post.title,postBody(post)].join(' ')).includes(needle)))
+        .slice(0,30).map(post=>({id:post.id,owner:post.owner,title:post.title||'',body:postBody(post)}));
+    }
+    mounted={enhance,openPost,isVisible,findPosts,onDialogClosed,refreshOpenPost,reset,destroy};return mounted;
   }
-  window.NEXORA_COMMUNITY_FEED_SOCIAL={mount,enhance:root=>mounted?.enhance(root),openPost:(id,options)=>mounted?.openPost(id,options),isVisible:item=>mounted?.isVisible(item)??true,onDialogClosed:()=>mounted?.onDialogClosed(),refreshOpenPost:()=>mounted?.refreshOpenPost(),reset:()=>mounted?.reset()};
+  window.NEXORA_COMMUNITY_FEED_SOCIAL={mount,enhance:root=>mounted?.enhance(root),openPost:(id,options)=>mounted?.openPost(id,options),isVisible:item=>mounted?.isVisible(item)??true,findPosts:(query,likedOnly)=>mounted?.findPosts(query,likedOnly)||[],onDialogClosed:()=>mounted?.onDialogClosed(),refreshOpenPost:()=>mounted?.refreshOpenPost(),reset:()=>mounted?.reset()};
 })();

@@ -972,6 +972,8 @@
     if (!area) return;
     area.classList.add('shell-header-search');
     if (!area.id) area.id = 'shell-header-search';
+    // The compact header search belongs to Community only.
+    if (!cfg.isCommunity) return;
     var actions = header.querySelector('.shell-workspace-actions,.header-actions');
     if (!actions) {
       actions = document.createElement('div');
@@ -981,21 +983,19 @@
     var toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'icon-button shell-search-toggle';
-    toggle.setAttribute('aria-label', input.getAttribute('aria-label') || input.placeholder);
-    toggle.setAttribute('aria-controls', area.id);
+    toggle.setAttribute('aria-label', 'Search Community');
+    toggle.setAttribute('aria-controls', 'community-search-dialog');
+    toggle.setAttribute('aria-haspopup', 'dialog');
     toggle.setAttribute('aria-expanded', 'false');
     toggle.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
     actions.prepend(toggle);
-    function setOpen(open) {
-      document.body.classList.toggle('shell-search-open', open);
-      toggle.setAttribute('aria-expanded', String(open));
-      if (open) input.focus();
-      else toggle.focus();
+    function openSearch(event) {
+      if (event) event.preventDefault();
+      window.dispatchEvent(new CustomEvent('nexora-community-search', {detail:{query:input.value}}));
     }
-    toggle.addEventListener('click', function() { setOpen(toggle.getAttribute('aria-expanded') !== 'true'); });
-    area.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') { event.preventDefault(); setOpen(false); }
-    });
+    toggle.addEventListener('click', openSearch);
+    input.addEventListener('focus', openSearch);
+    if (area.tagName === 'FORM') area.addEventListener('submit', openSearch);
   }
 
   function init() {

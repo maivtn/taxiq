@@ -918,8 +918,9 @@ body[data-nexora-workspace="pos"] .sidebar-section-label + .sidebar-nav { margin
   body[data-nexora-workspace] .header.shell-header { min-height:64px; padding:10px 12px; gap:8px; flex-wrap:nowrap; }
   .header.shell-header .shell-header-search { display:none; order:3; flex:1 0 100%; width:100%; max-width:none; }
   body.shell-search-open .header.shell-header .shell-header-search { display:block; }
-  .header.shell-header .shell-search-toggle { display:inline-flex; flex:none; width:44px; height:44px; padding:0; border:0; background:transparent; color:#64748b; box-shadow:none; }
-  .header.shell-header .shell-search-toggle svg { width:17px; height:17px; }
+  .header.shell-header .shell-search-toggle { display:inline-flex; position:relative; isolation:isolate; flex:none; width:44px; height:44px; padding:0; border:0; background:transparent; color:#111827; box-shadow:none; }
+  .header.shell-header .shell-search-toggle::before { content:''; position:absolute; inset:4px; z-index:-1; border-radius:50%; background:#e4e6eb; }
+  .header.shell-header .shell-search-toggle svg { width:24px; height:24px; }
   .header.shell-header .shell-header-search .search { display:flex; align-items:center; min-height:44px; }
   .header.shell-header .shell-header-search.search { min-height:44px; padding-block:4px; }
   .header.shell-header .shell-header-search input { height:36px; padding-left:38px; font-size:13px; }
@@ -1247,7 +1248,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
     <main class="content">
       <div class="page-head"><div><div class="eyebrow">NEXORA Community</div><h1 class="page-title">Cộng đồng</h1><p class="subtitle">Chia sẻ, hỏi đáp và mua bán cùng những người trong nghề</p></div></div>
       <nav class="primary-tabs" aria-label="Các mục Community"><button class="pill" data-view="feed">Bảng tin</button><button class="pill active" data-view="market">Nhóm &amp; Chợ</button><button class="pill" data-view="pages">Fanpage</button><button class="pill" data-view="deals">Deal &amp; Coupon</button><button class="pill" data-view="jobs">Việc làm</button><button class="pill" data-view="daywork">Ca làm thêm</button><button class="pill" data-view="blog">Blog</button><button class="pill" data-view="messages"><span class="comm-tab-icons" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H8l-4 3z"></path></svg><svg viewBox="0 0 24 24"><path d="M7 3l3 4-2 2c1.7 3 3.3 4.6 6 6l2-2 4 3-1 4c-9 1-16-6-16-15z"></path></svg></span>Tin nhắn &amp; Cuộc gọi</button></nav>
-      <div id="localDiscovery" class="local-discovery"><span id="viewerLocationLabel">Ưu tiên bài gần bạn</span><button type="button" id="changeViewerLocation">Đổi khu vực</button></div>
       <section id="marketView">
       <div class="subrow"><div class="subtabs"><button class="subtab" data-view="groups">Nhóm</button><button class="subtab active" data-view="market">Mua bán</button></div><button type="button" class="btn market-info-toggle" aria-expanded="false" aria-controls="marketFreeNote" data-market-info-toggle="" aria-label="Đăng tin và giao dịch miễn phí."></button><div class="market-create-actions"><button type="button" id="createSale" class="btn primary">＋ Đăng bán</button><button type="button" id="createWant" class="btn soft">＋ Đăng cần mua</button></div></div>
       <p class="market-free-note" id="marketFreeNote">Đăng tin và giao dịch miễn phí. Người mua, người bán tự nhắn tin, thỏa thuận giá và giao nhận; NEXORA không thu phí giao dịch.</p>
@@ -2469,6 +2469,13 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 
 
 
+
+
+
+
+
+
+
       </main>
     </div>
   </div>
@@ -2486,7 +2493,7 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   </script>
   <script src="../assets/nexora-icons.js"></script>
   <script src="../assets/nexora-shell-nav.js?v=20261029-sidebar-group-labels"></script>
-  <script src="../assets/nexora-shell.js?v=20261030-header-nine-dots-v48" defer=""></script>
+  <script src="../assets/nexora-shell.js?v=20261109-community-search2" defer=""></script>
   <script src="../assets/vendor/lucide.min.js"></script>
   <script>if(window.lucide)window.lucide.createIcons();</script>
   <script src="community/community-shared.js?v=20261109-friends1" defer=""></script>
@@ -2494,8 +2501,9 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   <script src="community/community-platform.js?v=20261107-feature-shortcuts1"></script>
   <script src="community/community-directory.js?v=20261109-facebook-share1"></script>
   <script src="community/community-create-menu.js?v=20261109-create-order2"></script>
-  <script src="community/community-additions.js?v=20261109-more-cards3"></script>
+  <script src="community/community-additions.js?v=20261109-community-search2"></script>
   <script src="community-integration.js?v=20261109-inline1" defer=""></script>
+
 
 
 
