@@ -219,7 +219,6 @@
     const postItems=document.createElement('div');postItems.className='community-menu-group-items';createItems.append(postItems);
     // Reuse the Feed's role-filtered actions, labels and permission checks.
     const postSources=[
-      ['photos','#feedMoreActions [data-po-route="post"]','photos'],
       ['tips','#feedActions [data-template="tip"]','tip'],
       ['ask','#feedActions [data-template="question"]','question'],
       ['poll','#feedActions [data-template="poll"]','poll'],
