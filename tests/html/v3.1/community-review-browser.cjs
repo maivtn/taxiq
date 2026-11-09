@@ -58,6 +58,18 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await page.reload();const saved=market.locator(`[data-listing-id="${id}"] .community-market-save`);await saved.waitFor();assert.equal(await saved.getAttribute('aria-pressed'),'true');await saved.click();assert.equal(await saved.getAttribute('aria-pressed'),'false');
      await market.screenshot({path:path.join(output,`${width}-${account}-market.png`)});
     });
+    await check('Reels keeps five working shortcuts without social actions',async()=>{
+     await open('reels');const extra=hub.locator('.community-extra-pane'),nav=extra.locator('.community-reels-shortcuts');await nav.waitFor();
+     assert.equal(await nav.locator('button').count(),5);assert.equal(await nav.locator('button').nth(4).getAttribute('aria-current'),'page');
+     await extra.locator('video').first().waitFor();
+     assert.equal(await extra.locator('[data-expansion-reel-like],[data-expansion-reel-comment],[data-expansion-reel-share]').count(),0);
+     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+     await page.screenshot({path:path.join(output,`${width}-${account}-reels.png`)});
+     for(const [index,route] of [[0,'feed'],[1,'pages'],[2,'shop'],[3,'deals']]){
+      await nav.locator('button').nth(index).click();await page.waitForFunction(route=>new URL(location.href).searchParams.get('tab')===route,route);
+      await open('reels');await nav.waitFor();
+     }
+    });
     await check('Fanpage navigation latest posts and page links',async()=>{
      await open('pages');const pages=pane.locator('#pagesView');await pages.locator('#pageLatestPosts article').first().waitFor();
      assert.ok((await hub.locator('[data-i18n=pages]').allTextContents()).every(text=>text==='Fanpage'));

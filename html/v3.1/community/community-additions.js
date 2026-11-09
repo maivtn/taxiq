@@ -51,6 +51,23 @@
     const assistantStyles=document.createElement('style');root.append(assistantStyles);
     const assistantStylesReady=window.NEXORA_NATIVE.read(new URL('community-ai-assistant.css?v=20261109-ai-assistant1',baseURL).href).then(css=>{assistantStyles.textContent=css;});
     const pane=document.createElement('section');pane.className='community-extra-pane';pane.hidden=true;workspace.append(pane);
+    let reelsShortcuts=null;
+    function showReelsShortcuts(){
+      if(!reelsShortcuts){
+        const source=frames[0].contentDocument?.querySelector('#pagesView > .community-pages-shortcuts');
+        if(!source)return;
+        reelsShortcuts=source.cloneNode(true);reelsShortcuts.className='community-reels-shortcuts';
+        const routes=['feed','pages','shop','deals','reels'];
+        reelsShortcuts.querySelectorAll('button').forEach((button,index)=>{
+          button.removeAttribute('data-view');button.removeAttribute('data-page-scope');button.removeAttribute('data-po-route');
+          button.classList.toggle('active',routes[index]==='reels');button.setAttribute('aria-current',routes[index]==='reels'?'page':'false');
+          button.addEventListener('click',()=>navigate(routes[index]));
+        });
+        pane.prepend(reelsShortcuts);
+      }
+      reelsShortcuts.hidden=false;
+    }
+    styles.textContent+='.community-reels-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:12px 12px 14px;padding:5px;background:#fff;border:1px solid #e2e6ee;border-radius:15px;box-shadow:0 5px 17px #17243a0a}.community-reels-shortcuts button{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;padding:9px;border:0;border-radius:11px;background:transparent;color:#68758c;cursor:pointer}.community-reels-shortcuts button.active{background:#eeeaff;color:#6350de}.community-reels-shortcuts svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.community-reels-shortcuts button:focus-visible{outline:3px solid #a99fff;outline-offset:2px}';
     const loading=document.createElement('div');loading.className='community-route-loading';loading.setAttribute('role','status');loading.setAttribute('aria-live','polite');loading.textContent='Loading Real Estate…';loading.hidden=true;pane.append(loading);
     const menu=root.getElementById('ecosystemMenu');
     const createMenu=window.NEXORA_COMMUNITY_CREATE_MENU.mount(root,{role:window.NEXORA_COMMUNITY_SHARED.role,navigate});
@@ -463,7 +480,7 @@
           api.root.host.hidden=false;
         }
         if(request!==generation)return;
-        loading.hidden=true;pane.removeAttribute('aria-busy');pane.scrollTop=0;
+        loading.hidden=true;pane.removeAttribute('aria-busy');if(route==='reels')showReelsShortcuts();pane.scrollTop=0;
         if(!fromHost){notify({type:'nexora-community-route',route});if(Object.keys(routeContext).length)notify({type:'nexora-community-context',context:routeContext});}
       }catch(error){
         if(request!==generation)return;
