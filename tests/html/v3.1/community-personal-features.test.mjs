@@ -7,6 +7,7 @@ const shared=readFileSync(new URL('../../../html/v3.1/community/community-shared
 const feed=readFileSync(new URL('../../../html/v3.1/community/community-po-feed.js',import.meta.url),'utf8');
 for(const [query,expected] of [
   ['account=personal',['realestate','food']],
+  ['account=personal&role=tech',['realestate','food']],
   ['role=tech&account=business',['realestate','food']],
   ['account=business',['shop','transfer','realestate','food']]
 ])test('Feed shortcuts follow demo account: '+query,async t=>{

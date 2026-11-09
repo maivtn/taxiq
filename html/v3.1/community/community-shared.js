@@ -9,6 +9,7 @@
   const query=new URLSearchParams(location.search);
   const role=window.NEXORA_SHELL?.activePage==='staff'||['staff','tech'].includes(query.get('role'))||query.get('account')==='personal'?'staff':'owner';
   const businessFeatures=new Set(['shop','transfer','workers','services','hiring','posRecruitment']);
+  // Storefront and salon tools belong to the Salon demo account.
   const canAccessFeature=feature=>!businessFeatures.has(feature)||role==='owner';
   const member=query.get('member')||window.NEXORA_SHELL?.profileName||(role==='staff'?document.querySelector('.staff-profile-name')?.textContent.trim():null)||(role==='staff'?'David Le':'BITCOIN NAIL BAR');
   function identity(name=member,alias){
