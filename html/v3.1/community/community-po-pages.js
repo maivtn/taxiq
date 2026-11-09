@@ -31,7 +31,7 @@
   function admin(page){return card('Page roles',`<p>One shared administration system for Pages and groups.</p><div class="po-page-row"><strong>${esc(page.owner)}</strong><span class="po-badge">Owner</span></div>${(page.poTools?.team||[]).map(row=>`<div class="po-page-row"><strong>${esc(row.name)}</strong><span>${esc(row.role)}</span></div>`).join('')}${button('Invite by NEXORA ID / phone','team')}`)+card('Comments & moderation',button('Open comments','posts')+button('Keyword filter','keywords'))+card('Followers',button('Manage followers','followers'))+card('Business inbox',button('Open inbox','inbox'));}
   function enhance(root,page,tab){
     if(current&&current.id!==page.id)guestView=false;current=page;currentTab=tab;const panel=root.querySelector('[data-page-detail-id]');if(!panel)return;
-    panel.classList.add('po-page-supplement');const owner=page.owner===api.member&&!guestView,personal=page.pageType==='personal';
+    panel.classList.add('po-page-supplement');const owner=page.owner===api.member&&!guestView,personal=page.pageType==='personal';panel.classList.toggle('po-page-owner',owner);
     const content=panel.querySelector('.page-tab-content'),tabs=panel.querySelector('.page-detail-tabs'),hero=panel.querySelector('.page-hero-actions');
     panel.querySelector('.page-owner-tools')?.remove();panel.querySelector('[data-po-contact-details]')?.remove();
     const bio=panel.querySelector('.page-profile-title .meta');if(personal&&bio)bio.textContent=(page.handle||'')+' · Personal / Creator Page';

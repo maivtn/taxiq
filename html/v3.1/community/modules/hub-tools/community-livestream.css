@@ -3,7 +3,7 @@
 .lv-surface{max-width:1120px;margin:0 auto;padding:14px;background:var(--lv-bg);border-radius:20px}
 .lv-surface h1,.lv-dialog h2{margin:0;font-size:19px;line-height:1.35;overflow-wrap:anywhere}
 .lv-top,.lv-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.lv-top{margin-bottom:12px}
+.lv-surface .lv-top{display:flex!important;margin-bottom:12px}
 .lv-surface .lv-top.live-hero{display:flex;gap:10px;margin:0 0 12px!important;padding:0!important;border:0;background:none}
 .lv-surface .lv-top.live-hero h1{font-size:19px!important;line-height:1.35!important;margin:0!important;letter-spacing:normal}
 .lv-surface .lv-top.live-hero p{margin:3px 0!important}
