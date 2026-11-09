@@ -61,9 +61,10 @@ Khi người dùng nhắc Community (kể cả cách viết “comunity”) v1, 
 ## Thời điểm kiểm thử
 
 - Mặc định làm xong toàn bộ phạm vi thay đổi, rà soát diff, tạo Git commit rồi tự chạy test; không chờ người dùng yêu cầu hoặc xác nhận thêm.
+- Sau khi commit code, phải kiểm thử hồi quy toàn bộ các yêu cầu đã triển khai ở phiên hiện tại và các phiên trước, không chỉ phần thay đổi của commit mới nhất. Đối chiếu lịch sử yêu cầu, commit và bộ kiểm thử sẵn có để bao phủ các màn hình, trạng thái và luồng liên quan.
 - Gom kiểm thử một lượt sau commit; không tự chạy test lẻ tẻ trong lúc làm hoặc trước commit. Nếu người dùng chỉ định phạm vi kiểm thử riêng hoặc yêu cầu không chạy test, làm theo yêu cầu đó.
 - Quy tắc này áp dụng cho cả test tự động và kiểm thử UI trên trình duyệt phù hợp với phần thay đổi. Khi thay đổi giao diện hoặc tương tác, kiểm tra các màn hình và luồng liên quan bằng trình duyệt theo quy tắc không gián đoạn công việc bên dưới.
-- Nếu test phát hiện lỗi thuộc thay đổi vừa làm, sửa trong phạm vi yêu cầu, rà soát diff, commit bổ sung rồi kiểm thử lại. Lỗi ngoài phạm vi hoặc trở ngại môi trường phải được báo rõ, không tự mở rộng phạm vi sửa.
+- Nếu test phát hiện lỗi thuộc các yêu cầu đã triển khai, kể cả từ phiên trước, phải sửa trong phạm vi các yêu cầu đó, rà soát diff và tạo commit bổ sung. Sau mỗi commit sửa lỗi, chạy lại toàn bộ `npm test` và các luồng UI trong phạm vi hồi quy; lặp lại đến khi đạt hoặc có trở ngại thực tế cần báo rõ. Lỗi ngoài phạm vi yêu cầu hoặc trở ngại môi trường phải được báo rõ, không tự mở rộng phạm vi sửa.
 - Báo mã commit đã kiểm thử và kết quả thực tế. Nếu chưa chạy được test, nêu rõ lý do; không khẳng định luồng hoạt động đúng hoặc test đạt khi chưa có bằng chứng.
 
 ## Kiểm thử trình duyệt không gián đoạn công việc
@@ -84,7 +85,7 @@ Khi người dùng nhắc Community (kể cả cách viết “comunity”) v1, 
 ## Commit và kiểm thử sau khi hoàn tất
 
 - Sau mỗi yêu cầu đã hoàn tất có thay đổi file, tự động tạo Git commit cho các thay đổi thuộc yêu cầu đó; không cần hỏi lại người dùng.
-- Trước khi commit, rà soát diff và chỉ đưa vào commit các thay đổi thuộc yêu cầu. Sau khi commit thành công, tự chạy test theo mục “Thời điểm kiểm thử”; không dừng ở bước commit để chờ lệnh test.
+- Trước khi commit, rà soát diff và chỉ đưa vào commit các thay đổi thuộc yêu cầu. Sau khi commit thành công, tự chạy kiểm thử hồi quy toàn bộ yêu cầu của các phiên theo mục “Thời điểm kiểm thử”; nếu có lỗi trong phạm vi thì sửa, commit bổ sung và chạy lại, không dừng ở bước commit để chờ lệnh test hoặc lệnh sửa lỗi.
 - Không đưa thay đổi không liên quan của người dùng vào commit. Không tự động push nếu người dùng chưa yêu cầu.
 - Trong phản hồi hoàn tất, thông báo mã commit và kết quả kiểm thử ngắn gọn; nếu test lỗi hoặc không chạy được, nêu rõ lỗi hoặc trở ngại thực tế.
 
