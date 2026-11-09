@@ -20,9 +20,9 @@
     const notify=data=>options.notify?.(data);
     const blogTabs=document.createElement('div');
     blogTabs.className='community-news-tabs';blogTabs.setAttribute('role','tablist');blogTabs.setAttribute('aria-label','News and Blog');
-    blogTabs.innerHTML='<button type="button" role="tab" aria-selected="false" data-community-news-tab="news">🗞️ News &amp; Updates</button><button type="button" role="tab" aria-selected="true" class="active" data-community-news-tab="blog">📰 Blog</button>';
+    blogTabs.innerHTML='<button type="button" role="tab" aria-selected="false" data-community-news-tab="news"><img src="/html/assets/icons/3d-fluency/news.png" alt="" width="20" height="20"><span>News &amp; Updates</span></button><button type="button" role="tab" aria-selected="true" class="active" data-community-news-tab="blog"><img src="/html/v3.1/community/nav-icons/blog.svg" alt="" width="20" height="20"><span>Blog</span></button>';
     const blogTabStyle=document.createElement('style');
-    blogTabStyle.textContent='.community-news-tabs{display:flex;gap:7px;margin:7px 0 17px;padding:6px;width:max-content;max-width:100%;border:1px solid #e0dcf7;border-radius:13px;background:#f5f3ff}.community-news-tabs button{border:0;border-radius:9px;padding:10px 17px;background:transparent;color:#615c7c;font-size:13px;font-weight:850;cursor:pointer}.community-news-tabs button.active{background:#6552dc;color:#fff;box-shadow:0 4px 12px #5f4dc42b}';
+    blogTabStyle.textContent='.community-news-tabs{display:flex;gap:7px;margin:7px 0 17px;padding:6px;width:max-content;max-width:100%;border:1px solid #e0dcf7;border-radius:13px;background:#f5f3ff}.community-news-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:9px;padding:10px 17px;background:transparent;color:#615c7c;font-size:13px;font-weight:850;cursor:pointer}.community-news-tabs button img{display:block;flex:none;width:20px;height:20px;object-fit:contain}.community-news-tabs button.active{background:#6552dc;color:#fff;box-shadow:0 4px 12px #5f4dc42b}';
     function attachBlogTabs(){
       const doc=frames[0].contentDocument,view=doc?.getElementById('blogView');
       if(!view)return;

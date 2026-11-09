@@ -87,6 +87,16 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await cards.nth(1).locator('[data-live-open]').click();await extra.locator('#live-chat-form').waitFor();await extra.locator('[data-action=live-back]').click();
      await page.screenshot({path:path.join(output,`${width}-${account}-live.png`)});
     });
+    await check('News and Blog use local icons and retain tab navigation',async()=>{
+     await open('news');const news=hub.locator('.community-extra-pane .news-mode-tabs');await news.waitFor();
+     assert.equal(await news.locator('img').count(),2);await news.locator('img').evaluateAll(async nodes=>Promise.all(nodes.map(image=>image.decode())));
+     await news.locator('[data-news-mode=blog]').click();const blog=pane.locator('#blogView .community-news-tabs');await blog.waitFor();
+     assert.equal(await blog.locator('img').count(),2);await blog.locator('img').evaluateAll(async nodes=>Promise.all(nodes.map(image=>image.decode())));
+     assert.equal(await blog.locator('[data-community-news-tab=blog]').getAttribute('aria-selected'),'true');
+     await blog.screenshot({path:path.join(output,`${width}-${account}-news-blog-tabs.png`)});
+     await blog.locator('[data-community-news-tab=news]').click();await news.waitFor();
+     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+    });
     await check('Fanpage navigation latest posts and page links',async()=>{
      await open('pages');const pages=pane.locator('#pagesView');await pages.locator('#pageLatestPosts article').first().waitFor();
      assert.ok((await hub.locator('[data-i18n=pages]').allTextContents()).every(text=>text==='Fanpage'));
