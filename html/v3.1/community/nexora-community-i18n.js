@@ -160,6 +160,7 @@ Lọc ngành nghề việc làm	Filter job industries
 Đăng bài nhanh	Quick post
 Tạo bài	Create post
 Tạo nội dung	Create content
+Ảnh/video	Photo video
 Chỉnh sửa Fanpage	Edit Page
 Fanpage chưa có video.	This Page has no videos yet.
 Fanpage chưa đăng ảnh. Chủ Fanpage có thể thêm ảnh bìa, ảnh đại diện hoặc ảnh bài viết.	This Page has no photos yet. Add a cover, profile photo, or post photo.

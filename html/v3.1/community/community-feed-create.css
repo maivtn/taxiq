@@ -96,3 +96,52 @@ body #feedView #feedComposerCard #feedPostShortcuts {
   gap: 8px;
   margin-top: 10px;
 }
+
+/* Retain the PO's three media shortcuts directly below the compose prompt. */
+body #feedView .feed-media-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding-top: 8px;
+}
+body #feedView .feed-media-shortcuts button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #596174;
+  font-size: 12px;
+  font-weight: 800;
+}
+body #feedView .feed-media-shortcuts button:hover {
+  background: #f5f6fa;
+}
+body #feedView .feed-media-shortcuts button:focus-visible {
+  outline: 3px solid #b1a4f8;
+  outline-offset: 2px;
+}
+body #feedView .feed-media-shortcuts svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+body #feedView .feed-media-live { color: #f22c53; }
+body #feedView .feed-media-photo { color: #32b75b; }
+body #feedView .feed-media-reel { color: #ee4d79; }
+@media (max-width: 650px) {
+  body #feedView .feed-media-shortcuts button {
+    gap: 5px;
+    padding: 8px 1px;
+    font-size: 11px;
+  }
+  body #feedView .feed-media-shortcuts svg {
+    width: 18px;
+    height: 18px;
+  }
+}
