@@ -49,6 +49,9 @@ fs.mkdirSync(output,{recursive:true});
         await check('Personal cannot open hiring through a composer deep link',async()=>{
           for(const kind of ['hiring','deal','dayhire'])await blockedComposer('personal',kind);
           await personalControls();
+          const original=page.url();
+          await jobs.locator('body').evaluate(()=>window.parent.postMessage({type:'nexora-community-pos'},location.origin));
+          await page.waitForTimeout(150);assert.equal(page.url(),original);
         });
         const title='Role QA seeking '+width;
         await check('Personal publishes seeking and reloads',async()=>{

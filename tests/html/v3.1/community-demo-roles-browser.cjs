@@ -56,6 +56,7 @@ const rows=[],errors=[];
               assert.equal(await classic().locator('[data-shifts-action="post"]').isVisible(),role==='salon');
               assert.equal(await classic().locator('#shiftTemplates [data-template="daywork"]').isVisible(),role==='personal');
             }
+            if(route==='post')assert.equal(await host.locator('#editor [data-social-type="coupon"]').count(),role==='personal'?0:1);
             if(route==='deals')assert.equal(await classic().locator('.community-deals-business').count(),role==='personal'?0:1);
             assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
             if(['feed','jobs','shift','deals','food-market'].includes(route))await page.screenshot({path:path.join(output,width+'-'+role+'-'+route+'.png')});
