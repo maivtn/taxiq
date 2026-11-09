@@ -138,3 +138,18 @@ body #feedView .feed-media-reel { color: #ee4d79; }
     height: 18px;
   }
 }
+
+@media (max-width: 800px) {
+  body #feedView .feed-create-control #feedActionsToggle {
+    min-height: 32px;
+    padding: 5px 44px 5px 9px;
+    gap: 4px;
+    border-radius: 8px;
+    font-size: 11px;
+    line-height: 20px;
+  }
+  body #feedView #feedActionsToggle .feed-create-plus {
+    width: 14px;
+    height: 14px;
+  }
+}
