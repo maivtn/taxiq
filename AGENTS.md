@@ -19,7 +19,7 @@ Khi người dùng nhắc Community (kể cả cách viết “comunity”) v1, 
 - Người dùng chủ động yêu cầu bỏ qua các bước tài liệu và phê duyệt thiết kế của skill/workflow cho dự án này. Không dùng các bước đó làm điều kiện chặn triển khai.
 - Chỉ hỏi khi thiếu thông tin quan trọng không thể suy ra từ mã nguồn hoặc ngữ cảnh, hay thao tác có nguy cơ mất dữ liệu/vượt phạm vi yêu cầu. Giữ thay đổi gọn, bám UI hiện có và bảo toàn thay đổi không liên quan.
 - Làm trên nhánh `main`, không tự tạo worktree hoặc nhánh mới, trừ khi người dùng yêu cầu khác.
-- Không tự chạy test; tuân thủ mục “Thời điểm kiểm thử” bên dưới. Báo kết quả ngắn gọn, không viết thêm tài liệu mô tả sau mỗi thay đổi.
+- Làm xong thì rà soát diff, commit thay đổi rồi tự chạy test theo mục “Thời điểm kiểm thử” bên dưới. Báo kết quả ngắn gọn, không viết thêm tài liệu mô tả sau mỗi thay đổi.
 
 ## Tài liệu chỉ khi được yêu cầu
 
@@ -31,7 +31,7 @@ Khi người dùng nhắc Community (kể cả cách viết “comunity”) v1, 
 - Khi người dùng yêu cầu hợp nhất nhiều phiên bản HTML/spec, xây baseline hoặc phân tích phạm vi thay đổi của một tính năng, đọc và dùng [PO Requirement Reconciler](skills/po-requirement-reconciler/SKILL.md).
 - Hướng dẫn và hồ sơ tính năng nằm tại [Bộ chuẩn yêu cầu](docs/requirements/README.md). Dùng lại biểu mẫu chung, giữ riêng nguồn, yêu cầu và quyết định của từng tính năng.
 - Khi nhận PO mới, mốc đối chiếu chính là bản thực tế đang deploy trên môi trường web được chỉ định, gồm cả thay đổi phát sinh sau PO cũ. V1, Master Spec và code main/master không thay thế mốc deployed nếu chưa xác minh tương ứng.
-- Không tự áp dụng quy trình hồ sơ này làm điều kiện chặn các chỉnh sửa prototype thông thường; giữ nguyên quy tắc làm trực tiếp và chỉ kiểm thử khi được yêu cầu.
+- Không tự áp dụng quy trình hồ sơ này làm điều kiện chặn các chỉnh sửa prototype thông thường; giữ nguyên quy tắc làm trực tiếp, commit rồi tự kiểm thử sau khi hoàn tất.
 
 ## IMPORTANT — Bám sát PO; thiếu trong PO thì lấy từ staging web
 
@@ -60,10 +60,11 @@ Khi người dùng nhắc Community (kể cả cách viết “comunity”) v1, 
 
 ## Thời điểm kiểm thử
 
-- Chỉ chạy test khi người dùng yêu cầu rõ ràng; không tự chạy trong lúc làm, khi hoàn tất hoặc trước khi commit.
-- Làm xong toàn bộ phạm vi thay đổi rồi mới gom kiểm thử một lượt khi được yêu cầu; không chạy test lẻ tẻ sau từng chỉnh sửa. Nếu người dùng chỉ định phạm vi kiểm thử riêng, làm theo phạm vi đó.
-- Quy tắc này áp dụng cho cả test tự động và thao tác test UI trên trình duyệt. Vẫn được đọc mã nguồn và rà soát diff để thực hiện thay đổi.
-- Khi chưa được yêu cầu test, ghi rõ “Chưa chạy test — chờ yêu cầu của người dùng”; không khẳng định các luồng đã chạy đúng hoặc test đã đạt.
+- Mặc định làm xong toàn bộ phạm vi thay đổi, rà soát diff, tạo Git commit rồi tự chạy test; không chờ người dùng yêu cầu hoặc xác nhận thêm.
+- Gom kiểm thử một lượt sau commit; không tự chạy test lẻ tẻ trong lúc làm hoặc trước commit. Nếu người dùng chỉ định phạm vi kiểm thử riêng hoặc yêu cầu không chạy test, làm theo yêu cầu đó.
+- Quy tắc này áp dụng cho cả test tự động và kiểm thử UI trên trình duyệt phù hợp với phần thay đổi. Khi thay đổi giao diện hoặc tương tác, kiểm tra các màn hình và luồng liên quan bằng trình duyệt theo quy tắc không gián đoạn công việc bên dưới.
+- Nếu test phát hiện lỗi thuộc thay đổi vừa làm, sửa trong phạm vi yêu cầu, rà soát diff, commit bổ sung rồi kiểm thử lại. Lỗi ngoài phạm vi hoặc trở ngại môi trường phải được báo rõ, không tự mở rộng phạm vi sửa.
+- Báo mã commit đã kiểm thử và kết quả thực tế. Nếu chưa chạy được test, nêu rõ lý do; không khẳng định luồng hoạt động đúng hoặc test đạt khi chưa có bằng chứng.
 
 ## Kiểm thử trình duyệt không gián đoạn công việc
 
@@ -77,15 +78,15 @@ Khi người dùng nhắc Community (kể cả cách viết “comunity”) v1, 
 - Tất cả file kiểm thử JavaScript (`*.test.js`, `*.test.mjs`, `*.test.cjs`) phải đặt trong thư mục `tests/` ở gốc dự án; test mới cũng phải tuân thủ quy tắc này.
 - Giữ cấu trúc thư mục tương ứng với mã nguồn: test cho `html/pages/` đặt trong `tests/html/pages/`, test cho `html/assets/` đặt trong `tests/html/assets/`; áp dụng tương tự cho các thư mục khác.
 - Không đặt file test cạnh mã nguồn trong `html/` hoặc tài liệu trong `docs/`.
-- Khi được yêu cầu test: chạy toàn bộ kiểm thử bằng `npm test`; chỉ chạy một file bằng `node --test tests/<đường-dẫn-file-test>` khi người dùng yêu cầu phạm vi đó.
+- Sau commit, mặc định chạy toàn bộ kiểm thử bằng `npm test`; chỉ chạy một file bằng `node --test tests/<đường-dẫn-file-test>` khi người dùng yêu cầu phạm vi đó.
 - Khi đọc mã nguồn hoặc fixture từ test, xác định đường dẫn dựa trên vị trí file test (`import.meta.url` hoặc `__dirname`), không phụ thuộc thư mục hiện tại của terminal.
 
-## Commit sau khi hoàn tất
+## Commit và kiểm thử sau khi hoàn tất
 
 - Sau mỗi yêu cầu đã hoàn tất có thay đổi file, tự động tạo Git commit cho các thay đổi thuộc yêu cầu đó; không cần hỏi lại người dùng.
-- Trước khi commit, rà soát diff. Không tự chạy test để đáp ứng điều kiện commit; nếu chưa được yêu cầu test, vẫn commit thay đổi thuộc yêu cầu và ghi rõ chưa chạy test. Nếu đã chạy test theo yêu cầu và còn lỗi liên quan, xử lý hoặc báo rõ trở ngại trước khi commit.
+- Trước khi commit, rà soát diff và chỉ đưa vào commit các thay đổi thuộc yêu cầu. Sau khi commit thành công, tự chạy test theo mục “Thời điểm kiểm thử”; không dừng ở bước commit để chờ lệnh test.
 - Không đưa thay đổi không liên quan của người dùng vào commit. Không tự động push nếu người dùng chưa yêu cầu.
-- Trong phản hồi hoàn tất, thông báo mã commit và trạng thái kiểm thử ngắn gọn (kết quả thực tế hoặc chưa chạy theo quy tắc trên).
+- Trong phản hồi hoàn tất, thông báo mã commit và kết quả kiểm thử ngắn gọn; nếu test lỗi hoặc không chạy được, nêu rõ lỗi hoặc trở ngại thực tế.
 
 ## Tài khoản demo
 
