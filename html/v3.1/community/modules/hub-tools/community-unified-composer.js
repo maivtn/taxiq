@@ -20,7 +20,6 @@
     const footer=form.querySelector('.social-compose-footer');
     footer.insertAdjacentHTML('beforeend','<p role="alert" data-composer-error></p>');
     const offers=JSON.parse(localStorage.getItem('nexora-community-templates-v1')||'{}').feed||[];
-    footer.querySelector('.social-add-actions').insertAdjacentHTML('beforeend','<button type="button" class="btn soft" data-composer-mode="stories">Story</button>');
     if(page)form.querySelector('.social-compose-main').insertAdjacentHTML('beforeend','<label class="social-attach-deal">Attach deal<select name="attachedDealId"><option value="">None</option>'+offers.filter(row=>row.kind==='deal'&&row.pageId===page.id).map(row=>'<option value="'+esc(row.id)+'" '+(post?.attachedDealId===row.id?'selected':'')+'>'+esc(row.title)+'</option>').join('')+'</select></label>');
     form._retainedLegacyMedia=(post?.legacyMedia||[]).filter(item=>item.src&&item.type==='video');
     const legacyPreview=document.createElement('div');legacyPreview.className='po-legacy-media';

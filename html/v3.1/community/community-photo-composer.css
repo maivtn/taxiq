@@ -51,6 +51,7 @@
   border-radius:10px;font-size:12px;font-weight:700;white-space:nowrap;text-align:center;
   transition:background .16s,border-color .16s,box-shadow .16s;
 }
+#editor.social-dialog.community-photo-composer .social-add-row .social-add-more{color:#5948d2;background:#f4f2ff;border:1px solid #dcd6ff}
 #editor.community-photo-composer .social-labeled-action:hover{box-shadow:0 3px 10px #25315b0e;filter:brightness(.98)}
 #editor.community-photo-composer .social-labeled-action:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
 #editor.community-photo-composer .social-action-symbol{display:grid;place-items:center;flex:none;width:20px;height:20px;padding:0}
