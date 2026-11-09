@@ -1,4 +1,4 @@
-/* Render the PO Story and People components inside the retained Community Feed. */
+/* Render the PO Story, People and Reels components inside the retained Community Feed. */
 (() => {
   'use strict';
   const shortcutAssets=new URL('../../assets/icon-oneqr/',document.currentScript.src);
@@ -18,10 +18,12 @@
     if(!stories){stories=document.createElement('div');stories.id='communityPOStories';stories.className='community-po-feed';stories.hidden=true;composer.after(stories);}
     if(!people){people=document.createElement('div');people.id='communityPOPeople';people.className='community-po-feed';people.hidden=true;}
     if(people.previousElementSibling!==stories)stories.after(people);
+    let reels=document.getElementById('communityPOReels');
+    if(!reels){reels=document.createElement('div');reels.id='communityPOReels';reels.className='community-po-feed';reels.hidden=true;feed.append(reels);}
     const visible=!feed.classList.contains('hide')&&!feed.classList.contains('deal-mode');
-    shortcuts.hidden=!visible;
-    stories.hidden=!visible||!stories.firstElementChild;people.hidden=!visible||!people.firstElementChild;
-    return {feed,stories,people,visible};
+    shortcuts.hidden=!visible;if(!visible)reels.querySelectorAll('video').forEach(video=>video.pause());
+    stories.hidden=!visible||!stories.firstElementChild;people.hidden=!visible||!people.firstElementChild;reels.hidden=!visible||!reels.firstElementChild;
+    return {feed,stories,people,reels,visible};
   }
   async function refresh(){
     const elements=slots(),broker=parent.NEXORA_COMMUNITY_FEED;
@@ -29,20 +31,26 @@
     const current=++revision;
     try{
       const preview=await broker.preview();if(!preview||current!==revision||disposed)return;
-      for(const key of ['stories','people']){
+      for(const key of ['stories','people','reels']){
         const node=elements[key],markup=preview[key]||'';
         if(node.dataset.markup!==markup){const rail=node.querySelector('[role="region"]'),offset=rail?.scrollLeft||0;node.innerHTML=markup;node.dataset.markup=markup;const next=node.querySelector('[role="region"]');if(next)next.scrollLeft=offset;}
         node.hidden=!markup||!slots().visible;
+        if(key==='reels')window.NEXORA_COMMUNITY_PO?.hydrateVideos(node);
       }
     }catch(error){console.error('Community PO Feed',error);}
   }
   function schedule(){clearTimeout(timer);timer=setTimeout(refresh,80);}
   document.addEventListener('click',async event=>{
     const shortcut=event.target.closest('[data-community-shortcut]');if(shortcut){event.preventDefault();route(shortcut.dataset.communityShortcut);return;}
-    const root=event.target.closest('#communityPOStories,#communityPOPeople');if(!root)return;
+    const root=event.target.closest('#communityPOStories,#communityPOPeople,#communityPOReels');if(!root)return;
     const button=event.target.closest('button');if(!button)return;
     event.preventDefault();event.stopPropagation();
-    if(button.dataset.action==='story-compose')route('stories',{composeStory:'1'});
+    if(button.closest('#communityPOReels')){
+      if(button.dataset.feedKind==='reel')route('reels',{composeReel:'1'});
+      else if(button.dataset.section==='reels')route('reels');
+      else if(button.dataset.reelPlay){const video=button.parentElement.querySelector('video');if(video){video.controls=true;video.play().then(()=>{button.hidden=true;}).catch(()=>{video.controls=true;});}}
+    }
+    else if(button.dataset.action==='story-compose')route('stories',{composeStory:'1'});
     else if(button.dataset.storyOpen)route('stories',{storyId:button.dataset.storyOpen});
     else if(button.dataset.action==='people-all')route('people',{peopleView:'all'});
     else if(button.dataset.personView)route('people',{personId:button.dataset.personView});
@@ -51,6 +59,8 @@
   });
   window.addEventListener('nexora-po-feed-refresh',schedule);
   window.addEventListener('storage',event=>{if(!event.key||event.key.startsWith('nexora-'))schedule();});
+  document.addEventListener('pause',event=>{if(event.target.matches?.('#communityPOReels video'))event.target.parentElement.querySelector('[data-reel-play]')?.removeAttribute('hidden');},true);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('#communityPOReels video').forEach(video=>video.pause());});
   window.addEventListener('pagehide',()=>{disposed=true;clearTimeout(timer);});
   function start(){const feed=document.getElementById('feedView');if(!feed)return;new MutationObserver(schedule).observe(feed,{attributes:true,attributeFilter:['class']});schedule();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();

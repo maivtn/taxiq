@@ -62,7 +62,7 @@
     hydrate();syncDiscovery();
     const absolute=html=>html.replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,quote,value)=>/^(?:data:|blob:|https?:|#)/.test(value)?all:'url('+quote+new URL(value,location.href).href+quote+')').replace(/\b(src|poster)="([^"]+)"/g,(all,attr,value)=>/^(?:data:|blob:|https?:|#)/.test(value)?all:attr+'="'+new URL(value,location.href).href+'"');
     const incoming=pendingFriendPeople();
-    return {stories:absolute(storyRail()),people:absolute(peopleSection()),requests:absolute('<div class="friend-notice-head"><strong>'+tx('Lời mời kết bạn','Friend requests')+'</strong><b>'+incoming.length+'</b></div><div class="friend-request-list">'+(incoming.length?incoming.map(friendRequestCard).join(''):'<p class="friend-empty">'+tx('Không có lời mời mới.','No new requests.')+'</p>')+'</div>'),requestCount:incoming.length};
+    return {reels:absolute(feedReelsStrip()).replace(/data-video-id=/g,'data-po-video='),stories:absolute(storyRail()),people:absolute(peopleSection()),requests:absolute('<div class="friend-notice-head"><strong>'+tx('Lời mời kết bạn','Friend requests')+'</strong><b>'+incoming.length+'</b></div><div class="friend-request-list">'+(incoming.length?incoming.map(friendRequestCard).join(''):'<p class="friend-empty">'+tx('Không có lời mời mới.','No new requests.')+'</p>')+'</div>'),requestCount:incoming.length};
   }
   function enhancePhotoComposer(){
     const dialog=$('editor');dialog.classList.add('community-photo-composer');
