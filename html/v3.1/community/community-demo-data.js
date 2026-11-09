@@ -26,6 +26,9 @@
     ai: '/html/v3.1/nexora-welcome/ai-marketing-results-v2.png',
     // Product photos used only in fictional market listings. Original source pages:
     // https://www.greiner-gmbh.de/hairline/produkte/wartestuehle/wartestuhl-35.html
+    marketCabinet:'/html/v3.1/community/market-photos/storage-cabinet.svg',
+    marketRack:'/html/v3.1/community/market-photos/polish-rack.svg',
+    marketDeskLamp:'/html/v3.1/community/market-photos/desk-lamp.svg',
     marketChair:'/html/v3.1/community/market-photos/waiting-chair.jpg',
     // https://ongle24.com/collections/lampes-uv
     marketLamp:'/html/v3.1/community/market-photos/gel-lamp.jpg',
@@ -474,5 +477,16 @@
     try { localStorage.setItem(baselineKey, JSON.stringify(baselines)); } catch {}
     return rows;
   }
-  window.NEXORA_COMMUNITY_DEMO = {date, at, images, mediaURL, videos, videoURL, merge, market, extra:{feed,groups,pages,pagePosts,jobs,shifts,messages:[],promotions:{}}, blogs, connect, jobCandidates, shiftWorkflow};
+  function marketPhoto(item) {
+    const title=String(item.title||'').toLowerCase();
+    if(/desk lamp|manicure desk|white-light/.test(title))return images.marketDeskLamp;
+    if(/polish.*rack|display rack/.test(title))return images.marketRack;
+    if(/trolley|trolleys/.test(title))return images.marketTrolley;
+    if(item.icon==='cabinet')return images.marketCabinet;
+    if(item.icon==='lamp')return images.marketLamp;
+    if(item.industry==='Nhà hàng & ăn uống')return images.marketTable;
+    return images.marketChair;
+  }
+  market.forEach(item=>{if(!item.photo)item.photo=marketPhoto(item);});
+  window.NEXORA_COMMUNITY_DEMO = {date, at, images, mediaURL, marketPhoto, videos, videoURL, merge, market, extra:{feed,groups,pages,pagePosts,jobs,shifts,messages:[],promotions:{}}, blogs, connect, jobCandidates, shiftWorkflow};
 })();

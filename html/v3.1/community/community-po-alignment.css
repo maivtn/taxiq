@@ -116,10 +116,13 @@ body.embedded #jobsView .community-po-jobs-hero{padding:12px 14px;gap:12px;borde
 body.embedded #jobsView .community-po-jobs-hero h2{font-size:22px;line-height:1.2;margin:0 0 4px}
 body.embedded #jobsView .community-po-jobs-hero p{font-size:12px;line-height:1.4}
 body.embedded #jobsView .community-po-hero-actions{gap:6px;margin-top:8px}
-body.embedded #marketView #createSale{margin-left:auto;order:2}
+body.embedded #marketView #createSale{margin-left:auto;order:2;flex:none;min-height:36px;padding:8px 10px;font-size:11px;white-space:nowrap}
+body.embedded #marketView #tabButtons{display:flex;align-items:center;flex-wrap:nowrap;gap:4px}
+body.embedded #marketView #tabButtons>.subtab{padding:8px;font-size:11px;white-space:nowrap}
+body.embedded #marketView [data-market-info-toggle]{display:none}
 body.embedded #marketView #listings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 body.embedded #marketView #listings>.listing{display:flex;flex-direction:column;width:100%;min-width:0;gap:0;padding:0;overflow:hidden;border-radius:12px}
-body.embedded #marketView #listings>.listing>.listing-photo{width:100%;height:auto;aspect-ratio:7/4;object-fit:cover;border-radius:0}
+body.embedded #marketView #listings>.listing>.listing-photo{width:100%;height:auto;aspect-ratio:7/4;object-fit:contain;background:#f1eff8;border-radius:0}
 body.embedded #marketView #listings>.listing>div{min-width:0;padding:10px}
 body.embedded #marketView #listings>.empty{grid-column:1/-1}
 body.embedded #marketView #listings .chips{display:none}
@@ -138,3 +141,6 @@ body.embedded #marketView #listings .chips{display:none}
  body.embedded #pagesView>.community-pages-hero h2{font-size:16px}
  body.embedded #jobsView .community-po-jobs-hero h2{font-size:20px}
 }
+
+body.embedded #marketView .market-search-row{gap:6px}
+body.embedded #marketSearchButton{flex:none;min-height:44px;padding:8px 10px;font-size:12px}

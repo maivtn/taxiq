@@ -3,6 +3,7 @@
 (() => {
   const isConnect = location.pathname.includes('privacy-qr-layout');
   const communityPairs = `
+Tìm	Search
 Nhóm dành cho bạn	Groups for you
 Bài mới trong nhóm	New group posts
 Nhóm đã tham gia	Joined groups

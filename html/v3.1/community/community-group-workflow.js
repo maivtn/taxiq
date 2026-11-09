@@ -191,14 +191,13 @@
       if(market&&marketNavigation){
         if(!market.querySelector(':scope > .feature-intro')){
           const hero=view.querySelector(':scope > .feature-intro')?.cloneNode(true);
-          if(hero){hero.querySelector('.community-group-filter-toggle')?.remove();hero.querySelector('[data-template="group"]')?.remove();market.prepend(hero);}
+          if(hero){hero.querySelector('.community-group-filter-toggle')?.remove();market.prepend(hero);}
         }
-        const sale=document.getElementById('createSale'),hero=market.querySelector(':scope > .feature-intro');
-        if(sale&&hero&&!hero.contains(sale))hero.append(sale);
+        const sale=document.getElementById('createSale'),marketTabs=market.querySelector('#tabButtons');
+        if(sale&&marketTabs&&!marketTabs.contains(sale))marketTabs.append(sale);
         const toolbar=market.querySelector('.market-toolbar');
         if(toolbar){marketNavigation.before(toolbar);const input=toolbar.querySelector('input[type="search"]');if(input)input.placeholder=cards.querySelector('[data-po-group-search]').placeholder;}
-        const info=marketNavigation.querySelector('[data-market-info-toggle]');
-        if(info)market.querySelector('#tabButtons')?.append(info);
+        market.querySelectorAll('[data-market-info-toggle]').forEach(button=>button.remove());
       }
       const search=cards.querySelector('.community-group-search');if(navigation)navigation.before(search);
       if(toggle)search.append(toggle);

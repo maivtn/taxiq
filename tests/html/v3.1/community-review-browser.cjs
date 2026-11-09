@@ -33,9 +33,21 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await groups.screenshot({path:path.join(output,`${width}-${account}-groups.png`)});
     });
     await check('market sell save persistence and two columns',async()=>{
-     await open('market');const market=pane.locator('#marketView');await market.locator('.feature-intro #createSale').waitFor();
-     const hero=market.locator(':scope>.feature-intro'),sale=hero.locator('#createSale');
-     const hb=await hero.boundingBox(),sb=await sale.boundingBox();assert.ok(sb.x+sb.width>=hb.x+hb.width-20);assert.ok(hb.height<=115);
+     await open('market');const market=pane.locator('#marketView');await market.locator('#tabButtons #createSale').waitFor();
+     const hero=market.locator(':scope>.feature-intro'),sale=market.locator('#tabButtons #createSale');
+     await hero.locator('[data-template="group"]').click();await pane.locator('#templateForm[data-kind=group]').waitFor();await pane.locator('#closeModal').click();
+     assert.equal(await hero.locator('#createSale').count(),0);
+     assert.equal(await market.locator('[data-market-info-toggle]').count(),0);
+     assert.deepEqual(await market.locator('#tabButtons [data-tab]').evaluateAll(nodes=>nodes.map(node=>node.dataset.tab)),['all','sale','want']);
+     const tabBox=await market.locator('#tabButtons [data-tab=all]').boundingBox(),saleBox=await sale.boundingBox();assert.ok(Math.abs(tabBox.y-saleBox.y)<6);
+     for(const tab of ['sale','want','all']){await market.locator('#tabButtons [data-tab='+tab+']').click();await sale.waitFor();}
+     const search=market.locator('#searchInput'),searchButton=market.locator('#marketSearchButton');
+     const inputBox=await search.boundingBox(),searchBox=await searchButton.boundingBox();assert.ok(searchBox.x>=inputBox.x+inputBox.width);assert.ok(Math.abs(searchBox.y-inputBox.y)<6);
+     await search.fill('zz-no-market-result-zz');await searchButton.click();await market.locator('#listings .empty').waitFor();
+     await search.fill('');await searchButton.click();
+     const photos=market.locator('#listings>.listing>.listing-photo');assert.equal(await photos.count(),await market.locator('#listings>.listing').count());
+     await photos.evaluateAll(async nodes=>{await Promise.all(nodes.map(image=>{image.loading='eager';return image.decode();}));});
+     assert.ok(await photos.evaluateAll(nodes=>nodes.every(image=>image.naturalWidth>0&&getComputedStyle(image).objectFit==='contain')));
      await sale.click();await pane.locator('#listingForm').waitFor();await pane.locator('#closeModal').click();
      const cards=market.locator('#listings>.listing');assert.ok(await cards.count()>1);
      assert.equal(await cards.locator('.chips:visible').count(),0);
