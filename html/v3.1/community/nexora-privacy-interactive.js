@@ -48,6 +48,17 @@
   const parentMessageOrigin = location.protocol === 'file:' ? '*' : location.origin;
   const esc = value => String(value || '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
   const initials = value => String(value || '').trim().split(/\s+/).filter(Boolean).slice(0,2).map(word=>[...word][0]).join('').toLocaleUpperCase();
+  const contactAvatarBase=new URL('.',document.currentScript.src);
+  const messageIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/></svg>';
+  function contactAvatar(member){
+    const person=window.NEXORA_COMMUNITY_CONNECT?.directory().find(person=>person.name===member.name);
+    const page=window.NEXORA_COMMUNITY_DEMO?.extra.pages.find(page=>page.title===member.name);
+    const photo=person?.avatar||member.avatar||page?.avatar;
+    let source='';
+    if(photo){try{const url=new URL(photo,contactAvatarBase);if(['http:','https:','blob:'].includes(url.protocol)||/^data:image\//i.test(photo))source=url.href;}catch{}}
+    const letters=esc(initials(member.name));
+    return '<span class="contact-avatar" aria-hidden="true">'+(source?'<img src="'+esc(source)+'" alt="" data-initials="'+letters+'">':letters)+'</span>';
+  }
   const phoneIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h4l1 5-2 2a16 16 0 0 0 6 6l2-2 5 1v4a2 2 0 0 1-2 2C10 21 3 14 3 5a2 2 0 0 1 2-2z"/></svg>';
   const videoIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>';
   const imageIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m4 17 5-5 3 3 3-3 5 5"/></svg>';
@@ -444,8 +455,9 @@
     const contacts=connected.filter(member=>!isBlocked(member.name)).sort((a,b)=>a.name.localeCompare(b.name));
     $('#contactRows').innerHTML=contacts.map(member=>{
       const detail=member.detail==='request'?'chat-mai':member.detail;
-      return '<article class="connect-contact"><button type="button" class="row-button contact-main" data-contact-member="'+esc(member.name)+'" data-detail="'+esc(detail)+'" data-initials="'+esc(initials(member.name))+'"><span><strong>'+esc(member.name)+'</strong><small>'+esc(member.handle)+' · '+esc(member.id)+'</small></span></button><div class="contact-actions"><button type="button" class="secondary" data-contact-member="'+esc(member.name)+'" data-detail="'+esc(detail)+'" aria-label="'+esc(ui('Message ','Tin nhắn ')+member.name)+'">'+ui('Message','Tin nhắn')+'</button><button type="button" class="secondary" data-start-call="voice" data-call-name="'+esc(member.name)+'" aria-label="'+esc(ui('Voice call ','Gọi thoại ')+member.name)+'">'+phoneIcon+ui('Voice call','Gọi thoại')+'</button></div></article>';
+      return '<article class="connect-contact">'+contactAvatar(member)+'<button type="button" class="row-button contact-main" data-contact-member="'+esc(member.name)+'" data-detail="'+esc(detail)+'" data-initials="'+esc(initials(member.name))+'"><span><strong>'+esc(member.name)+'</strong><small>'+esc(member.handle)+' · '+esc(member.id)+'</small></span></button><div class="contact-actions"><button type="button" class="secondary" data-contact-member="'+esc(member.name)+'" data-detail="'+esc(detail)+'" aria-label="'+esc(ui('Message ','Tin nhắn ')+member.name)+'">'+messageIcon+'</button><button type="button" class="secondary" data-start-call="voice" data-call-name="'+esc(member.name)+'" aria-label="'+esc(ui('Voice call ','Gọi thoại ')+member.name)+'">'+phoneIcon+'</button></div></article>';
     }).join('');
+    for(const image of $('#contactRows').querySelectorAll('.contact-avatar img'))image.addEventListener('error',()=>image.replaceWith(document.createTextNode(image.dataset.initials)),{once:true});
     $('#contactsEmpty').classList.toggle('hidden',contacts.length!==0);
   }
   function openContact(name){
