@@ -16,7 +16,7 @@ const server=http.createServer(async(req,res)=>{
   let browser;const results=[];
   try{
     browser=await chromium.launch({headless:true});
-    const base='http://127.0.0.1:'+server.address().port;
+    const base=process.env.COMMUNITY_BASE_URL||'http://127.0.0.1:'+server.address().port;
     for(const width of [320,390,430])for(const account of ['business','personal']){
       const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
       try{

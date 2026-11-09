@@ -21,7 +21,7 @@ const server = http.createServer(async (request, response) => {
 (async () => {
   await fs.mkdir(output, {recursive:true});
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  const base = 'http://127.0.0.1:' + server.address().port;
+  const base = process.env.COMMUNITY_BASE_URL || 'http://127.0.0.1:' + server.address().port;
   let browser;
   const results = [], errors = [];
   try {
