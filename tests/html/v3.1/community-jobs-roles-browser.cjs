@@ -73,6 +73,7 @@ fs.mkdirSync(output,{recursive:true});
           await form.locator('[name="phone"]').fill('7135550199');
           await form.locator('[type="submit"]').click();
           await jobs.locator('#jobPosts').getByText(title,{exact:true}).waitFor();
+          await page.waitForFunction(()=>new URLSearchParams(location.search).get('jobsTab')==='myPosts'&&!history.state?.communityDetail);
           await page.reload({waitUntil:'domcontentloaded'});await jobs.locator('#jobsWorkflow').waitFor({state:'attached'});
           await jobs.locator('button[data-jobs-tab="myPosts"]').click();
           await jobs.locator('#jobPosts').getByText(title,{exact:true}).waitFor();

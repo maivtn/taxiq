@@ -5,7 +5,7 @@
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
   var componentURL=new URL('community/community-hub.js?v=20261109-nav-tabs2',document.currentScript.src);
-  var hub=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
+  var hub=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false,closedJobsTab=null;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
   function clearDetailState(){if(history.state?.communityDetail){var state=Object.assign({},history.state);delete state.communityDetail;history.replaceState(state,'',location.href);}}
@@ -130,7 +130,11 @@
       document.body.classList.toggle('community-detail-open',open);
       if (open && !detailOpen && !detailBackPending) pushCommunityState({community:current, communityDetail:true}, '', location.href);
       detailOpen = open;
-      if (!open && !detailBackPending && history.state && history.state.communityDetail) {detailBackPending=true;history.back();}
+      if (!open && !detailBackPending && history.state && history.state.communityDetail) {
+        // Closing a saved Jobs form pops its modal entry, but keeps the resulting workspace.
+        closedJobsTab=current==='jobs'?new URLSearchParams(location.search).get('jobsTab'):null;
+        detailBackPending=true;history.back();
+      }
       else if(!open&&clearPostOnBack&&!detailBackPending)clearPostLink();
     }
     if(data.type==='nexora-community-history-back'){if(history.state?.communityPrevious||history.length>1&&document.referrer)history.back();else receiveHubEvent({type:'nexora-community-back'});return;}
@@ -145,6 +149,7 @@
     if(detailBackPending){
       detailBackPending=false;
       clearDetailState();
+      if(closedJobsTab){var jobsURL=new URL(location.href);jobsURL.searchParams.set('jobsTab',closedJobsTab);history.replaceState(history.state,'',jobsURL);closedJobsTab=null;}
       if(current!==route(new URLSearchParams(location.search).get('tab'))){var url=new URL(location.href);url.searchParams.set('tab',current);pushCommunityState({community:current},'',url);}
       show(current,true,true);
       if(detailOpen)pushCommunityState({community:current,communityDetail:true},'',location.href);
