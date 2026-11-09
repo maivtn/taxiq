@@ -646,7 +646,7 @@ body #feedView .feed-action[data-blog-create] .feed-icon .community-action-icon 
 }
 
 /* Owner Page actions share the Community purple palette and Lucide sizing. */
-#communityPageScreen .po-page-owner .page-hero-actions .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#f3f0ff;color:#6250c9;border:1px solid #dcd5fb;box-shadow:none}
+#communityPageScreen .po-page-owner .page-hero-actions .btn{--page-action-bg:#f3f0ff;--page-action-hover:#eae5ff;--page-action-ink:#6250c9;--page-action-border:#dcd5fb;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#f3f0ff;color:#6250c9;border:1px solid #dcd5fb;box-shadow:none}
 #communityPageScreen .po-page-owner .page-hero-actions [data-po-page-action="manage"]{background:#6755ec;color:#fff;border-color:#6755ec}
 #communityPageScreen .po-page-owner .page-hero-actions .btn svg{flex:none;width:16px;height:16px;stroke:currentColor;stroke-width:1.8}
 #communityPageScreen .po-page-owner .page-hero-actions .btn:hover{background:#eae5ff;border-color:#b8aaf1}
