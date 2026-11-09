@@ -74,7 +74,7 @@
       function notifyHostDetail(force=false){const open=view==='connect'?(connectDetailOpen||connectDialogOpen):communityModalOpen;if(force||open!==lastHostDetail){lastHostDetail=open;notifyHost({type:'nexora-community-detail',open});}}
       let view=viewForRoute(initialRoute);
       if(!['feed','groups','market','pages','jobs','daywork','deals','blog','connect'].includes(view))view='feed';
-      let communityLoaded=false,connectLoaded=false,connectSection=sectionForRoute(initialRoute),pendingCommunityView=view==='connect'?null:view;
+      let communityLoaded=false,connectLoaded=false,connectSection=sectionForRoute(initialRoute),pendingCommunityView=view==='connect'?null:view,pendingCreateMenu=false;
       let connectDetailOpen=false,connectDialogOpen=false,communityModalOpen=false;
       function updateDetailState(){const detailOpen=view==='connect'?(connectDetailOpen||connectDialogOpen):communityModalOpen;app.classList.toggle('detail-open',detailOpen);root.querySelector('.mobile-nav').hidden=detailOpen;}
       function notifyRequest(){let pending=true;try{const saved=JSON.parse(localStorage.getItem('nexora-connect-preview-v2'));if(saved&&saved.request)pending=saved.request==='pending';}catch{}root.getElementById('requestBadge').hidden=!pending;root.getElementById('notificationItem').hidden=!pending;root.getElementById('notificationEmpty').hidden=pending;}
@@ -117,6 +117,7 @@
         setView('feed',false);
         const toggle=community.contentDocument?.getElementById('feedActionsToggle');
         if(toggle){toggle.click();return;}
+        pendingCreateMenu=true;
         sendToFrame(community,{type:'nexora-open-create-menu'});
       });
       root.getElementById('communityLocation')?.addEventListener('click',()=>sendToFrame(community,{type:'nexora-open-location'}));
@@ -126,7 +127,7 @@
       root.getElementById('messagesButton').addEventListener('click',()=>{connectSection='messages';setView('connect');});
       root.getElementById('accountButton').addEventListener('click',()=>{connectSection='privacy';setView('connect');});
       root.getElementById('globalSearch').addEventListener('keydown',event=>{if(event.key==='Enter'&&event.currentTarget.value.trim()){connectSection='messages';setView('connect');const query=event.currentTarget.value.trim();const fill=()=>{const input=connect.contentDocument?.getElementById('memberQuery');if(input){input.value=query;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();}};if(connectLoaded)fill();else connect.addEventListener('load',fill,{once:true});}});
-      community.addEventListener('load',()=>{sendToFrame(community,{type:'nexora-language',language});});
+      community.addEventListener('load',()=>{sendToFrame(community,{type:'nexora-language',language});if(pendingCreateMenu){pendingCreateMenu=false;sendToFrame(community,{type:'nexora-open-create-menu'});}});
       connect.addEventListener('load',()=>{if(!connect.hasAttribute('src')||connect.contentDocument?.location.href==='about:blank')return;connectLoaded=true;sendToFrame(connect,{type:'nexora-language',language});notifyRequest();if(view==='connect'){sendToFrame(connect,{type:'nexora-open-section',section:connectSection});if(pendingContact){sendToFrame(connect,{type:'nexora-open-contact',contact:pendingContact});pendingContact=null;}if(pendingGroup){sendToFrame(connect,{type:'nexora-open-community-group',group:pendingGroup});pendingGroup=null;}if(pendingRequest){sendToFrame(connect,{type:'nexora-open-request'});pendingRequest=false;}}});
       window.addEventListener('message',event=>{
         if(event.source!==community.contentWindow||(location.protocol!=='file:'&&event.origin!==location.origin)||event.data?.type!=='nexora-prototype-ready')return;
