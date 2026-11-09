@@ -19,6 +19,7 @@ const server=http.createServer(async(req,res)=>{try{const file=path.resolve(repo
         if(width<768){
           assert.equal(Math.round((await page.locator('#feedComposerCard .feed-avatar').boundingBox()).height),42);
           assert.equal(Math.round((await page.locator('#feedComposerCard .feed-prompt-text').boundingBox()).height),42);
+          for(const transform of await page.locator('#feedComposerCard .feed-media-shortcuts svg').evaluateAll(nodes=>nodes.map(el=>getComputedStyle(el).transform)))assert.equal(transform,'matrix(1, 0, 0, 1, 0, -2)');
         }
         const menu=page.locator('.shell-language-menu'),toggle=page.locator('.shell-header-language');
         async function choose(locale){await toggle.click();await menu.locator('[data-shell-language="'+locale+'"]').click();await page.waitForFunction(locale=>document.documentElement.lang===locale,locale);await page.waitForTimeout(150);}
@@ -51,6 +52,7 @@ const server=http.createServer(async(req,res)=>{try{const file=path.resolve(repo
             await control.locator('.ts-control').click();assert.equal(await control.locator('.ts-dropdown .jobs-worker-choice svg').count(),0);await page.keyboard.press('Escape');
           }
         }
+        results.push({width,account,name:'PO Jobs cleanup and worker filters',pass:true});
       }finally{await context.close();}
     }
   }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));await fs.writeFile(path.join(output,'results.json'),JSON.stringify({results,errors},null,2));}
