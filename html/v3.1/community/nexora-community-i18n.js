@@ -3,6 +3,14 @@
 (() => {
   const isConnect = location.pathname.includes('privacy-qr-layout');
   const communityPairs = `
+Lối tắt cộng đồng	Community shortcuts
+Gian hàng	Store
+Lọc Fanpage	Filter Pages
+Tìm	Search
+Tìm Fanpage, tiệm, nhà hàng...	Search pages, shops, restaurants...
+Tiệm nail	Nail salons
+Ẩm thực	Food
+
 Tạo nhóm theo nghề, quản lý thành viên, đăng bài và mua bán quanh bạn.	Create trade groups, manage members, post and shop nearby.
 Trang / Fanpage	Pages & Fanpages
 Tạo trang doanh nghiệp, đăng bài và quản lý nội dung ngay trong Community.	Create a business Page, post and manage content in Community.
@@ -179,7 +187,7 @@ Lọc loại bài trên bảng tin	Filter feed posts
 Nhóm & Chợ	Groups & Market
 Trang	Pages
 Fanpage	Pages
-Trang / Fanpage	Pages
+Trang / Fanpage	Pages & Fanpages
 TRANG / FANPAGE	PAGE
 FANPAGE	PAGE
 Tạo Trang / Fanpage	Create a Page

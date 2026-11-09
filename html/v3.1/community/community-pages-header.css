@@ -1,0 +1,20 @@
+/* Pages header copied from the PO social rail, Pages hero, search and filters. */
+#pagesView>.community-pages-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 14px;padding:5px;background:#fff;border:1px solid #e2e6ee;border-radius:15px;box-shadow:0 5px 17px #17243a0a}
+#pagesView>.community-pages-shortcuts button{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;padding:9px;border:0;border-radius:11px;background:transparent;color:#68758c;cursor:pointer}
+#pagesView>.community-pages-shortcuts button:hover{background:#f3f1ff;color:#6350de}
+#pagesView>.community-pages-shortcuts button.active{background:#eeeaff;color:#6350de}
+#pagesView>.community-pages-shortcuts svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body.embedded #pagesView>.community-pages-hero{display:flex;align-items:flex-start;flex-direction:column;gap:10px;margin:0 0 11px;padding:18px 14px 14px;border:1px solid #dfd9ff;border-radius:18px;background:linear-gradient(115deg,#f0edff 0%,#fff 72%)}
+body.embedded #pagesView>.community-pages-hero .community-po-eyebrow{font-size:10px;line-height:1.5;letter-spacing:.13em;color:#6852e5;font-weight:900}
+body.embedded #pagesView>.community-pages-hero h2{margin:4px 0 3px;font-size:20px;line-height:1.2;letter-spacing:0;color:#25304b;font-weight:800}
+body.embedded #pagesView>.community-pages-hero p{margin:0;max-width:550px;font-size:11px;line-height:1.4;color:#79839c}
+body.embedded #pagesView>.community-pages-hero>.btn{display:inline-flex;align-items:center;gap:2px;min-height:35px;padding:8px 11px;border:0;border-radius:10px;background:#6551df;color:#fff;box-shadow:none;font-size:11px;font-weight:800;line-height:1.4}
+body.embedded #pagesView>.community-pages-search{display:flex;gap:7px;margin:0 0 11px;padding:0;border:0;background:transparent}
+body.embedded #pagesView .community-pages-search #pageSearch{flex:1;min-width:0;width:100%;height:42px;min-height:42px;padding:11px 13px;border:1px solid #d9deea;border-radius:10px;background:#fff;font:inherit;font-size:12px!important;box-shadow:none}
+body.embedded #pagesView>.community-pages-search>button{display:flex;align-items:center;justify-content:center;gap:3px;flex:none;min-height:42px;padding:0 12px;border:0;border-radius:11px;background:#6551df;color:#fff;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
+#pagesView .community-pages-search>button svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+body.embedded #pagesView>.community-pages-filters{display:flex;flex-wrap:nowrap;gap:7px;margin:0 0 12px;padding:1px 0 5px;overflow-x:auto;scrollbar-width:none}
+body.embedded #pagesView>.community-pages-filters>.filter-chip{flex:none;min-height:36px;min-width:0;padding:8px 11px;border:1px solid #dfe2ee;border-radius:999px;background:#fff;color:#515c76;font-size:12px;font-weight:800;line-height:1.4;white-space:nowrap;cursor:pointer}
+body.embedded #pagesView>.community-pages-filters>.filter-chip.active{background:#6150d8;border-color:#6150d8;color:#fff}
+#pagesView :is(.community-pages-shortcuts button,.community-pages-search button,.community-pages-filters button):focus-visible{outline:3px solid #a99fff;outline-offset:2px}
+@media(min-width:801px){body.embedded #pagesView>.community-pages-hero{padding:20px;flex-direction:row;align-items:center;justify-content:space-between}body.embedded #pagesView>.community-pages-hero h2{font-size:24px}body.embedded #pagesView>.community-pages-hero p{font-size:13px}}

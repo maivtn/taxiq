@@ -1,0 +1,8 @@
+/* The PO Pages screen has five primary mobile destinations. */
+@media(max-width:800px){
+ .mobile-nav:has([data-view="pages"].active){--community-nav-count:5!important;grid-template-columns:repeat(5,minmax(0,1fr))!important}
+ .mobile-nav:has([data-view="pages"].active) :is([data-view="deals"],[data-view="connect"]){display:none!important}
+ .mobile-nav:has([data-view="pages"].active) .mobile-tab.tab{min-height:46px;border-radius:12px}
+ .mobile-nav:has([data-view="pages"].active) [data-view="pages"].active{background:#6551df!important;border-color:#6551df!important;color:#fff!important}
+ .mobile-nav:has([data-view="pages"].active) [data-view="pages"].active span{color:inherit!important}
+}
