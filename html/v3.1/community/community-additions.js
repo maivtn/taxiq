@@ -140,7 +140,7 @@
       .ecosystem-item-icon img{display:block;width:24px;height:24px;object-fit:contain}
       .ecosystem-item-icon svg{width:18px;height:18px}
       .ecosystem-item-label{line-height:1.3;overflow-wrap:anywhere}
-      .community-menu-create{flex:0 1 auto;min-height:0;margin:0!important;padding:10px 0 0!important;border-top:1px solid #ececf5!important;gap:8px}
+      .community-menu-create{flex:0 0 auto;min-height:0;margin:0!important;padding:10px 0 0!important;border-top:1px solid #ececf5!important;gap:8px}
       .ecosystem-menu .community-menu-create-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:36px;padding:8px 10px;border:0;border-radius:9px;background:#f4f0ff;color:#5c43d5;text-align:left;font:inherit;font-size:12px;font-weight:800}
       .community-menu-post-count{flex:none;font-size:10px}
       #communityMenuPostTypes{display:block;max-height:min(40vh,300px);overflow-y:auto;overscroll-behavior:contain;padding:1px}
