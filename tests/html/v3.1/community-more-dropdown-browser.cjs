@@ -108,7 +108,7 @@ const server = http.createServer(async (request, response) => {
             await host.locator(destination).waitFor();
             assert.equal(await more.getAttribute('aria-current'), 'page');
           }
-          await tabs.locator('[data-view="feed"]').click();
+          await host.locator('.tab[data-view="feed"]:visible').first().click();
           await page.waitForURL(url => url.searchParams.get('tab') === 'feed');
           assert.equal(await more.getAttribute('aria-current'), 'false');
         });
