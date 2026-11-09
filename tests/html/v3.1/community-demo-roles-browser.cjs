@@ -48,7 +48,7 @@ const rows=[],errors=[];
             if(role==='personal')await personalControls();
             if(route==='jobs'){
               for(const tab of ['transfer','workers','services'])assert.equal(await classic().locator('[data-jobs-tab="'+tab+'"]').count(),role==='personal'?0:1);
-              assert.equal(await classic().locator('[data-jobs-action="open-pos"]').count(),role==='personal'?0:1);
+              assert.equal(await classic().locator('.jobs-nav [data-jobs-action="open-pos"]').count(),role==='personal'?0:1);
               assert.equal(Boolean(await classic().locator('[data-template="hiring"]:visible').count()||await host.locator('#communityCreateMenu [data-create-kind="hiring"]').count()),role==='salon');
               assert.equal(Boolean(await classic().locator('[data-template="seeking"]:visible').count()||await host.locator('#communityCreateMenu [data-create-kind="seeking"]').count()),role==='personal');
               if(role==='personal'&&width===390)assert.ok(await classic().locator('#jobsView [data-view="daywork"]').count()||await host.locator('[data-quick-view="daywork"]').count());
@@ -64,8 +64,9 @@ const rows=[],errors=[];
           });
           await check(role,'More drawer and Feed shortcuts',async()=>{
             await open(role,'feed');
-            if(width>800)await classic().locator('#feedActionsToggle').click();
-            assert.equal(await classic().locator('#feedActions [data-template="deal"]').count(),role==='personal'?0:1);
+            await host.locator('#communityCreate').click();
+            assert.equal(await host.locator('#communityCreateMenu [data-create-kind="deal"]').count(),role==='personal'?0:1);
+            await host.locator('#communityCreate').click();
             for(const feature of ['shop','transfer'])assert.equal(await classic().locator('[data-community-shortcut="'+feature+'"]').count(),role==='personal'&&feature==='transfer'?0:1);
             await host.locator('.community-nav-more:visible').first().click();
             await host.locator('#ecosystemMenu').waitFor();
@@ -79,7 +80,7 @@ const rows=[],errors=[];
             await open(role,'jobs');
             const tabs=role==='personal'?['browse','myPosts','applied','profile','matched','availability','offering','invites']:['browse','myPosts','workers','invites','services','transfer'];
             for(const tab of tabs){
-              await classic().locator('button[data-jobs-tab="'+tab+'"]').click();
+              await classic().locator('.jobs-nav button[data-jobs-tab="'+tab+'"]').click();
               assert.equal(await classic().locator('#jobsView').getAttribute('data-jobs-tab'),tab);
               for(const denied of (role==='personal'?['transfer','workers','services']:['profile','applied','matched','availability','offering']))assert.equal(await classic().locator('button[data-jobs-tab="'+denied+'"]').count(),0);
             }
