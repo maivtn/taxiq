@@ -35,13 +35,14 @@ const server=http.createServer(async(req,res)=>{
         });
         await check('open close outside Escape keyboard scroll and role actions',async()=>{
           await open();await trigger.tap();await expanded();
+          assert.deepEqual(await menu.locator('[role="menuitem"]').evaluateAll(nodes=>nodes.slice(0,4).map(node=>node.textContent)),['Write blog','Photo video','Reel','Live video']);
           assert.equal(await menu.locator('[data-create-kind="deal"]').count(),account==='business'?1:0);
           assert.equal(await menu.locator('[data-create-kind="seeking"]').count(),account==='personal'?1:0);
           await menu.locator('[data-create-kind="photos"]').scrollIntoViewIfNeeded();
           assert.equal(await menu.locator('img').evaluateAll(nodes=>nodes.every(node=>node.complete&&node.naturalWidth>0)),true);
           await menu.evaluate(el=>el.scrollTop=0);await page.screenshot({path:path.join(output,`${width}-${account}-dropdown.png`)});
           await page.keyboard.press('Escape');await menu.waitFor({state:'hidden'});
-          await trigger.press('ArrowDown');await expanded();await page.keyboard.press('End');assert.equal(await menu.locator('[data-create-kind="live"]').evaluate(el=>el.getRootNode().activeElement===el),true);
+          await trigger.press('ArrowDown');await expanded();await page.keyboard.press('End');assert.equal(await menu.locator('[role="menuitem"]').last().evaluate(el=>el.getRootNode().activeElement===el),true);
           await page.keyboard.press('Escape');await trigger.tap();await page.locator('.community-heading h1[data-i18n="community"]').tap();await menu.waitFor({state:'hidden'});
         });
         await check('open from Pages without changing route',async()=>{

@@ -4,8 +4,12 @@
   const base=new URL('./',document.currentScript.src);
   const artwork=name=>'feed-icons/'+name;
   const oneqr=name=>'../icon-oneqr/issue-2040-oneqr-'+name+'-3d.png';
-  // Labels, order and artwork follow the existing Feed actions.
+  // Keep publishing shortcuts first; labels and artwork match the Feed actions.
   const entries=[
+    ['blog','Write blog',artwork('blog-1352524.png'),'blog',{composeKind:'blog'}],
+    ['photos','Photo video',oneqr('image'),'post',{modal:'1',composeKind:'photos'}],
+    ['reels','Reel',oneqr('video'),'reels',{}],
+    ['live','Live video',oneqr('video'),'live',{}],
     ['showcase','Work photos',artwork('picture-2659360.png'),'feed',{composeKind:'showcase'}],
     ['tip','Tips',artwork('mode-8484254.png'),'feed',{composeKind:'tip'}],
     ['question','Ask',artwork('speech-bubble-5726734.png'),'feed',{composeKind:'question'}],
@@ -15,11 +19,7 @@
     ['want','Post a wanted item',oneqr('shopping-bag'),'market',{composeKind:'market',marketType:'want'}],
     ['deal','Post a deal or coupon',oneqr('ticket'),'deals',{composeKind:'deal'},'owner'],
     ['hiring','Post a job',artwork('posting-8522069.png'),'jobs',{composeKind:'hiring'},'owner'],
-    ['seeking','Seeking work',oneqr('user-round'),'jobs',{composeKind:'seeking'},'staff'],
-    ['blog','Write blog',artwork('blog-1352524.png'),'blog',{composeKind:'blog'}],
-    ['photos','Photo video',oneqr('image'),'post',{modal:'1',composeKind:'photos'}],
-    ['reels','Reel',oneqr('video'),'reels',{}],
-    ['live','Live video',oneqr('video'),'live',{}]
+    ['seeking','Seeking work',oneqr('user-round'),'jobs',{composeKind:'seeking'},'staff']
   ];
   function mount(root,{role,navigate}){
     const trigger=root.getElementById('communityCreate');
