@@ -28,8 +28,8 @@
 .friend-request-card .friends-handle{margin:2px 0 0;color:#6250c8;font-size:10px;font-weight:750}
 .friend-request-card .friends-detail{margin:2px 0 0;min-height:0;color:#69738b;font-size:9px;line-height:1.4}
 .friend-request-card .friend-request-actions{display:flex;flex-direction:row;gap:6px;margin-top:8px}
-.friend-request-card .friend-request-actions button{flex:1;min-width:0;min-height:29px;padding:5px;border:1px solid #6552d8;border-radius:7px;background:#6552d8;color:#fff;font-size:10px;font-weight:850}
-.friend-request-card .friend-request-actions button.secondary{border-color:#dde0ee;background:#fff;color:#505a72}
+.friends-content[data-friends-view="received"] .friend-request-card .friend-request-actions button{flex:1;min-width:0;min-height:29px;padding:5px;border:1px solid #6552d8;border-radius:7px;background:#6552d8;color:#fff;font-size:10px;font-weight:850}
+.friends-content[data-friends-view="received"] .friend-request-card .friend-request-actions button.secondary{border-color:#dde0ee;background:#fff;color:#505a72}
 .friend-request-card .friend-request-actions svg{display:none}
 .friend-sample{position:absolute;top:9px;right:8px;padding:3px 5px;border-radius:5px;background:#f0ebff;color:#5e50c7;font-size:8px;font-weight:900}
 @container module (max-width:650px){.friend-request-info{padding-right:27px}}
