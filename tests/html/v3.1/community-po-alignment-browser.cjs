@@ -50,7 +50,7 @@ const results=[],errors=[];
      assert.equal(await form.locator('[name=kind] option[value=service]').count(),account==='personal'?0:1);
      if(account==='personal'){
       await form.locator('[name=kind]').evaluate(select=>{select.add(new Option('Service','service'));select.value='service';});
-      await form.locator('[name=title]').fill('Blocked salon service');await form.locator('[type=submit]').click();
+      await form.locator('[name=title]').fill('Blocked salon service');await form.locator('[name=description]').fill('Service must not be saved');await form.locator('[type=submit]').click();
       assert.equal(await pane.locator('#editor').isVisible(),true,'Service submission is rejected');assert.equal(await pane.locator('.store-item').count(),0);
       await form.locator('[name=kind]').selectOption('product');
      }
@@ -58,7 +58,7 @@ const results=[],errors=[];
      await form.locator('[name=shareFeed]').uncheck();await form.locator('[type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      await pane.locator('[data-edit-item]').first().click();await pane.locator('#item-form [name=title]').fill('PO product edited');await pane.locator('#item-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      if(account==='business'){
-      await pane.locator('.store-tool-grid [data-action="shop-add-service"]').first().click();await pane.locator('#item-form [name=title]').fill('PO service');await pane.locator('#item-form [name=shareFeed]').uncheck();await pane.locator('#item-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
+      await pane.locator('.store-tool-grid [data-action="shop-add-service"]').first().click();await pane.locator('#item-form [name=title]').fill('PO service');await pane.locator('#item-form [name=description]').fill('Business service description');await pane.locator('#item-form [name=shareFeed]').uncheck();await pane.locator('#item-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      }
      await pane.locator('.store-tool-grid [data-action="shop-post"]').first().click();await pane.locator('#feed-form [name=body]').fill('PO store update '+member);await pane.locator('#feed-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      await page.reload();await pane.locator('.store-head').waitFor();assert.equal(await pane.locator('.store-preview-title h2').innerText(),member+' Store');
