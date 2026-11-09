@@ -41,6 +41,7 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-direct-dom';
         });
         await check('Deals tabs and business modules',async()=>{
           await open('deals');
+          await feed.locator('[data-deal-route="nearby"]').waitFor();
           for(const route of ['nearby','match','opening','wallet',...(account==='business'?['campaign','redeem']:[])]){
             const button=feed.locator('[data-deal-route="'+route+'"]');
             if(!(await button.isVisible()))await feed.locator('.community-deals-business summary').click();
@@ -57,7 +58,7 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-direct-dom';
           }
         });
         await check('Real Estate iframe and Back',async()=>{
-          await open('realestate');await hub.locator('.community-document-pane iframe').waitFor();await page.frameLocator('.community-document-pane iframe').locator('#hero').waitFor();
+          await open('realestate');await hub.locator('.community-document-pane iframe').waitFor();await page.frameLocator('.community-document-pane iframe').locator('.hero').waitFor();
           assert.equal(page.frames().length,2);await hub.locator('.community-back-to-feed').click();await feed.locator('#feedView').waitFor();
         });
       }finally{await context.close();}

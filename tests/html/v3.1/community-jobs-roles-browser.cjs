@@ -1,6 +1,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
+const {nativePane}=require('./native-pane.cjs');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.COMMUNITY_BASE_URL||'http://127.0.0.1:5504';
 const output=process.env.COMMUNITY_ROLE_OUTPUT||'/tmp/taxiq-v31-role-fix/browser';
@@ -50,7 +51,7 @@ fs.mkdirSync(output,{recursive:true});
           for(const kind of ['hiring','deal','dayhire'])await blockedComposer('personal',kind);
           await personalControls();
           const original=page.url();
-          await jobs.locator('body').evaluate(()=>window.parent.postMessage({type:'nexora-community-pos'},location.origin));
+          await nativePane(page).evaluate(()=>window.parent.postMessage({type:'nexora-community-pos'},location.origin));
           await page.waitForTimeout(150);assert.equal(page.url(),original);
         });
         const title='Role QA seeking '+width;
