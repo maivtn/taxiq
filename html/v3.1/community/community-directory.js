@@ -73,7 +73,12 @@
       if(result)core()?.refresh();return result;
     }
     function subscribe(listener){window.addEventListener('nexora-community-shared-changed',listener);return ()=>window.removeEventListener('nexora-community-shared-changed',listener);}
-    return {ready:engine,list,state,addFriend,cancelRequest,unfriend,respond,subscribe,request:id=>state().sent.includes(id)?cancelRequest(id):addFriend(id),placeholder:()=>frame.contentDocument?.getElementById('memberQuery')?.placeholder||'',search:query=>frame.contentWindow.NEXORA_COMMUNITY_CONNECT.search(query),open(name){return frame.contentWindow.NEXORA_COMMUNITY_CONNECT.openDirect(name);}};
+    async function sendPost(name,post){
+      const connect=await engine();if(!list().some(person=>person.name===name)||!connect.openDirect(name))return false;
+      const thread=core().getContext().currentDetail;if(!thread)return false;
+      return core().appendChatMessage(thread,{type:'community-card',text:post.caption||post.title||'',contextCard:{kind:'post',id:post.id,title:post.title||'',owner:post.owner||'',body:post.body||'',photo:post.photo||'',url:post.url}});
+    }
+    return {ready:engine,list,state,addFriend,cancelRequest,unfriend,respond,subscribe,sendPost,request:id=>state().sent.includes(id)?cancelRequest(id):addFriend(id),placeholder:()=>frame.contentDocument?.getElementById('memberQuery')?.placeholder||'',search:query=>frame.contentWindow.NEXORA_COMMUNITY_CONNECT.search(query),open(name){return frame.contentWindow.NEXORA_COMMUNITY_CONNECT.openDirect(name);}};
   }
   window.NEXORA_COMMUNITY_DIRECTORY={create};
 })();

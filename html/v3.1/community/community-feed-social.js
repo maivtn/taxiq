@@ -108,16 +108,25 @@
     const button=(action,label,postId,extra='',className='community-social-link')=>`<button type="button" class="${className}" data-social-action="${action}"${attr(postId,extra)}>${label}</button>`;
     const icon=kind=>`<svg class="community-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${kind==='heart'?'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>':kind==='share'?'<path d="m14 4 8 7-8 7v-4C8 14 4 16 2 20c0-7 4-11 12-11V4Z"/>':'<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/>'}</svg>`;
     const threadKey=(postId,rootId)=>postId+':'+rootId;
-    const isVisible=post=>!['pending','removed'].includes(post.groupStatus)&&!(own(post)&&state.deletedPostIds.includes(String(post.id)))&&(!post.paused||own(post));
+    const audiencePermits=post=>!post||own(post)||(!['me','onlyme','private'].includes(post.visibility)&&(post.visibility!=='friends'||window.NEXORA_COMMUNITY_SHARED?.friendNames?.(post.owner)?.includes(member)));
+    const shareAudienceAllowed=post=>!post.sharedPostId||audiencePermits(post)&&audiencePermits(findPost(post.sharedPostId));
+    const isVisible=post=>shareAudienceAllowed(post)&&!['pending','removed'].includes(post.groupStatus)&&!(own(post)&&state.deletedPostIds.includes(String(post.id)))&&(!post.paused||own(post));
+    const shareFlow=window.NEXORA_COMMUNITY_SHARE?.create({...adapter,getPost:id=>{const post=findPost(id);return audiencePermits(post)?post:null;},postBody,safeImages,onClose:result=>{
+      if(result==='shared'){modal=null;adapter.closeDialog?.();refresh();return;}
+      if(modal?.kind==='post'){const previous={...modal};openPost(previous.id,{...previous,preserveOpen:true});focusControl('share-post',previous.id,true);}
+      else closeDialog(false);
+    }});
     const commentCount=post=>ensurePost(post).comments.length;
     const seenPosts=new Set();
     const viewObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{for(const item of entries){if(!item.isIntersecting)continue;const key=item.target.dataset.feedPostId||item.target.dataset.postId;if(!key||seenPosts.has(key)||!findPost(key))continue;seenPosts.add(key);change(next=>{next.posts[key].views=(Number(next.posts[key].views)||0)+1;});const counter=item.target.querySelector('[data-po-views]');if(counter)counter.textContent=String(ensurePost(findPost(key)).views||0)+' '+tView();}},{threshold:.35}):null;
     const tView=()=>document.documentElement.lang==='vi'?'lượt xem':'views';
     function poMarkup(post){const entry=ensurePost(post),visibility=post.visibility||'public';return '<div class="community-po-post-meta" data-social-ui="po-meta"><span data-po-views>'+String(entry.views||0)+' '+tView()+'</span>'+(visibility!=='public'?'<span class="chip">'+esc(visibility==='friends'?'Friends':'Only me')+'</span>':'')+(post.pinned?'<span class="chip">Pinned</span>':'')+(entry.savedBy?.includes(member)?'<span class="chip">Saved</span>':'')+(post.paused?'<span class="chip">Post paused</span>':'')+'</div>'+(post.poVideoId?'<video controls playsinline data-po-video="'+esc(post.poVideoId)+'" data-social-ui="po-video"></video>':'');}
-    function sharePost(post){const text=[post.title,postBody(post)].filter(Boolean).join('\n\n');adapter.openDialog?.('<div class="overlay" data-social-overlay><section class="dialog" role="dialog" aria-modal="true"><div class="dialog-head"><h2>Share post</h2>'+button('close','×',post.id,' aria-label="Close"','icon-btn')+'</div><div class="dialog-body"><p>Review and copy this post to send to others.</p><textarea class="field" data-po-share-text readonly rows="7">'+esc(text)+'</textarea><div class="listing-actions">'+button('share-native','Share to app',post.id,'','btn primary')+button('share-copy','Copy post text',post.id,'','btn')+'</div></div></section></div>');}
+    function sharePost(post){if(shareFlow){shareFlow.open(post);return;}const text=[post.title,postBody(post)].filter(Boolean).join('\n\n');adapter.openDialog?.('<div class="overlay" data-social-overlay><section class="dialog" role="dialog" aria-modal="true"><div class="dialog-head"><h2>Share post</h2>'+button('close','×',post.id,' aria-label="Close"','icon-btn')+'</div><div class="dialog-body"><p>Review and copy this post to send to others.</p><textarea class="field" data-po-share-text readonly rows="7">'+esc(text)+'</textarea><div class="listing-actions">'+button('share-native','Share to app',post.id,'','btn primary')+button('share-copy','Copy post text',post.id,'','btn')+'</div></div></section></div>');}
     function actionsMarkup(post) {
       const entry=ensurePost(post),liked=entry.likedBy.includes(member),count=entry.baseLikes+entry.likedBy.length;
-      return `<div class="community-social-actions" data-social-ui="actions">${button('like',icon('heart')+`<span>${esc(t('like'))} · ${count}</span>`,post.id,` aria-pressed="${liked}" title="${esc(t(liked?'unlike':'like'))}"`)}${button('comments',icon('message-circle')+`<span>${esc(t('comments',{count:commentCount(post)}))}</span>`,post.id,` aria-expanded="${opened.has(String(post.id))}"`)}${button('share-post',icon('share')+'<span>Share</span>',post.id)}</div>`;
+      const likeIcon='<svg class="community-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v11H3V10zm0 1 5-8c2 0 3 2 2 5l-1 2h6a2 2 0 0 1 2 2l-2 7a3 3 0 0 1-3 2H7"/></svg>';
+      const vi=document.documentElement.lang==='vi';
+      return `<div class="community-social-stats" data-social-ui="stats"><span aria-label="${esc(t('like'))} · ${count}">${likeIcon}<span>${count}</span></span>${button('comments',esc(t('comments',{count:commentCount(post)})),post.id,` aria-expanded="${opened.has(String(post.id))}"`)}</div><div class="community-social-actions" data-social-ui="actions">${button('like',likeIcon+`<span>${esc(t('like'))}</span>`,post.id,` aria-pressed="${liked}" title="${esc(t(liked?'unlike':'like'))}"`)}${button('comments',icon('message-circle')+`<span>${vi?'Bình luận':'Comment'}</span>`,post.id,` aria-expanded="${opened.has(String(post.id))}"`)}${button('share-post',icon('share')+'<span>'+(vi?'Chia sẻ':'Share')+'</span>',post.id,' aria-haspopup="dialog"'+(post.sharedPostId&&(!findPost(post.sharedPostId)||!audiencePermits(findPost(post.sharedPostId)))?' disabled':''))}</div>`;
     }
     function menuMarkup(post) {
       const owner=own(post);
@@ -172,13 +181,14 @@
       for(const card of cards) {
         const postId=card.dataset.feedPostId||card.dataset.postId,post=findPost(postId);if(!post)continue;
         ensurePost(post);card.classList.add('community-social-card');
+        if(post.sharedPostId)card.querySelector(':scope > h3')?.remove();
         for(const element of card.querySelectorAll('[data-social-ui]'))element.remove();
         for(const element of card.querySelectorAll(':scope > .kind, :scope > .meta'))element.remove();
         // The base prototype's single image is replaced by the same post's gallery.
         if(safeImages(post).length&&!card.classList.contains('page-detail-post'))for(const image of card.querySelectorAll(':scope > .blog-cover, :scope > .blog-card-cover, :scope > img, :scope > .community-feed-photo'))image.remove();
         card.insertAdjacentHTML('afterbegin',authorHeaderMarkup(post)+previewMarkup(post));
         if(safeImages(post).length&&!card.classList.contains('page-detail-post')){const existingActions=card.querySelector(':scope > .listing-actions');if(existingActions)existingActions.insertAdjacentHTML('beforebegin',galleryMarkup(post));else card.insertAdjacentHTML('beforeend',galleryMarkup(post));}
-        card.insertAdjacentHTML('beforeend',poMarkup(post)+marketplaceMarkup(post)+actionsMarkup(post)+(opened.has(String(post.id))?commentsMarkup(post,card.closest('[data-social-post-detail]')?'detail':'card'):''));
+        card.insertAdjacentHTML('beforeend',(post.sharedPostId&&shareFlow?'<div data-social-ui="shared-post">'+shareFlow.preview(post,true)+'</div>':'')+poMarkup(post)+marketplaceMarkup(post)+actionsMarkup(post)+(opened.has(String(post.id))?commentsMarkup(post,card.closest('[data-social-post-detail]')?'detail':'card'):''));
         viewObserver?.observe(card);window.NEXORA_COMMUNITY_PO?.hydrateVideos(card);
         const market=card.querySelector(':scope > .community-social-market');
         const marketActions=market?.querySelector('.community-social-market-actions');
@@ -287,6 +297,7 @@
       if(action==='save-post'){change(next=>{const row=next.posts[postId];row.savedBy||=[];row.savedBy=row.savedBy.includes(member)?row.savedBy.filter(name=>name!==member):[...row.savedBy,member];});adapter.render?.();return;}
       if(action==='copy-link'){const link=new URL(parent.location.href);link.searchParams.set('tab','feed');link.searchParams.set('postId',postId);navigator.clipboard?.writeText(link.href).then(()=>tell('Post link copied.')).catch(()=>tell('Could not copy automatically.'));return;}
       if(action==='share-post'){sharePost(post);return;}
+      if(action==='open-original'){openPost(post.id);return;}
       if(action==='share-copy'){const text=document.querySelector('[data-po-share-text]');navigator.clipboard?.writeText(text?.value||'').then(()=>tell('Post text copied.')).catch(()=>{text?.select();tell('Could not copy automatically.');});return;}
       if(action==='share-native'){const text=document.querySelector('[data-po-share-text]')?.value||'';if(navigator.share)navigator.share({title:'Community post',text}).catch(()=>{});else tell('This browser cannot share to apps. Use Copy post text.');return;}
       if(action==='destination'){const scope=target.dataset.socialScope;if(scope){modal=null;adapter.closeDialog?.();if(adapter.navigateFeed)adapter.navigateFeed(scope);else window.NEXORA_COMMUNITY_GROUPS?.navigate(scope);}return;}
@@ -366,8 +377,9 @@
       if(event.shiftKey&&(document.activeElement===first||document.activeElement===dialog)){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     }
     function reset() {try{localStorage.removeItem(STORAGE_KEY);}catch{}state={version:1,posts:Object.create(null),reports:[],deletedPostIds:[]};opened.clear();threads.clear();limits.clear();replyLimits.clear();replyTargets.clear();drafts.clear();for(const post of getFeed())if(post.kind!=='deal')ensurePost(post);persist(state);enhance();}
-    function onDialogClosed() {modal=null;swipeStart=null;closeMenus();}
+    function onDialogClosed() {shareFlow?.dismiss();modal=null;swipeStart=null;closeMenus();}
     function languageChanged() {
+      if(shareFlow?.isOpen()){shareFlow.refresh();return;}
       const form=document.querySelector('[data-social-edit-form],[data-social-report-form]');
       const values=form?[...form.elements].filter(element=>element.name).map(element=>[element.name,element.value]):[];
       enhance();
@@ -376,7 +388,7 @@
       if(nextForm)for(const [name,value] of values)if(nextForm.elements[name])nextForm.elements[name].value=value;
     }
     const languageObserver=new MutationObserver(languageChanged);
-    function destroy() {destroyed=true;viewObserver?.disconnect();document.removeEventListener('click',onClick);document.removeEventListener('submit',onSubmit);document.removeEventListener('input',onInput);document.removeEventListener('pointerdown',onPointerDown);document.removeEventListener('pointerup',onPointerUp);document.removeEventListener('pointercancel',onPointerCancel);document.removeEventListener('keydown',onKeyDown,true);languageObserver.disconnect();}
+    function destroy() {destroyed=true;shareFlow?.destroy();viewObserver?.disconnect();document.removeEventListener('click',onClick);document.removeEventListener('submit',onSubmit);document.removeEventListener('input',onInput);document.removeEventListener('pointerdown',onPointerDown);document.removeEventListener('pointerup',onPointerUp);document.removeEventListener('pointercancel',onPointerCancel);document.removeEventListener('keydown',onKeyDown,true);languageObserver.disconnect();}
     applyDeleted();for(const post of getFeed())if(post.kind!=='deal')ensurePost(post);persist(state);
     document.addEventListener('click',onClick);document.addEventListener('submit',onSubmit);document.addEventListener('input',onInput);document.addEventListener('pointerdown',onPointerDown);document.addEventListener('pointerup',onPointerUp);document.addEventListener('pointercancel',onPointerCancel);document.addEventListener('keydown',onKeyDown,true);languageObserver.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
     const refreshOpenPost=()=>{if(modal?.kind==='post'&&document.querySelector('[data-social-post-detail]'))openPost(modal.id,{...modal,preserveOpen:true});};

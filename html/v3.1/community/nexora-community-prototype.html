@@ -172,7 +172,8 @@
   <link rel="stylesheet" href="../vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="community-controls.css?v=20261029">
   <link rel="stylesheet" href="community-mobile.css?v=20261109-personal-job-actions2">
-  <link rel="stylesheet" href="community-feed-social.css?v=20261105-community-compact-post-menu-v22">
+  <link rel="stylesheet" href="community-feed-social.css?v=20261109-facebook-share1">
+  <link rel="stylesheet" href="community-share-post.css?v=20261109-facebook-share1">
   <link rel="stylesheet" href="community-feed-composer.css?v=20261106-community-v22-restoration-v59">
   <link rel="stylesheet" href="community-layout.css?v=20261109-compact-content-gap1">
 <link rel="stylesheet" href="community-group-workflow.css?v=20261109-group-filters1">
@@ -317,7 +318,8 @@
 <script src="community-jobs-expansion.js?v=20261109-demo-role3"></script>
 <script src="community-jobs-workflow.js?v=20261109-hiring-inline1"></script>
 <script src="community-shifts-workflow.js?v=20261109-reliability1"></script>
-<script src="community-feed-social.js?v=20261109-feed-share1"></script>
+<script src="community-share-post.js?v=20261109-facebook-share1"></script>
+<script src="community-feed-social.js?v=20261109-facebook-share1"></script>
 <script src="community-feed-composer.js?v=20261109-coverage1"></script>
 <script src="community-deals-selects.js?v=20261105-deals-controls-v5"></script>
 <script src="community-deals-workflow.js?v=20261109-hide-industry-shortcut1"></script>
@@ -993,6 +995,32 @@
   window.addEventListener('message',event=>{if(event.source!==window.parent||(location.protocol!=='file:'&&event.origin!==location.origin))return;if(event.data?.type==='nexora-close-modal'){closeModal();dealsWorkflow?.closeDetail();}if(event.data?.type==='nexora-community-context')openContext(event.data.context);if(event.data?.type==='nexora-open-view'&&['feed','groups','market','pages','jobs','daywork','deals','blog','messages'].includes(event.data.view))setView(event.data.view);});
   document.addEventListener('click',event=>{if(event.target.closest('#fillExample'))fillExample();if(event.target.closest('#fillBlogExample'))fillBlogExample();});
   const feedAdapter={groupType:group=>groupWorkflow?.store.groupType(group),getFeed:()=>[...extra.feed,...listings,...extra.pagePosts.filter(post=>post.status!=='scheduled'&&(!post.publishAt||new Date(post.publishAt)<=new Date()))],getPage:id=>extra.pages.find(page=>page.id===id),removePost:post=>{if(extra.pagePosts.includes(post)){if(post.owner!==ME)return false;extra.pagePosts=extra.pagePosts.filter(row=>row.id!==post.id);return saveExtra();}return removeFeedPost(post);},avatarFor:feedAvatar,isBusiness:feedBusiness,getGroups:()=>(groupWorkflow?.store.groups()||extra.groups).map(group=>({...group,joined:groupWorkflow?groupWorkflow.store.joined(group.id):Boolean(membershipFlags()[group.id])})),getJoinedGroups:()=>(groupWorkflow?.store.groups()||extra.groups).filter(group=>groupWorkflow?groupWorkflow.store.joined(group.id):membershipFlags()[group.id]),currentMember:ME,role:ROLE,navigateFeed,renderPost:post=>feedCardHTML({...post,surface:post.type==='sale'||post.type==='want'?'market':'feed'}),contactPost:contact,markSold:post=>{const item=listings.find(row=>row.id===post.id);if(!item||item.owner!==ME||item.status!=='open')return false;const previous=item.status;item.status=item.type==='want'?'bought':'sold';if(!save()){item.status=previous;return false;}return true;},save:saveExtra,render:renderExtra,openTemplate,editPost:item=>extra.pagePosts.includes(item)?window.NEXORA_COMMUNITY_PO.editPagePost(item):item.type==='sale'||item.type==='want'?form(item):openTemplate(item.kind,item),openDialog:html=>{$('#modalRoot').innerHTML=html;},closeDialog:closeModal,escape:esc,toast};
+  Object.assign(feedAdapter,{
+    publishShare(original,options){
+      const post=feedAdapter.getFeed().find(row=>String(row.id)===String(original.id));if(!post||['pending','removed'].includes(post.groupStatus)||post.paused)return false;
+      if(!['public','friends','me'].includes(options.audience)||['me','onlyme','private'].includes(post.visibility)&&post.owner!==ME)return false;
+      if(['me','onlyme','private'].includes(post.visibility)&&options.audience!=='me'||post.visibility==='friends'&&options.audience==='public')return false;
+      const group=options.groupId&&groupWorkflow?.store.groups().find(row=>String(row.id)===String(options.groupId));
+      if(options.groupId&&(!group||!groupWorkflow.store.joined(group.id)||groupWorkflow.store.groupType(group)==='Marketplace'||group.archived))return false;
+      if(group&&post.visibility&&post.visibility!=='public')return false;
+      const sourceIds=(Array.isArray(post.destinations)?post.destinations.filter(row=>row.groupId).map(row=>String(row.groupId)):post.destinations?.groupIds||[post.groupId].filter(Boolean)).map(String),sourceMain=Array.isArray(post.destinations)?post.destinations.some(row=>row.isMainFeed||row.groupId===null):post.destinations?.includeMainFeed!==false;
+      if(!sourceMain&&groupWorkflow?.store.groups().some(row=>sourceIds.includes(String(row.id))&&['private','closed'].includes(row.privacy||row.visibility))&&(!group||!sourceIds.includes(String(group.id))))return false;
+      const item={id:'shared-'+crypto.randomUUID(),kind:'general',owner:ME,title:'',description:options.caption||'',createdAt:new Date().toISOString(),visibility:group?'public':options.audience,sharedPostId:post.sharedPostId||post.id,destinations:{includeMainFeed:!group,groupIds:group?[String(group.id)]:[]}};
+      if(group){item.groupId=String(group.id);if(group.approval&&group.owner!==ME)item.groupStatus='pending';}
+      extra.feed.unshift(item);const saved=groupWorkflow?groupWorkflow.store.publishToGroups(item.destinations.groupIds,saveExtra):saveExtra();if(!saved){extra.feed=extra.feed.filter(row=>row.id!==item.id);return false;}return {id:item.id,status:item.groupStatus||'published'};
+    },
+    async getShareContacts(original){
+      const post=feedAdapter.getFeed().find(row=>String(row.id)===String(original.id)),directory=window.parent.NEXORA_COMMUNITY_PEOPLE||window.NEXORA_COMMUNITY_PEOPLE;
+      if(!post||!directory||['pending','removed'].includes(post.groupStatus)||post.paused||['me','onlyme','private'].includes(post.visibility))return [];
+      await directory.ready();let people=directory.list().filter(person=>person.name!==ME);
+      if(post.visibility==='friends'){const friends=window.NEXORA_COMMUNITY_SHARED.friendNames?.(post.owner)||[];people=people.filter(person=>person.name===post.owner||friends.includes(person.name));}
+      const dest=post.destinations,ids=(Array.isArray(dest)?dest.filter(row=>row.groupId).map(row=>row.groupId):dest?.groupIds||[post.groupId].filter(Boolean)).map(String),main=Array.isArray(dest)?dest.some(row=>row.isMainFeed||row.groupId===null):dest?.includeMainFeed!==false;
+      const restricted=groupWorkflow?.store.groups().filter(group=>ids.includes(String(group.id))&&['private','closed'].includes(group.privacy||group.visibility));
+      if(!main&&restricted?.length){const members=new Set(restricted.flatMap(group=>groupWorkflow.store.members(group.id)));people=people.filter(person=>members.has(person.name));}
+      return people;
+    },
+    async sendShareMessage(name,post,context){if(!(await feedAdapter.getShareContacts(post)).some(person=>person.name===name))return false;const directory=window.parent.NEXORA_COMMUNITY_PEOPLE||window.NEXORA_COMMUNITY_PEOPLE;return directory?.sendPost(name,{id:post.id,title:post.title,owner:post.owner,body:(post.steps||post.details||post.description||post.body||'').slice(0,360),photo:post.photo||post.photos?.[0]||'',url:context.url,caption:context.caption})||false;}
+  });
   feedSocial=window.NEXORA_COMMUNITY_FEED_SOCIAL?.mount({...feedAdapter,render:()=>{render();renderExtra();}})||null;
   feedComposer=window.NEXORA_COMMUNITY_FEED_COMPOSER?.mount(feedAdapter)||null;
   groupWorkflow=window.NEXORA_COMMUNITY_GROUPS?.mount({...feedAdapter,getGroups:()=>extra.groups,getFeed:()=>extra.feed,getJoinedGroups:()=>extra.groups.filter(group=>membershipFlags()[group.id]),setMembership:(id,joined)=>{const before=membershipFlags()[id];membershipFlags()[id]=joined;if(saveExtra())return true;membershipFlags()[id]=before;return false;},saveGroups:rows=>saveRows('groups',rows),saveFeed:rows=>saveRows('feed',rows),deleteGroupPosts,openPost:(id,options)=>feedSocial?.openPost(id,options),enhancePosts:root=>feedSocial?.enhance(root),openChat:group=>{if(window.parent!==window)window.parent.postMessage({type:'nexora-open-community-group',group},parentMessageOrigin);}})||null;
