@@ -7,6 +7,8 @@ const repo=path.resolve(__dirname,'..');
 const base='/html/v3.1/community/';
 const read=file=>fs.readFileSync(path.join(repo,file),'utf8');
 const local=(value,from)=>new URL(value,'https://community.local'+from).pathname;
+// A scoped :root rule cannot match the scope root; tokens must use :scope.
+const outerCSS=css=>css.replace(/(^|\n)([ \t]*):root(?=\s*\{)/g,'$1$2:scope');
 const files=['nexora-community-prototype.html','nexora-privacy-qr-layout.html','modules/hub-tools/index.html','modules/friends/index.html','modules/wheel/index.html','modules/meet/index.html','deals/nearby.html','deals/deal-match.html','deals/campaigns.html','deals/grand-opening.html'];
 const definitions={},bodies={};
 function extract(file){
@@ -50,7 +52,8 @@ for(const name of ['community.html','staff-community.html']){
     const style=doc.createElement('style');style.dataset.outerStyle=link.getAttribute('href');
     const source=local(link.getAttribute('href'),'/'+file);
     const css=read(source).replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,q,v)=>/^(?:data:|https?:|#)/.test(v)?all:'url("'+local(v,source)+'")');
-    style.textContent='@scope (:root) to ([data-community-region] > *) {\n'+css+'\n}';link.replaceWith(style);
+    style.textContent='@scope (:root) to ([data-community-region] > *) {\n'+outerCSS(css)+'\n}';link.replaceWith(style);
   }
+  for(const style of doc.head.querySelectorAll('style[data-outer-style]'))style.textContent=outerCSS(style.textContent);
   fs.writeFileSync(path.join(repo,file),('<!doctype html>\n'+doc.documentElement.outerHTML+'\n').replace(/[ \t]+$/gm,'').replace(/\n{4,}/g,'\n\n\n'));
 }

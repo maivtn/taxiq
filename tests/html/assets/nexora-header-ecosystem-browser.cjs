@@ -22,7 +22,7 @@ const server=http.createServer(async(req,res)=>{
     browser=await chromium.launch({headless:true});
     const origin='http://127.0.0.1:'+server.address().port;
     const headerSignatures=new Map();
-    for(const width of [320,390,834,1440])for(const entry of ['pages/dashboard.html','pages/pos-front-desk.html','pages/staff-profile.html?account=personal','v3.1/community.html?account=business&tab=feed','v3.1/staff-community.html?account=personal&role=tech&tab=feed']) {
+    for(const width of [320,390,834,1440])for(const entry of ['pages/dashboard.html','pages/pos-front-desk.html','pages/staff-profile.html?account=personal','v3.1/community.html?account=business&tab=feed','v3.1/staff-community.html?account=personal&role=tech&tab=feed','v3.1/index.html?account=personal']) {
       const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
       try {
         const page=await context.newPage();page.setDefaultTimeout(15000);
@@ -32,8 +32,38 @@ const server=http.createServer(async(req,res)=>{
         await page.waitForFunction(()=>document.querySelector('.header.shell-header .shell-ecosystem-toggle'));
         await page.waitForFunction(()=>document.querySelector('link[data-shell-ecosystem-style]')?.sheet);
         if(entry.startsWith('v3.1/')){
+          const personal=new URL(page.url()).pathname.endsWith('/staff-community.html');
+          const appearance=await page.evaluate(()=>{
+            const root=getComputedStyle(document.documentElement),header=getComputedStyle(document.querySelector('.header')),sidebar=getComputedStyle(document.querySelector('.sidebar'));
+            return {sidebarToken:root.getPropertyValue('--nexora-sidebar').trim(),surfaceToken:root.getPropertyValue('--nexora-surface-muted').trim(),body:getComputedStyle(document.body).backgroundColor,header:header.backgroundColor,sidebar:sidebar.backgroundColor,sidebarImage:sidebar.backgroundImage,search:getComputedStyle(document.querySelector('.header input')).backgroundColor};
+          });
+          assert.equal(appearance.sidebarToken,'#081f49');
+          assert.equal(appearance.surfaceToken,'#f3f6fa');
+          assert.equal(appearance.body,'rgb(247, 249, 252)');
+          assert.equal(appearance.header,'rgb(255, 255, 255)');
+          assert.equal(appearance.search,'rgb(243, 246, 250)');
+          if(personal)assert.equal(appearance.sidebar,'rgb(8, 31, 73)');
+          else assert.notEqual(appearance.sidebarImage,'none');
+          await page.locator('#feedPosts article').first().waitFor();
+          const sidebar=page.locator('aside.sidebar');
+          if(width<=768){
+            await page.locator('[data-shell-drawer-open]').click();
+            await page.waitForFunction(()=>document.querySelector('aside.sidebar').getBoundingClientRect().x>=0);
+            assert.equal(await sidebar.evaluate(el=>el.inert),false);
+          }
+          await page.screenshot({path:path.join(output,`${width}-${entry.split('/')[1].split('.')[0]}-shell.png`)});
+          if(personal){
+            const oneQR=sidebar.locator('[data-staff-group="one-qr"]');
+            await oneQR.click();assert.equal(await oneQR.getAttribute('aria-expanded'),'true');
+            await oneQR.click();assert.equal(await oneQR.getAttribute('aria-expanded'),'false');
+          }
+          if(width<=768){
+            await page.keyboard.press('Escape');
+            await page.waitForFunction(()=>!document.querySelector('aside.sidebar').classList.contains('is-open'));
+            assert.equal(await sidebar.evaluate(el=>el.inert),true);
+          }
           const signature=await page.locator('.header').evaluate(el=>({height:el.getBoundingClientRect().height,controls:Array.from(el.querySelectorAll('.shell-workspace-actions > a,.shell-workspace-actions > button,.shell-ecosystem-toggle')).map(control=>({label:control.getAttribute('aria-label'),width:control.getBoundingClientRect().width,height:control.getBoundingClientRect().height,color:getComputedStyle(control).color,icon:control.querySelector('svg')?.outerHTML||control.querySelector('img')?.getAttribute('src')}))}));
-          if(entry.includes('staff-community'))assert.deepEqual(signature,headerSignatures.get(width));else headerSignatures.set(width,signature);
+          if(personal)assert.deepEqual(signature,headerSignatures.get(width));else headerSignatures.set(width,signature);
         }
         const toggle=page.locator('.header .shell-ecosystem-toggle'),panel=page.locator('.header .shell-ecosystem-panel');
         const before=page.url();
