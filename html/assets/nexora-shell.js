@@ -995,6 +995,7 @@
     }
     toggle.addEventListener('click', openSearch);
     input.addEventListener('focus', openSearch);
+    input.addEventListener('click', openSearch);
     if (area.tagName === 'FORM') area.addEventListener('submit', openSearch);
   }
 

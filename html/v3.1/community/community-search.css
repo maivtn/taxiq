@@ -5,7 +5,7 @@ body.community-hub-active .header .mobile-brand>.brand-logo,body.community-hub-a
 .community-search-dialog[open]{display:flex;flex-direction:column}
 .community-search-dialog *{box-sizing:border-box}
 .community-search-dialog button{font:inherit;cursor:pointer}
-.community-search-dialog button:focus-visible,.community-search-dialog input:focus-visible{outline:2px solid #0866ff;outline-offset:-2px}
+.community-search-dialog button:focus-visible{outline:2px solid #0866ff;outline-offset:-2px}
 .community-search-dialog button:disabled{opacity:.6;cursor:wait}
 .community-search-dialog svg{display:block;flex:none;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
 .community-search-dialog [hidden]{display:none!important}

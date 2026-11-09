@@ -11,7 +11,7 @@
     let stored;
     try{stored=JSON.parse(localStorage.getItem(key)||'null');}catch{}
     const state={recent:Array.isArray(stored?.recent)?stored.recent.filter(value=>typeof value==='string').slice(0,20):['blog','setting'],hidden:Array.isArray(stored?.hidden)?stored.hidden:[],hideLiked:stored?.hideLiked===true};
-    let ready=false,failed=false,allRecent=false,likedOnly=false,opener=null,suppressFocus=false;
+    let ready=false,failed=false,allRecent=false,likedOnly=false,opener=null,suppressFocus=false,scrollPositions=[],scrollMode='auto';
     const dialog=document.createElement('dialog');dialog.id='community-search-dialog';dialog.className='community-search-dialog';dialog.setAttribute('aria-label','Search Community');
     dialog.innerHTML='<form class="community-search-head" role="search"><button type="button" data-search-back aria-label="Back">'+svg('back')+'</button><input name="query" type="search" placeholder="Search..." aria-label="Search Community" autocomplete="off" maxlength="120"><button type="submit" aria-label="Search">'+svg('search')+'</button></form><div class="community-search-body"></div><p class="community-search-status" role="status" aria-live="polite"></p>';
     document.body.append(dialog);
@@ -44,12 +44,18 @@
     function render(){if(likedOnly||input.value.trim())renderResults();else renderHome();}
     async function load(){failed=false;render();try{await directory.ready();ready=true;}catch{failed=true;}if(dialog.open)render();}
     function focusOpener(){suppressFocus=true;opener?.focus({preventScroll:true});queueMicrotask(()=>{suppressFocus=false;});}
-    function release(){dialog.close();document.querySelectorAll('.shell-search-toggle').forEach(button=>button.setAttribute('aria-expanded','false'));focusOpener();}
+    function release(){
+      dialog.close();document.querySelectorAll('.shell-search-toggle').forEach(button=>button.setAttribute('aria-expanded','false'));focusOpener();
+      const restore=()=>{for(const [element,left,top]of scrollPositions)element.scrollTo({left,top,behavior:'instant'});};
+      restore();requestAnimationFrame(()=>{if(!dialog.open){restore();history.scrollRestoration=scrollMode;}});
+    }
     function close(){if(history.state?.communitySearch){history.back();}else release();}
     function leave(){const value={...history.state};delete value.communitySearch;history.replaceState(value,'',location.href);release();}
     function open(query=''){
       if(suppressFocus||dialog.open)return;
       opener=document.activeElement;input.value=String(query).slice(0,120);allRecent=false;likedOnly=false;
+      scrollPositions=[document.scrollingElement,...document.querySelectorAll('.community-v2-content .native-body,.community-v2-content .workspace,.community-v2-content .community-extra-pane')].filter(Boolean).map(element=>[element,element.scrollLeft,element.scrollTop]);
+      scrollMode=history.scrollRestoration;history.scrollRestoration='manual';
       history.pushState({...history.state,communitySearch:true},'',location.href);render();dialog.showModal();input.focus();
       document.querySelectorAll('.shell-search-toggle').forEach(button=>button.setAttribute('aria-expanded','true'));
       load();

@@ -19,7 +19,7 @@ const server=http.createServer(async(req,res)=>{try{const file=path.resolve(repo
         const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',error=>errors.push({width,account,error:error.message}));
         const url=origin+'/html/v3.1/'+(account==='personal'?'staff-community.html?account=personal&role=tech':'community.html?account=business')+'&tab=feed';
         const dialog=page.locator('#community-search-dialog'),feed=page.locator('#communityPane');
-        const open=async()=>{if(width<768)await page.locator('.app-area>.header .shell-search-toggle').click();else await page.locator('.app-area>.header input[type="search"]').focus();await dialog.waitFor();await page.waitForFunction(()=>window.NEXORA_COMMUNITY_PEOPLE?.list().length>0);await dialog.locator('.community-search-person').first().waitFor();};
+        const open=async()=>{if(width<768)await page.locator('.app-area>.header .shell-search-toggle').click();else await page.locator('.app-area>.header input[type="search"]').click();await dialog.waitFor();await page.waitForFunction(()=>window.NEXORA_COMMUNITY_PEOPLE?.list().length>0);await dialog.locator('.community-search-person').first().waitFor();};
         async function check(name,fn){try{await fn();results.push({width,account,name,pass:true});console.log('PASS',width,account,name);}catch(error){results.push({width,account,name,pass:false,error:error.stack});console.log('FAIL',width,account,name,error.message);await page.screenshot({path:path.join(output,`${width}-${account}-${name.replace(/\W+/g,'-')}.png`)}).catch(()=>{});}}
         await page.goto(url,{waitUntil:'domcontentloaded'});await feed.locator('#feedPosts article').first().waitFor();
         await check('header scope, localDiscovery removal, opening and layout',async()=>{
@@ -59,7 +59,7 @@ const server=http.createServer(async(req,res)=>{try{const file=path.resolve(repo
         await check('liked posts and Community result navigation',async()=>{
           const like=feed.locator('[data-social-action="like"]').first(),id=await like.getAttribute('data-social-post');if(await like.getAttribute('aria-pressed')!=='true')await like.click();
           await open();await dialog.locator('[data-search-liked]').click();await dialog.locator(`[data-search-post="${id}"]`).waitFor();
-          await dialog.locator(`[data-search-post="${id}"]`).click();await dialog.waitFor({state:'hidden'});await feed.locator('[data-social-post-detail]').waitFor();await feed.locator('#closeModal').click();
+          await dialog.locator(`[data-search-post="${id}"]`).click();await dialog.waitFor({state:'hidden'});await feed.locator('[data-social-post-detail]').waitFor();await feed.locator('[data-social-action="close"]').first().click();
           await open();await dialog.locator('input').fill('blog');await dialog.locator('[data-search-route="blog"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='blog');assert.equal(await dialog.isVisible(),false);
           assert.equal(await page.locator('#localDiscovery,.community-header-location').count(),0);
         });
