@@ -59,7 +59,7 @@
  .jobs-profile-steps .filter-chip{min-width:0;white-space:normal;line-height:1.35;min-height:44px}
  #jobsView #jobTemplates .template-card{display:grid;grid-template-columns:32px minmax(0,1fr);gap:3px 10px;align-items:center;text-align:left;padding:12px;min-height:0}
  #jobsView #jobTemplates .template-icon{grid-row:1/3}
- #jobsView #jobTemplates .template-card strong,#jobsView #jobTemplates .template-card small{margin:0;line-height:1.4}
+ #jobsView #jobTemplates .template-card strong,#jobsView #jobTemplates .template-card small{margin:0;line-height:1.4; margin-bottom: 12px;}
 }
 .jobs-workflow-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,320px);gap:12px;align-items:stretch}
 .jobs-workflow-head .jobs-nav{align-items:center}
