@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community/community-hub.js?v=20261109-coverage2',document.currentScript.src);
+  var componentURL=new URL('community/community-hub.js?v=20261109-demo-role3',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -36,7 +36,7 @@
   function routeContext(){var query=new URLSearchParams(location.search),result={};for(var key of contextKeys)if(query.has(key))result[key]=query.get(key);return result;}
   function route(value) {
     value = aliases[value] || value;
-    return routes.indexOf(value) >= 0 ? value : 'feed';
+    return routes.indexOf(value) >= 0 && window.NEXORA_COMMUNITY_SHARED.canAccessFeature(value) ? value : 'feed';
   }
   function sidebar(value) {
     if (value === 'market') return 'groups';

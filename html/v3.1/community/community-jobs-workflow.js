@@ -53,7 +53,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     const member = () => { const value = typeof adapter.currentMember === 'function' ? adapter.currentMember() : adapter.currentMember; return String(value?.id || value?.name || value || ''); };
     const memberName = () => { const value = typeof adapter.currentMember === 'function' ? adapter.currentMember() : adapter.currentMember; return String(value?.name || value?.displayName || value || ''); };
     const role = () => ['owner','business','salon'].includes(typeof adapter.role === 'function' ? adapter.role() : adapter.role) ? 'owner' : 'staff';
-    const canPost = kind => kind==='hiring'||kind==='transfer' ? role()==='owner' : kind==='seeking' ? role()==='staff' : ['service-request','service-offer'].includes(kind);
+    const canPost = kind => ['hiring','transfer','service-request'].includes(kind) ? role()==='owner' : ['seeking','service-offer'].includes(kind)&&role()==='staff';
     const own = row => !!row && String(row.ownerId || row.owner || '') === member();
     const esc = adapter.escape || (value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])));
     const language = () => (typeof adapter.language === 'function' ? adapter.language() : document.documentElement.lang || 'vi').startsWith('en') ? 'en' : 'vi';

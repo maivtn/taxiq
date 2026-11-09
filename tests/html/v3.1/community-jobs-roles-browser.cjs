@@ -68,13 +68,12 @@ fs.mkdirSync(output,{recursive:true});
           await jobs.locator('button[data-jobs-tab="myPosts"]').click();
           await jobs.locator('#jobPosts').getByText(title,{exact:true}).waitFor();
         });
-        await check('Personal transfers allow browsing and contact only',async()=>{
-          await jobs.locator('button[data-jobs-tab="transfer"]').click();
+        await check('Personal hides all employer tabs and rejects transfer links',async()=>{
+          for(const tab of ['transfer','services','workers'])assert.equal(await jobs.locator('button[data-jobs-tab="'+tab+'"]').count(),0);
+          await open('staff-community.html','account=personal&tab=jobs&jobsTab=transfer');
+          assert.equal(await jobs.locator('#jobsView').getAttribute('data-jobs-tab'),'browse');
           assert.equal(await jobs.locator('[data-jobs-extra="new-transfer"]').count(),0);
-          assert.equal(await jobs.locator('[data-jobs-extra="transfer-template"]').count(),0);
-          assert.equal(await jobs.locator('[data-jobs-extra="edit"]').count(),0);
-          await jobs.locator('#jobsExtraSearch').fill('');
-          await page.screenshot({path:path.join(output,'personal-transfer-'+width+'.png')});
+          await page.screenshot({path:path.join(output,'personal-jobs-'+width+'.png')});
         });
         await check('Linked staff remains a worker and rejects owner deep link',async()=>{
           await open('staff-community.html','role=tech&account=business&tab=jobs&jobsTab=workers');
@@ -104,15 +103,11 @@ fs.mkdirSync(output,{recursive:true});
           await jobs.locator('#jobPosts').getByText(transferTitle,{exact:true}).waitFor();
           await page.screenshot({path:path.join(output,'salon-transfer-'+width+'.png')});
         });
-        await check('Personal views a salon transfer and contacts its owner',async()=>{
-          await open('staff-community.html','account=personal&tab=jobs&jobsTab=transfer');
-          const card=jobs.locator('#jobPosts article').filter({hasText:transferTitle});
-          await card.waitFor();
-          for(const action of ['edit','close','delete'])assert.equal(await card.locator('[data-jobs-extra="'+action+'"]').count(),0);
-          await card.locator('[data-jobs-extra="detail"]').click();
-          await jobs.locator('[data-jobs-dialog]').waitFor();
-          await jobs.locator('.jobs-dialog-footer [data-jobs-extra="message"]').click();
-          await page.waitForURL(url=>url.searchParams.get('tab')==='connect');
+        await check('Personal cannot open a salon transfer by its record link',async()=>{
+          const transferId=await jobs.locator('#jobPosts article').filter({hasText:transferTitle}).locator('[data-jobs-extra="detail"]').getAttribute('data-id');
+          await open('staff-community.html','account=personal&tab=jobs&jobsTab=transfer&jobId='+transferId);
+          assert.equal(await jobs.locator('#jobsView').getAttribute('data-jobs-tab'),'browse');
+          assert.equal(await jobs.locator('[data-jobs-dialog]').count(),0);
           await open('community.html','tab=jobs');
         });
         await check('Salon cannot open seeking through a composer deep link',async()=>{

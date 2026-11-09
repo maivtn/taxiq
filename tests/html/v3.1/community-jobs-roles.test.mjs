@@ -62,14 +62,22 @@ test('same member cannot edit or close records from a different active role',t=>
   assert.equal(s.saves,0);
 });
 
-test('personal can browse transfers but cannot create, edit, close or delete old transfers',t=>{
+test('personal hides salon transfer and employer tabs and rejects their direct routes',t=>{
   const s=setup(t,{jobs:[{...posting('old-transfer','transfer','Demo'),transferType:'sell'}]});
   s.api.navigate('transfer');
   assert.equal(s.document.querySelector('[data-jobs-extra="new-transfer"]'),null);
   assert.equal(s.document.querySelector('[data-jobs-extra="edit"]'),null);
   assert.equal(s.document.querySelector('[data-jobs-extra="delete"]'),null);
-  assert.ok(s.document.getElementById('jobPosts').textContent.includes('old-transfer'));
-  for(const [action,id]of [['new-transfer',''],['edit','old-transfer'],['close','old-transfer'],['delete','old-transfer'],['confirm-delete','old-transfer']])s.click(action,id);
+  assert.equal(s.document.getElementById('jobsView').dataset.jobsTab,'browse');
+  for(const tab of ['transfer','workers','services']){
+    assert.equal(s.document.querySelector('[data-jobs-tab="'+tab+'"]'),null);
+    s.api.navigate(tab);
+    assert.equal(s.document.getElementById('jobsView').dataset.jobsTab,'browse');
+  }
+  assert.equal(s.document.getElementById('jobPosts').textContent.includes('old-transfer'),false);
+  s.api.navigate('jobs',{jobId:'old-transfer'});
+  assert.equal(s.document.querySelector('[data-jobs-dialog]'),null);
+  for(const [action,id]of [['new-transfer',''],['new-service-request',''],['detail','old-transfer'],['message','old-transfer'],['edit','old-transfer'],['close','old-transfer'],['delete','old-transfer'],['confirm-delete','old-transfer']])s.click(action,id);
   assert.equal(s.document.getElementById('jobsExtraForm'),null);
   assert.equal(s.document.querySelector('[data-jobs-dialog]'),null);
   assert.equal(s.saves,0);

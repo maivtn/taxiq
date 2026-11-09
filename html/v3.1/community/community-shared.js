@@ -8,6 +8,7 @@
   function change(operation){const data=read(),result=operation(data);if(result===false)return false;try{localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new CustomEvent('nexora-community-shared-changed'));return result===undefined?true:result;}catch{return false;}}
   const query=new URLSearchParams(location.search);
   const role=window.NEXORA_SHELL?.activePage==='staff'||['staff','tech'].includes(query.get('role'))||query.get('account')==='personal'?'staff':'owner';
+  const canAccessFeature=feature=>role==='owner'||!['shop','transfer','workers','services','hiring','posRecruitment'].includes(feature);
   const member=query.get('member')||window.NEXORA_SHELL?.profileName||(role==='staff'?document.querySelector('.staff-profile-name')?.textContent.trim():null)||(role==='staff'?'David Le':'BITCOIN NAIL BAR');
   function identity(name=member,alias){
     let legacyId;try{legacyId=JSON.parse(localStorage.getItem('nexora-connect-workflow-v1')||'{}').profiles?.[name]?.id;}catch{}
@@ -39,7 +40,7 @@
   function customerContact(customer,business,field){if(!customer||!business||customer===business)return false;identity(customer);identity(business);return change(data=>{data.customerContacts||=[];let row=data.customerContacts.find(row=>row.customer===customer&&row.business===business);if(!row){row={customer,business};data.customerContacts.push(row);}row[field]=true;data.identities[business].kind='business';});}
   const me=()=>identity(member);
 
-  window.NEXORA_COMMUNITY_SHARED={KEY,DAY,read,change,copy,member,role,identity,me,connectedPeople,saveBusinessContact:(customer,business)=>customerContact(customer,business,'savedContact'),registerCustomer:(customer,business)=>customerContact(customer,business,'isCustomer'),wallet,points,activity,revoke,notify};
+  window.NEXORA_COMMUNITY_SHARED={KEY,DAY,read,change,copy,member,role,canAccessFeature,identity,me,connectedPeople,saveBusinessContact:(customer,business)=>customerContact(customer,business,'savedContact'),registerCustomer:(customer,business)=>customerContact(customer,business,'isCustomer'),wallet,points,activity,revoke,notify};
   window.addEventListener('storage',event=>{if(event.key===KEY)window.dispatchEvent(new CustomEvent('nexora-community-shared-changed'));});
   identity();
 })();

@@ -128,7 +128,7 @@
       if(event.shiftKey&&root.activeElement===first){event.preventDefault();last?.focus();}else if(!event.shiftKey&&root.activeElement===last){event.preventDefault();first?.focus();}
     },true);
     document.addEventListener('click',event=>{const path=event.composedPath();if(!menu.hidden&&!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
-    for(const [route,label] of Object.entries(LABELS)){if(['page-tools','group-tools','food-market'].includes(route))continue;
+    for(const [route,label] of Object.entries(LABELS)){if(['page-tools','group-tools','food-market'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
       const button=document.createElement('button');button.type='button';button.dataset.communityExtra=route;
       const definition=window.lucide?.icons[ICONS[route]];
       if(definition)button.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true'}));
@@ -263,7 +263,7 @@
       if(data&&typeof data==='object')notify(data);
     }
     async function navigate(route,context={},fromHost=false){
-      if(route==='explore')route='feed';
+      if(route==='explore'||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))route='feed';
       if(route==='assistant')return openAssistant();
       closeAssistant();
       if(route==='post'&&context.modal==='1'&&!current)return openFeedComposer(context);
