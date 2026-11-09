@@ -1150,7 +1150,7 @@ const sections=[['home','🪧','Bảng tin','Feed'],['reels','▶️','Reels','R
       return primary.map(id=>{const [,icon,vi,en]=sections.find(x=>x[0]===id);const short={groups:tx('Nhóm Chợ','Groups'),pages:tx('Fanpage','Pages'),deals:tx('Ưu đãi','Deals'),jobs:tx('Việc làm','Jobs'),live:tx('Live','Live'),messages:tx('Tin nhắn','Messages'),shop:tx('Gian hàng','Shop'),transfer:tx('Sang nhượng','Transfers'),realestate:tx('Địa ốc','Real Estate'),food:tx('Món ngon','Food')};const label=short[id]||tx(vi,en);return `<button type="button" class="community-tab ${id==='live'?'live-tab':''} ${current===id?'active':''}" data-section="${id}" aria-current="${current===id?'page':'false'}"><span class="tab-icon" aria-hidden="true">${icon}</span><span>${label}</span></button>`}).join('');
     }
     function featureMenu(){
-      const shortcuts=[['shop','🏬','Gian hàng của tôi','My storefront','Quản lý gian hàng','Manage your storefront'],['transfer','🔑','Sang nhượng tiệm','Salon transfers','Mua, bán tiệm','Buy or sell a salon'],['realestate','🏘️','Địa ốc','Real Estate','Mua bán bất động sản','Property listings'],['food','🍜','Nhà hàng món ngon','Food & Restaurants','Món ngon · ưu đãi · fanpage','Food · deals · fanpages']];
+      const shortcuts=[['shop','🏬','Gian hàng của tôi','My storefront','Quản lý gian hàng','Manage your storefront'],['transfer','🔑','Sang nhượng tiệm','Salon transfers','Mua, bán tiệm','Buy or sell a salon'],['realestate','🏘️','Địa ốc','Real Estate','Mua bán bất động sản','Property listings'],['food','🍜','Food Community','Food Community','Món ngon · ưu đãi · fanpage','Food · deals · fanpages']];
       const remaining=sections;
       const mobileGroups=[
         [tx('Cộng đồng','Community'),['messages']],
