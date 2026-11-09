@@ -178,6 +178,7 @@
 /* The compact Jobs actions show Seeking work before Extra shifts. */
 .community-seeking-context-action{display:none!important}
 @media(max-width:800px){
+  body.embedded:has(#jobsView.jobs-staff-layout:not(.hide)) #localDiscovery.has-seeking-action.has-context-action{display:flex!important}
   body.embedded #localDiscovery.has-seeking-action{flex-wrap:wrap}
   body.embedded #localDiscovery.has-seeking-action .community-context-location{flex:1 1 100%}
   body.embedded #localDiscovery .community-seeking-context-action{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;min-height:44px;white-space:nowrap}
