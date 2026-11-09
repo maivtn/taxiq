@@ -678,8 +678,10 @@
     const visibleJobs=sortNearby(extra.jobs.filter(x=>x.status!=='closed'&&(jobIndustryFilter==='all'||(x.industry||'Nail & làm đẹp')===jobIndustryFilter)));const visibleShifts=sortNearby(extra.shifts.filter(x=>x.status!=='closed'&&(!x.date||x.date>=localDateISO())&&(shiftKindFilter==='all'||x.kind===shiftKindFilter)&&(shiftDateFilter==='all'||x.date===localDateISO())));
     document.querySelectorAll('[data-job-industry]').forEach(b=>b.classList.toggle('active',b.dataset.jobIndustry===jobIndustryFilter));document.querySelectorAll('[data-shift-kind]').forEach(b=>b.classList.toggle('active',b.dataset.shiftKind===shiftKindFilter));document.querySelectorAll('[data-shift-date]').forEach(b=>b.classList.toggle('active',b.dataset.shiftDate===shiftDateFilter));
     $('#messageCount').textContent=extra.messages.length+' nháp';
-    $('#feedMore').classList.toggle('hide',visibleFeed.length<=feedVisibleLimit);
-    $('#feedPosts').innerHTML=visibleFeed.slice(0,feedVisibleLimit).map(feedCardHTML).join('');
+    const feedMore=$('#feedMore');
+    const feedItems=feedMore.hidden?visibleFeed:visibleFeed.slice(0,feedVisibleLimit);
+    feedMore.classList.toggle('hide',visibleFeed.length<=feedVisibleLimit);
+    $('#feedPosts').innerHTML=feedItems.map(feedCardHTML).join('');
     if(!visibleFeed.length){
       const nextAction={deal:ROLE==='staff'?['data-view="deals"','Deal & Coupon']:['data-template="deal"','Đăng Deal & Coupon'],market:['data-market-kind="sale"','Đăng món cần bán'],jobs:ROLE==='staff'?['data-template="seeking"','Tìm việc']:['data-template="hiring"','Đăng tin tuyển người'],pages:['data-template="page"','Tạo Fanpage'],shifts:ROLE==='staff'?['data-template="daywork"','Rảnh nhận ca']:['data-template="dayhire"','Đăng ca cần người'],blog:['data-blog-create="blog"','Viết bài blog'],general:['data-template="general"','Viết bài'],showcase:['data-template="showcase"','Đăng ảnh mẫu'],tip:['data-template="tip"','Chia sẻ mẹo'],question:['data-template="question"','Đặt câu hỏi'],poll:['data-template="poll"','Tạo bình chọn'],event:['data-template="event"','Tạo sự kiện']}[feedKindFilter]||['data-template="general"','Viết bài đầu tiên'];
       $('#feedPosts').innerHTML=feedKindFilter==='deal'?dealEmptyMarkup():`<div class="panel empty"><h3>Chưa có bài trong mục này</h3><p>Bạn có thể bắt đầu ngay tại đây.</p><div class="feed-empty-actions"><button type="button" class="btn primary" ${nextAction[0]}>＋ ${nextAction[1]}</button>${feedKindFilter==='market'?'<button type="button" class="btn soft" data-market-kind="want">＋ Đăng cần mua</button>':''}</div></div>`;
@@ -692,7 +694,7 @@
     $('#shiftPosts').innerHTML=visibleShifts.map(shiftCard).join('')||'<div class="panel empty"><h3>Chưa có ca phù hợp</h3><p>Đăng ca cần người hoặc ngày bạn rảnh nhận ca.</p></div>';
     $('#messageDrafts').innerHTML=extra.messages.length?extra.messages.map(x=>`<article class="panel content-card"><span class="kind want">NHÁP TIN NHẮN</span><h3>${esc(x.reference)}</h3><div class="meta">Gửi đến: ${esc(x.recipient)} · ${esc(templateCatalog[x.kind]?.title||'Tin nhắn')}</div><p style="white-space:pre-wrap">${esc(x.body)}</p></article>`).join(''):`<div class="panel empty"><div class="empty-icon">✉</div><h3>Chưa có nháp tin nhắn</h3><p>Chọn một mẫu ở trên để xem cách soạn nhanh.</p></div>`;
     renderInbox();
-    if(feedScope!=='drafts')decorateFeedAuthors(visibleFeed.slice(0,feedVisibleLimit));
+    if(feedScope!=='drafts')decorateFeedAuthors(feedItems);
     hydratePageMedia($('#feedPosts'));
     feedSocial?.enhance();
     groupWorkflow?.enhance();jobsWorkflow?.render();shiftsWorkflow?.render();feedSocial?.refreshOpenPost();
