@@ -6,6 +6,15 @@ function menu(w) {
   return {toggle:w.document.querySelector('.shell-ecosystem-toggle'), panel:w.document.querySelector('.shell-ecosystem-panel')};
 }
 
+test('an inline shell script resolves Ecosystem assets relative to the page', t => {
+  const w=boot(t,{before:w=>Object.defineProperty(w.document,'currentScript',{value:w.document.createElement('script'),configurable:true})});
+  const {toggle,panel}=menu(w);
+  assert.ok(toggle);
+  toggle.click();
+  assert.equal(panel.hidden,false);
+  assert.equal(panel.querySelector('img').src,'https://nexora.test/html/assets/header-ecosystem/vmmtoken.png');
+});
+
 test('Ecosystem toggles in place and closes on an outside click', t => {
   const w=boot(t), {toggle,panel}=menu(w), url=w.location.href;
   assert.equal(panel.hidden,true);

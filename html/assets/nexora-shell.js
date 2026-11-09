@@ -19,7 +19,7 @@
   'use strict';
 
   var cfg = window.NEXORA_SHELL || {};
-  var shellAssetBase = new URL('./', document.currentScript ? document.currentScript.src : new URL('../assets/nexora-shell.js', window.location.href));
+  var shellAssetBase = new URL('./', (document.currentScript && document.currentScript.src) || new URL('../assets/nexora-shell.js', window.location.href));
   var activePage = cfg.activePage || '';
   var personalOnly = activePage === 'staff' && cfg.salonLinked === false;
 
