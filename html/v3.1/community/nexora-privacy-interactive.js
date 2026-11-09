@@ -9,6 +9,18 @@
   let profileUrl = 'https://nexoratouch.com/community?tab=connect&handle=@bitcoin.nail.bar';
   const inviteUrl = 'https://nexoratouch.com/';
   const defaults = {phone:'shared', email:'nobody', messages:'requests', calls:'shared', request:'pending', sentMessages:{}, sourceChats:{}, deletedCalls:[], createdGroups:[], joinedCommunities:[], connections:[], chatPrefs:{}, archivedChats:[], deletedChats:[], reportedChats:[],clearedChats:{},callHistory:[],messageMeta:{},profile:{}};
+  // Show both relationship sources in the local demo without replacing existing contacts.
+  const sharedContacts=window.NEXORA_COMMUNITY_SHARED;
+  const demoContacts=(window.NEXORA_COMMUNITY_DEMO?.connect?.customerContacts||[]).filter(row=>row.customer===currentMember);
+  if(sharedContacts&&demoContacts.length&&!sharedContacts.read().customerContactDemoMembers?.includes(currentMember)){
+    if(!(sharedContacts.read().customerContacts||[]).some(row=>row.customer===currentMember)){
+      for(const row of demoContacts){
+        if(row.savedContact)sharedContacts.saveBusinessContact(row.customer,row.business);
+        if(row.isCustomer)sharedContacts.registerCustomer(row.customer,row.business);
+      }
+    }
+    sharedContacts.change(data=>{data.customerContactDemoMembers=[...new Set([...(data.customerContactDemoMembers||[]),currentMember])];});
+  }
   const members = [
     {name:'Mai Nguyễn', id:'NX-2041', handle:'@mai.nail', detail:'request'},
     {name:'Kim Tuyen', id:'NX-2042', handle:'@kim.tuyen', phone:'7135550144', detail:'chat-kim'},
@@ -139,7 +151,7 @@
     $('#connectStage').classList.remove('detail-open', 'default-preview');
     $('#memberQuery').value = '';
     renderMemberResults();
-    for (const name of ['messages','calls','privacy']) {
+    for (const name of ['messages','contacts','calls','privacy']) {
       $('#' + name + 'Panel').classList.toggle('hidden', name !== (next === 'groups' ? 'messages' : next));
     }
     $('#detailPanel').classList.add('hidden');
@@ -154,6 +166,7 @@
       renderMessages();
     }
     if (next === 'calls') renderCalls();
+    if (next === 'contacts') renderConnections();
     if (next === 'groups') renderGroups();
     if (next === 'privacy') renderSummaries();
     if (window.parent !== window) window.parent.postMessage({type:'nexora-connect-section',section:next}, parentMessageOrigin);
@@ -212,7 +225,7 @@
     renderTourStep();
   }
   function detailShell(title, subtitle, content, actions = '') {
-    return '<button class="back" data-back>← Back to ' + esc(section === 'privacy' ? 'Settings' : section === 'calls' ? 'Calls' : section === 'groups' ? 'Group chats' : 'Messages') + '</button>' +
+    return '<button class="back" data-back>← Back to ' + esc(section === 'privacy' ? 'Settings' : section === 'contacts' ? ui('Contacts','Danh bạ') : section === 'calls' ? 'Calls' : section === 'groups' ? 'Group chats' : 'Messages') + '</button>' +
       '<div class="chat-heading"><div><h2 class="screen-title" tabindex="-1" id="detailTitle">' + esc(title) + '</h2>' +
       '<p class="screen-subtitle">' + esc(subtitle) + '</p></div>' + actions + '</div>' + content;
   }
@@ -259,7 +272,7 @@
     const bubbles = allMessages.length ? allMessages.map(message => chatMessageMarkup(message, initials)).join('') : '<p class="chat-empty">No messages yet. Say hello.</p>';
     const actions = '<div class="chat-actions">' + (allowCalls&&!blocked ? '<button class="chat-action" data-start-call="voice" aria-label="Voice call ' + esc(name) + '" title="Voice call">' + phoneIcon + '<span>Call</span></button><button class="chat-action" data-start-call="video" aria-label="Video call ' + esc(name) + '" title="Video call">' + videoIcon + '<span>Video</span></button>' : '') + '<button class="chat-action chat-close" data-back aria-label="Close conversation" title="Close conversation">×</button></div>';
     const tools = [['photo',imageIcon,'Photo'],['voice',micIcon,'Voice'],['sticker','✦','Stickers'],['gif','GIF','GIF'],['emoji',emojiIcon,'Emoji']].map(([kind,icon,label])=>'<button type="button" class="chat-tool" data-chat-tool="' + kind + '" aria-label="' + label + '" title="' + label + '">' + icon + '<span>' + label + '</span></button>').join('');
-    return '<button class="back" data-back>← Back to ' + esc(section === 'groups' ? 'Group chats' : 'Messages') + '</button>' +
+    return '<button class="back" data-back>← Back to ' + esc(section === 'contacts' ? ui('Contacts','Danh bạ') : section === 'groups' ? 'Group chats' : 'Messages') + '</button>' +
       '<div class="chat-heading"><div class="chat-person"><span class="chat-avatar" aria-hidden="true">' + esc(initials) + (group ? '' : '<i class="chat-online-dot"></i>') + '</span><div class="chat-person-copy"><div class="chat-title-line"><h2 class="screen-title" tabindex="-1" id="detailTitle">' + esc(displayName) + '</h2>'+(group?'':'<button type="button" class="chat-menu-toggle" data-chat-menu-toggle aria-label="'+esc(ui('Conversation options','Tùy chọn cuộc trò chuyện'))+'" aria-controls="conversationMenu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>')+'</div><p class="screen-subtitle">' + (group ? 'Group chat' : blocked?esc(ui('Blocked','Đã chặn')):pref.restricted?esc(ui('Restricted','Đã hạn chế')):'<span class="chat-live-status">Active now</span>') + '</p></div></div>' + actions + (group?'':chatMenuMarkup(threadId,name))+'</div>' +
       '<div class="chat-conversation"><div class="chat-message-list"><span class="chat-context">' + esc(context) + '</span>' + bubbles + '</div></div>' +
       '<div class="chat-composer"><div class="chat-tools" role="toolbar" aria-label="Message tools">' + tools + '</div><input id="chatPhotoInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div id="chatPicker" class="chat-picker hidden"></div><div id="chatAttachmentPreview" class="chat-attachment-preview hidden"></div><div class="composer"><label class="sr-only" for="messageText">Message</label><textarea id="messageText" class="demo-textarea" rows="1" placeholder="'+esc(blocked?ui('Unblock to send messages','Bỏ chặn để gửi tin nhắn'):ui('Write a message...','Viết tin nhắn...'))+'"'+(blocked?' disabled':'')+'></textarea><button class="primary" data-send-message="' + esc(threadId) + '" aria-label="Send message"'+(blocked?' disabled':'')+'><span>Send</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12 16-8-5 16-3-7-8-1zM12 13l8-9"/></svg></button><button type="button" class="chat-like" data-chat-like aria-label="Send a quick emoji" title="Send a quick emoji"'+(blocked?' disabled':'')+'>'+esc(pref.quickEmoji||'👍')+'</button></div></div>';
@@ -348,7 +361,7 @@
       const source = state.sourceChats[kind];
       const messages=window.NEXORA_COMMUNITY_DEMO?.connect?.chats?.find(chat=>chat.id===kind)?.messages||[];
       html = thread(source.recipient, source.reference, messages, kind, true);
-      if(source.requestStatus==='pending')html='<div class="surface">'+['accepted','ignored','blocked'].map((action,index)=>'<button type="button" class="secondary" data-source-request="'+esc(kind)+'" data-source-request-action="'+action+'">'+[ui('Accept','Chấp nhận'),ui('Ignore','Bỏ qua'),ui('Block','Chặn')][index]+'</button>').join('')+'</div>'+html;
+      if(source.requestStatus==='pending'&&!hasConnection({name:source.recipient}))html='<div class="surface">'+['accepted','ignored','blocked'].map((action,index)=>'<button type="button" class="secondary" data-source-request="'+esc(kind)+'" data-source-request-action="'+action+'">'+[ui('Accept','Chấp nhận'),ui('Ignore','Bỏ qua'),ui('Block','Chặn')][index]+'</button>').join('')+'</div>'+html;
     } else if (kind.startsWith('group-')&&window.NEXORA_COMMUNITY_CONNECT) {
       const room=window.NEXORA_COMMUNITY_CONNECT.resolveThread(kind);
       if(!room){currentMessages=[];pendingChatAttachment=null;mediaGeneration++;closeChatRecording();const panel=$('#detailPanel');panel.replaceChildren();panel.classList.add('hidden');currentDetail='';showSection('groups');return false;}
@@ -371,17 +384,18 @@
     panel.innerHTML = html;
     const draft=chatDrafts.get(kind);
     if(draft){const input=panel.querySelector('#messageText');if(input)input.value=draft.text;pendingChatAttachment=draft.attachment;}
-    panel.classList.toggle('chat-detail', kind.startsWith('chat-') || kind.startsWith('group-') || (kind === 'request' && state.request === 'accepted'));
+    panel.classList.toggle('chat-detail', kind.startsWith('chat-') || kind.startsWith('source-') || kind.startsWith('group-') || (kind === 'request' && state.request === 'accepted'));
     panel.dataset.chatTheme=chatPref(kind).theme||'default';
     renderChatAttachment();
     requestAnimationFrame(()=>{const list=panel.querySelector('.chat-message-list');if(list)list.scrollTop=list.scrollHeight;});
     panel.classList.remove('hidden');
     if (window.parent !== window) window.parent.postMessage({type:'nexora-connect-detail',open:true}, parentMessageOrigin);
-    if(state.sourceChats[kind]?.requestStatus==='pending')for(const control of document.querySelectorAll('#detailPanel #messageText,#detailPanel [data-send-message],#detailPanel [data-start-call]'))control.disabled=true;
+    if(state.sourceChats[kind]?.requestStatus==='pending'&&!hasConnection({name:state.sourceChats[kind].recipient}))for(const control of document.querySelectorAll('#detailPanel #messageText,#detailPanel [data-send-message],#detailPanel [data-start-call]'))control.disabled=true;
     $('#connectStage').classList.add('detail-open');
     $('#connectStage').classList.toggle('default-preview', defaultPreview);
     document.querySelectorAll('.row-button.is-selected').forEach(button => button.classList.remove('is-selected'));
-    document.querySelector('[data-detail="' + kind + '"]')?.classList.add('is-selected');
+    const selected=(section==='contacts'?$('#contactRows').querySelector('[data-detail="'+kind+'"]'):null)||document.querySelector('[data-detail="' + kind + '"]');
+    selected?.classList.add('is-selected');
     if (!defaultPreview) {
       $('#detailTitle').focus();
       window.scrollTo({top:0,behavior:'instant'});
@@ -416,9 +430,12 @@
   function hasConnection(person) {if(window.NEXORA_COMMUNITY_SHARED?.connectedPeople(currentMember).includes(person.name))return true;const identity=window.NEXORA_COMMUNITY_SHARED?.identity(person.name);return [person.id,...(identity?.legacyIds||[])].some(id=>state.connections.includes(id));}
   function renderConnections() {
     for(const name of window.NEXORA_COMMUNITY_SHARED?.connectedPeople(currentMember)||[]){if(!members.some(person=>person.name===name)){const identity=window.NEXORA_COMMUNITY_SHARED.identity(name);members.push({name,id:identity.id,handle:'@'+identity.nickname,detail:'source-'+encodeURIComponent(name)});}}
-    for(const person of members)if(person.detail?.startsWith('source-')&&hasConnection(person)&&!state.sourceChats[person.detail])state.sourceChats[person.detail]={recipient:person.name,reference:person.handle,sourceId:person.id};
+    for(const person of members)if(person.name!==currentMember&&hasConnection(person)){
+      person.detail||='source-'+encodeURIComponent(person.name);
+      if(person.detail.startsWith('source-')&&!state.sourceChats[person.detail])state.sourceChats[person.detail]={recipient:person.name,reference:person.handle,sourceId:person.id};
+    }
     const card = $('#connectionsCard');
-    const connected = members.filter(member => hasConnection(member));
+    const connected = [...new Map(members.filter(member => member.name!==currentMember&&hasConnection(member)).map(member=>[member.name,member])).values()];
     card.classList.toggle('hidden', connected.length === 0);
     $('#connectionCount').textContent = String(connected.length);
     $('#connectionRows').innerHTML = connected.map(member => {
@@ -426,6 +443,24 @@
       const detail = member.detail === 'request' && hasConnection(member) ? 'chat-mai' : member.detail;
       return '<button class="row-button" data-detail="' + detail + '" data-initials="' + esc(initials) + '"><span><strong>' + esc(member.name) + '</strong><small>' + esc(member.handle) + ' · ' + esc(member.id) + '</small></span><span class="arrow">›</span></button>';
     }).join('');
+    const contacts=connected.filter(member=>!isBlocked(member.name)).sort((a,b)=>a.name.localeCompare(b.name));
+    $('#contactCount').textContent=String(contacts.length);
+    $('#contactRows').innerHTML=contacts.map(member=>{
+      const detail=member.detail==='request'?'chat-mai':member.detail;
+      return '<article class="connect-contact"><button type="button" class="row-button contact-main" data-contact-member="'+esc(member.name)+'" data-detail="'+esc(detail)+'" data-initials="'+esc(initials(member.name))+'"><span><strong>'+esc(member.name)+'</strong><small>'+esc(member.handle)+' · '+esc(member.id)+'</small></span></button><div class="contact-actions"><button type="button" class="secondary" data-contact-member="'+esc(member.name)+'" data-detail="'+esc(detail)+'" aria-label="'+esc(ui('Message ','Tin nhắn ')+member.name)+'">'+ui('Message','Tin nhắn')+'</button><button type="button" class="secondary" data-start-call="voice" data-call-name="'+esc(member.name)+'" aria-label="'+esc(ui('Voice call ','Gọi thoại ')+member.name)+'">'+phoneIcon+ui('Voice call','Gọi thoại')+'</button></div></article>';
+    }).join('');
+    $('#contactsEmpty').classList.toggle('hidden',contacts.length!==0);
+  }
+  function openContact(name){
+    const member=members.find(row=>row.name===name);
+    if(!member||!hasConnection(member)||isBlocked(name))return;
+    const detail=member.detail==='request'?'chat-mai':member.detail;
+    if(detail?.startsWith('source-'))state.sourceChats[detail]||={recipient:name,reference:member.handle,sourceId:member.id};
+    if(state.sourceChats[detail]?.requestStatus==='pending')state.sourceChats[detail].requestStatus='accepted';
+    state.deletedChats=state.deletedChats.filter(id=>id!==detail);
+    state.archivedChats=state.archivedChats.filter(id=>id!==detail);
+    if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
+    showDetail(detail);
   }
   const conversationSamples={'chat-kim':'Please send a few examples and your available dates. I will confirm the schedule this afternoon.','chat-sally':'I would like medium nails so typing stays comfortable. Do you have any openings on Friday afternoon?','group-houston':'Could you send the price per chair and the pickup location?','group-art':'I will bring a liner brush and sample tips. What other colors should I prepare?',...Object.fromEntries((window.NEXORA_COMMUNITY_DEMO?.connect?.chats||[]).map(chat=>[chat.id,chat.messages.at(-1)?.text||'']))};
   function renderConversationPreviews() {
@@ -588,6 +623,7 @@
     }
     if (target.dataset.section) { if (tourActive) finishTour(false); showSection(target.dataset.section); return; }
     if (target.dataset.back !== undefined) { showSection(section); return; }
+    if (target.dataset.contactMember) { openContact(target.dataset.contactMember); return; }
     if (target.dataset.detail) { showDetail(target.dataset.detail); return; }
     if (target.dataset.callFilter) {
       callFilter = target.dataset.callFilter;
@@ -744,6 +780,7 @@
     scheduleTourAdvance();
   });
   window.NEXORA_CONNECT_CORE={currentMember,currentRole,currentAccount,key,members,getState:()=>clone(state),read:()=>clone(load()),mutate,save,toast,showDetail,showSection,renderGroups,renderMessages,renderCalls,renderSummaries,renderMemberResults,rememberChatDraft,appendChatMessage,getContext:()=>({section,currentDetail,messages:clone(currentMessages),communityFilter,callFilter}),isBlocked,chatPref,escape:esc,initials,setProfileURL:value=>{profileUrl=value;},refresh:()=>{state=load();savedSnapshot=clone(state);renderSummaries();renderMessages();renderGroups();renderCalls();if(currentDetail)showDetail(currentDetail);}};
+  window.addEventListener('nexora-community-shared-changed',()=>{renderConnections();changed();});
   renderSummaries();
   renderConversationPreviews();
   function setupCompactConnectTools(){
@@ -761,7 +798,7 @@
   const params = new URLSearchParams(location.search);
   if (params.get('embedded') === '1') document.body.classList.add('embedded');
   const requestedSection = params.get('section');
-  showSection(['messages', 'calls', 'groups', 'privacy'].includes(requestedSection) ? requestedSection : 'messages');
+  showSection(['messages', 'contacts', 'calls', 'groups', 'privacy'].includes(requestedSection) ? requestedSection : 'messages');
   if (requestedSection === 'messages' && ['chat-kim','request'].includes(params.get('detail'))) showDetail(params.get('detail'));
   window.addEventListener('message', event => {
     if (event.source !== window.parent || (location.protocol !== 'file:' && event.origin !== location.origin) || event.data?.type !== 'nexora-open-contact') return;
@@ -773,7 +810,7 @@
     state.archivedChats=state.archivedChats.filter(value=>value!==id);
     if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}showSection('messages');showDetail(id);
   });
-  window.addEventListener('message', event => {if (event.source !== window.parent || (location.protocol !== 'file:' && event.origin !== location.origin)) return;if (event.data?.type === 'nexora-open-section' && ['messages','calls','groups','privacy'].includes(event.data.section)) showSection(event.data.section);if (event.data?.type === 'nexora-back') {const close=document.querySelector('#connectWorkflowDialog [data-connect-action="close-dialog"]')||document.querySelector('#connectMemberDrawer button[data-connect-action="close-members"]')||document.querySelector('#connectActiveCall:not(.is-minimized) [data-connect-action="minimize-call"]');if(close){close.click();if(currentDetail&&window.parent!==window)window.parent.postMessage({type:'nexora-connect-detail',open:!!currentDetail,force:true},parentMessageOrigin);return;}if(currentDetail)showSection(section);}if (event.data?.type === 'nexora-open-request' && state.request === 'pending') {showSection('messages');showDetail('request');}});
+  window.addEventListener('message', event => {if (event.source !== window.parent || (location.protocol !== 'file:' && event.origin !== location.origin)) return;if (event.data?.type === 'nexora-open-section' && ['messages','contacts','calls','groups','privacy'].includes(event.data.section)) showSection(event.data.section);if (event.data?.type === 'nexora-back') {const close=document.querySelector('#connectWorkflowDialog [data-connect-action="close-dialog"]')||document.querySelector('#connectMemberDrawer button[data-connect-action="close-members"]')||document.querySelector('#connectActiveCall:not(.is-minimized) [data-connect-action="minimize-call"]');if(close){close.click();if(currentDetail&&window.parent!==window)window.parent.postMessage({type:'nexora-connect-detail',open:!!currentDetail,force:true},parentMessageOrigin);return;}if(currentDetail)showSection(section);}if (event.data?.type === 'nexora-open-request' && state.request === 'pending') {showSection('messages');showDetail('request');}});
   let hasSeenTour = false;
   try { hasSeenTour = localStorage.getItem(tourSeenKey) === '1'; } catch {}
   if (params.get('tour') === '1' || (params.get('embedded') !== '1' && !hasSeenTour && !params.get('detail') && (!requestedSection || requestedSection === 'messages'))) {

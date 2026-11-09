@@ -250,7 +250,7 @@
       if(button.getAttribute(name)!==value)button.setAttribute(name,value);
     });
     const detail=document.querySelector('#detailPanel.chat-detail:not(.hidden)');
-    setBodyClass('community-chat-open',Boolean(detail&&['messages','groups'].includes(document.body.dataset.section)&&visible(detail)));
+    setBodyClass('community-chat-open',Boolean(detail&&['messages','contacts','groups'].includes(document.body.dataset.section)&&visible(detail)));
   }
   function schedule(){if(!queued){queued=true;requestAnimationFrame(refresh);}}
   new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden','aria-selected','disabled','accept']});

@@ -950,6 +950,8 @@ Find people to add	Tìm người để thêm
 Message requests	Yêu cầu tin nhắn
 Recent conversations	Hội thoại gần đây
 Connections	Danh bạ
+Contacts	Danh bạ
+← Back to Contacts	← Quay lại Danh bạ
 Create group	Tạo nhóm
 No messages yet	Chưa có tin nhắn
 Find more groups	Tìm thêm nhóm
