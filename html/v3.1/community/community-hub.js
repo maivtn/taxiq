@@ -112,6 +112,8 @@
       root.querySelectorAll('[data-top-sub-view]').forEach(el=>el.addEventListener('click',()=>setView(el.dataset.topSubView)));
       root.querySelectorAll('.tab-sub-toggle').forEach(toggle=>toggle.addEventListener('click',()=>{const menu=root.getElementById(toggle.getAttribute('aria-controls')),open=menu.hidden;closeMenus();menu.hidden=!open;toggle.setAttribute('aria-expanded',String(open));}));
       root.getElementById('communityBack').addEventListener('click',()=>{stopTour(false);closeMenus();if(hosted)notifyHost({type:'nexora-community-history-back'});else if(history.length>1&&document.referrer)history.back();else setView('feed',false);});
+      root.getElementById('communityFindPeople')?.addEventListener('click',()=>{connectSection='contacts';setView('connect');});
+      root.getElementById('communityCreate')?.addEventListener('click',()=>root.getElementById('feedActionsToggle')?.click());
       root.getElementById('languageBack').addEventListener('click',()=>{closeMenus();languageButton.focus();});
       root.querySelectorAll('[data-side-view],[data-quick-view]').forEach(el=>el.addEventListener('click',()=>setView(el.dataset.sideView||el.dataset.quickView)));
       root.getElementById('sidebarToggle').addEventListener('click',()=>{if(isCompact()){app.classList.toggle('nav-open');}else{app.classList.toggle('sidebar-collapsed');}root.getElementById('sidebarToggle').setAttribute('aria-expanded',String(app.classList.contains('nav-open')||!app.classList.contains('sidebar-collapsed')));});

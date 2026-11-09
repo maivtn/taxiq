@@ -1,5 +1,6 @@
 /* The dashboard owns the workspace shell; the PO owns Community content. */
 .community-back { display:none; }
+.community-location,.community-heading-actions .community-find,.community-heading-actions .community-create { display:none; }
 body.embedded .app { grid-template-columns: minmax(0, 1fr); min-height: 0; }
 body.embedded .app > .sidebar,
 body.embedded .app-footer,
@@ -75,6 +76,14 @@ body.embedded .community-heading > div { flex:1; }
   body.embedded .top { flex:none; background:#fff; border-bottom:1px solid #e2e8f0; }
   body.embedded .community-heading { width:calc(100% - 28px); min-height:44px; margin:3px auto; padding:0; gap:8px; }
   body.embedded .community-heading h1 { font-size:18px; line-height:1.3; white-space:normal; }
+  body.embedded .community-heading { align-items:flex-start; }
+  body.embedded .community-heading p { display:none; }
+  body.embedded .community-location { display:block; margin:1px 0 0; padding:0; border:0; background:transparent; color:#737d93; font-size:10px; font-weight:700; }
+  body.embedded .community-heading-actions { display:flex; align-items:flex-start; gap:5px; margin-left:auto; }
+  body.embedded .community-heading-actions .community-find,
+  body.embedded .community-heading-actions .community-create { display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:5px 9px; border:1px solid #e1e4ed; border-radius:8px; background:#fff; color:#4c566d; box-shadow:0 2px 5px #18213b12; font-size:10px; font-weight:800; white-space:nowrap; }
+  body.embedded .community-heading-actions .community-create { border-color:#6550df; background:#6550df; color:#fff; }
+  body.embedded .community-heading-actions .tour-launch { display:none; }
   .community-heading > div { flex:1; }
   .community-heading .community-back { display:inline-flex; align-items:center; justify-content:center; flex:none; min-width:60px; height:44px; padding:0; border:0; border-radius:8px; background:transparent; color:#5445c6; font-size:11px; font-weight:700; }
   .community-back-face { display:inline-flex; align-items:center; justify-content:center; gap:4px; min-height:30px; padding:6px 8px; border:1px solid #d9d2fa; border-radius:8px; background:#f5f3ff; box-shadow:0 1px 2px #34226c0a; }
