@@ -15,6 +15,15 @@
     style.textContent+=`
       @container community (max-width:800px) {
         :host .main > .workspace { order:1; }
+        :host .main > .top { margin-top:var(--community-header-scroll,0px); }
+        :host .main > .mobile-nav:not([hidden]) { min-height:0; padding:5px 5px 7px; }
+        :host .main > .mobile-nav .mobile-tab.tab {
+          min-height:46px; padding:4px 2px; gap:2px;
+          grid-template-rows:22px auto;
+        }
+        :host .main > .mobile-nav .mobile-tab.tab > :is(svg,.community-nav-art) { width:22px; height:22px; }
+        :host .main > .mobile-nav .mobile-tab.tab > span { min-height:0; }
+        :host .main > .mobile-nav.is-docked { padding-bottom:max(7px,env(safe-area-inset-bottom)); }
         :host .main > .mobile-nav:not([hidden]) {
           flex:none;
           border-top:0;
@@ -44,10 +53,12 @@
     root.append(style);
     const mobileNav=root.querySelector('.mobile-nav');
     const workspace=root.querySelector('.workspace');
+    const heading=root.querySelector('.main > .top');
     workspace.addEventListener('scroll',event=>{
       const scroller=event.target;
       if(!scroller.matches('.workspace,.native-body,.community-extra-pane')||scroller.closest('[hidden]'))return;
       mobileNav.classList.toggle('is-docked',scroller.scrollTop>=mobileNav.offsetHeight&&mobileNav.offsetHeight>0);
+      heading.style.setProperty('--community-header-scroll',-Math.min(Math.max(0,scroller.scrollTop),heading.offsetHeight)+'px');
     },{capture:true,passive:true});
     let additions;
     const initialRoute=options.params?.get('tab')||'feed';
