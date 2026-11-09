@@ -19,7 +19,7 @@
   ];
   const posts=[
     {id:'sample-store-update',kind:'post',title:['Thông tin lịch làm cuối tuần (mẫu)','Weekend appointment update (sample)'],body:['Khách có thể nhắn tin cho tiệm để trao đổi dịch vụ và thời gian phù hợp. Đây là bài giới thiệu mẫu của gian hàng.','Message the salon to discuss a service and a suitable time. This is a sample storefront update.'],image:media.salon},
-    {id:'sample-store-design',kind:'photos',title:['Bộ móng xanh trong tuần (mẫu)','This week’s blue nail design (sample)'],body:['Một mẫu móng xanh được dùng để minh họa bài đăng từ gian hàng lên Bảng tin Community.','A blue nail design illustrating a storefront post shared to the Community Feed.'],image:media.design}
+    {id:'sample-store-design',kind:'photos',title:['Bộ móng xanh trong tuần (mẫu)','This week’s blue nail design (sample)'],body:['Một mẫu móng xanh được dùng để minh họa bài đăng từ gian hàng lên Bảng tin Community.','A blue nail design illustrating a storefront post shared to the Community Feed.'],image:''}
   ];
   const text=(values,language)=>values[language==='vi'?0:1];
   function translateFields(target,source,language){
@@ -47,9 +47,9 @@
     if(shared?.role!=='owner'||shared.member!=='BITCOIN NAIL BAR')return false;
     if(state.storefrontDemoSeeded===1){
       const post=state.feedPosts.find(row=>row.id==='sample-store-design'&&row.shopOrigin&&row.author===shared.member);
-      if(!post||post.image!==media.blue||post.images?.some(image=>image!==media.blue))return false;
-      post.image=media.design;
-      if(post.images?.length)post.images=[media.design];
+      if(!post||![media.blue,media.design].includes(post.image)||post.images?.some(image=>![media.blue,media.design].includes(image)))return false;
+      post.image='';
+      if(post.images?.length)post.images=[];
       return true;
     }
     const shop=state.shop;

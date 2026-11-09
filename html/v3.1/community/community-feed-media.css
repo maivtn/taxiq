@@ -14,3 +14,6 @@
  #feedPosts>.content-card>.community-feed-photo,
  #feedPosts>.content-card>.blog-cover{max-height:180px}
 }
+
+/* The first storefront sample is displayed as a text-only Recent post. */
+[data-feed-post-id="sample-store-design"] .community-social-gallery{display:none}

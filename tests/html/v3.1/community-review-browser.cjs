@@ -19,6 +19,10 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
     const check=async(name,run)=>{try{await run();results.push({width,account,name,pass:true});console.log('PASS',width,account,name);}catch(e){results.push({width,account,name,pass:false,error:e.stack});console.log('FAIL',width,account,name,e.message);await page.screenshot({path:path.join(output,`${width}-${account}-${name.replace(/\W/g,'-')}-failed.png`)}).catch(()=>{});}};
     await check('groups recommendations latest and empty state',async()=>{
      await open('groups');const groups=pane.locator('#groupsView');await groups.locator('.community-group-latest').waitFor();
+     const location=hub.locator('#communityLocation');if(await location.isVisible()){
+      const box=await location.boundingBox();assert.ok(box.height<=26&&box.width<=145,JSON.stringify(box));
+      await location.click();await pane.locator('#viewerLocationTitle').waitFor();await pane.locator('#closeModal').click();
+     }
      assert.equal(await groups.locator('.community-group-section>h3').first().innerText(),'Groups for you');
      assert.equal(await groups.locator('.community-group-latest>h3').innerText(),'New group posts');
      assert.ok(await groups.locator('.community-group-posts article').count()>0);
@@ -124,10 +128,8 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
      await shop.screenshot({path:path.join(output,`${width}-${account}-shop.png`)});
      if(account==='business'){
-      await open('feed');const photo=pane.locator('[data-feed-post-id="sample-store-design"] .community-social-gallery img');await photo.waitFor();
-      assert.ok((await photo.getAttribute('src')).endsWith('/community-staging/3bd5b46971b0c903.png'));
-      assert.equal(await photo.evaluate(node=>getComputedStyle(node).objectFit),'contain');
-      assert.ok((await photo.boundingBox()).height<=(width<=700?180:240)+1);
+      await open('feed');const sample=pane.locator('[data-feed-post-id="sample-store-design"]');await sample.waitFor();
+      assert.equal(await sample.locator('.community-social-gallery:visible').count(),0);
       await pane.locator('[data-feed-post-id="sample-store-design"]').screenshot({path:path.join(output,`${width}-business-sample-photo.png`)});
      }
 

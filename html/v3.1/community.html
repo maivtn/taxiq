@@ -1009,9 +1009,13 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 }
 #community-staging #communityLocation {
   position:relative;
-  min-height:30px;
+  gap:4px;
+  border-radius:6px;
+  font-size:10px;
+  line-height:14px;
+  min-height:24px;
   margin-top:2px;
-  padding:5px 44px 5px 8px;
+  padding:3px 44px 3px 6px;
   background:#f5f2ff;
   color:#5442bd;
 }
@@ -1026,6 +1030,7 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   stroke-linejoin:round;
   flex:none;
 }
+#community-staging #communityLocation .lucide-map-pin { width:12px; height:12px; }
 #community-staging #communityLocation .lucide-chevron-down { position:absolute; right:16px; top:50%; width:16px; height:16px; transform:translateY(-50%); }
 #community-staging #feedView > .feed-intro[hidden],
 #community-staging #feedView:not(.deal-mode) .section-heading:has(> #feedListTitle) { display:none; }
@@ -2300,7 +2305,7 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   <script src="../assets/vendor/lucide.min.js"></script>
   <script>if(window.lucide)window.lucide.createIcons();</script>
   <script src="community/community-shared.js?v=20261109-community-review4"></script>
-  <script src="community/community-direct-code.js?v=20261109-personal-video1" data-community-code=""></script><script src="community/community-native.js?v=20261109-community-review4"></script>
+  <script src="community/community-direct-code.js?v=20261109-compact-location1" data-community-code=""></script><script src="community/community-native.js?v=20261109-community-review4"></script>
   <script src="community/community-platform.js?v=20261107-feature-shortcuts1"></script>
   <script src="community/community-directory.js?v=20261109-facebook-share1"></script>
   <script src="community/community-create-menu.js?v=20261109-create-icons3"></script>
