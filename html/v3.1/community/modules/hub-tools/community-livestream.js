@@ -72,7 +72,7 @@
   const demoGuests=['Lan Phạm','Kevin Trần','Mai Anh'];
   const samplePoll={question:['Bộ nail tiếp theo mọi người muốn xem mẫu nào?','Which nail set would you like to see next?'],choices:[['Mẫu Tết đỏ vàng','Red and gold Lunar New Year set'],['Mẫu French thanh lịch','Classic French set'],['Mẫu đính đá','Gemstone set']],counts:[104,58,24],votes:{}};
   const sampleQA=[{id:'sample-qa',author:'Kevin T.',text:['Gel có bền hơn bột không ạ?','Does gel last longer than acrylic?']}];
-  let category='all',directoryPageId='',viewer=false,setup=null,dialogPanel='',dialogRoom='',cameraFacing='user',cameraRequest=0,pipStream=null,caption='en',quality='720p',ageAccepted=new Set(),flashClock,recording=null,downloadUrl='',replayUrl='',foreignRoom=null,cancelTrim=null;
+  let category='all',directoryPageId='',viewer=false,setup=null,dialogPanel='',dialogRoom='',cameraFacing='user',cameraRequest=0,pipStream=null,caption='en',quality='720p',ageAccepted=new Set(),flashClock,recording=null,downloadUrl='',replayUrl='',foreignRoom=null,foreignChats=[],cancelTrim=null;
   state.livePOViewer||={};
   state.livePONotifications||=[];
   state.livePOChannels||={};
@@ -101,6 +101,12 @@
     state.livePNGDemoVersion=1;save();
   }
   seedLiveDemo();
+  if(!state.liveSafetyDemoVersion){
+    const sample=state.liveRooms.find(room=>room.demo&&room.id.endsWith('-sales')&&own(room));
+    if(sample){sample.safety||={moderators:['Mai Anh']};state.liveChats[sample.id]||=[{id:'po-live-chat-lan',member:'Lan Phạm',author:'Lan P.',text:['Cho em hỏi giá bộ này ạ?','How much is this set?'],time:Date.now()-60000},{id:'po-live-chat-kevin',member:'Kevin Trần',author:'Kevin T.',text:['Tiệm có nhận walk-in không?','Do you accept walk-ins?'],time:Date.now()-30000}];}
+    state.liveSafetyDemoVersion=1;save();
+  }
+
   const wheelPrizes=[{key:'gift25',vi:'Gift card $25',en:'$25 gift card',probability:5},{key:'gift10',vi:'Gift card $10',en:'$10 gift card',probability:15},{key:'discount',vi:'Giảm 20%',en:'20% off',probability:30},{key:'service',vi:'Tặng dịch vụ',en:'Service gift',probability:10},{key:'none',vi:'Chúc may mắn',en:'Better luck next time',probability:40}];
   function records(){try{return JSON.parse(localStorage.getItem(recordKey)||'{}');}catch{return {};}}
   const previousLookup=liveRoomById;
@@ -117,12 +123,12 @@
     if(!/^NX-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(ownerId||''))return null;
     try{
       const saved=JSON.parse(localStorage.getItem('nexora-v31:community-hub-tools:'+ownerId)||'{}');
-      return resolveLink((saved.liveRooms||[]).filter(room=>room.ownerId===ownerId&&canWatchRoom(room)&&
-        (room.status!=='ended'||room.summary?.published===true)),id)||null;
+      const found=resolveLink((saved.liveRooms||[]).filter(room=>room.ownerId===ownerId&&
+        (room.status!=='ended'||room.summary?.published===true)),id)||null;foreignChats=found?(saved.liveChats?.[found.id]||[]):[];return found;
     }catch{return null;}
   }
   function getRoom(id=activeLiveRoom){
-    const room=liveRoomById(id);
+    let room=liveRoomById(id);if(room&&!own(room)&&room.ownerId){room=loadForeignRoom(room.id,room.ownerId)||room;foreignRoom=room;}
     return room&&!own(room)?{...room,...state.livePOViewer[id]?.room}:room;
   }
   function prefs(id){return state.livePOViewer[id]||{};}
@@ -166,9 +172,11 @@
   function roomMark(room){return art(room.art||(room.category==='salon'?'paintbrush':'tv'),56);}
   function roomName(room){return newsText(room.title)||t('Buổi live','Livestream');}
   function hostMode(room){return own(room)&&!viewer;}
+  function canModerate(room){return hostMode(room)||(room.safety?.moderators||[]).includes(shared.member);}
   function canOpenReplay(room){return room.sample||hostMode(room)||room.summary?.published===true;}
   function isPrivate(room){return room.rehearsal===true;}
   function canWatchRoom(room){
+    if((room.safety?.blocked||[]).includes(shared.member)&&!own(room))return false;
     return !isPrivate(room)||own(room)||room.guests?.some(guest=>guest.nxId===shared.me().id||guest.name===shared.member||guest.name===person());
   }
   function openRoom(id,view=false){
@@ -349,9 +357,10 @@
     const getFlash=flashMarkup(room)?row(room.flash.name,t('Số lượng có hạn','Limited quantity'),action('claim-flash',t('Nhận','Claim'),{style:'soft',disabled:!room.flash.dealId}),art('ticket',32)):'';
     return (getDeal||getService||getFlash)?'<div class="lv-pins">'+getService+getDeal+(getFlash?'<div data-lv-flash-card>'+getFlash+'</div>':'')+'</div>':'';
   }
-  function chat(room){return [...(room.id==='po-live-bitcoin'?demoChat:[]),...(state.liveChats[room.id]||[])];}
+  function chat(room){return [...(room.id==='po-live-bitcoin'?demoChat:[]),...(own(room)?state.liveChats[room.id]||[]:foreignRoom?.id===room.id?foreignChats:state.liveChats[room.id]||[])];}
   function chatRows(room,host){
     return chat(room).slice(-8).map((message,index)=>'<div class="lv-comment">'+personBadge(message.author)+'<div class="lv-grow"><strong>'+esc(message.author)+'</strong> '+esc(newsText(message.text))+'</div>'+
+      (canModerate(room)&&message.id?action('moderate-message',t('Kiểm duyệt','Moderate'),{value:message.id,style:'soft'}):'')+
       (host&&message.id?action('pin-comment',t('Ghim','Pin'),{value:message.id,style:'soft',pressed:room.pinnedComment===message.id}):'')+'</div>').join('');
   }
   function stageButton(key,label,mark,pressed){
@@ -365,8 +374,8 @@
         :action('remind',prefs(room.id).remind?t('Đã đặt nhắc lịch','Reminder set'):t('Nhắc tôi','Remind me'),{pressed:!!prefs(room.id).remind,style:'primary',icon:icon('Bell')}))+'</div>')+'</section>';
   }
   function gate(room){
-    const blocked=!canWatchRoom(room);
-    return '<section class="lv-surface"><header class="lv-top">'+action('back',t('Đang live','Live Now'),{icon:icon('ArrowLeft')})+'</header>'+card(head(blocked?t('Phát thử riêng tư','Private rehearsal'):t('Giới hạn độ tuổi 18+','Ages 18 and over'),blocked?t('Chỉ bạn và người được mời xem được.','Only the host and invited guests can view.'):'')+(blocked&&own(room)?action('host',t('Chủ buổi','Host'),{style:'primary'}):blocked?'':action('age',t('Tôi đủ 18 tuổi','I am 18 or over'),{style:'primary'})))+'</section>';
+    const blocked=!canWatchRoom(room),banned=(room.safety?.blocked||[]).includes(shared.member)&&!own(room);
+    return '<section class="lv-surface"><header class="lv-top">'+action('back',t('Đang live','Live Now'),{icon:icon('ArrowLeft')})+'</header>'+card(head(banned?t('Bị chặn','Blocked'):blocked?t('Phát thử riêng tư','Private rehearsal'):t('Giới hạn độ tuổi 18+','Ages 18 and over'),banned?'':blocked?t('Chỉ bạn và người được mời xem được.','Only the host and invited guests can view.'):'')+(blocked&&own(room)?action('host',t('Chủ buổi','Host'),{style:'primary'}):blocked?'':action('age',t('Tôi đủ 18 tuổi','I am 18 or over'),{style:'primary'})))+'</section>';
   }
   function replayView(room){
     if(!canOpenReplay(room)){
@@ -459,7 +468,7 @@
   }
   function qaPanel(room){
     const questions=[...(room.id==='po-live-bitcoin'?sampleQA:[]),...(room.questions||[])],host=hostMode(room);
-    return card(head(t('Hộp hỏi đáp','Q&A inbox'),t('Câu hỏi tách khỏi trò chuyện.','Questions are kept separate from chat.'))+
+    return card(head(room.purpose==='tutorial'?t('Hàng đợi câu hỏi của học viên','Student question queue'):t('Hộp hỏi đáp','Q&A inbox'),t('Câu hỏi tách khỏi trò chuyện.','Questions are kept separate from chat.'))+(host&&questions.length?action('answer-next',t('Tiếp theo','Next'),{style:'soft'}):'')+
       (questions.length?questions.map(question=>row(question.author+': '+newsText(question.text),room.answering===question.id?t('Đang trả lời','Answering now'):'',
         host?action('answer',t('Ghim','Pin'),{value:question.id,pressed:room.answering===question.id,style:'soft'}):'',personBadge(question.author))).join(''):empty()))+
       (!host?card(form('question',field(t('Câu hỏi','Question'),'text','','required maxlength="300"'),t('Gửi câu hỏi','Send question'))):'');
@@ -481,9 +490,9 @@
       toggle('age',t('Giới hạn độ tuổi 18+','Ages 18 and over'),safety.age),
       t('Lưu thay đổi','Save changes')))+
       card(head(t('An toàn buổi live','Livestream safety'))+
-      row(t('AI rà soát hình ảnh live','AI image screening'),t('Cần kết nối dịch vụ live.','Requires the livestream service.'),'',icon('Shield'))+
+      row(t('AI rà soát hình ảnh live','AI image screening'),t('Cần kết nối dịch vụ live.','Requires the livestream service.'),chip(t('Mẫu','Demo'),'violet'),icon('Shield'))+
       row(t('Cảnh báo nhạc bản quyền','Music copyright warning'),'',tile('library'),icon('Music')))+
-      card(head(t('Đồng kiểm duyệt','Co-moderators'))+(safety.moderators||[]).map(name=>row(name,t('Đồng kiểm duyệt','Co-moderator'),action('moderator-remove',t('Gỡ','Remove'),{value:name}),personBadge(name))).join('')+
+      card(head(t('Đồng kiểm duyệt','Co-moderators'))+(safety.moderators||[]).map(name=>row(name,t('Xóa / tắt tiếng / chặn người xem — không thể kết thúc buổi live','Delete / mute / block viewers — cannot end the livestream'),action('moderator-remove',t('Gỡ','Remove'),{value:name}),personBadge(name))).join('')+
       action('panel',t('+ Thêm người kiểm duyệt','+ Add moderator'),{value:'moderator',style:'soft'}));
   }
 
@@ -563,7 +572,7 @@
       (host?form('recording', '<label class="lv-field">'+t('Tệp bản ghi','Recording file')+'<input type="file" name="video" accept="video/*"></label><label class="lv-field">'+t('Đổi ảnh bìa','Change cover')+'<input type="file" name="cover" accept="image/*"></label>',t('Lưu bản ghi','Save recording')):'')+
       (!hasRecording(room)&&!currentRecord?'<p class="lv-note">'+t('Chưa có bản ghi.','No recording yet.')+'</p>':''))+
       card(head(t('Mục lục chương','Chapters'))+(room.chapters?.length?room.chapters.map(item=>row(clock(item.time)+' · '+newsText(item.title),'',action('seek',t('Phát','Play'),{value:String(item.time),disabled:!hasRecording(room),icon:icon('Play')}))).join(''):empty())+
-      (room.purpose==='tutorial'?'<p class="lv-note">'+t('Replay chia chương có thể đưa vào thư viện OneAcademy.','Chaptered replay can be added to the OneAcademy library.')+'</p>':''))+
+      (room.purpose==='tutorial'?'<p class="lv-note">'+t('Replay chia chương có thể đưa vào thư viện OneAcademy.','Chaptered replay can be added to the OneAcademy library.')+'</p>'+action('academy-add',t('Đưa vào thư viện OneAcademy','Add to OneAcademy'),{style:'soft',disabled:!host||!hasRecording(room)})+action('academy','OneAcademy',{style:'soft'}):''))+
       ((room.places?.length||room.place)?card(head(t('Địa điểm đã ghé','Places visited'))+(room.places||[room.place]).map(place=>row(place.name,place.address,'<a class="lv-btn soft" href="'+mapLink(place.address)+'" target="_blank" rel="noopener noreferrer">'+t('Bản đồ','Map')+'</a>',art('map-pin',30))).join('')):'');
   }
   function openPanel(key,room=getRoom()){
@@ -873,7 +882,8 @@
   function handleComment(form,room){
     const message=new FormData(form).get('message').trim();
     if(!message)return;
-    const safety=room.safety||{},previous=state.liveChats[room.id]||[],recent=previous.findLast(row=>row.member===shared.member);
+    const safety=room.safety||{},previous=own(room)?state.liveChats[room.id]||[]:foreignRoom?.id===room.id?foreignChats:state.liveChats[room.id]||[],recent=previous.findLast(row=>row.member===shared.member);
+    if((safety.blocked||[]).includes(shared.member)||(safety.muted||[]).includes(shared.member))throw Error(t('Bạn không thể bình luận trong buổi live này.','You cannot comment in this livestream.'));
     if(!hostMode(room)&&safety.followers&&!prefs(room.id).follow)throw Error(t('Theo dõi để bình luận.','Follow to comment.'));
     if(safety.slow&&recent&&Date.now()-recent.time<10000)throw Error(t('Chờ 10 giây trước khi bình luận tiếp.','Wait 10 seconds before commenting again.'));
     if((safety.keywords||'').split(',').some(word=>word.trim()&&message.toLowerCase().includes(word.trim().toLowerCase())))throw Error(t('Bình luận bị bộ lọc từ khóa chặn.','Comment blocked by the keyword filter.'));
@@ -885,7 +895,27 @@
       if(!updateRoom(room,{leads:[...(room.leads||[]),{name:person(),text:message,kind:booking?'booking':'order'}]})){state.liveChats[room.id]=previous;return;}
       pushRoomNotice(room,'sales',t('Có yêu cầu mới từ bình luận','New request from live chat'),message,'leads');
     }else if(!save()){state.liveChats[room.id]=previous;return;}
+    if(!own(room)&&foreignRoom?.id===room.id){const key='nexora-v31:community-hub-tools:'+room.ownerId;try{const data=JSON.parse(localStorage.getItem(key)||'{}');data.liveChats||={};data.liveChats[room.id]=next;if((sale||booking)&&room.pageId==='p1'){const hostRoom=data.liveRooms?.find(item=>item.id===room.id);if(hostRoom)hostRoom.leads=[...(hostRoom.leads||[]),{name:person(),text:message,kind:booking?'booking':'order'}];}localStorage.setItem(key,JSON.stringify(data));foreignChats=next;}catch{state.liveChats[room.id]=previous;return;}}
     refresh(room);
+  }
+  function moderateLiveChat(room,id,kind){
+    if(!canModerate(room))return;
+    const key='nexora-v31:community-hub-tools:'+room.ownerId;
+    const data=own(room)?state:JSON.parse(localStorage.getItem(key)||'{}');
+    const target=data.liveRooms?.find(item=>item.id===room.id),messages=data.liveChats?.[room.id]||[],message=messages.find(item=>item.id===id);
+    if(!target||!message)return;
+    const participant=message.member||message.author;
+    if(kind!=='delete-live-comment'&&(participant===room.owner||participant===shared.member))return;
+    const before=JSON.stringify(data);
+    if(kind==='delete-live-comment')data.liveChats[room.id]=messages.filter(item=>item.id!==id);
+    else {target.safety||={};const field=kind==='mute-live-viewer'?'muted':'blocked';target.safety[field]=[...new Set([...(target.safety[field]||[]),participant])];}
+    if(own(room)){if(!save()){Object.assign(state,JSON.parse(before));return;}}
+    else{try{localStorage.setItem(key,JSON.stringify(data));foreignRoom=target;foreignChats=data.liveChats[room.id];}catch{return;}}
+    closeDialog();refresh(getRoom(room.id));
+  }
+  function academyPanel(){
+    const entries=state.academyReplays||[];
+    showDialog('OneAcademy',card(head('OneAcademy')+(entries.length?entries.map(item=>row(newsText(item.title),t('Bản xem lại · Mục lục chương','Replay · Chapters'),action('academy-open',t('Phát','Play'),{value:item.id,style:'soft'}),art('video',32))).join(''):empty())),'academy');
   }
   function liveSubmit(event){
     const form=event.target,key=form.dataset.livePoForm;
@@ -964,6 +994,12 @@
     const room=getRoom(dialogRoom||activeLiveRoom),host=room&&hostMode(room);
     try{
       if(key==='close'){closeDialog();return;}
+      if(key==='academy'){academyPanel();return;}
+      if(key==='academy-open'){closeDialog();const entry=getRoom(value);if(entry){openRoom(value);openPanel('replay',entry);}return;}
+      if(key==='academy-add'){if(!room||!hostMode(room)||!hasRecording(room))return;state.academyReplays||=[];if(!state.academyReplays.some(item=>item.id===room.id)){state.academyReplays.push({id:room.id,title:room.title,chapters:room.chapters||[]});if(!save()){state.academyReplays.pop();return;}}academyPanel();return;}
+      if(key==='moderate-message'){if(!room||!canModerate(room))return;const item=chat(room).find(row=>row.id===value);if(item)showDialog(t('Kiểm duyệt & an toàn','Moderation & safety'),card(head(item.author,newsText(item.text))+'<div class="lv-actions">'+action('delete-live-comment',t('Xóa','Delete'),{value})+action('mute-live-viewer',t('Tắt tiếng','Mute'),{value})+action('block-live-viewer',t('Chặn người xem','Block viewer'),{value})+'</div>'),'message-moderation',room.id);return;}
+      if(['delete-live-comment','mute-live-viewer','block-live-viewer'].includes(key)){if(room)moderateLiveChat(room,value,key);return;}
+
       if(key==='start'){openLiveComposer();return;}
       if(key==='filter'){category=value;render();return;}
       if(key==='open'){openRoom(value);return;}
@@ -1033,6 +1069,7 @@
       if(key==='pin-service'){if(servicesFor(room).some(item=>item.id===value))patch(room,{serviceId:room.serviceId===value?'':value},dialogPanel);return;}
       if(key==='pin-deal'){if(dealsFor(room).some(item=>item.id===value))patch(room,{dealId:room.dealId===value?'':value},dialogPanel);return;}
       if(key==='pin-comment'){patch(room,{pinnedComment:room.pinnedComment===value?'':value});return;}
+      if(key==='answer-next'){const questions=room.questions||[];if(questions.length){const index=questions.findIndex(item=>item.id===room.answering);patch(room,{answering:questions[(index+1)%questions.length].id},'qa');}return;}
       if(key==='answer'){patch(room,{answering:room.answering===value?'':value},'qa');return;}
       if(key==='toggle-pip'){
         if(room.pip){pipStream?.getTracks().forEach(track=>track.stop());pipStream=null;}
