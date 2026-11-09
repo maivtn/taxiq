@@ -48,3 +48,7 @@ body #groupsView .community-group-search .community-group-filter-toggle{display:
 .community-group-search .community-group-filter-toggle:is([aria-expanded="true"],.has-filters){border-color:#b8aaf0;background:#eae5ff}
 .community-group-search [data-group-filter-count]:not([hidden]){display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;background:#6755ec;color:#fff;border-radius:20px;font-size:10px}
 @media(max-width:800px){.community-group-search input{font-size:16px}}
+
+.community-group-latest{grid-template-columns:minmax(0,1fr)}
+.community-group-posts{display:grid;gap:14px;min-width:0}
+.community-group-posts>.content-card{min-width:0;margin:0}
