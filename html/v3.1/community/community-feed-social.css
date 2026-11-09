@@ -75,9 +75,7 @@
 .community-social-dialog .dialog-footer{align-items:center;flex-wrap:wrap}
 .community-social-error{color:#b73550;font-size:12px;margin:0}
 .community-social-error:empty{display:none}
-.community-social-stats{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:12px;color:#7a8597;font-size:12px}
-.community-like-count{font-size:.9em;font-variant-numeric:tabular-nums}
-.community-social-stats>.community-social-link{min-height:30px;padding:3px 0;font-size:12px;font-weight:500}
+.community-social-count{font-size:.9em;font-variant-numeric:tabular-nums}
 body .community-social-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:5px;padding-top:5px}
 body .community-social-actions>.community-social-link{width:100%;min-width:0;min-height:44px;gap:7px;font-size:13px;font-weight:700}
 body .community-social-actions>.community-social-link[aria-pressed=true]{color:#6752cc;background:#f3efff}
