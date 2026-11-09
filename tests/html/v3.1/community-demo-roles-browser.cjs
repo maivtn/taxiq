@@ -53,7 +53,7 @@ const rows=[],errors=[];
               assert.equal(await classic().locator('#jobTemplates [data-template="seeking"]').isVisible(),role==='personal');
             }
             if(route==='shift'){
-              assert.equal(await classic().locator('#shiftTemplates [data-template="dayhire"]').isVisible(),role==='salon');
+              assert.equal(await classic().locator('[data-shifts-action="post"]').isVisible(),role==='salon');
               assert.equal(await classic().locator('#shiftTemplates [data-template="daywork"]').isVisible(),role==='personal');
             }
             if(route==='deals')assert.equal(await classic().locator('.community-deals-business').count(),role==='personal'?0:1);
@@ -70,6 +70,29 @@ const rows=[],errors=[];
             for(const feature of ['shop','transfer'])assert.equal(await host.locator('[data-community-extra="'+feature+'"]:visible').count(),role==='personal'?0:1);
             await host.locator('[data-community-extra="people"]').click();
             await page.waitForURL(url=>url.searchParams.get('tab')==='people');
+          });
+        }
+        for(const role of ['personal','salon']){
+          await check(role,'Jobs tabs and service composer',async()=>{
+            await open(role,'jobs');
+            const tabs=role==='personal'?['browse','myPosts','applied','profile','matched','availability','offering','invites']:['browse','myPosts','workers','invites','services','transfer'];
+            for(const tab of tabs){
+              await classic().locator('button[data-jobs-tab="'+tab+'"]').click();
+              assert.equal(await classic().locator('#jobsView').getAttribute('data-jobs-tab'),tab);
+              for(const denied of (role==='personal'?['transfer','workers','services']:['profile','applied','matched','availability','offering']))assert.equal(await classic().locator('button[data-jobs-tab="'+denied+'"]').count(),0);
+            }
+            await classic().locator('button[data-jobs-tab="'+(role==='personal'?'offering':'services')+'"]').click();
+            await classic().locator('[data-jobs-extra="'+(role==='personal'?'new-service-offer':'new-service-request')+'"]').click();
+            await classic().locator('#jobsExtraForm').waitFor();
+            assert.equal(await classic().locator('#jobsExtraForm').getAttribute('data-kind'),role==='personal'?'service-offer':'service-request');
+          });
+          await check(role,'Shift tabs and account setup',async()=>{
+            await open(role,'shift');
+            const tabs=role==='personal'?['browse','my-shifts','payments']:['my-shifts','payments'];
+            for(const tab of tabs){await classic().locator('[data-shifts-tab="'+tab+'"]').click();assert.equal(await classic().locator('[data-shifts-tab="'+tab+'"]').getAttribute('aria-selected'),'true');}
+            if(role==='personal')assert.equal(await classic().locator('[data-shifts-action="post"]').count(),0);
+            await classic().locator('[data-shifts-action="setup"]').click();
+            await classic().locator('#shiftsZelleForm').waitFor();
           });
         }
         for(const route of ['shop','transfer'])await check('personal','reject '+route+' and account switch',async()=>{
