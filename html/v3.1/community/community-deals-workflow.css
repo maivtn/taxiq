@@ -22,7 +22,7 @@
 @media(max-width:700px){.community-deals-nav{align-items:flex-start;gap:12px}.community-deals-nav-tabs{flex:1 1 100%}}
 
 /* Owner tools share one menu; their existing screens and deep links stay available. */
-.community-deals-business{position:relative;flex:none}
+.community-deals-business{display:none;position:relative;flex:none}
 .community-deals-business>summary{position:relative;list-style:none;padding-right:44px;min-height:44px}
 .community-deals-business>summary::-webkit-details-marker{display:none}
 .community-deals-business>summary .community-deals-caret{position:absolute;right:16px;width:16px;height:16px}
@@ -44,3 +44,10 @@
 }
 
 @media(max-width:800px){.community-deals-frame[data-community-region]{height:100dvh;min-height:650px}}
+
+@media(max-width:800px){
+ .community-deals-nav-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:4px;overflow:visible;padding-bottom:0}
+ .community-deals-nav-tabs .community-deals-tab{flex-direction:column;min-width:0;min-height:60px;padding:6px 2px;gap:4px;white-space:normal;text-align:center;font-size:10px}
+ .community-deals-nav-tabs .community-deals-tab img{width:22px;height:22px}
+ .community-deals-actions{justify-content:flex-end}
+}
