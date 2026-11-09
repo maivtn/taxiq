@@ -1,0 +1,46 @@
+/* Header Ecosystem dropdown, matching the staging header. */
+.header.shell-header .shell-header-messages { color:#0f766e; }
+.header.shell-header.shell-ecosystem-open { z-index:45; }
+.header.shell-header .shell-ecosystem { position:relative; flex:none; }
+.header.shell-header .shell-ecosystem-toggle {
+  position:relative; z-index:2; display:flex; align-items:center; justify-content:center;
+  width:40px; height:40px; padding:0; border:0; border-radius:8px;
+  background:transparent; cursor:pointer;
+}
+.header.shell-header .shell-ecosystem-toggle img { display:block; width:22px; height:22px; }
+.header.shell-header .shell-ecosystem-toggle:hover,
+.header.shell-header .shell-ecosystem-toggle[aria-expanded="true"] { background:#f5f5f5; }
+.header.shell-header .shell-ecosystem-toggle:focus-visible,
+.header.shell-header .shell-ecosystem-item:focus-visible { outline:2px solid #64748b; outline-offset:2px; }
+.header.shell-header .shell-ecosystem-panel {
+  position:absolute; z-index:1; top:calc(100% + 12px); right:0;
+  box-sizing:border-box; width:min(500px, calc(100vw - 24px));
+  display:flex; flex-direction:column; gap:12px; padding:16px 14px 18px;
+  border:1px solid #dde5ef; border-radius:12px; background:#fff; color:#414141;
+  box-shadow:0 12px 28px #0000000d;
+}
+.header.shell-header .shell-ecosystem-title { font-size:14px; font-weight:700; line-height:20px; }
+.header.shell-header .shell-ecosystem-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.header.shell-header .shell-ecosystem-item {
+  display:flex; align-items:center; justify-content:center; box-sizing:border-box;
+  width:104px; max-width:100%; height:104px; padding:6px; margin:0;
+  border:1px solid transparent; border-radius:12px; background:#fff;
+  box-shadow:none; text-decoration:none; cursor:pointer;
+}
+.header.shell-header .shell-ecosystem-item:hover,
+.header.shell-header .shell-ecosystem-item:focus-visible {
+  border-color:#bfdbfe; background:#f8fbff; box-shadow:0 2px 8px #3b82f61a;
+}
+.header.shell-header .shell-ecosystem-item img { display:block; width:100%; height:100%; object-fit:contain; }
+.header.shell-header .shell-ecosystem-backdrop { display:none; }
+.header.shell-header .shell-ecosystem [hidden] { display:none; }
+@media (max-width:767px) {
+  .header.shell-header .shell-ecosystem-panel {
+    position:fixed; top:72px; right:auto; left:50%; transform:translateX(-50%);
+    max-height:min(80vh,calc(100dvh - 88px)); overflow-y:auto;
+  }
+  .header.shell-header .shell-ecosystem-backdrop { display:block; position:fixed; z-index:0; inset:0; background:#0004; }
+  .header.shell-header .shell-ecosystem-grid { grid-template-columns:repeat(3,minmax(0,1fr)); column-gap:8px; }
+  .header.shell-header .shell-ecosystem-item { width:96px; height:96px; justify-self:center; }
+  .header.shell-header .shell-ecosystem [hidden] { display:none; }
+}

@@ -19,6 +19,7 @@
   'use strict';
 
   var cfg = window.NEXORA_SHELL || {};
+  var shellAssetBase = new URL('./', document.currentScript ? document.currentScript.src : new URL('../assets/nexora-shell.js', window.location.href));
   var activePage = cfg.activePage || '';
   var personalOnly = activePage === 'staff' && cfg.salonLinked === false;
 
@@ -583,11 +584,101 @@
         '<i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span>' +
       '</button></div>' : '');
 
+  function headerEcosystem() {
+    // Order, logos and destinations match staging's Client/ecosystem response.
+    var products = [
+      ['VMMToken', 'vmmtoken.png', 'https://vmmtoken.com'],
+      ['CRYPTOMAP360', 'cryptomap360.png', 'https://staging.cryptopmap360.com'],
+      ['VMMTRAVEL', 'vmmtravel.png', ''],
+      ['Moongle Mall', 'moonglemall.png', 'https://moonglemall.com'],
+      ['nailhub', 'nailhub.png', 'https://staging.nailhub.ai'],
+      ['VLINKPAY', 'vlinkpay.png', 'https://staging-web-app.vlinkpay.com']
+    ];
+    return '<div class="shell-ecosystem">' +
+      '<button class="shell-ecosystem-toggle" type="button" aria-label="Ecosystem" aria-haspopup="menu" aria-expanded="false" aria-controls="shell-ecosystem-menu"><img src="' + new URL('community-v2/nexora-ecosystem.svg', shellAssetBase).href + '" alt="" width="22" height="22"></button>' +
+      '<div class="shell-ecosystem-backdrop" hidden></div>' +
+      '<div class="shell-ecosystem-panel" id="shell-ecosystem-menu" hidden><div class="shell-ecosystem-title" id="shell-ecosystem-title">Ecosystem</div><div class="shell-ecosystem-grid" role="menu" aria-labelledby="shell-ecosystem-title">' +
+      products.map(function(product) {
+        var image = '<img src="' + new URL('header-ecosystem/' + product[1], shellAssetBase).href + '" alt="' + product[0] + '" width="104" height="104">';
+        // VMMTRAVEL has no destination configured on staging.
+        return product[2] ? '<a class="shell-ecosystem-item" role="menuitem" href="' + product[2] + '" target="_blank" rel="noopener noreferrer">' + image + '</a>'
+          : '<button class="shell-ecosystem-item" role="menuitem" type="button">' + image + '</button>';
+      }).join('') + '</div></div></div>';
+  }
+
+  function initHeaderEcosystem(header) {
+    var root = header && header.querySelector('.shell-ecosystem');
+    if (!root) return;
+    if (!document.querySelector('link[data-shell-ecosystem-style]')) {
+      var style = document.createElement('link');
+      style.rel = 'stylesheet';
+      style.href = new URL('nexora-header-ecosystem.css?v=20261109-ecosystem1', shellAssetBase).href;
+      style.setAttribute('data-shell-ecosystem-style', '');
+      document.head.appendChild(style);
+    }
+    var toggle = root.querySelector('.shell-ecosystem-toggle');
+    var panel = root.querySelector('.shell-ecosystem-panel');
+    var backdrop = root.querySelector('.shell-ecosystem-backdrop');
+    var items = Array.from(panel.querySelectorAll('[role="menuitem"]'));
+    var savedOverflow = null;
+    function syncScroll() {
+      var lock = !panel.hidden && window.innerWidth < 768;
+      if (lock && savedOverflow === null) {
+        savedOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+      } else if (!lock && savedOverflow !== null) {
+        document.body.style.overflow = savedOverflow;
+        savedOverflow = null;
+      }
+    }
+    function setOpen(open, restoreFocus) {
+      panel.hidden = !open;
+      backdrop.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      header.classList.toggle('shell-ecosystem-open', open);
+      syncScroll();
+      if (restoreFocus) toggle.focus();
+    }
+    toggle.addEventListener('click', function() { setOpen(panel.hidden); });
+    backdrop.addEventListener('click', function() { setOpen(false, true); });
+    document.addEventListener('click', function(event) {
+      if (!panel.hidden && !root.contains(event.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function(event) {
+      if (!panel.hidden && event.key === 'Escape') {
+        event.preventDefault();
+        setOpen(false, true);
+      }
+    });
+    root.addEventListener('focusout', function(event) {
+      if (!root.contains(event.relatedTarget)) setOpen(false);
+    });
+    root.addEventListener('keydown', function(event) {
+      var index = items.indexOf(document.activeElement);
+      var next;
+      if (event.key === 'ArrowDown') next = (index + 1) % items.length;
+      if (event.key === 'ArrowUp') next = index < 0 ? items.length - 1 : (index + items.length - 1) % items.length;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = items.length - 1;
+      if (next === undefined) return;
+      event.preventDefault();
+      setOpen(true);
+      items[next].focus();
+    });
+    panel.addEventListener('click', function(event) {
+      if (event.target.closest('a.shell-ecosystem-item')) setOpen(false, true);
+    });
+    window.addEventListener('resize', syncScroll);
+    window.addEventListener('nexora-community-search', function() { setOpen(false); });
+  }
+
   function merchantHeader() {
     var pos = workspace === 'pos';
-    return '<div class="mobile-brand"><button class="icon-button" type="button" data-shell-drawer-open aria-label="Open navigation menu" aria-controls="nexora-sidebar" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' + '</button><a href="dashboard.html"><img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Touch"></a></div>' +
+    var home = personalOnly ? 'frame-personal.html?view=dashboard' : 'dashboard.html';
+    var messages = personalOnly ? 'staff-community.html?account=personal&amp;role=tech&amp;tab=connect' : 'community.html?tab=connect';
+    return '<div class="mobile-brand"><button class="icon-button" type="button" data-shell-drawer-open aria-label="Open navigation menu" aria-controls="nexora-sidebar" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' + '</button><a href="' + home + '"><img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Touch"></a></div>' +
       '<form class="shell-workspace-search" action="dashboard.html"><label class="search"><i data-lucide="search" aria-hidden="true"></i><input name="q" type="search" aria-label="' + (pos ? 'Search SI POS tools' : 'Search products') + '" placeholder="' + (pos ? 'Search SI POS tools...' : 'Search products or features…') + '" autocomplete="off"' + (pos ? ' data-shell-function-search' : '') + '></label><div class="shell-function-results" hidden></div></form>' +
-      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '<a class="shell-header-notification" href="news-library.html?tab=news" aria-label="Nexora news"><i data-lucide="bell" aria-hidden="true"></i><span class="shell-header-badge" aria-hidden="true">30</span></a><a href="community.html?tab=connect" aria-label="Community messages"><i data-lucide="messages-square" aria-hidden="true"></i></a><button class="shell-header-language" type="button" aria-label="Switch language"><i data-lucide="globe" aria-hidden="true"></i><span>EN</span></button><a href="dashboard.html" aria-label="All products"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></a></div>';
+      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '<a class="shell-header-notification" href="news-library.html?tab=news" aria-label="Nexora news"><i data-lucide="bell" aria-hidden="true"></i><span class="shell-header-badge" aria-hidden="true">30</span></a><a class="shell-header-messages" href="' + messages + '" aria-label="Community messages"><i data-lucide="messages-square" aria-hidden="true"></i></a><button class="shell-header-language" type="button" aria-label="Switch language"><i data-lucide="globe" aria-hidden="true"></i><span>EN</span></button>' + headerEcosystem() + '</div>';
   }
 
   function navigate(tab) {
@@ -1005,8 +1096,9 @@
     if (sidebar) sidebar.id = 'nexora-sidebar';
     if (sidebar) sidebar.innerHTML = activePage === 'staff' ? STAFF_SIDEBAR_HTML : renderMerchantSidebarHtml();
     if (document.body.setAttribute) document.body.setAttribute('data-nexora-workspace', workspace);
-    if (header) header.innerHTML = treeNav && activePage !== 'staff' ? merchantHeader() : HEADER_HTML;
+    if (header) header.innerHTML = personalOnly || (treeNav && activePage !== 'staff') ? merchantHeader() : HEADER_HTML;
     initHeaderSearch(header);
+    initHeaderEcosystem(header);
     saveExpandedGroups();
 
     // drawer backdrop (once)
