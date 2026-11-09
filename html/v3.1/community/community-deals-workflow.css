@@ -42,3 +42,5 @@
  .community-deals-business-menu .community-deals-tab{justify-content:flex-start}
  .community-deals-post{min-height:42px;padding:8px 10px;font-size:12px}
 }
+
+@media(max-width:800px){.community-deals-frame[data-community-region]{height:100dvh;min-height:650px}}
