@@ -53,6 +53,16 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      assert.equal(await hub.locator('#tourCard:visible,.community-assistant-overlay:visible').count(),0);
 
      await menu.locator('[data-community-extra="friends"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='friends');await menu.waitFor({state:'hidden'});
+     const friends=hub.locator('.community-extra-pane .friends-shell'),sent=friends.locator('[data-friends-tab=sent]');await sent.waitFor();
+     const initialCount=await sent.locator('[data-count=sent]').innerText();
+     for(const destination of ['sent','received','suggestions','all','sent']){
+      const button=friends.locator(`.friends-nav [data-friends-tab="${destination}"]`);await button.click();
+      await page.waitForFunction(destination=>document.querySelector(`.friends-nav [data-friends-tab="${destination}"]`)?.getAttribute('aria-current')==='page',destination);
+      const icons=await friends.locator('.friends-nav button').evaluateAll(nodes=>nodes.map(node=>node.querySelectorAll('svg').length));assert.deepEqual(icons,[1,1,1,1]);
+     }
+     assert.equal(await friends.locator('#friendsTitle').innerText(),'Sent requests');assert.equal(await sent.locator('[data-count=sent]').innerText(),initialCount);
+     await sent.screenshot({path:path.join(output,`${width}-${account}-sent-requests.png`)});
+
     });
     await check('market sell save persistence and two columns',async()=>{
      await open('market');const market=pane.locator('#marketView');await market.locator('#tabButtons #createSale').waitFor();

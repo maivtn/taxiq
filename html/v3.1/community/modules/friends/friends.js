@@ -77,7 +77,7 @@
   document.addEventListener('keydown',event=>{if(event.key==='Escape'){const open=document.querySelector('.friends-card-menu:not([hidden])');if(open){const button=open.previousElementSibling;closeMenus();button.focus();}}});
   search.addEventListener('input',()=>{query=search.value.trim();render();});
   $('clearFriendsSearch').addEventListener('click',()=>{query='';search.value='';render();search.focus();});
-  for(const button of document.querySelectorAll('[data-icon]'))button.insertAdjacentHTML('afterbegin',icon(button.dataset.icon));
+  for(const button of document.querySelectorAll('[data-icon]'))if(!button.querySelector('svg'))button.insertAdjacentHTML('afterbegin',icon(button.dataset.icon));
   document.querySelector('[data-search-icon]').innerHTML=icon('Search');
   async function navigate(routeName,context={}){
     const request=++generation,next=Object.hasOwn(tabs,context.friendsView)?context.friendsView:'all';active=true;

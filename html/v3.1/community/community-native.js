@@ -82,7 +82,7 @@
     function controls(element){
       const candidates=[...(element.tagName==='BUTTON'?[element]:[]),...element.querySelectorAll?.('button')||[]];
       for(const button of candidates){
-        if(button.querySelector('svg')||button.closest('[data-user-text],[data-community-authored],.chat-message-body'))continue;
+        if(button.hasAttribute('data-icon')||button.querySelector('svg')||button.closest('[data-user-text],[data-community-authored],.chat-message-body'))continue;
         const label=button.textContent.trim();
         const action=Object.values(button.dataset).join(' ')+' '+(button.getAttribute('aria-label')||'')+' '+label;
         const rules=[[/spin|quay/i,'RotateCw'],[/close|cancel|đóng|hủy|×|✕/i,'X'],[/mic|micro|voice|giọng/i,'Mic'],[/video|reel/i,'Video'],[/photo|image|ảnh|camera/i,'Camera'],[/delete|remove|xóa|xoá/i,'Trash2'],[/save|lưu/i,'Save'],[/search|find|tìm/i,'Search'],[/back|prev|quay lại|trước/i,'ArrowLeft'],[/next|tiếp/i,'ArrowRight'],[/send|gửi|reply|trả lời/i,'Send'],[/create|add|new|thêm|tạo/i,'Plus'],[/edit|sửa/i,'SquarePen'],[/share|chia sẻ/i,'Share2'],[/call|gọi/i,'Phone'],[/copy|sao chép/i,'Copy'],[/filter|lọc/i,'SlidersHorizontal'],[/download|tải về/i,'Download'],[/check|approve|accept|duyệt|chấp nhận/i,'Check'],[/service|dịch vụ/i,'Wrench']];
