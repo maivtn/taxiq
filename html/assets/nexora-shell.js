@@ -987,7 +987,7 @@
     toggle.setAttribute('aria-controls', 'community-search-dialog');
     toggle.setAttribute('aria-haspopup', 'dialog');
     toggle.setAttribute('aria-expanded', 'false');
-    toggle.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    toggle.innerHTML = '<i data-lucide="search" aria-hidden="true"></i>';
     actions.prepend(toggle);
     function openSearch(event) {
       if (event) event.preventDefault();
