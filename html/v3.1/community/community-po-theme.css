@@ -14,6 +14,7 @@
 .community-po-shortcut-food .community-po-shortcut-arrow{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e66f2e;color:#fff;line-height:1}
 .community-po-shortcut-badge{position:absolute;top:-8px;right:11px;border-radius:999px;padding:2px 7px;background:#e66f2e;color:#fff;font-size:9px;font-weight:900;letter-spacing:.06em}
 @media(max-width:1023px){.community-po-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.community-po-shortcuts{display:none}}
 @media(max-width:600px){.community-po-shortcuts{gap:8px;margin-bottom:14px}.community-po-shortcut{min-height:72px;padding:9px 8px;gap:7px;border-radius:10px}.community-po-shortcut-icon{width:28px;height:28px;font-size:19px}.community-po-shortcut-icon img{width:24px;height:24px}.community-po-shortcut-copy strong{font-size:11px}.community-po-shortcut-copy small{font-size:10px}.community-po-shortcut-arrow{font-size:16px}.community-po-shortcut-food .community-po-shortcut-arrow{width:19px;height:19px}.community-po-shortcut-badge{font-size:8px}}
 :host,.native-html {
   --ink:#20243a;--ink2:#44516a;--muted:#737a8d;--mut:#737a8d;
