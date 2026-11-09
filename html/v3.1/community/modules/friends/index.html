@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Friends · NEXORA Community</title>
+  <link rel="stylesheet" href="friends.css?v=20261109-friends1">
+</head>
+<body>
+  <main class="friends-shell">
+    <aside class="friends-sidebar" aria-label="Friends">
+      <div class="friends-brand"><img src="../../../../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt=""><h2>Friends</h2></div>
+      <nav class="friends-nav" aria-label="Friends sections">
+        <button type="button" data-friends-tab="all" data-icon="UsersRound" aria-current="page"><span>All friends</span><span class="friends-count" data-count="all">0</span></button>
+        <button type="button" data-friends-tab="received" data-icon="UserRoundCheck"><span>Friend requests</span><span class="friends-count" data-count="received">0</span></button>
+        <button type="button" data-friends-tab="suggestions" data-icon="UserRoundPlus"><span>Suggestions</span></button>
+        <button type="button" data-friends-tab="sent" data-icon="Send"><span>Sent requests</span><span class="friends-count" data-count="sent">0</span></button>
+      </nav>
+    </aside>
+    <section class="friends-content" aria-labelledby="friendsTitle" aria-busy="true">
+      <header class="friends-header">
+        <div><h2 id="friendsTitle">All friends</h2><p id="friendsSummary" aria-live="polite">Loading friends…</p></div>
+        <div class="friends-search"><label class="sr-only" for="friendsSearch">Search friends</label><span data-search-icon aria-hidden="true"></span><input id="friendsSearch" type="search" placeholder="Search friends" autocomplete="off"><button type="button" id="clearFriendsSearch" aria-label="Clear search" hidden>×</button></div>
+      </header>
+      <div id="friendsGrid" class="friends-grid"></div>
+      <div id="friendsEmpty" class="friends-empty" hidden></div>
+    </section>
+  </main>
+  <dialog id="unfriendDialog" class="friends-dialog" aria-labelledby="unfriendTitle" aria-describedby="unfriendDescription">
+    <form method="dialog">
+      <header><h2 id="unfriendTitle">Unfriend</h2><button type="submit" value="cancel" class="friends-icon-button" aria-label="Close">×</button></header>
+      <p id="unfriendDescription"></p>
+      <footer><button type="submit" value="cancel" class="friends-button secondary">Cancel</button><button type="submit" value="confirm" class="friends-button danger">Unfriend</button></footer>
+    </form>
+  </dialog>
+  <div id="friendsStatus" class="friends-status" role="status" aria-live="polite" hidden></div>
+  <script src="friends.js?v=20261109-friends1"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community/community-hub.js?v=20261109-food-community1',document.currentScript.src);
+  var componentURL=new URL('community/community-hub.js?v=20261109-friends1',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -12,10 +12,10 @@
   var current = '';
   var detailOpen = false;
   var ready = false;
-  var routes = ['feed', 'groups', 'market', 'pages', 'deals', 'jobs', 'shift', 'blog', 'connect', 'chatgroups', 'contacts', 'calls', 'privacy', 'food', 'realestate', 'shop', 'transfer', 'reels', 'live', 'news', 'wallet', 'wheel', 'meet', 'account', 'assistant', 'notifications', 'stories', 'people', 'post', 'page-tools', 'group-tools', 'food-market', 'explore'];
+  var routes = ['feed', 'groups', 'market', 'pages', 'deals', 'jobs', 'shift', 'blog', 'connect', 'chatgroups', 'contacts', 'calls', 'privacy', 'food', 'realestate', 'shop', 'transfer', 'reels', 'live', 'news', 'wallet', 'wheel', 'meet', 'account', 'assistant', 'notifications', 'stories', 'friends', 'people', 'post', 'page-tools', 'group-tools', 'food-market', 'explore'];
   var aliases = {mkt:'market', fanpage:'pages', daywork:'shift', shifts:'shift', profile:'jobs', 'jobs-my-posts':'jobs', 'jobs-applied':'jobs', 'shift-payments':'shift', learning:'feed', events:'feed', explore:'feed', dcats:'deals', dmatch:'deals', dopen:'deals', dlast:'deals', dlastt:'deals', dlastb:'deals', dcamp:'deals', dwallet:'deals', dcreate:'deals', dmanage:'deals', dredeem:'deals', dwish:'deals'};
 
-  var contextKeys=['dealTab','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','listingId','meetingId','meetView','recordId','wheelTab','foodPostId','reelId','pageId','pageTab','pageMode','pageScope','groupTab','composeKind','marketType','storyId','composeStory','personId','peopleView'];
+  var contextKeys=['dealTab','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','listingId','meetingId','meetView','recordId','wheelTab','foodPostId','reelId','pageId','pageTab','pageMode','pageScope','groupTab','composeKind','marketType','storyId','composeStory','personId','peopleView','friendsView'];
   // Only Community is cloned. Other business tools retain their original destinations.
   var cloneRoot=new URL('./',location.href),pagesRoot=new URL('../pages/',cloneRoot);
   var clonePages=new Set(['community.html','community.htm','staff-community.html','index.html']);
@@ -51,7 +51,7 @@
     var changed = next !== current;
     current = next;
     var url = new URL(location.href);
-    url.searchParams.set('tab', next);if(!['pages','page-tools'].includes(next))for(var pageKey of ['pageId','pageMode','pageTab'])url.searchParams.delete(pageKey);var legacy={profile:['jobsTab','profile'],'jobs-my-posts':['jobsTab','myPosts'],'jobs-applied':['jobsTab','applied'],'shift-payments':['shiftTab','payments']}[value];if(legacy)url.searchParams.set(legacy[0],legacy[1]);
+    url.searchParams.set('tab', next);if(next!=='friends')url.searchParams.delete('friendsView');if(!['pages','page-tools'].includes(next))for(var pageKey of ['pageId','pageMode','pageTab'])url.searchParams.delete(pageKey);var legacy={profile:['jobsTab','profile'],'jobs-my-posts':['jobsTab','myPosts'],'jobs-applied':['jobsTab','applied'],'shift-payments':['shiftTab','payments']}[value];if(legacy)url.searchParams.set(legacy[0],legacy[1]);
     // Legacy group links retain their group context in the parent URL.
     if(detailBackPending) {
       // Finish the pending modal traversal before writing the next route entry.

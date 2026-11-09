@@ -38,11 +38,18 @@
   }
   function revoke(reference,name=member){const original=wallet(name).ledger.filter(row=>row.reference.endsWith(':'+reference)&&row.amount>0);for(const row of original){points(-row.amount,'activity:removed','revoke:'+row.id,name);}}
   function notify(title,route,context={},recipient=member){return change(data=>{data.notifications.unshift({id:crypto.randomUUID(),recipient,title,route,context,read:false,time:new Date().toISOString()});data.notifications=data.notifications.slice(0,200);});}
-  function connectedPeople(name=member){const data=read(),names=new Set();for(const row of data.friendRequests||[])if(row.status==='accepted'&&(row.from===name||row.to===name))names.add(row.from===name?row.to:row.from);for(const row of data.customerContacts||[])if(row.customer===name&&(row.savedContact===true||row.isCustomer===true))names.add(row.business);try{const key='nexora-connect-preview-v2'+(name==='BITCOIN NAIL BAR'?'':':'+encodeURIComponent(name)),stored=JSON.parse(localStorage.getItem(key)||'{}');for(const peer of Object.values(data.identities))if((stored.connections||[]).some(id=>id===peer.id||peer.legacyIds?.includes(id)))names.add(peer.name);}catch{}return [...names];}
+  function friendRemoved(name,peer,data=read()){return (data.friendRemovals||[]).some(row=>row.from===name&&row.to===peer||row.from===peer&&row.to===name);}
+  function friendNames(name=member){
+    const data=read(),names=new Set();
+    for(const row of data.friendRequests||[])if(row.status==='accepted'&&(row.from===name||row.to===name))names.add(row.from===name?row.to:row.from);
+    try{const key='nexora-connect-preview-v2'+(name==='BITCOIN NAIL BAR'?'':':'+encodeURIComponent(name)),stored=JSON.parse(localStorage.getItem(key)||'{}');for(const peer of Object.values(data.identities))if((stored.connections||[]).some(id=>id===peer.id||peer.legacyIds?.includes(id)))names.add(peer.name);}catch{}
+    return [...names].filter(peer=>peer!==name&&!friendRemoved(name,peer,data));
+  }
+  function connectedPeople(name=member){const data=read(),names=new Set(friendNames(name));for(const row of data.customerContacts||[])if(row.customer===name&&(row.savedContact===true||row.isCustomer===true))names.add(row.business);return [...names];}
   function customerContact(customer,business,field){if(!customer||!business||customer===business)return false;identity(customer);identity(business);return change(data=>{data.customerContacts||=[];let row=data.customerContacts.find(row=>row.customer===customer&&row.business===business);if(!row){row={customer,business};data.customerContacts.push(row);}row[field]=true;data.identities[business].kind='business';});}
   const me=()=>identity(member);
 
-  window.NEXORA_COMMUNITY_SHARED={KEY,DAY,read,change,copy,member,role,canAccessFeature,identity,me,connectedPeople,saveBusinessContact:(customer,business)=>customerContact(customer,business,'savedContact'),registerCustomer:(customer,business)=>customerContact(customer,business,'isCustomer'),wallet,points,activity,revoke,notify};
+  window.NEXORA_COMMUNITY_SHARED={KEY,DAY,read,change,copy,member,role,canAccessFeature,identity,me,friendNames,friendRemoved,connectedPeople,saveBusinessContact:(customer,business)=>customerContact(customer,business,'savedContact'),registerCustomer:(customer,business)=>customerContact(customer,business,'isCustomer'),wallet,points,activity,revoke,notify};
   window.addEventListener('storage',event=>{if(event.key===KEY)window.dispatchEvent(new CustomEvent('nexora-community-shared-changed'));});
   identity();
 })();

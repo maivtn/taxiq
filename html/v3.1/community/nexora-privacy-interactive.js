@@ -425,7 +425,7 @@
     renderConversationPreviews();
     renderConnections();changed();
   }
-  function hasConnection(person) {if(window.NEXORA_COMMUNITY_SHARED?.connectedPeople(currentMember).includes(person.name))return true;const identity=window.NEXORA_COMMUNITY_SHARED?.identity(person.name);return [person.id,...(identity?.legacyIds||[])].some(id=>state.connections.includes(id));}
+  function hasConnection(person) {const shared=window.NEXORA_COMMUNITY_SHARED;if(shared?.connectedPeople(currentMember).includes(person.name))return true;if(shared?.friendRemoved(currentMember,person.name))return false;const identity=shared?.identity(person.name);return [person.id,...(identity?.legacyIds||[])].some(id=>state.connections.includes(id));}
   function renderConnections() {
     for(const name of window.NEXORA_COMMUNITY_SHARED?.connectedPeople(currentMember)||[]){if(!members.some(person=>person.name===name)){const identity=window.NEXORA_COMMUNITY_SHARED.identity(name);members.push({name,id:identity.id,handle:'@'+identity.nickname,detail:'source-'+encodeURIComponent(name)});}}
     for(const person of members)if(person.name!==currentMember&&hasConnection(person)){
