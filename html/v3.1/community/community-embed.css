@@ -79,12 +79,13 @@ body.embedded .community-heading > div { flex:1; }
   body.embedded .community-heading { align-items:flex-start; }
   body.embedded .community-heading p { display:none; }
   body.embedded .community-location { display:block; margin:1px 0 0; padding:0; border:0; background:transparent; color:#737d93; font-size:10px; font-weight:700; }
-  body.embedded .community-heading-actions { display:flex; align-items:flex-start; gap:5px; margin-left:auto; }
+  body.embedded .community-heading > div:first-of-type { flex:1; min-width:0; }
+  body.embedded .community-heading-actions { display:flex; align-items:flex-start; flex:0 0 auto; gap:5px; margin-left:auto; min-width:0; }
   body.embedded .community-heading-actions .community-find,
   body.embedded .community-heading-actions .community-create { display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:5px 9px; border:1px solid #e1e4ed; border-radius:8px; background:#fff; color:#4c566d; box-shadow:0 2px 5px #18213b12; font-size:10px; font-weight:800; white-space:nowrap; }
   body.embedded .community-heading-actions .community-create { border-color:#6550df; background:#6550df; color:#fff; }
   body.embedded .community-heading-actions .tour-launch { display:none; }
-  .community-heading > div { flex:1; }
+  .community-heading > div { flex:initial; }
   .community-heading .community-back { display:inline-flex; align-items:center; justify-content:center; flex:none; min-width:60px; height:44px; padding:0; border:0; border-radius:8px; background:transparent; color:#5445c6; font-size:11px; font-weight:700; }
   .community-back-face { display:inline-flex; align-items:center; justify-content:center; gap:4px; min-height:30px; padding:6px 8px; border:1px solid #d9d2fa; border-radius:8px; background:#f5f3ff; box-shadow:0 1px 2px #34226c0a; }
   .community-back svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
@@ -102,6 +103,12 @@ body.embedded .community-heading > div { flex:1; }
   body.embedded .mobile-tab.tab .community-nav-art { width:27px; height:27px; }
   body.embedded .mobile-tab.tab > span { display:block; max-width:100%; overflow-wrap:normal; }
   body.embedded .mobile-tab.tab:active { transform:none; }
+}
+@media (max-width:380px) {
+  body.embedded .community-heading { width:calc(100% - 20px); gap:5px; }
+  body.embedded .community-heading-actions { gap:3px; }
+  body.embedded .community-heading-actions .community-find,
+  body.embedded .community-heading-actions .community-create { min-height:30px; padding-inline:6px; font-size:9px; }
 }
 @media (hover:none) {
   .top .tab:hover:not(:active),.top-actions button:hover:not(:active) { transform:none; }
