@@ -78,7 +78,8 @@
   :is(#community-staging,#community-hub) .top .tab-new { display:none; }
 
   :is(#community-staging,#community-hub) #feedView:not(.deal-mode) > .feed-intro,
-  :is(#community-staging,#community-hub) #feedView:not(.deal-mode) .section-heading:has(> #feedListTitle) { display:none; }
+  :is(#community-staging,#community-hub) #feedView:not(.deal-mode) .section-heading:has(> #feedListTitle),
+  :is(#community-staging,#community-hub) #feedView:not(.deal-mode) #sponsoredFeed:empty { display:none; }
   :is(#community-staging,#community-hub) #feedComposerCard {
     display:flex;
     flex-wrap:wrap;
