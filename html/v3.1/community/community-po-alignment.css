@@ -122,6 +122,7 @@ body.embedded #marketView #listings>.listing{display:flex;flex-direction:column;
 body.embedded #marketView #listings>.listing>.listing-photo{width:100%;height:auto;aspect-ratio:7/4;object-fit:cover;border-radius:0}
 body.embedded #marketView #listings>.listing>div{min-width:0;padding:10px}
 body.embedded #marketView #listings>.empty{grid-column:1/-1}
+body.embedded #marketView #listings .chips{display:none}
 @media(max-width:650px){
  body.embedded #marketView #listings>.listing>div{padding:8px}
  body.embedded #marketView #listings .listing-top{gap:6px}
