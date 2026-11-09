@@ -41,6 +41,7 @@ const results=[],errors=[];
      await page.locator('.po-page-supplement').waitFor();assert.ok((await page.locator('.page-profile-title').innerText()).includes('Personal / Creator Page'));
      await page.locator('.page-hero-actions [data-edit-page]').click();const edit=page.locator('#pageEditForm');await edit.waitFor();await edit.locator('[name=title]').fill('BrianNguyenAI edited '+width);await edit.locator('[type=submit]').click();await page.locator('.po-page-supplement').waitFor();assert.ok((await page.locator('#pageDetailTitle').innerText()).includes('edited'));
      await page.reload();await page.locator('.po-page-supplement').waitFor();assert.equal(await page.locator('[data-page-tab=services]').count(),0);
+     await page.locator('[data-page-tab=about]').click();assert.equal((await page.locator('.page-tab-content').innerText()).includes('SIPOS'),false);assert.equal((await page.locator('.page-tab-content').innerText()).includes('Address & directions'),false);
     });
     await check('Page shared composer draft publish edit privacy',async()=>{
      await open('pages','business','&pageId=p1&pageMode=view&pageTab=posts');await page.locator('.po-page-supplement').waitFor();await page.locator('.page-hero-actions [data-po-page-action=compose]').click();const form=page.locator('[data-unified-composer]');await form.waitFor();
