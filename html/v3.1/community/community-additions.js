@@ -143,9 +143,12 @@
       .community-menu-create{flex:0 0 auto;min-height:0;margin:0!important;padding:10px 0 0!important;border-top:1px solid #ececf5!important;gap:8px}
       .ecosystem-menu .community-menu-create-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:36px;padding:8px 10px;border:0;border-radius:9px;background:#f4f0ff;color:#5c43d5;text-align:left;font:inherit;font-size:12px;font-weight:800}
       .community-menu-post-count{flex:none;font-size:10px}
-      #communityMenuPostTypes{display:block;max-height:min(40vh,300px);overflow-y:auto;overscroll-behavior:contain;padding:1px}
+      #communityMenuPostTypes{display:flex;flex-wrap:wrap;gap:6px;max-height:min(40vh,300px);overflow-y:auto;overscroll-behavior:contain;padding:1px}
       #communityMenuPostTypes[hidden]{display:none}
-      #communityMenuPostTypes>[data-community-extra="post"]{margin-bottom:7px}
+      #communityMenuPostTypes>.community-menu-group-items{display:contents}
+      .community-menu-create .ecosystem-item{flex:0 1 auto;width:auto;min-height:32px;gap:5px;padding:5px 8px;border-radius:8px;font-size:11px}
+      .community-menu-create .ecosystem-item-icon{flex-basis:20px;width:20px;height:20px;background:transparent}
+      .community-menu-create .ecosystem-item-icon img,.community-menu-create .ecosystem-item-icon svg{width:18px;height:18px}
       @container community (max-width:380px){.ecosystem-menu .ecosystem-item{font-size:10px;gap:5px;padding:6px}.ecosystem-item-icon{flex-basis:24px;width:24px;height:24px}}
 
     `;
@@ -240,8 +243,14 @@
     }
     menuCount.textContent=(existingMenuItems.length-1)+' more sections';
     const artworkBase=new URL('../../assets/icon-oneqr/',baseURL);
-    const menuArtwork={connect:'message-circle',feed:'layout-list',market:'users-round',pages:'building-2',friends:'users-round',people:'user-round',shop:'store',transfer:'hand-coins',realestate:'home',jobs:'briefcase',daywork:'calendar-clock',food:'utensils',deals:'ticket',live:'video',reels:'youtube',news:'receipt',blog:'receipt',stories:'image',explore:'globe-2',wallet:'wallet',wheel:'gift',meet:'video',account:'user-cog',assistant:'bot',notifications:'bell'};
-    for(const button of existingMenuItems){const name=menuArtwork[button.dataset.quickView||button.dataset.communityExtra]||(button.id==='menuStartTour'?'sparkles':'image'),icon=button.querySelector('.ecosystem-item-icon'),image=document.createElement('img');image.src=new URL('issue-2040-oneqr-'+name+'-3d.png',artworkBase).href;image.alt='';image.width=image.height=24;image.draggable=false;icon.replaceChildren(image);}
+    const menuArtwork={connect:'message-circle',feed:'layout-list',market:'users-round',pages:'building-2',friends:'users-round',people:'user-round',shop:'store',transfer:'hand-coins',realestate:'home',jobs:'briefcase',daywork:'calendar-clock',food:'utensils',deals:'ticket',live:'video',news:'receipt',blog:'receipt',stories:'image',explore:'globe-2',wallet:'wallet',wheel:'gift',meet:'video',account:'user-cog',assistant:'bot',notifications:'bell'};
+    for(const button of existingMenuItems){
+      const route=button.dataset.quickView||button.dataset.communityExtra;
+      if(route==='reels')continue;
+      const name=menuArtwork[route]||(button.id==='menuStartTour'?'sparkles':'image'),icon=button.querySelector('.ecosystem-item-icon'),image=document.createElement('img');
+      image.src=route==='news'?new URL('../../assets/icons/3d-fluency/news.png',baseURL).href:new URL('issue-2040-oneqr-'+name+'-3d.png',artworkBase).href;
+      image.alt='';image.width=image.height=24;image.draggable=false;icon.replaceChildren(image);
+    }
     const postItems=document.createElement('div');postItems.className='community-menu-group-items';createItems.append(postItems);
     // Reuse the Feed's role-filtered actions, labels and permission checks.
     const postSources=[
