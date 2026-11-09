@@ -1,12 +1,12 @@
 <!-- Adapted from PO goi-community-giao-dev / shell-community.html; host owns identity, navigation and points. -->
 <!doctype html>
 <html lang="vi">
-<head><script>
-window.NEXORA_SHELL={activePage:'staff',salonLinked:false};
+<head><!-- Salon/Owner PO review; app source d2865dfbcbc56a75ce94aa986233ee30549b8fe9 --><script>
+window.NEXORA_SHELL={activePage:'community',salonLinked:true};
 window.addEventListener('message',event=>{
   if(event.source!==window||event.data?.type!=='nexora-community-route')return;
-  const target=new URL('https://taxiq-nexora-touch.vercel.app/html/v3.1/staff-community.html');
-  target.searchParams.set('tab',event.data.route);target.searchParams.set('account','personal');target.searchParams.set('role','tech');
+  const target=new URL('https://taxiq-nexora-touch.vercel.app/html/v3.1/community.html');
+  target.searchParams.set('tab',event.data.route);target.searchParams.set('account','business');target.searchParams.set('role','owner');
   for(const [key,value] of Object.entries(event.data.context||{}))if(value!=null)target.searchParams.set(key,value);
   location.assign(target.href);
 });
@@ -21,9 +21,8 @@ window.addEventListener('message',event=>{
   const query=new URLSearchParams(location.search);
   const role=window.NEXORA_SHELL?.activePage==='staff'||['staff','tech'].includes(query.get('role'))||query.get('account')==='personal'?'staff':'owner';
   const businessFeatures=new Set(['shop','transfer','workers','services','hiring','posRecruitment']);
-  // Personal My storefront manages records owned by this NEXORA ID, not the salon.
-  const personalStorefront=role==='staff'&&(query.get('account')==='personal'||window.NEXORA_SHELL?.salonLinked===false);
-  const canAccessFeature=feature=>!businessFeatures.has(feature)||role==='owner'||feature==='shop'&&personalStorefront;
+  // Storefront and salon tools belong to the Salon demo account.
+  const canAccessFeature=feature=>!businessFeatures.has(feature)||role==='owner';
   const member=query.get('member')||window.NEXORA_SHELL?.profileName||(role==='staff'?document.querySelector('.staff-profile-name')?.textContent.trim():null)||(role==='staff'?'David Le':'BITCOIN NAIL BAR');
   function identity(name=member,alias){
     let legacyId;try{legacyId=JSON.parse(localStorage.getItem('nexora-connect-workflow-v1')||'{}').profiles?.[name]?.id;}catch{}
@@ -51,11 +50,18 @@ window.addEventListener('message',event=>{
   }
   function revoke(reference,name=member){const original=wallet(name).ledger.filter(row=>row.reference.endsWith(':'+reference)&&row.amount>0);for(const row of original){points(-row.amount,'activity:removed','revoke:'+row.id,name);}}
   function notify(title,route,context={},recipient=member){return change(data=>{data.notifications.unshift({id:crypto.randomUUID(),recipient,title,route,context,read:false,time:new Date().toISOString()});data.notifications=data.notifications.slice(0,200);});}
-  function connectedPeople(name=member){const data=read(),names=new Set();for(const row of data.friendRequests||[])if(row.status==='accepted'&&(row.from===name||row.to===name))names.add(row.from===name?row.to:row.from);for(const row of data.customerContacts||[])if(row.customer===name&&(row.savedContact===true||row.isCustomer===true))names.add(row.business);try{const key='nexora-connect-preview-v2'+(name==='BITCOIN NAIL BAR'?'':':'+encodeURIComponent(name)),stored=JSON.parse(localStorage.getItem(key)||'{}');for(const peer of Object.values(data.identities))if((stored.connections||[]).some(id=>id===peer.id||peer.legacyIds?.includes(id)))names.add(peer.name);}catch{}return [...names];}
+  function friendRemoved(name,peer,data=read()){return (data.friendRemovals||[]).some(row=>row.from===name&&row.to===peer||row.from===peer&&row.to===name);}
+  function friendNames(name=member){
+    const data=read(),names=new Set();
+    for(const row of data.friendRequests||[])if(row.status==='accepted'&&(row.from===name||row.to===name))names.add(row.from===name?row.to:row.from);
+    try{const key='nexora-connect-preview-v2'+(name==='BITCOIN NAIL BAR'?'':':'+encodeURIComponent(name)),stored=JSON.parse(localStorage.getItem(key)||'{}');for(const peer of Object.values(data.identities))if((stored.connections||[]).some(id=>id===peer.id||peer.legacyIds?.includes(id)))names.add(peer.name);}catch{}
+    return [...names].filter(peer=>peer!==name&&!friendRemoved(name,peer,data));
+  }
+  function connectedPeople(name=member){const data=read(),names=new Set(friendNames(name));for(const row of data.customerContacts||[])if(row.customer===name&&(row.savedContact===true||row.isCustomer===true))names.add(row.business);return [...names];}
   function customerContact(customer,business,field){if(!customer||!business||customer===business)return false;identity(customer);identity(business);return change(data=>{data.customerContacts||=[];let row=data.customerContacts.find(row=>row.customer===customer&&row.business===business);if(!row){row={customer,business};data.customerContacts.push(row);}row[field]=true;data.identities[business].kind='business';});}
   const me=()=>identity(member);
 
-  window.NEXORA_COMMUNITY_SHARED={KEY,DAY,read,change,copy,member,role,canAccessFeature,identity,me,connectedPeople,saveBusinessContact:(customer,business)=>customerContact(customer,business,'savedContact'),registerCustomer:(customer,business)=>customerContact(customer,business,'isCustomer'),wallet,points,activity,revoke,notify};
+  window.NEXORA_COMMUNITY_SHARED={KEY,DAY,read,change,copy,member,role,canAccessFeature,identity,me,friendNames,friendRemoved,connectedPeople,saveBusinessContact:(customer,business)=>customerContact(customer,business,'savedContact'),registerCustomer:(customer,business)=>customerContact(customer,business,'isCustomer'),wallet,points,activity,revoke,notify};
   window.addEventListener('storage',event=>{if(event.key===KEY)window.dispatchEvent(new CustomEvent('nexora-community-shared-changed'));});
   identity();
 })();
@@ -1558,7 +1564,7 @@ const sections=[['home','🪧','Bảng tin','Feed'],['reels','▶️','Reels','R
       return primary.map(id=>{const [,icon,vi,en]=sections.find(x=>x[0]===id);const short={groups:tx('Nhóm Chợ','Groups'),pages:tx('Fanpage','Pages'),deals:tx('Ưu đãi','Deals'),jobs:tx('Việc làm','Jobs'),live:tx('Live','Live'),messages:tx('Tin nhắn','Messages'),shop:tx('Gian hàng','Shop'),transfer:tx('Sang nhượng','Transfers'),realestate:tx('Địa ốc','Real Estate'),food:tx('Món ngon','Food')};const label=short[id]||tx(vi,en);return `<button type="button" class="community-tab ${id==='live'?'live-tab':''} ${current===id?'active':''}" data-section="${id}" aria-current="${current===id?'page':'false'}"><span class="tab-icon" aria-hidden="true">${icon}</span><span>${label}</span></button>`}).join('');
     }
     function featureMenu(){
-      const shortcuts=[['shop','🏬','Gian hàng của tôi','My storefront','Quản lý gian hàng','Manage your storefront'],['transfer','🔑','Sang nhượng tiệm','Salon transfers','Mua, bán tiệm','Buy or sell a salon'],['realestate','🏘️','Địa ốc','Real Estate','Mua bán bất động sản','Property listings'],['food','🍜','Nhà hàng món ngon','Food & Restaurants','Món ngon · ưu đãi · fanpage','Food · deals · fanpages']];
+      const shortcuts=[['shop','🏬','Gian hàng của tôi','My storefront','Quản lý gian hàng','Manage your storefront'],['transfer','🔑','Sang nhượng tiệm','Salon transfers','Mua, bán tiệm','Buy or sell a salon'],['realestate','🏘️','Địa ốc','Real Estate','Mua bán bất động sản','Property listings'],['food','🍜','Food Community','Food Community','Món ngon · ưu đãi · fanpage','Food · deals · fanpages']];
       const remaining=sections;
       const mobileGroups=[
         [tx('Cộng đồng','Community'),['messages']],

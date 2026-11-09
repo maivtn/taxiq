@@ -5,10 +5,10 @@ const assert = require('node:assert/strict');
 const { pathToFileURL } = require('node:url');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const repo = path.resolve(__dirname, '../../../..');
-const output = process.env.EVIDENCE_DIR || '/tmp/taxiq-storefront-polish-20261109';
+const output = process.env.EVIDENCE_DIR || '/tmp/taxiq-storefront-business-polish-20261109';
 const origin = process.env.TEST_ORIGIN || 'http://127.0.0.1:8873';
 const viewports = [{name:'phone',width:390,height:844},{name:'ipad',width:820,height:1180},{name:'desktop',width:1440,height:900}];
-const livePath = '/html/v3.1/staff-community.html?tab=shop&account=personal&role=tech';
+const livePath = '/html/v3.1/community.html?tab=shop&account=business&role=owner';
 const originalPath = '/from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html?section=shop';
 fs.mkdirSync(output,{recursive:true});
 const hash = file => crypto.createHash('sha256').update(fs.readFileSync(path.join(repo,file))).digest('hex');
@@ -17,7 +17,7 @@ async function prepare(context) {
     try {
       localStorage.setItem('nexora-community-tour-desktop-v1','1');
       localStorage.setItem('nexora-community-tour-mobile-v1','1');
-      localStorage.setItem('nexora-community-v13',JSON.stringify({lang:'en',role:'personal'}));
+      localStorage.setItem('nexora-community-v13',JSON.stringify({lang:'en',role:'business'}));
     } catch {}
   });
 }
@@ -47,9 +47,9 @@ async function baseline(browser) {
 }
 const artifact='docs/prototypes/my-storefront/my-storefront-polished-v1.html';
 const packageOnly=process.argv.includes('--package-only');
-const staffDesktopOnly=process.argv.includes('--staff-desktop-only');
+const businessDesktopOnly=process.argv.includes('--business-desktop-only');
 const formsOnly=process.argv.includes('--forms-only');
-const results=(packageOnly||staffDesktopOnly||formsOnly)&&fs.existsSync(path.join(output,'results.json'))?JSON.parse(fs.readFileSync(path.join(output,'results.json'))).results.filter(row=>formsOnly|| (packageOnly?row.name.startsWith('staff-'):row.name!=='staff-desktop')):[];
+const results=(packageOnly||businessDesktopOnly||formsOnly)&&fs.existsSync(path.join(output,'results.json'))?JSON.parse(fs.readFileSync(path.join(output,'results.json'))).results.filter(row=>formsOnly|| (packageOnly?row.name.startsWith('business-'):row.name!=='business-desktop')):[];
 const clean=text=>String(text).replace(/[\p{Extended_Pictographic}\uFE0F\u200D＋✦✧▣⌖☎✉↗✓·●]/gu,'').replace(/\s+/g,' ').trim();
 function saveResults(){fs.writeFileSync(path.join(output,'results.json'),JSON.stringify({head:require('node:child_process').execSync('git rev-parse HEAD',{cwd:repo}).toString().trim(),originalPOHash:hash('from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html'),artifactHash:hash(artifact),results},null,2));}
 async function visible(page,selector){await page.locator(selector).first().waitFor({state:'visible'});}
@@ -78,7 +78,7 @@ async function layout(page,viewport){
 }
 async function verifyFlow(browser,viewport,packaged){
   const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},isMobile:viewport.name==='phone',hasTouch:viewport.name!=='desktop'});
-  const name=(packaged?'package':'staff')+'-'+viewport.name;
+  const name=(packaged?'package':'business')+'-'+viewport.name;
   const entry={name,viewport,checks:[],errors:[],failedRequests:[],pass:false};results.push(entry);
   let phase='open',page;
   const checkpoint=label=>{entry.checks.push(label);phase=label;console.log('CHECK',name,label);saveResults();};
@@ -89,7 +89,7 @@ async function verifyFlow(browser,viewport,packaged){
     const start=packaged?pathToFileURL(path.join(repo,artifact)).href:origin+livePath;
     await page.goto(start,{waitUntil:'domcontentloaded'});await visible(page,'.store-head');
     entry.role=await page.evaluate(()=>({role:window.NEXORA_COMMUNITY_SHARED.role,shop:window.NEXORA_COMMUNITY_SHARED.canAccessFeature('shop'),salonTools:['transfer','workers','services','hiring','posRecruitment'].map(feature=>window.NEXORA_COMMUNITY_SHARED.canAccessFeature(feature))}));
-    assert(entry.role.shop&&entry.role.salonTools.every(value=>!value),'Personal storefront must not grant salon management');
+    assert(entry.role.role==='owner'&&entry.role.shop&&entry.role.salonTools.every(Boolean),'The storefront must run as Salon/Owner');
     const baselineData=JSON.parse(fs.readFileSync(path.join(output,'baseline.json')));
     const before=baselineData.screens.find(row=>row.name==='current'&&row.viewport.name===viewport.name);
     const after=await inventory(page);
@@ -113,7 +113,7 @@ async function verifyFlow(browser,viewport,packaged){
     await click(page,'.store-head [data-action="edit-shop"]');await page.mouse.click(2,2);await page.locator('#editor').waitFor({state:'hidden'});
     await click(page,'.store-head [data-action="edit-shop"]');
     await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
-    await form.locator('[name=name]').fill('Linh Studio · Personal Storefront');await form.locator('[name=type]').selectOption('personal');
+    await form.locator('[name=name]').fill('Linh Studio · Business Storefront');await form.locator('[name=type]').selectOption('salon');
     for(const [field,value] of Object.entries({category:'Nail supplies and personal services',city:'Houston, TX',phone:'2815550198',email:'storefront-qa@example.com',hours:'Mon–Sat, 9am–6pm',website:'https://example.com/book',about:'Personal nail supplies and services in Houston. '+('Detailed storefront introduction with useful contact information. '.repeat(5))}))await form.locator('[name='+field+']').fill(value);
     await form.locator('[name=fulfillment][value=pickup]').check();await form.locator('[name=fulfillment][value=shipping]').check();
     await form.locator('[name=logo]').setInputFiles({name:'too-large.png',mimeType:'image/png',buffer:Buffer.alloc(1024*1024+1)});
@@ -122,7 +122,7 @@ async function verifyFlow(browser,viewport,packaged){
     await form.locator('[name=logo]').setInputFiles({name:'logo.png',mimeType:'image/png',buffer:image});
     await form.locator('[name=cover]').setInputFiles({name:'cover.png',mimeType:'image/png',buffer:image});
     await form.locator('[type=submit]').click();await page.locator('#editor').waitFor({state:'hidden'});
-    assert.equal(await page.locator('.store-preview-title h2').textContent(),'Linh Studio · Personal Storefront');
+    assert.equal(await page.locator('.store-preview-title h2').textContent(),'Linh Studio · Business Storefront');
     assert.equal(await page.locator('.store-progress').getAttribute('aria-valuenow'),'5');
     await click(page,'.store-head [data-action="edit-shop"]');assert.equal(await form.locator('[name=email]').inputValue(),'storefront-qa@example.com');
     await closeEditor(page);checkpoint('store form: required/email/upload validation, cancel, save, reopen');
@@ -190,7 +190,7 @@ async function verifyFlow(browser,viewport,packaged){
     }else{
       const destinations=[];
       for(const section of ['pages','deals','live','messages','groups','jobs','food','realestate']){
-        phase='staff destination '+section;
+        phase='business destination '+section;
         await click(page,'.store-connect[data-section='+section+']');const target=section==='messages'?'connect':section;
         if(section==='live'){await page.getByRole('heading',{name:'Livestream & Video',exact:true}).waitFor();await page.locator('#editor.storefront-dialog').waitFor({state:'detached'});}
         else await page.waitForURL(url=>url.searchParams.get('tab')===target);
@@ -203,10 +203,13 @@ async function verifyFlow(browser,viewport,packaged){
     checkpoint('Community destinations and storefront tool navigation');
     if(!packaged&&viewport.name==='desktop'){
       await page.goto(origin+livePath+'&member=storefront-other-qa',{waitUntil:'domcontentloaded'});await visible(page,'.store-head');assert.equal(await page.locator('.store-progress').getAttribute('aria-valuenow'),'0','Another identity must not see the first storefront');
-      await page.goto(origin+livePath,{waitUntil:'domcontentloaded'});await visible(page,'.store-head');assert.equal(await page.locator('.store-preview-title h2').textContent(),'Linh Studio · Personal Storefront');
-      await page.goto(origin+'/html/v3.1/staff-community.html?tab=shop&account=business&role=tech',{waitUntil:'domcontentloaded'});await page.waitForURL(url=>url.searchParams.get('tab')==='feed');
-      assert.equal(await page.evaluate(()=>window.NEXORA_COMMUNITY_SHARED.canAccessFeature('shop')),false,'Linked staff must not gain business storefront management');
-      checkpoint('personal identity isolation and linked-staff permission boundary');
+      await page.goto(origin+livePath,{waitUntil:'domcontentloaded'});await visible(page,'.store-head');assert.equal(await page.locator('.store-preview-title h2').textContent(),'Linh Studio · Business Storefront');
+      for(const account of ['personal','business']){
+        await page.goto(origin+'/html/v3.1/staff-community.html?tab=shop&account='+account+'&role=tech',{waitUntil:'domcontentloaded'});await page.waitForURL(url=>url.searchParams.get('tab')==='feed');
+        assert.equal(await page.evaluate(()=>window.NEXORA_COMMUNITY_SHARED.canAccessFeature('shop')),false,account+' Tech must not gain storefront management');
+        assert.equal(await page.locator('.store-head').count(),0,account+' Tech must not mount the storefront');
+      }
+      checkpoint('business identity isolation; Personal/Tech and linked staff denied');
     }
     assert.equal(entry.errors.length,0,'JavaScript errors '+entry.errors.join('; '));
     assert.equal(entry.failedRequests.length,0,'Failed essential requests '+JSON.stringify(entry.failedRequests));
@@ -215,7 +218,7 @@ async function verifyFlow(browser,viewport,packaged){
   finally{await context.close();saveResults();}
 }
 async function verifyModalLayouts(browser,viewport,packaged){
-  const name=(packaged?'package':'staff')+'-'+viewport.name,entry=results.find(row=>row.name===name);
+  const name=(packaged?'package':'business')+'-'+viewport.name,entry=results.find(row=>row.name===name);
   const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},isMobile:viewport.name==='phone',hasTouch:viewport.name!=='desktop'});
   try{
     await prepare(context);const page=await context.newPage();page.setDefaultTimeout(12000);
@@ -239,7 +242,7 @@ async function verifyModalLayouts(browser,viewport,packaged){
     else {
       const before=JSON.parse(fs.readFileSync(path.join(output,'baseline.json')));
       assert.equal(before.sourceHash,hash('from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/shell-community.html'),'Original PO was changed');
-      for(const viewport of viewports.filter(viewport=>!staffDesktopOnly||viewport.name==='desktop'))for(const packaged of staffDesktopOnly?[false]:packageOnly?[true]:[false,true])await (formsOnly?verifyModalLayouts:verifyFlow)(browser,viewport,packaged);
+      for(const viewport of viewports.filter(viewport=>!businessDesktopOnly||viewport.name==='desktop'))for(const packaged of businessDesktopOnly?[false]:packageOnly?[true]:[false,true])await (formsOnly?verifyModalLayouts:verifyFlow)(browser,viewport,packaged);
       if(results.some(result=>!result.pass))process.exitCode=1;
       console.log('RESULT',results.filter(result=>result.pass).length+'/'+results.length);
     }

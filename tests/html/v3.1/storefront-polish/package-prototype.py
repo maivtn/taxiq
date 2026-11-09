@@ -1,13 +1,20 @@
-"""Package the current personal storefront without changing the original PO files."""
+"""Package the Salon/Owner storefront without changing the original PO files."""
 from pathlib import Path
 import base64
 import mimetypes
 import re
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
 MODULE = ROOT / 'html/v3.1/community/modules/hub-tools'
 COMMUNITY = ROOT / 'html/v3.1/community'
 OUTPUT = ROOT / 'docs/prototypes/my-storefront/my-storefront-polished-v1.html'
+SOURCE_REV = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+
+
+def source_text(file):
+    """Keep unrelated, concurrent workspace edits out of the review package."""
+    return subprocess.check_output(['git', 'show', SOURCE_REV + ':' + file.resolve().relative_to(ROOT).as_posix()], cwd=ROOT).decode()
 
 
 def data_url(path):
@@ -25,12 +32,12 @@ def inline_css(source, base):
     return re.sub(r'url\(([\'\"]?)([^)\'\"\s]+)\1\)', replace, source)
 
 
-source = (MODULE / 'index.html').read_text()
+source = source_text(MODULE / 'index.html')
 
 
 def stylesheet(match):
     file = (MODULE / match.group(1).split('?')[0]).resolve()
-    return '<style>' + inline_css(file.read_text(), file.parent) + '</style>'
+    return '<style>' + inline_css(source_text(file), file.parent) + '</style>'
 
 
 source = re.sub(r'<link rel="stylesheet" href="([^"]+)"\s*/?>', stylesheet, source)
@@ -38,7 +45,7 @@ source = re.sub(r'<link rel="stylesheet" href="([^"]+)"\s*/?>', stylesheet, sour
 
 def script(match):
     file = (MODULE / match.group(1).split('?')[0]).resolve()
-    text = file.read_text()
+    text = source_text(file)
     text = re.sub(r'document\.currentScript\.src(?!\s*\|\|)', '(document.currentScript.src||document.baseURI)', text)
     if file.name == 'community-storefront-polish.js':
         for asset in (ROOT / 'html/v3.1/icon-oneqr').glob('*.png'):
@@ -54,21 +61,21 @@ for asset in (MODULE / 'media').iterdir():
         source = source.replace('/html/v3.1/community/modules/hub-tools/media/' + asset.name, embedded)
         source = source.replace('media/' + asset.name, embedded)
 
-# Match the real staff route and make cross-module destinations work from file://.
+# Match the Salon/Owner route and make cross-module destinations work from file://.
 bootstrap = """<script>
-window.NEXORA_SHELL={activePage:'staff',salonLinked:false};
+window.NEXORA_SHELL={activePage:'community',salonLinked:true};
 window.addEventListener('message',event=>{
   if(event.source!==window||event.data?.type!=='nexora-community-route')return;
-  const target=new URL('https://taxiq-nexora-touch.vercel.app/html/v3.1/staff-community.html');
-  target.searchParams.set('tab',event.data.route);target.searchParams.set('account','personal');target.searchParams.set('role','tech');
+  const target=new URL('https://taxiq-nexora-touch.vercel.app/html/v3.1/community.html');
+  target.searchParams.set('tab',event.data.route);target.searchParams.set('account','business');target.searchParams.set('role','owner');
   for(const [key,value] of Object.entries(event.data.context||{}))if(value!=null)target.searchParams.set(key,value);
   location.assign(target.href);
 });
 </script>"""
-source = source.replace('<head>', '<head>' + bootstrap + '<script>' + (COMMUNITY / 'community-shared.js').read_text() + '</script>', 1)
+source = source.replace('<head>', '<head><!-- Salon/Owner PO review; app source ' + SOURCE_REV + ' -->' + bootstrap + '<script>' + source_text(COMMUNITY / 'community-shared.js') + '</script>', 1)
 source = source.replace(":'home',workMode='all'", ":'shop',workMode='all'", 1)
 source = source.replace(',location.origin)', ",location.protocol==='file:'?'*':location.origin)")
-theme = (COMMUNITY / 'community-po-theme.css').read_text().replace('.native-body', 'body').replace('.native-html', 'html').replace(':host', ':root')
+theme = source_text(COMMUNITY / 'community-po-theme.css').replace('.native-body', 'body').replace('.native-html', 'html').replace(':host', ':root')
 source = source.replace('</head>', '<style>' + inline_css(theme, COMMUNITY) + '</style></head>', 1)
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 OUTPUT.write_text(source)
