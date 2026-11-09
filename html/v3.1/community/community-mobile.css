@@ -657,3 +657,9 @@ body #feedView .feed-action[data-blog-create] .feed-icon .community-action-icon 
 body.embedded #pagesView>.community-pages-filters>.filter-chip{display:block!important}
 #pagesView .community-pages-filters .filter-chip::first-letter{text-transform:uppercase}
 #pagesView .community-pages-filters :is(svg,img,.community-action-icon,.feed-icon){display:none!important}
+
+/* Keep the primary Jobs / Extra shifts switch compact on phones. */
+@media(max-width:650px){
+ body.embedded :is(#jobsView,#dayworkView) .jobs-personal-sections{padding:3px;gap:3px;border-radius:10px}
+ body.embedded :is(#jobsView,#dayworkView) .jobs-personal-sections>button{min-height:32px;height:32px;padding:5px 8px;font-size:11px;line-height:20px;border-radius:7px}
+}
