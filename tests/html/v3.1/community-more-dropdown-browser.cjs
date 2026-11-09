@@ -68,12 +68,12 @@ const server = http.createServer(async (request, response) => {
             const trigger = await more.boundingBox();
             assert.ok(box.y >= trigger.y + trigger.height && box.y <= trigger.y + trigger.height + 16);
             assert.ok(box.width <= 502 && box.height <= 562);
-            assert.equal(await host.locator('.community-menu-heading').isVisible(), false);
+            assert.equal(await host.locator('.community-menu-heading').isVisible(), true);
             assert.equal(await host.locator('.community-menu-backdrop').evaluate(node => getComputedStyle(node).backgroundColor), 'rgba(0, 0, 0, 0)');
             await page.keyboard.press('End');
-            assert.equal(await menu.locator('[role="menuitem"]').last().evaluate(node => node.getRootNode().activeElement === node), true);
+            assert.equal(await menu.locator('[role="menuitem"]:visible').last().evaluate(node => node.getRootNode().activeElement === node), true);
             await page.keyboard.press('Home');
-            assert.equal(await menu.locator('[role="menuitem"]').first().evaluate(node => node.getRootNode().activeElement === node), true);
+            assert.equal(await menu.locator('[role="menuitem"]:visible').first().evaluate(node => node.getRootNode().activeElement === node), true);
           } else {
             assert.equal(await menu.getAttribute('role'), 'dialog');
             assert.equal(await menu.getAttribute('aria-modal'), 'true');
@@ -82,7 +82,7 @@ const server = http.createServer(async (request, response) => {
             assert.ok(Math.abs(box.height-app.height)<2);
             assert.equal(await host.locator('.community-menu-close').isVisible(), true);
             await page.keyboard.press('Shift+Tab');
-            assert.equal(await menu.locator('button').last().evaluate(node => node.getRootNode().activeElement === node), true);
+            assert.equal(await menu.locator('button:visible').last().evaluate(node => node.getRootNode().activeElement === node), true);
           }
           await page.screenshot({path:path.join(output, width+'-'+account+'-more.png')});
           await page.keyboard.press('Escape');

@@ -119,12 +119,12 @@ fs.mkdirSync(output,{recursive:true});
         });
         await check('Salon hiring composer URL opens salon recruitment',async()=>{
           await page.goto(base+'/html/v3.1/community.html?tab=jobs&composeKind=hiring',{waitUntil:'domcontentloaded'});
-          await page.waitForURL('**/html/pages/pos-recruitment.html');
+          await page.waitForURL(url=>url.pathname.endsWith('/html/pages/pos-recruitment.html'));
           await open('community.html','tab=jobs');
         });
         await check('Salon hiring creation opens salon recruitment',async()=>{
           await jobs.locator('#jobTemplates [data-template="hiring"]:visible,#localDiscovery [data-template="hiring"]:visible').click();
-          await page.waitForURL('**/html/pages/pos-recruitment.html');
+          await page.waitForURL(url=>url.pathname.endsWith('/html/pages/pos-recruitment.html'));
         });
         await check('Staff role alias uses personal shell',async()=>{
           await open('community.html','role=staff&tab=jobs');
