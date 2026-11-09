@@ -55,11 +55,14 @@
   const tile=key=>action('panel',label(key),{value:key,icon:icon(toolLabels[key][2]),style:'tool'});
   const categories=[['all','Tất cả','All',''],['salon','Nail & làm đẹp','Nail & beauty','paintbrush'],['food','Ẩm thực','Food','store'],['travel','Du lịch','Travel','map'],['houston','Houston','Houston','map']];
   const demoRooms=[
-    {id:'po-live-bitcoin',title:['Tư vấn mẫu nail Tết + ưu đãi khách mới','Lunar New Year nail ideas + new guest offer'],host:'BITCOIN NAIL BAR',category:'salon',pageId:'p1',city:'Houston, TX',viewers:248,art:'paintbrush',dealId:'extra-po-new-guest',serviceId:'gel-manicure',oneqr:true,purpose:'none'},
-    {id:'po-live-pho',title:['Vào bếp: phở gia truyền cuối tuần','In the kitchen: weekend family pho'],host:'Phở Gà Houston',category:'food',city:'Houston, TX',viewers:96,art:'store',purpose:'explore'},
-    {id:'po-live-brian',title:['Hát theo yêu cầu — tối thứ Bảy','Song requests on Saturday night'],host:'BrianNguyenAI',category:'music',city:'Houston, TX',viewers:57,art:'music',purpose:'music'},
+    {id:'po-live-bitcoin',title:['Tư vấn mẫu nail Tết + ưu đãi khách mới','Lunar New Year nail ideas + new guest offer'],host:'BITCOIN NAIL BAR',category:'salon',pageId:'p1',city:'Houston, TX',viewers:248,art:'paintbrush',cover:'/html/v3.1/community/live-photos/nails.jpg',dealId:'extra-po-new-guest',serviceId:'gel-manicure',oneqr:true,purpose:'none'},
+    {id:'po-live-pho',title:['Vào bếp: phở gia truyền cuối tuần','In the kitchen: weekend family pho'],host:'Phở Gà Houston',category:'food',city:'Houston, TX',viewers:96,art:'store',cover:'/html/v3.1/community/modules/hub-tools/media/dbaf5871be9452a3.jpg',purpose:'explore'},
+    {id:'po-live-brian',title:['Hát theo yêu cầu — tối thứ Bảy','Song requests on Saturday night'],host:'BrianNguyenAI',category:'music',city:'Houston, TX',viewers:57,art:'music',cover:'/html/v3.1/community/live-photos/music.jpg',purpose:'music'},
   ].map(room=>({...room,sample:true,poLive:true,status:'live',description:''}));
   sampleLiveRooms.unshift(...demoRooms);
+  for(const room of sampleLiveRooms){
+    if(['sample-live-shop','sample-live-talk','sample-live-nails','sample-live-community'].includes(room.id))room.cover='/html/v3.1/community/live-photos/nails.jpg';
+  }
   const demoChat=[
     {author:'Lan P.',text:['Cho em hỏi giá bộ này ạ?','How much is this set?']},
     {author:'Hùng T.',text:['Mình comment "GEL20" là chốt đơn đúng không shop?','Do I comment "GEL20" to order?']},
