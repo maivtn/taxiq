@@ -14,7 +14,7 @@
     feed:'layout-list', market:'users-round', groups:'users-round', pages:'building-2',
     deals:'ticket', jobs:'briefcase', daywork:'calendar-days', blog:'feed-blog', connect:'message-circle',
     general:'paintbrush', showcase:'feed-photo', tip:'feed-tip', question:'feed-ask', poll:'feed-poll',
-    event:'feed-event', sale:'feed-sale', want:'shopping-bag', hiring:'feed-job', seeking:'user-round',
+    event:'feed-event', sale:'feed-sale', want:'shopping-bag', deal:'ticket', hiring:'feed-job', seeking:'user-round',
     dayhire:'calendar-clock', page:'building-2', group:'users-round', messages:'message-circle', calls:'phone', privacy:'settings-2'
   };
   function makeArtwork(name,nav=false) {
