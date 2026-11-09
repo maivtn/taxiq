@@ -818,8 +818,12 @@ body[data-nexora-workspace="pos"] .sidebar { padding:18px 14px; }
 .shell-workspace-search { position:relative; flex:1; max-width:560px; min-width:0; }
 .shell-workspace-search .search { width:100%; }
 .shell-workspace-actions { display:flex; gap:6px; align-items:center; margin-left:auto; }
-.shell-workspace-actions a { display:flex; width:40px; height:40px; align-items:center; justify-content:center; color:var(--nexora-muted); border:1px solid var(--nexora-border); border-radius:10px; }
+.shell-workspace-actions a,
+.shell-header-language { position:relative; display:flex; width:40px; height:40px; align-items:center; justify-content:center; color:var(--nexora-muted); border:1px solid var(--nexora-border); border-radius:10px; }
+.shell-header-language { flex-direction:column; gap:1px; background:transparent; font-size:9px; font-weight:800; line-height:1; cursor:pointer; }
 .shell-workspace-actions svg { width:18px; height:18px; }
+.shell-header-badge { position:absolute; top:1px; right:0; min-width:16px; height:16px; padding:0 4px; border-radius:999px; background:#ff3b3b; color:#fff; font-size:9px; font-weight:800; line-height:16px; text-align:center; }
+.shell-header-language svg { width:16px; height:16px; }
 .shell-function-results { position:absolute; z-index:50; left:0; right:0; top:calc(100% + 8px); max-height:60vh; overflow:auto; border:1px solid var(--nexora-border); border-radius:10px; background:#fff; box-shadow:var(--nexora-soft-shadow); padding:6px; }
 .shell-function-results a { display:block; padding:12px; font-size:13px; text-decoration:none; color:var(--nexora-text); }
 .shell-function-results a:hover, .shell-function-results a:focus-visible { background:#eeefff; }
@@ -887,7 +891,7 @@ body[data-nexora-workspace="pos"] .sidebar-section-label + .sidebar-nav { margin
 
 /* All workspace headers share the same icon treatment and mobile search. */
 .header.shell-header .shell-search-toggle { display:none; }
-.header.shell-header :is(.shell-workspace-actions a,.mobile-brand .icon-button) { border:0; background:transparent; box-shadow:none; }
+.header.shell-header :is(.shell-workspace-actions a,.shell-header-language,.mobile-brand .icon-button) { border:0; background:transparent; box-shadow:none; }
 .header.shell-header .mobile-brand .icon-button { color:#64748b; }
 .header.shell-header .shell-workspace-actions a[href="owner-setting.html"] { color:#2563eb; }
 .header.shell-header .shell-workspace-actions a[href="news-library.html?tab=news"] { color:#b45309; }
@@ -896,7 +900,7 @@ body[data-nexora-workspace="pos"] .sidebar-section-label + .sidebar-nav { margin
 .header.shell-header .shell-header-search svg { color:#64748b; }
 .header.shell-header :is(.shell-workspace-actions a,.icon-button):focus-visible { outline:2px solid #64748b; outline-offset:2px; }
 @media (max-width:767px) {
-  body[data-nexora-workspace] .header.shell-header { min-height:64px; padding:10px 12px; gap:8px; flex-wrap:wrap; }
+  body[data-nexora-workspace] .header.shell-header { min-height:64px; padding:10px 12px; gap:8px; flex-wrap:nowrap; }
   .header.shell-header .shell-header-search { display:none; order:3; flex:1 0 100%; width:100%; max-width:none; }
   body.shell-search-open .header.shell-header .shell-header-search { display:block; }
   .header.shell-header .shell-search-toggle { display:inline-flex; flex:none; width:44px; height:44px; padding:0; border:0; background:transparent; color:#64748b; box-shadow:none; }
