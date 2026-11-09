@@ -33,20 +33,24 @@ const shellCSS=shell.styles.map(s=>s.text.replace(/url\((['"]?)([^)'"\s]+)\1\)/g
 fs.writeFileSync(path.join(repo,'html/v3.1/community/community-direct-code.js'),'/* Copied Community scripts and styles. Regenerate with scripts/build-community-direct.cjs. */\nwindow.NEXORA_COMMUNITY_CODE='+JSON.stringify(definitions)+';\nwindow.NEXORA_COMMUNITY_SHELL_CSS='+JSON.stringify(shellCSS)+';\n');
 for(const name of ['community.html','staff-community.html']){
   const file='html/v3.1/'+name,doc=parse(read(file));
-  const host=doc.querySelector('#community-staging,#community-hub');host.dataset.communityRegion='shell';host.innerHTML=shell.doc.body.innerHTML;
+  const host=doc.querySelector('#community-staging,#community-hub');
+  // Entry-specific header/Feed refinements already copied into the page remain authoritative.
+  const preserved=['#communityLocation','#communityFindPeople','#feedView > .feed-intro','#feedMore','#feedView > .feature-layout > aside'].map(selector=>[selector,host.querySelector(selector)?.outerHTML]);
+  host.dataset.communityRegion='shell';host.innerHTML=shell.doc.body.innerHTML;
+  for(const [selector,markup]of preserved)if(markup)host.querySelector(selector)?.replaceWith(parse(markup).body.firstElementChild);
   doc.querySelectorAll('template[data-community-template]').forEach(n=>n.remove());
   host.insertAdjacentHTML('afterend',templates);
   doc.querySelectorAll('script[data-community-code]').forEach(n=>n.remove());
-  const bundle=doc.createElement('script');bundle.src='community/community-direct-code.js?v=20261109-inline1';bundle.dataset.communityCode='';
+  const bundle=doc.createElement('script');bundle.src='community/community-direct-code.js?v=20261109-po-alignment1';bundle.dataset.communityCode='';
   doc.querySelector('script[src*="community-native.js"]').before(bundle);
-  for(const script of doc.querySelectorAll('script[src*="community-native.js"],script[src*="community-integration.js"]'))script.src=script.getAttribute('src').replace(/\?v=.*/,'?v=20261109-inline1');
+  for(const script of doc.querySelectorAll('script[src*="community-native.js"],script[src*="community-integration.js"],script[src*="community-shared.js"]'))script.src=script.getAttribute('src').replace(/\?v=.*/,'?v=20261109-po-alignment1');
   // Keep the outer sidebar styles outside the copied Community sections.
-  for(const style of doc.head.querySelectorAll('style[data-outer-style]')){const link=doc.createElement('link');link.rel='stylesheet';link.href=style.dataset.outerStyle;style.replaceWith(link);}
+  // Existing scoped outer styles can include entry-specific fixes; only convert new links.
   for(const link of [...doc.head.querySelectorAll('link[rel="stylesheet"]')].filter(n=>!n.href.startsWith('https:'))){
     const style=doc.createElement('style');style.dataset.outerStyle=link.getAttribute('href');
     const source=local(link.getAttribute('href'),'/'+file);
     const css=read(source).replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,q,v)=>/^(?:data:|https?:|#)/.test(v)?all:'url("'+local(v,source)+'")');
     style.textContent='@scope (:root) to ([data-community-region] > *) {\n'+css+'\n}';link.replaceWith(style);
   }
-  fs.writeFileSync(path.join(repo,file),('<!doctype html>\n'+doc.documentElement.outerHTML+'\n').replace(/[ \t]+$/gm,''));
+  fs.writeFileSync(path.join(repo,file),('<!doctype html>\n'+doc.documentElement.outerHTML+'\n').replace(/[ \t]+$/gm,'').replace(/\n{4,}/g,'\n\n\n'));
 }

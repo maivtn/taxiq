@@ -8,8 +8,8 @@
   function change(operation){const data=read(),result=operation(data);if(result===false)return false;try{localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new CustomEvent('nexora-community-shared-changed'));return result===undefined?true:result;}catch{return false;}}
   const query=new URLSearchParams(location.search);
   const role=window.NEXORA_SHELL?.activePage==='staff'||['staff','tech'].includes(query.get('role'))||query.get('account')==='personal'?'staff':'owner';
-  const businessFeatures=new Set(['shop','transfer','workers','services','hiring','posRecruitment']);
-  // Storefront and salon tools belong to the Salon demo account.
+  const businessFeatures=new Set(['storeServices','foodMerchant','transfer','workers','services','hiring','posRecruitment']);
+  // Every NEXORA ID has a storefront; salon services and merchant tools require Business.
   const canAccessFeature=feature=>!businessFeatures.has(feature)||role==='owner';
   const member=query.get('member')||window.NEXORA_SHELL?.profileName||(role==='staff'?document.querySelector('.staff-profile-name')?.textContent.trim():null)||(role==='staff'?'David Le':'BITCOIN NAIL BAR');
   function identity(name=member,alias){

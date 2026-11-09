@@ -5,7 +5,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.COMMUNITY_BASE_URL||'http://127.0.0.1:5504';
 const output=process.env.COMMUNITY_ROLE_OUTPUT||'/tmp/taxiq-community-demo-roles';
 fs.mkdirSync(output,{recursive:true});
-const routes=['feed','groups','market','pages','deals','jobs','shift','blog','connect','contacts','calls','privacy','food','realestate','reels','live','news','wallet','wheel','meet','account','assistant','notifications','stories','people','post','food-market'];
+const routes=['feed','groups','market','pages','deals','jobs','shift','blog','connect','contacts','calls','privacy','food','realestate','reels','live','news','wallet','wheel','meet','account','assistant','notifications','stories','people','post','food-market','shop'];
 const rows=[],errors=[];
 (async()=>{
   const browser=await chromium.launch({headless:true});
@@ -27,7 +27,7 @@ const rows=[],errors=[];
           await classic().locator('#feedView').waitFor({state:'attached'});
           if(route==='assistant')await host.locator('#ai-dialog:visible').waitFor();
           else if(['food','realestate'].includes(route))await host.locator('.community-document-pane iframe').waitFor();
-          else if(['reels','live','news','wallet','wheel','meet','account','assistant','notifications','stories','people','post','food-market'].includes(route))await host.locator('.community-extra-pane>section:visible').waitFor();
+          else if(['reels','live','news','wallet','wheel','meet','account','assistant','notifications','stories','people','post','food-market','shop'].includes(route))await host.locator('.community-extra-pane>section:visible').waitFor();
           else if(route==='jobs')await classic().locator('#jobsWorkflow').waitFor();
           else if(route==='deals')await classic().locator('#communityDealsView').waitFor();
           else if(['feed','groups','market','pages','shift','blog'].includes(route))await classic().locator('#'+({feed:'feed',groups:'groups',market:'market',pages:'pages',shift:'daywork',blog:'blog'}[route])+'View').waitFor();
@@ -37,9 +37,9 @@ const rows=[],errors=[];
           catch(error){rows.push({width,role,name,pass:false,error:error.message});await page.screenshot({path:path.join(output,width+'-'+role+'-'+name.replace(/[^a-z0-9]+/gi,'-')+'-failed.png')}).catch(()=>{});console.log('FAIL '+width+' '+role+' '+name+' '+error.message.slice(0,350));}
         }
         async function personalControls(){
-          assert.equal(await host.locator('[data-community-extra="shop"],[data-community-extra="transfer"]').count(),0);
-          assert.equal(await classic().locator('[data-community-shortcut="shop"],[data-community-shortcut="transfer"]').count(),0);
-          assert.equal(await host.locator('[data-section="shop"]:visible,[data-section="transfer"]:visible,[data-food-action="edit-shop"]:visible,[data-food-action="post-dish"]:visible').count(),0);
+          assert.equal(await host.locator('[data-community-extra="transfer"]').count(),0);
+          assert.equal(await classic().locator('[data-community-shortcut="transfer"]').count(),0);
+          assert.equal(await host.locator('[data-section="transfer"]:visible,[data-food-action="edit-shop"]:visible,[data-food-action="post-dish"]:visible').count(),0);
         }
         for(const role of ['personal','salon']){
           for(const route of routes)await check(role,'screen '+route,async()=>{
@@ -66,10 +66,10 @@ const rows=[],errors=[];
             await open(role,'feed');
             if(width>800)await classic().locator('#feedActionsToggle').click();
             assert.equal(await classic().locator('#feedActions [data-template="deal"]').count(),role==='personal'?0:1);
-            for(const feature of ['shop','transfer'])assert.equal(await classic().locator('[data-community-shortcut="'+feature+'"]').count(),role==='personal'?0:1);
+            for(const feature of ['shop','transfer'])assert.equal(await classic().locator('[data-community-shortcut="'+feature+'"]').count(),role==='personal'&&feature==='transfer'?0:1);
             await host.locator('.community-nav-more:visible').first().click();
             await host.locator('#ecosystemMenu').waitFor();
-            for(const feature of ['shop','transfer'])assert.equal(await host.locator('[data-community-extra="'+feature+'"]:visible').count(),role==='personal'?0:1);
+            for(const feature of ['shop','transfer'])assert.equal(await host.locator('[data-community-extra="'+feature+'"]:visible').count(),role==='personal'&&feature==='transfer'?0:1);
             await host.locator('[data-community-extra="people"]').click();
             await page.waitForURL(url=>url.searchParams.get('tab')==='people');
           });
@@ -97,7 +97,7 @@ const rows=[],errors=[];
             await classic().locator('#shiftsZelleForm').waitFor();
           });
         }
-        for(const route of ['shop','transfer'])await check('personal','reject '+route+' and account switch',async()=>{
+        for(const route of ['transfer'])await check('personal','reject '+route+' and account switch',async()=>{
           await open('personal',route);await page.waitForURL(url=>url.searchParams.get('tab')==='feed');await personalControls();
           await open('salon',route);
           if(route==='transfer')await classic().locator('[data-jobs-extra="new-transfer"]').waitFor();

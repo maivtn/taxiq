@@ -1,0 +1,88 @@
+/* PO: from-po/goi-community-giao-dev/04-MAN-HINH-PROTOTYPE/screenshots.
+   Retain the shared shell and working controllers; align their content surfaces. */
+body.embedded .content{padding:18px 16px 40px}
+body.embedded :is(#groupsView,#pagesView)>.feature-intro{
+ display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 12px;
+ padding:18px;border:1px solid #ded7ff;border-radius:16px;background:linear-gradient(115deg,#f0edff,#fff);
+}
+body.embedded :is(#groupsView,#pagesView)>.feature-intro>div{display:block;min-width:0}
+body.embedded :is(#groupsView,#pagesView)>.feature-intro h2{margin:5px 0 4px;font-size:22px;line-height:1.3;color:#25304b}
+body.embedded :is(#groupsView,#pagesView)>.feature-intro p{margin:0;color:#73809c;font-size:13px;line-height:1.5}
+.community-po-eyebrow{font-size:10px;font-weight:900;letter-spacing:.13em;color:#6852e5}
+.community-po-jobs-hero{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px;border:1px solid #ded7ff;border-radius:16px;background:linear-gradient(115deg,#f0edff,#fff);margin-bottom:16px}
+.community-po-jobs-hero[hidden]{display:none}
+.community-po-jobs-hero h2{margin:5px 0 8px;font-size:28px;line-height:1.2;color:#25304b}
+.community-po-jobs-hero p{margin:0;max-width:740px;color:#73809c;font-size:13px;line-height:1.55}
+.community-po-hero-actions{display:flex;flex-direction:column;gap:8px;flex:none}
+#groupsView:not(.hide){display:flex;flex-direction:column}
+#groupsView>.feature-intro{order:-1}
+body.embedded .community-group-section{display:block;min-width:0}
+body.embedded .community-group-section>h3{margin:8px 0 12px;text-transform:none;color:#25304b;font-size:15px;letter-spacing:0}
+.community-group-rail{display:flex;gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:10px;scrollbar-width:thin}
+body.embedded .community-group-card{flex:0 0 270px;min-width:0;padding:0 12px 12px;overflow:hidden;scroll-snap-align:start;border-radius:14px}
+.community-group-cover{height:112px;margin:0 -12px 0;background:linear-gradient(120deg,#6252df,#879df2);background-size:cover;background-position:center}
+.community-group-cover img{display:block;width:100%;height:100%;object-fit:cover}
+.community-group-avatar{position:relative;display:grid;place-items:center;width:38px;height:38px;margin:-20px 0 10px;background:#fff;border-radius:12px;box-shadow:0 3px 9px #25304b1a}
+.community-group-avatar img{width:28px;height:28px;object-fit:contain}
+body.embedded .community-group-card-heading>h3{font-size:15px;line-height:1.3;margin-bottom:5px}
+body.embedded .community-group-card .meta{font-size:11px}
+body.embedded .community-group-card>p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.5;margin:8px 0}
+body.embedded .community-group-card .community-group-inline-rules{display:none}
+body.embedded .community-group-card .listing-actions{display:flex;flex-wrap:nowrap;gap:6px}
+body.embedded .community-group-card .listing-actions>.btn{flex:1;min-width:0;min-height:40px;font-size:11px;padding:8px 6px}
+body.embedded #pageCards{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:12px;overscroll-behavior-x:contain;scrollbar-width:thin}
+body.embedded #pageCards>.page-card{flex:0 0 300px;min-width:0;scroll-snap-align:start;border-radius:14px;overflow:hidden}
+body.embedded #pageCards .page-cover{height:112px}
+body.embedded #pageCards .page-content{padding:12px}
+body.embedded #pageCards .page-identity{padding-top:0;margin-top:-32px;position:relative;align-items:flex-end;gap:10px}
+body.embedded #pageCards .page-avatar{width:44px;height:44px;border:3px solid #fff;background:#fff;border-radius:13px;flex:none}
+body.embedded #pageCards .page-identity>div{padding-top:30px}
+body.embedded #pageCards .page-identity h3{font-size:15px;line-height:1.35}
+body.embedded #pageCards .page-identity .meta{font-size:11px}
+body.embedded #pageCards .page-content>p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.5;margin:8px 0}
+body.embedded #pageCards .page-actions{flex-wrap:nowrap;gap:6px;padding-top:8px}
+body.embedded #pageCards .page-actions .btn{min-height:40px;font-size:11px;padding:8px}
+body.embedded #pagesView>.section-heading{display:flex;margin:18px 0 10px}
+body.embedded #pagesView>.section-heading h2{font-size:15px}
+.native-body:has(#page-view){--ink:#25304b;--muted:#77839e;--violet:#6653df;--bg:#f7f7fc}
+.native-body #page-view :is(.btn.primary,.group-create-button){background:#6653df;border-color:#6653df}
+.native-body #page-view :is(.store-head h1,.news-hero h1,.live-hero h1){color:#25304b;letter-spacing:-.025em}
+.native-body #page-view .store-head{margin:2px 0 14px;gap:14px}
+.native-body #page-view .store-head h1{font-size:28px}
+.native-body #page-view .store-head p{font-size:13px}
+.native-body #page-view .store-workspace{grid-template-columns:minmax(0,1fr) 320px;gap:12px;margin-bottom:18px}
+.native-body #page-view :is(.store-setup.card,.store-toolbox.card){padding:16px;border-radius:14px;box-shadow:0 5px 18px #25304b05}
+.native-body #page-view .store-setup-top strong{background:transparent;color:#25304b;min-width:0;padding:0}
+.native-body #page-view :is(.store-setup h2,.store-toolbox h2){font-size:18px;color:#25304b}
+.native-body #page-view .store-checks{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.native-body #page-view .store-check{font-size:11px;font-weight:400}
+.native-body #page-view .store-progress{height:8px;margin:14px 0}
+.native-body #page-view .store-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:12px}
+.native-body #page-view .store-tool-grid button{min-height:44px;padding:8px;gap:7px;font-size:11px;border-radius:9px;background:#fff}
+.native-body #page-view .store-action-art{width:22px;height:22px;flex-basis:22px}
+.native-body #page-view .store-preview-cover{min-height:170px;align-items:flex-end;background-color:#5746bc}
+.native-body #page-view .store-preview-title .store-action-art{width:42px;height:42px;flex-basis:42px}
+@media(max-width:1000px){.native-body #page-view .store-workspace{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:650px){
+ .community-po-jobs-hero{padding:17px 14px;display:block}
+ .community-po-jobs-hero h2{font-size:24px}
+ .community-po-jobs-hero p{font-size:12px}
+ .community-po-hero-actions{align-items:flex-start;margin-top:14px}
+ body.embedded .content{padding:16px 13px 40px}
+ body.embedded :is(#groupsView,#pagesView)>.feature-intro{padding:16px 13px;border-radius:15px;gap:12px}
+ body.embedded :is(#groupsView,#pagesView)>.feature-intro h2{font-size:20px}
+ body.embedded :is(#groupsView,#pagesView)>.feature-intro p{font-size:11px}
+ body.embedded :is(#groupsView,#pagesView)>.feature-intro>.btn{flex:none;font-size:11px;padding:8px 10px;min-height:40px}
+ body.embedded #pagesView>.feature-intro{align-items:flex-start;flex-direction:column}
+ body.embedded .community-group-card{flex-basis:226px}
+ body.embedded #pageCards>.page-card{flex-basis:285px}
+ body.embedded #pageCards .page-cover{height:105px}
+ .native-body #page-view .store-head{gap:12px}
+ .native-body #page-view .store-head h1{font-size:24px}
+ .native-body #page-view .store-head p{font-size:13px;line-height:1.5}
+ .native-body #page-view :is(.store-setup.card,.store-toolbox.card){padding:14px}
+ .native-body #page-view .store-checks{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .native-body #page-view .store-check{font-size:12px}
+ .native-body #page-view .store-tool-grid button{font-size:11px}
+ .native-body #page-view .store-preview-cover{padding:16px;min-height:150px}
+}

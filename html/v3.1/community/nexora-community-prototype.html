@@ -201,6 +201,7 @@
   <script src="../industry-icons.js?v=20261105-deals-controls-v5" data-industry-icons></script>
 <link rel="stylesheet" href="community-expansion.css?v=20261107-feature-shortcuts1">
 <link rel="stylesheet" href="community-sample-avatars.css">
+<link rel="stylesheet" href="community-po-alignment.css?v=20261109-po1">
 </head>
 <body>
 <script>
@@ -264,11 +265,11 @@
       </section>
       <section id="groupsView" class="hide">
         <div class="subrow"><div class="subtabs"><button class="subtab active" data-view="groups">Nhóm</button><button class="subtab" data-view="market">Mua bán</button></div></div>
-        <div class="feature-intro"><div><h2>Nhóm theo ngành nghề</h2><p>Tạo nhóm với chủ đề, khu vực và nội quy rõ ràng.</p></div><button type="button" class="btn soft community-group-filter-toggle" data-community-group-action="filters" aria-expanded="false" aria-controls="communityGroupFilters"><span>Bộ lọc</span><span data-group-filter-count hidden></span></button><button class="btn primary" data-template="group">＋ Tạo nhóm</button></div>
+        <div class="feature-intro"><div><span class="community-po-eyebrow">NEXORA COMMUNITY</span><h2>Nhóm &amp; Chợ</h2><p>Tạo nhóm theo nghề, quản lý thành viên, đăng bài và mua bán quanh bạn.</p></div><button type="button" class="btn soft community-group-filter-toggle" data-community-group-action="filters" aria-expanded="false" aria-controls="communityGroupFilters"><span>Bộ lọc</span><span data-group-filter-count hidden></span></button><button class="btn primary" data-template="group">＋ Tạo nhóm</button></div>
         <div class="feature-layout community-single-column"><div class="stack" id="groupCards"></div></div>
       </section>
       <section id="pagesView" class="hide">
-        <div class="feature-intro"><div><h2>Fanpage</h2><p>Fanpage công khai cho tiệm, doanh nghiệp hoặc người làm nghề. Giới thiệu dịch vụ và đăng cập nhật cho người theo dõi.</p></div><button type="button" class="btn primary" data-template="page">＋ Tạo Fanpage</button></div>
+        <div class="feature-intro"><div><span class="community-po-eyebrow">NEXORA COMMUNITY</span><h2>Trang / Fanpage</h2><p>Tạo trang doanh nghiệp, đăng bài và quản lý nội dung ngay trong Community.</p></div><button type="button" class="btn primary" data-template="page">＋ Tạo Fanpage</button></div>
         <div class="page-scope-bar" role="tablist" aria-label="View Page"><button type="button" class="filter-chip active" role="tab" data-page-scope="discover" aria-selected="true">Khám phá</button><button type="button" class="filter-chip" role="tab" data-page-scope="mine" aria-selected="false">Fanpage của tôi</button><button type="button" class="filter-chip" role="tab" data-page-scope="following" aria-selected="false">Đang theo dõi</button></div>
         <div class="page-searchbar"><input id="pageSearch" class="field" type="search" placeholder="Tìm Fanpage theo tên hoặc thành phố" aria-label="Tìm Fanpage"><button type="button" class="btn soft community-toolbar-filter-toggle" data-community-toolbar-filter="pageIndustryFilter" aria-expanded="false" aria-controls="pageIndustryFilter"><span>Bộ lọc</span></button><select id="pageIndustryFilter" class="select" aria-label="Lọc lĩnh vực Fanpage"><option value="">Mọi lĩnh vực</option><option>Nail & làm đẹp</option><option>Nhà hàng & ăn uống</option><option>Dịch vụ khác</option></select></div>
         <div class="section-heading"><h2 id="pageSectionTitle">Khám phá Fanpage</h2></div><div id="pageCards" class="mini-list"></div>

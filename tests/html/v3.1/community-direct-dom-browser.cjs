@@ -34,7 +34,7 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-direct-dom';
           }
           await feed.locator('[data-footer-route="pages"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='pages');await feed.locator('#pageCards .page-card').first().waitFor();
         });
-        for(const route of ['groups','market','pages','jobs','shift','blog','connect','contacts','chatgroups','calls','privacy','friends','reels','live','news','wallet','wheel','meet','account','notifications','stories','people',...(account==='business'?['shop','transfer']:[])])await check('direct '+route,async()=>{
+        for(const route of ['groups','market','pages','jobs','shift','blog','connect','contacts','chatgroups','calls','privacy','friends','reels','live','news','wallet','wheel','meet','account','notifications','stories','people','shop',...(account==='business'?['transfer']:[])])await check('direct '+route,async()=>{
           await open(route);
           if(['connect','contacts','chatgroups','calls','privacy'].includes(route))await hub.locator('#connectPane .native-body').waitFor();
           else if(['groups','market','pages','jobs','shift','blog','transfer'].includes(route))await feed.locator('#'+({shift:'daywork',transfer:'jobs'}[route]||route)+'View').waitFor();

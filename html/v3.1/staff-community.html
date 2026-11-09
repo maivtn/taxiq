@@ -1279,11 +1279,11 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
       </section>
       <section id="groupsView" class="hide">
         <div class="subrow"><div class="subtabs"><button class="subtab active" data-view="groups">Nhóm</button><button class="subtab" data-view="market">Mua bán</button></div></div>
-        <div class="feature-intro"><div><h2>Nhóm theo ngành nghề</h2><p>Tạo nhóm với chủ đề, khu vực và nội quy rõ ràng.</p></div><button type="button" class="btn soft community-group-filter-toggle" data-community-group-action="filters" aria-expanded="false" aria-controls="communityGroupFilters"><span>Bộ lọc</span><span data-group-filter-count="" hidden=""></span></button><button class="btn primary" data-template="group">＋ Tạo nhóm</button></div>
+        <div class="feature-intro"><div><span class="community-po-eyebrow">NEXORA COMMUNITY</span><h2>Nhóm &amp; Chợ</h2><p>Tạo nhóm theo nghề, quản lý thành viên, đăng bài và mua bán quanh bạn.</p></div><button type="button" class="btn soft community-group-filter-toggle" data-community-group-action="filters" aria-expanded="false" aria-controls="communityGroupFilters"><span>Bộ lọc</span><span data-group-filter-count="" hidden=""></span></button><button class="btn primary" data-template="group">＋ Tạo nhóm</button></div>
         <div class="feature-layout community-single-column"><div class="stack" id="groupCards"></div></div>
       </section>
       <section id="pagesView" class="hide">
-        <div class="feature-intro"><div><h2>Fanpage</h2><p>Fanpage công khai cho tiệm, doanh nghiệp hoặc người làm nghề. Giới thiệu dịch vụ và đăng cập nhật cho người theo dõi.</p></div><button type="button" class="btn primary" data-template="page">＋ Tạo Fanpage</button></div>
+        <div class="feature-intro"><div><span class="community-po-eyebrow">NEXORA COMMUNITY</span><h2>Trang / Fanpage</h2><p>Tạo trang doanh nghiệp, đăng bài và quản lý nội dung ngay trong Community.</p></div><button type="button" class="btn primary" data-template="page">＋ Tạo Fanpage</button></div>
         <div class="page-scope-bar" role="tablist" aria-label="View Page"><button type="button" class="filter-chip active" role="tab" data-page-scope="discover" aria-selected="true">Khám phá</button><button type="button" class="filter-chip" role="tab" data-page-scope="mine" aria-selected="false">Fanpage của tôi</button><button type="button" class="filter-chip" role="tab" data-page-scope="following" aria-selected="false">Đang theo dõi</button></div>
         <div class="page-searchbar"><input id="pageSearch" class="field" type="search" placeholder="Tìm Fanpage theo tên hoặc thành phố" aria-label="Tìm Fanpage"><button type="button" class="btn soft community-toolbar-filter-toggle" data-community-toolbar-filter="pageIndustryFilter" aria-expanded="false" aria-controls="pageIndustryFilter"><span>Bộ lọc</span></button><select id="pageIndustryFilter" class="select" aria-label="Lọc lĩnh vực Fanpage"><option value="">Mọi lĩnh vực</option><option>Nail &amp; làm đẹp</option><option>Nhà hàng &amp; ăn uống</option><option>Dịch vụ khác</option></select></div>
         <div class="section-heading"><h2 id="pageSectionTitle">Khám phá Fanpage</h2></div><div id="pageCards" class="mini-list"></div>
@@ -1319,38 +1319,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 </div>
 <div id="notifyPanel" class="notify-panel panel hide" role="dialog" aria-label="Thông báo phù hợp"></div>
 <div id="modalRoot"></div><div id="toast" class="toast hide" role="status"></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </div></div></section>
@@ -1397,15 +1365,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   <div id="createGroupDialog" class="call-preview hidden" role="dialog" aria-modal="true" aria-labelledby="createGroupTitle"><div class="call-preview-card group-dialog-card"><h2 id="createGroupTitle">Create group</h2><div class="form-line"><label for="groupName">Group name</label><input id="groupName" class="demo-input" placeholder="e.g. Houston nail friends" maxlength="80"></div><div class="inline-actions"><button class="secondary" id="cancelCreateGroup">Cancel</button><button class="primary" id="confirmCreateGroup" disabled="">Create</button></div></div></div>
 
 
-
-
-
-
-
-
-
-
-
 </div></div></section>
       </main>
       <footer class="app-footer"><span>© 2026 NEXORA Touch.</span><div class="store-badges"><span><small>GET IT ON</small><strong>Google Play</strong></span><span><small>DOWNLOAD ON THE</small><strong>App Store</strong></span></div></footer>
@@ -1427,8 +1386,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   </section>
 
 
-
-
 </div><template data-community-template="/html/v3.1/community/modules/hub-tools/index.html">
   <aside class="sidebar"><div class="brand">NEXORA <span>TOUCH</span></div><div class="brand-sub">Community</div><div class="id-card"><b id="side-account">NEXORA ID · Cá nhân</b><small>Một tài khoản cho mọi mục</small></div><div class="nav-label">Cộng đồng</div><nav id="side-nav"></nav><div class="sidebar-foot">Bản mẫu tương tác · Tin đăng và gian hàng của bạn được lưu trên trình duyệt này.</div></aside>
   <header class="topbar"><button type="button" id="mobile-header-menu" class="mobile-header-btn mobile-header-menu" data-mobile-account-open="1" aria-label="Mở menu tài khoản"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button><button type="button" class="mobile-header-logo" data-section="home" aria-label="NEXORA Community, về Bảng tin"><span>N</span></button><button type="button" id="mobile-header-bell" class="mobile-header-btn mobile-header-bell" data-mobile-notifications-open="1" aria-label="Thông báo mẫu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"></path></svg><span class="mobile-header-badge">3</span></button><button type="button" id="mobile-header-chat" class="mobile-header-btn mobile-header-chat" data-section="messages" aria-label="Tin nhắn Community"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h13a3 3 0 0 1 3 3v9l-4-3H7a4 4 0 0 1-4-4V4Z"></path><path d="M9 16v2a3 3 0 0 0 3 3h8l2 1V10"></path></svg></button><div class="dashboard-search"><span aria-hidden="true">⌕</span><input type="search" aria-label="Search products" placeholder="Search products or features…"></div><div class="mobile-brand">NEXORA Community</div><div class="crumb"><strong id="crumb-label">Trang chủ</strong></div><div class="top-actions"><span class="wallet">✦ <span id="wallet-label">Ví điểm NEXORA</span>: <span id="wallet-points">1.280</span></span><button class="account-chip" id="role-button" title="Chuyển vai trò bản mẫu">◉ Cá nhân</button><button class="lang-btn" id="lang-button" aria-label="Switch language">EN</button></div><button type="button" id="mobile-header-apps" class="mobile-header-btn mobile-header-apps" data-mobile-apps-open="1" aria-label="Mở tất cả mục Community"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="5" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="19" cy="5" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="19" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle><circle cx="19" cy="19" r="1.5"></circle></svg></button></header>
@@ -1441,15 +1398,9 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   <dialog id="nx-language-dialog" class="nx-language-dialog" aria-labelledby="nx-language-title"><div class="nx-language-head"><h2 id="nx-language-title">Chọn ngôn ngữ</h2><button type="button" id="nx-language-close" aria-label="Close">×</button></div><div id="nx-language-list" class="nx-language-list"></div></dialog>
 
 
-
 <!-- module tach rieng: xem file module tuong ung -->
 <!-- module tach rieng: xem file module tuong ung -->
 <!-- module tach rieng: xem file module tuong ung -->
-
-
-
-
-
 
 
 </template>
@@ -1481,7 +1432,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
     </form>
   </dialog>
   <div id="friendsStatus" class="friends-status" role="status" aria-live="polite" hidden=""></div>
-
 
 
 </template>
@@ -1685,12 +1635,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 <button id="tourStartBtn" onclick="tourManualStart(event)">✦ AI SMART TOUR</button>
 
 <div id="toast"></div>
-
-
-
-
-
-
 
 
 </template>
@@ -2055,7 +1999,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 </div>
 
 
-
 </template>
 <template data-community-template="/html/v3.1/community/deals/nearby.html">
 <div class="persona"><span>Demo role:</span><button data-role="tech" class="on">💅 Jessica · tech</button><button data-role="owner">🏪 Kayla · owner</button></div>
@@ -2233,16 +2176,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 </div>
 
 
-
-
-
-
-
-
-
-
-
-
 </template>
 <template data-community-template="/html/v3.1/community/deals/deal-match.html">
 <div class="top"><div class="bar"><div><h1>✦ NEXORA Deal Match <span class="badge">DEMO</span></h1><div class="sub"><span class="vi">Clients say what they want · salons answer with a deal · the system matches</span><span class="en">Clients say what they want · salons answer with a deal · the system matches</span></div></div><span style="flex:1"></span><button class="btn ghost sm" id="tourBtn">✦ AI Tour</button><button class="btn ghost sm" id="langBtn">EN</button></div>
@@ -2308,10 +2241,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 <div class="stour hidden" id="tb"><div class="hd">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="bar"><i id="tBar"></i></div></div>
 
 
-
-
-
-
 </template>
 <template data-community-template="/html/v3.1/community/deals/campaigns.html">
 <div class="top"><div class="bar"><div><h1>📈 NEXORA Campaigns <span class="badge">DEMO</span></h1><div class="sub"><span class="vi">Connect channels · manage campaigns · revenue per campaign (from POS check-ins)</span><span class="en">Connect channels · manage campaigns · revenue per campaign (from POS check-ins)</span></div></div><span style="flex:1"></span><button class="btn ghost sm" id="tourBtn">✦ AI Tour</button><button class="btn ghost sm" id="langBtn">EN</button></div>
@@ -2359,10 +2288,6 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 </main>
 <div class="toast" id="toast"></div>
 <div class="stour hidden" id="tb"><div class="hd">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="pbar"><i id="tBar"></i></div></div>
-
-
-
-
 
 
 </template>
@@ -2444,30 +2369,7 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 <div class="stour hidden" id="tb"><div class="hd">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="pbar"><i id="tBar"></i></div></div>
 
 
-
-
-
-
 </template>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
       </main>
@@ -2490,16 +2392,13 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   <script src="../assets/nexora-shell.js?v=20261109-search-icon3" defer=""></script>
   <script src="../assets/vendor/lucide.min.js"></script>
   <script>if(window.lucide)window.lucide.createIcons();</script>
-  <script src="community/community-shared.js?v=20261109-friends1" defer=""></script>
-  <script src="community/community-direct-code.js?v=20261109-media-shortcuts2" data-community-code=""></script><script src="community/community-native.js?v=20261109-inline1"></script>
+  <script src="community/community-shared.js?v=20261109-po-alignment1" defer=""></script>
+  <script src="community/community-direct-code.js?v=20261109-po-alignment1" data-community-code=""></script><script src="community/community-native.js?v=20261109-po-alignment1"></script>
   <script src="community/community-platform.js?v=20261107-feature-shortcuts1"></script>
   <script src="community/community-directory.js?v=20261109-facebook-share1"></script>
   <script src="community/community-create-menu.js?v=20261109-create-order2"></script>
   <script src="community/community-additions.js?v=20261109-more-dedup1"></script>
-  <script src="community-integration.js?v=20261109-nav-tabs2" defer=""></script>
-
-
-
+  <script src="community-integration.js?v=20261109-po-alignment1" defer=""></script>
 
 
 </body></html>

@@ -205,11 +205,11 @@ async function verifyFlow(browser,viewport,packaged){
       await page.goto(origin+livePath+'&member=storefront-other-qa',{waitUntil:'domcontentloaded'});await visible(page,'.store-head');assert.equal(await page.locator('.store-progress').getAttribute('aria-valuenow'),'0','Another identity must not see the first storefront');
       await page.goto(origin+livePath,{waitUntil:'domcontentloaded'});await visible(page,'.store-head');assert.equal(await page.locator('.store-preview-title h2').textContent(),'Linh Studio · Business Storefront');
       for(const account of ['personal','business']){
-        await page.goto(origin+'/html/v3.1/staff-community.html?tab=shop&account='+account+'&role=tech',{waitUntil:'domcontentloaded'});await page.waitForURL(url=>url.searchParams.get('tab')==='feed');
-        assert.equal(await page.evaluate(()=>window.NEXORA_COMMUNITY_SHARED.canAccessFeature('shop')),false,account+' Tech must not gain storefront management');
-        assert.equal(await page.locator('.store-head').count(),0,account+' Tech must not mount the storefront');
+        await page.goto(origin+'/html/v3.1/staff-community.html?tab=shop&account='+account+'&role=tech',{waitUntil:'domcontentloaded'});await visible(page,'.store-head');
+        assert.equal(await page.evaluate(()=>window.NEXORA_COMMUNITY_SHARED.canAccessFeature('shop')),true,account+' Tech has a personal storefront');
+        assert.equal(await page.locator('[data-action=shop-add-service]').count(),0,account+' Tech has no salon services');
       }
-      checkpoint('business identity isolation; Personal/Tech and linked staff denied');
+      checkpoint('business identity isolation; Personal/Tech storefront without salon services');
     }
     assert.equal(entry.errors.length,0,'JavaScript errors '+entry.errors.join('; '));
     assert.equal(entry.failedRequests.length,0,'Failed essential requests '+JSON.stringify(entry.failedRequests));

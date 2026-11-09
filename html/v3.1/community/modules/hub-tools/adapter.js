@@ -1,6 +1,9 @@
 /* The PO storefront, Reels, Live and News share Community navigation and identity. */
 (() => {
   const shared=window.NEXORA_COMMUNITY_SHARED;
+  // Keep the PO controller's nodes, but let the host supply the single header/navigation.
+  for(const node of document.querySelectorAll('.sidebar,.topbar,.community-heading,.mobile-nav-row,#feature-menu-root'))node.style.setProperty('display','none','important');
+  document.querySelector('.container').style.cssText='margin:0!important;padding:16px!important;max-width:none!important;width:100%!important';
   const layout=document.createElement('style');layout.textContent='.topbar,.community-heading,.mobile-nav-row,#feature-menu-root,.live-links,#ai-fab{display:none!important}.container{margin:0!important;padding:16px!important;max-width:1200px}.native-body{padding:0!important}';document.head.append(layout);
   const poStorySamples=samplePages.slice();
   const originalStoryItems=storyItems;storyItems=function(){return [...originalStoryItems(),...poStorySamples.slice(0,4).map((page,index)=>({id:'sample-story-'+index,name:page.name,body:page.aboutVi,bodyEn:page.aboutEn,image:page.cover,sample:true}))];};
@@ -13,7 +16,7 @@
   save=function(){const result=originalSave();if(result)window.dispatchEvent(new CustomEvent('nexora-hub-tools-changed'));return result;};
   const originalOpenDialog=openDialog,originalOpenDish=openDishDialog;
   openDialog=function(kind,...args){if(kind==='shop'&&!shared.canAccessFeature('shop'))return false;return originalOpenDialog(kind,...args);};
-  openDishDialog=function(...args){if(!shared.canAccessFeature('shop'))return false;return originalOpenDish(...args);};
+  openDishDialog=function(...args){if(!shared.canAccessFeature('foodMerchant'))return false;return originalOpenDish(...args);};
   const originalSocialComposer=openSocialComposer;
   openSocialComposer=function(...args){const result=originalSocialComposer(...args);if(shared.role!=='owner')for(const node of document.querySelectorAll('[data-social-type="coupon"]'))node.remove();return result;};
   const originalRender=render;
