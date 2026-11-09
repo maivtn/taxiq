@@ -215,7 +215,17 @@
         const button=document.createElement('button');button.type='button';button.className='ecosystem-item';button.dataset.communityCompose=entry.kind;button.disabled=entry.disabled;
         const icon=document.createElement('span');icon.className='ecosystem-item-icon';icon.setAttribute('aria-hidden','true');const definition=window.lucide?.icons[entry.icon];if(definition)icon.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true',focusable:'false'}));
         const label=document.createElement('span');label.className='ecosystem-item-label';label.textContent=entry.label;button.append(icon,label);
-        button.addEventListener('click',()=>{const source=frames[0].contentDocument?.querySelector(entry.selector);if(!source||source.hidden||source.disabled)return;menu.hidden=true;navigate('feed');frames[0].contentDocument?.querySelector(entry.selector)?.click();});
+        button.addEventListener('click',async()=>{
+          const source=frames[0].contentDocument?.querySelector(entry.selector);if(!source||source.hidden||source.disabled)return;menu.hidden=true;
+          const feed=frames[0].contentDocument?.getElementById('feedView');
+          if(current||frames[0].hidden||!feed||feed.classList.contains('hide')||feed.classList.contains('deal-mode')){
+            await new Promise(resolve=>{
+              const ready=event=>{if(event.source===frames[0].contentWindow&&event.data?.type==='nexora-prototype-view'&&event.data.view==='feed'){window.removeEventListener('message',ready);resolve();}};
+              window.addEventListener('message',ready);navigate('feed');
+            });
+          }
+          const action=frames[0].contentDocument?.querySelector(entry.selector);if(action&&!action.hidden&&!action.disabled)action.click();
+        });
         return button;
       }));
       updateMenuLayout();
