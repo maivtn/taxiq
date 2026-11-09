@@ -45,7 +45,7 @@ fs.mkdirSync(output,{recursive:true});
         await check('Personal route and posting controls',async()=>{
           await open('community.html','account=personal&tab=jobs');
           await page.waitForURL('**/staff-community.html**');await personalControls();
-          assert.ok((await page.locator('#communityDemoRoleButton').innerText()).includes('Personal'));
+          assert.equal(await page.evaluate(()=>window.NEXORA_COMMUNITY_SHARED.role),'staff');
         });
         await check('Personal cannot open hiring through a composer deep link',async()=>{
           for(const kind of ['hiring','deal','dayhire'])await blockedComposer('personal',kind);
@@ -84,7 +84,7 @@ fs.mkdirSync(output,{recursive:true});
           await personalControls();assert.equal(await jobs.locator('#jobsView').getAttribute('data-jobs-tab'),'browse');
         });
         await check('Salon switch restores salon actions and removes worker actions',async()=>{
-          await page.locator('#communityDemoRoleButton').click();await page.locator('[data-demo-account="salon"]').click();
+          await open('community.html','account=business&tab=jobs');
           await page.waitForURL('**/community.html**');await jobs.locator('#jobsWorkflow').waitFor();
           assert.equal(await jobs.locator('#jobTemplates [data-template="hiring"]').isVisible(),true);
           assert.equal(await jobs.locator('#jobTemplates [data-template="seeking"]').isVisible(),false);

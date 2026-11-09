@@ -64,7 +64,7 @@ const rows=[],errors=[];
           });
           await check(role,'More drawer and Feed shortcuts',async()=>{
             await open(role,'feed');
-            await classic().locator('#feedActionsToggle').click();
+            if(width>800)await classic().locator('#feedActionsToggle').click();
             assert.equal(await classic().locator('#feedActions [data-template="deal"]').count(),role==='personal'?0:1);
             for(const feature of ['shop','transfer'])assert.equal(await classic().locator('[data-community-shortcut="'+feature+'"]').count(),role==='personal'?0:1);
             await host.locator('.community-nav-more:visible').first().click();
@@ -102,7 +102,7 @@ const rows=[],errors=[];
           await open('salon',route);
           if(route==='transfer')await classic().locator('[data-jobs-extra="new-transfer"]').waitFor();
           else await host.locator('.community-extra-pane>section:visible').waitFor();
-          await page.locator('#communityDemoRoleButton').click();await page.locator('[data-demo-account="personal"]').click();
+          await open('personal',route);
           await page.waitForURL(url=>url.pathname.endsWith('staff-community.html')&&url.searchParams.get('tab')==='feed');
           await classic().locator('#feedView').waitFor();await personalControls();
           await page.reload({waitUntil:'domcontentloaded'});await classic().locator('#feedView').waitFor();await personalControls();

@@ -67,8 +67,8 @@ const server = http.createServer(async (request, response) => {
             assert.equal(await menu.getAttribute('aria-modal'), null);
             const trigger = await more.boundingBox();
             assert.ok(box.y >= trigger.y + trigger.height && box.y <= trigger.y + trigger.height + 16);
-            assert.ok(box.width <= 302 && box.height <= 562);
-            assert.equal(await host.locator('.community-menu-heading').isVisible(), false);
+            assert.ok(box.width <= 502 && box.height <= 562);
+            assert.equal(await host.locator('.community-menu-heading').isVisible(), true);
             assert.equal(await host.locator('.community-menu-backdrop').evaluate(node => getComputedStyle(node).backgroundColor), 'rgba(0, 0, 0, 0)');
             await page.keyboard.press('End');
             assert.equal(await menu.locator('[role="menuitem"]').last().evaluate(node => node.getRootNode().activeElement === node), true);

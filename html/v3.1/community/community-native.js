@@ -20,6 +20,7 @@
       .replace(/(?<![\w.-])html(?![\w-])/g, '.native-html')
       .replace(/(?<![\w.-])body(?![\w-])/g, '.native-body')
       .replace(/@media\s*\(\s*(max|min)-width\s*:\s*(\d+)px\s*\)/g, '@container module ($1-width: $2px)')
+      .replace(/\b(\d*\.?\d+)d?v([hw])\b/g,(_,number,axis)=>'calc(var(--community-pane-'+(axis==='h'?'height':'width')+') * '+Number(number)/100+')')
       .replace(/__NEXORA_NATIVE_URL_(\d+)__/g, (all,index)=>urls[Number(index)]);
   }
   function regionRoot(host) {
@@ -50,6 +51,8 @@
     }
     const sources=definition.scripts.map(item=>({url:new URL(item.url,url).href,code:item.code}));
     const root=regionRoot(host);
+    function dimensions(){host.style.setProperty('--community-pane-height',(host.clientHeight||browser.innerHeight)+'px');host.style.setProperty('--community-pane-width',(host.clientWidth||browser.innerWidth)+'px');}
+    dimensions();const sizeObserver=new ResizeObserver(dimensions);sizeObserver.observe(host);
     let html=host.querySelector(':scope > .native-html');
     if(!html){
       html=browser.document.createElement('div');html.className='native-html';
@@ -163,7 +166,7 @@
       set(target,key,value){if(key in windowAPI)windowAPI[key]=value;else target[key]=value;return true;}
     });
     const program = sources.map(script => '__scope.setScript(' + JSON.stringify(script.url) + ');\n' + script.code + '\n;' + (/\/qrcode\.min\.js(?:\?|$)/.test(script.url)?'window.QRCode=QRCode;':'')).join('\n');
-    const api = {document:doc,window:facade,root,url,send(data){facade.postMessage(data);},destroy(){observer.disconnect();for(const [target,type,fn,opts] of listeners)target.removeEventListener(type,fn,opts);for(const id of timers){browser.clearTimeout(id);browser.clearInterval(id);}root.replaceChildren();host.communityModule=null;}};
+    const api = {document:doc,window:facade,root,url,send(data){facade.postMessage(data);},destroy(){observer.disconnect();sizeObserver.disconnect();for(const [target,type,fn,opts] of listeners)target.removeEventListener(type,fn,opts);for(const id of timers){browser.clearTimeout(id);browser.clearInterval(id);}root.replaceChildren();host.communityModule=null;}};
     host.communityModule = api;
     try { new Function('window','document','location','parent','__scope','with(window){\n' + program + '\n__scope.invoke=(code,event,element)=>eval("(function(event){"+code+"\\n}).call(element,event)");\n}').call(facade,facade,doc,location,parent,scope); }
     catch(error){host.communityModule=null;api.destroy();throw error;}
