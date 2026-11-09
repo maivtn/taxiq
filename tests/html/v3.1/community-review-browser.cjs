@@ -171,8 +171,8 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
       const boxes=await actions.evaluateAll(nodes=>nodes.map(node=>({height:node.getBoundingClientRect().height,y:node.getBoundingClientRect().y,icons:node.querySelectorAll('svg').length,label:node.textContent.trim()})));
       assert.ok(boxes.every(box=>box.height<=30&&box.icons===1&&box.label)&&Math.abs(boxes[0].y-boxes[1].y)<2,JSON.stringify(boxes));
       await jobs.screenshot({path:path.join(output,`${width}-business-workers-compact.png`)});
-      await card.locator('[data-jobs-extra=worker-profile]').click();await pane.locator('#modalTitle').waitFor();await pane.locator('#closeModal').click();
-      await card.locator('[data-jobs-extra=worker-invite]').click();await pane.locator('#jobsInviteForm').waitFor();await pane.locator('#closeModal').click();
+      await card.locator('[data-jobs-extra=worker-profile]').click();await pane.locator('#jobsDialogTitle').waitFor();await pane.locator('[data-jobs-dialog] [data-jobs-action=dismiss]').click();
+      await card.locator('[data-jobs-extra=worker-invite]').click();await pane.locator('#jobsInviteForm').waitFor();await pane.locator('[data-jobs-dialog] [data-jobs-action=dismiss]').click();
      }
      await nav.locator('[data-jobs-tab=browse]').click();await jobs.locator('#jobPosts').waitFor();
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
