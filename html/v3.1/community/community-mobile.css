@@ -431,7 +431,7 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded #jobsView.jobs-enhanced > .feature-intro:not(.jobs-staff-actions),
   body.embedded #feedView.deal-mode #dealLanding { display: none; }
 
-  body.embedded:has(#jobsView.jobs-staff-layout:not(.hide)) #localDiscovery.has-context-action { display:none; }
+  body.embedded:has(#jobsView.jobs-staff-layout:not(.hide)) #localDiscovery.has-context-action { display:none!important; }
 
   body.embedded #jobsView #jobsWorkflow { margin: 0 0 6px; }
   body.embedded #jobsView .jobs-workflow-head { grid-template-columns: minmax(0, 1fr); gap: 8px; }

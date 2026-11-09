@@ -51,6 +51,7 @@ const rows=[],errors=[];
               assert.equal(await classic().locator('[data-jobs-action="open-pos"]').count(),role==='personal'?0:1);
               assert.equal(await classic().locator('#jobTemplates [data-template="hiring"]').isVisible(),role==='salon');
               assert.equal(await classic().locator('#jobTemplates [data-template="seeking"]').isVisible(),role==='personal');
+              if(role==='personal'&&width===390)assert.equal(await classic().locator('#localDiscovery .community-context-action[data-view="daywork"]:visible').count(),0);
             }
             if(route==='shift'){
               assert.equal(await classic().locator('[data-shifts-action="post"]').isVisible(),role==='salon');
