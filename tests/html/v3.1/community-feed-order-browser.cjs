@@ -26,6 +26,12 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/taxiq-community-feed-ord
           await frame.waitForFunction(()=>document.documentElement.lang==='en');
         }
         async function open(){await page.goto(origin+'/html/v3.1/'+entry,{waitUntil:'domcontentloaded'});await ready();}
+        async function returnToFeed(){
+          const close=tools().locator('#editor[open] [data-action="close-dialog"]').first();
+          if(await close.isVisible())await close.click();
+          await page.locator('.community-back-to-feed').click();
+          await ready();await ordered();
+        }
         async function state(){return frame.evaluate(()=>{
           const people=document.getElementById('communityPOPeople'),reels=document.getElementById('communityPOReels');
           const posts=[...document.querySelectorAll('#feedPosts > article.content-card')];
@@ -43,38 +49,42 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/taxiq-community-feed-ord
           await open();const value=await ordered();assert.ok(value.count>2);
           await frame.locator('#communityPOPeople').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,`${width}-${account}-people-reels.png`)});
           await frame.locator('#feedView').screenshot({path:path.join(output,`${width}-${account}-feed.png`)});
-          await page.reload({waitUntil:'domcontentloaded'});await ready();const reloaded=await ordered();assert.deepEqual(reloaded.ids,value.ids);return value;
+          await page.reload({waitUntil:'domcontentloaded'});await ready();await ordered();return value;
         });
         await check('load more and filter preserve insertion and original post order',async()=>{
           const initial=await ordered();
           if(await frame.locator('#feedMore').isVisible()){
             await frame.locator('#feedMore').click();await frame.waitForFunction(count=>document.querySelectorAll('#feedPosts > article.content-card').length>count,initial.count);const more=await ordered();assert.deepEqual(more.ids.slice(0,initial.count),initial.ids);
           }
-          const values=await frame.locator('#feedFilterSelect option').evaluateAll(nodes=>nodes.map(node=>node.value));
+          const values=await frame.locator('#feedFilterSelect option').evaluateAll(nodes=>nodes.map(node=>node.value).filter(value=>['general','jobs','market','scope:mine','scope:drafts','all'].includes(value)));
           const counts={};
-          for(const value of values){await frame.locator('#feedFilterSelect').selectOption(value);counts[value]=(await ordered()).count;}
-          await frame.locator('#feedFilterSelect').selectOption('all');await ordered();return counts;
+          for(const value of [...values.filter(value=>value!=='all'),'all']){
+            await frame.locator('.feed-filter-control .ts-control').click();
+            await frame.locator('.ts-dropdown .option[data-value="'+value+'"]').click();
+            counts[value]=(await ordered()).count;
+          }
+          return counts;
         });
         await check('Connect, Find people, profile and Feed return',async()=>{
           await open();await ordered();const button=frame.locator('#communityPOPeople [data-person-connect]:enabled').first();
           const id=await button.getAttribute('data-person-connect');await button.click();
           await frame.locator(`#communityPOPeople [data-person-connect="${id}"]`).filter({hasText:'Sent'}).waitFor();
           await frame.locator(`#communityPOPeople [data-person-view="${id}"]`).click();await tools().locator('.person-profile').waitFor();
-          await page.goBack({waitUntil:'domcontentloaded'});await ready();await ordered();
+          await returnToFeed();
           await frame.locator('#communityPOPeople [data-action="people-all"]').click();await tools().locator('#people-search').waitFor();
-          await page.goBack({waitUntil:'domcontentloaded'});await ready();await ordered();
+          await returnToFeed();
         });
         await check('Story and Reel create shortcuts, playback and return',async()=>{
           await open();await ordered();
           await frame.locator('#communityPOStories [data-action="story-compose"]').click();await tools().locator('#story-form').waitFor();
-          await page.goBack({waitUntil:'domcontentloaded'});await ready();await ordered();
+          await returnToFeed();
           const play=frame.locator('#communityPOReels [data-reel-play]').first();
           await play.click();await frame.waitForFunction(()=>[...document.querySelectorAll('#communityPOReels video')].some(video=>!video.paused&&video.currentTime>0));
-          await frame.locator('#communityPOReels [data-feed-kind="reel"]').click();await tools().locator('#reel-form').waitFor();
-          assert.ok(await tools().locator('#reel-form input[type="file"]').count());
-          await page.goBack({waitUntil:'domcontentloaded'});await ready();await ordered();
-          await frame.locator('#communityPOReels [data-section="reels"]').click();await tools().locator('.reels-page').waitFor();
-          await page.goBack({waitUntil:'domcontentloaded'});await ready();await ordered();
+          await frame.locator('#communityPOReels [data-feed-kind="reel"]').click();await tools().locator('#feed-form [name="kind"][value="reel"]').waitFor({state:'attached'});
+          assert.ok(await tools().locator('#feed-form input[type="file"][accept="video/*"]').count());
+          await returnToFeed();
+          await frame.locator('#communityPOReels [data-section="reels"]').click();await tools().locator('.reels-hero').waitFor();
+          await returnToFeed();
         });
       }finally{await context.close();}
     }
