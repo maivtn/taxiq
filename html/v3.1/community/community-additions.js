@@ -219,26 +219,26 @@
     const postItems=document.createElement('div');postItems.className='community-menu-group-items';createItems.append(postItems);
     // Reuse the Feed's role-filtered actions, labels and permission checks.
     const postSources=[
-      ['photos','#feedMoreActions [data-po-route="post"]','Images'],
-      ['tips','#feedActions [data-template="tip"]','Lightbulb'],
-      ['ask','#feedActions [data-template="question"]','CircleHelp'],
-      ['poll','#feedActions [data-template="poll"]','ChartNoAxesColumn'],
-      ['events','#feedActions [data-template="event"]','CalendarDays'],
-      ['sale','#feedActions [data-market-kind="sale"]','Tag'],
-      ['job','#feedActions [data-template="hiring"],#feedActions [data-template="seeking"]','BriefcaseBusiness'],
-      ['blog','#feedActions [data-blog-create]','NotebookPen'],
-      ['wanted','#feedActions [data-market-kind="want"]','Search'],
-      ['deal','#feedActions [data-template="deal"]','TicketPercent']
+      ['photos','#feedMoreActions [data-po-route="post"]','photos'],
+      ['tips','#feedActions [data-template="tip"]','tip'],
+      ['ask','#feedActions [data-template="question"]','question'],
+      ['poll','#feedActions [data-template="poll"]','poll'],
+      ['events','#feedActions [data-template="event"]','event'],
+      ['sale','#feedActions [data-market-kind="sale"]','sale'],
+      ['job','#feedActions [data-template="hiring"],#feedActions [data-template="seeking"]','hiring'],
+      ['blog','#feedActions [data-blog-create]','blog'],
+      ['wanted','#feedActions [data-market-kind="want"]','want'],
+      ['deal','#feedActions [data-template="deal"]','deal']
     ];
     let postMenuObserver,postMenuSignature='';
     function refreshPostMenu(){
       const source=frames[0].contentDocument;
-      const entries=postSources.flatMap(([kind,selector,icon])=>{const button=source?.querySelector(selector);if(!button||button.hidden)return [];const label=button.querySelector(':scope > span:last-child')?.textContent.trim()||button.textContent.trim();return label?[{kind,selector,label,disabled:button.disabled,icon:button.dataset.template==='seeking'?'UserRoundSearch':icon}]:[];});
+      const entries=postSources.flatMap(([kind,selector,icon])=>{const button=source?.querySelector(selector);if(!button||button.hidden)return [];const label=button.querySelector(':scope > span:last-child')?.textContent.trim()||button.textContent.trim();return label?[{kind,selector,label,disabled:button.disabled,icon:button.dataset.template==='seeking'?'seeking':icon}]:[];});
       const signature=JSON.stringify(entries);if(signature===postMenuSignature)return;postMenuSignature=signature;
       createToggle.querySelector('.community-menu-post-count').textContent=entries.length+' post types ⌄';
       postItems.replaceChildren(...entries.map(entry=>{
         const button=document.createElement('button');button.type='button';button.className='ecosystem-item';button.dataset.communityCompose=entry.kind;button.disabled=entry.disabled;
-        const icon=document.createElement('span');icon.className='ecosystem-item-icon';icon.setAttribute('aria-hidden','true');const definition=window.lucide?.icons[entry.icon];if(definition)icon.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true',focusable:'false'}));
+        const icon=document.createElement('span');icon.className='ecosystem-item-icon';icon.setAttribute('aria-hidden','true');const image=document.createElement('img');image.src=window.NEXORA_COMMUNITY_CREATE_MENU.iconURL(entry.icon);image.alt='';image.draggable=false;icon.append(image);
         const label=document.createElement('span');label.className='ecosystem-item-label';label.textContent=entry.label;button.append(icon,label);
         button.addEventListener('click',async()=>{
           const source=frames[0].contentDocument?.querySelector(entry.selector);if(!source||source.hidden||source.disabled)return;menu.hidden=true;

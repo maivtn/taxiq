@@ -23,7 +23,15 @@
         parent.postMessage({type:'nexora-community-page-navigate',pageId:button.dataset.footerPage||'',pageMode:'view',pageScope:'discover'},location.origin);
       }else parent.postMessage({type:'nexora-community-route',route:button.dataset.footerRoute},location.origin);
     });
-    feed.append(footer);
+    const sidebar=feed.querySelector('.feed-posting-tip');
+    if(!sidebar){feed.append(footer);return;}
+    const desktop=window.matchMedia('(min-width:1024px)');
+    function placeFooter(){
+      const container=desktop.matches?sidebar:feed;
+      if(footer.parentElement!==container)container.append(footer);
+    }
+    placeFooter();
+    window.addEventListener('resize',placeFooter);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

@@ -21,6 +21,10 @@
     ['hiring','Post a job',artwork('posting-8522069.png'),'jobs',{composeKind:'hiring'},'owner'],
     ['seeking','Seeking work',oneqr('user-round'),'jobs',{composeKind:'seeking'},'staff']
   ];
+  function iconURL(kind){
+    const entry=entries.find(([name])=>name===kind);
+    return entry?new URL(entry[2],base).href:null;
+  }
   function mount(root,{role,navigate}){
     const trigger=root.getElementById('communityCreate');
     if(!trigger)return;
@@ -45,11 +49,11 @@
       .community-create-menu img{display:block;flex:none;width:24px;height:24px;object-fit:contain}
     `;
     root.append(style,menu);
-    for(const [kind,label,icon,route,context,requiredRole] of entries){
+    for(const [kind,label,,route,context,requiredRole] of entries){
       if(requiredRole&&requiredRole!==role)continue;
       const button=document.createElement('button');button.type='button';
       button.dataset.createKind=kind;button.setAttribute('role','menuitem');
-      const image=document.createElement('img');image.src=new URL(icon,base).href;image.alt='';
+      const image=document.createElement('img');image.src=iconURL(kind);image.alt='';
       const text=document.createElement('span');text.textContent=label;button.append(image,text);
       button.addEventListener('click',()=>{close();navigate(route,{...context});});
       menu.append(button);
@@ -78,5 +82,5 @@
     window.visualViewport?.addEventListener('resize',()=>{if(isOpen())position();});
     return {close};
   }
-  window.NEXORA_COMMUNITY_CREATE_MENU={mount};
+  window.NEXORA_COMMUNITY_CREATE_MENU={mount,iconURL};
 })();

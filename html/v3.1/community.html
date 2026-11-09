@@ -1048,6 +1048,17 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
 }
 #community-staging #feedComposerCard .feed-media-shortcuts { display:flex; flex:none; gap:4px; padding:0; }
 #community-staging #feedComposerCard .feed-media-shortcuts button { min-height:36px; padding-block:4px; }
+@media (min-width:1024px) {
+  #community-staging #feedView:not(.deal-mode) > .feature-layout {
+    grid-template-columns:minmax(0,1fr) minmax(220px,24%);
+  }
+  #community-staging .feed-posting-tip #communityFeedFooter { margin-top:0; }
+  #community-staging .feed-posting-tip #communityFeedFooter .live-home {
+    display:grid;
+    justify-content:stretch;
+    padding:14px;
+  }
+}
 @media (max-width:1023px) {
   #community-staging #communityFindPeople,
   #community-staging #communityPOShortcuts,
@@ -2364,11 +2375,11 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   <script src="../assets/vendor/lucide.min.js"></script>
   <script>if(window.lucide)window.lucide.createIcons();</script>
   <script src="community/community-shared.js?v=20261109-friends1"></script>
-  <script src="community/community-direct-code.js?v=20261109-inline1" data-community-code=""></script><script src="community/community-native.js?v=20261109-inline1"></script>
+  <script src="community/community-direct-code.js?v=20261109-feed-layout2" data-community-code=""></script><script src="community/community-native.js?v=20261109-inline1"></script>
   <script src="community/community-platform.js?v=20261107-feature-shortcuts1"></script>
   <script src="community/community-directory.js?v=20261109-facebook-share1"></script>
-  <script src="community/community-create-menu.js?v=20261109-create-order2"></script>
-  <script src="community/community-additions.js?v=20261109-community-search2"></script>
+  <script src="community/community-create-menu.js?v=20261109-create-icons3"></script>
+  <script src="community/community-additions.js?v=20261109-create-icons3"></script>
   <script src="community-integration.js?v=20261109-inline1"></script>
 
 
