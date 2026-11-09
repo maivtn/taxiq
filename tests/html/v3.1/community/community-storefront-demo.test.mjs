@@ -34,7 +34,7 @@ test('existing and partially entered storefronts keep their fields, items and po
 test('demo data remains editable and deleted examples stay deleted on subsequent visits',t=>{
   const demo=setup(t),state=empty();demo.seed(state,owner);
   state.shop.name='Updated name';state.shop.items[0].title='Edited lamp';state.shop.items.splice(1,1);state.feedPosts.splice(0,1);
-  const before=clone(state);assert.equal(demo.seed(state,owner),false);assert.deepEqual(state,before);
+  const before=clone(state);assert.equal(demo.seed(state,owner),false);assert.deepEqual(clone(state),before);
 });
 
 test('personal users and other business identities receive no demo storefront',t=>{
