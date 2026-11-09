@@ -39,13 +39,9 @@
       .community-create-menu{position:fixed;inset:auto;margin:0;box-sizing:border-box;width:min(300px,calc(100vw - 24px));padding:6px;border:1px solid #e3e8f4;border-radius:13px;background:#fff;box-shadow:0 14px 36px #26376326;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;color:#26334c;font-family:Inter,Arial,sans-serif}
       .community-create-menu:popover-open{display:grid;gap:4px}
       .community-create-menu::backdrop{background:transparent}
-      .community-create-menu button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;box-sizing:border-box;padding:8px 10px;border:1px solid #dcd5ff;border-radius:9px;background:#f6f3ff;box-shadow:0 3px 0 #e2dcf8;color:inherit;text-align:left;font:750 12px/1.35 Inter,Arial,sans-serif;cursor:pointer}
-      .community-create-menu button:is([data-create-kind="tip"],[data-create-kind="sale"]){border-color:#f2d79a;background:#fff9e9;box-shadow:0 3px 0 #f0dfb2}
-      .community-create-menu button:is([data-create-kind="question"],[data-create-kind="hiring"],[data-create-kind="seeking"]){border-color:#f4cab2;background:#fff3eb;box-shadow:0 3px 0 #f1d4c4}
-      .community-create-menu button[data-create-kind="poll"]{border-color:#eee19b;background:#fffde3;box-shadow:0 3px 0 #eee2a8}
-      .community-create-menu button[data-create-kind="event"]{border-color:#f0cade;background:#fff4f8;box-shadow:0 3px 0 #eecddd}
-      .community-create-menu button:hover{filter:brightness(.97)}
-      .community-create-menu button:focus-visible{outline:2px solid #7961e9;outline-offset:-3px}
+      .community-create-menu button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;box-sizing:border-box;padding:8px 10px;border:0;border-radius:6px;background:#fff;box-shadow:none;color:inherit;text-align:left;font:600 12px/1.35 Inter,Arial,sans-serif;cursor:pointer}
+      .community-create-menu button:hover{background:#f5f6f8}
+      .community-create-menu button:focus-visible{outline:2px solid #7961e9;outline-offset:-2px;background:#f5f3ff}
       .community-create-menu img{display:block;flex:none;width:24px;height:24px;object-fit:contain}
     `;
     root.append(style,menu);

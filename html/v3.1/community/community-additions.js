@@ -26,7 +26,11 @@
     function attachBlogTabs(){
       const doc=frames[0].contentDocument,view=doc?.getElementById('blogView');
       if(!view)return;
-      view.prepend(blogTabs);doc.head.append(blogTabStyle);
+      view.prepend(blogTabs);
+      if(!blogTabStyle.isConnected){
+        window.NEXORA_NATIVE.regionRoot(frames[0]).scopeStyle(blogTabStyle);
+        blogTabStyle.dataset.communityScoped='1';doc.head.append(blogTabStyle);
+      }
     }
     frames[0].addEventListener('load',attachBlogTabs);attachBlogTabs();
     root.addEventListener('click',event=>{
@@ -469,7 +473,7 @@
       }
     }
     root.addEventListener('click',event=>{
-      const button=event.target.closest('[data-community-extra]');if(button)navigate(button.dataset.communityExtra==='news'?'blog':button.dataset.communityExtra);
+      const button=event.target.closest('[data-community-extra]');if(button){menu.hidden=true;navigate(button.dataset.communityExtra==='news'?'blog':button.dataset.communityExtra);}
     });
     root.addEventListener('click',event=>{
       if(current&&event.target.closest('.tab[data-view],[data-top-sub-view],[data-quick-view],[data-side-view],#messagesButton,#accountButton,#viewNotification,#startTour,#menuStartTour'))deactivate();
