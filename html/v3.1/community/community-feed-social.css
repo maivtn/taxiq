@@ -8,7 +8,6 @@
 .community-feed-post-name-row{display:flex;align-items:center;gap:7px;min-width:0;margin-top:1px}
 .community-feed-post-author{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#2c3853;font-size:14px;font-weight:800;line-height:1.4}
 .community-feed-post-name-row>.community-feed-post-author{flex:1}
-.community-feed-post-name-row>.community-feed-post-business{flex:none;white-space:nowrap}
 .community-feed-post-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px;margin-top:5px;min-width:0}
 .community-feed-post-meta>.community-feed-post-byline,.community-feed-post-meta>.community-feed-post-destinations{margin-top:0}
 .community-feed-post-byline time{white-space:nowrap}
@@ -26,7 +25,7 @@
 .community-feed-post-destinations{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:6px}
 .community-feed-post-destination{display:inline-flex;align-items:center;max-width:100%;padding:3px 7px;border-radius:6px;background:#f3f5f9;color:#7a859a;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
 .community-feed-post-header>.community-social-menu-wrap{position:relative;align-self:start;margin-top:-3px;z-index:3}
-.community-social-menu-toggle{display:grid;place-items:center;width:28px;height:28px;padding:0;border:1px solid #e8eaf2;border-radius:8px;background:#fff;color:#66718a;font-size:18px;font-weight:800;line-height:1;cursor:pointer}
+.community-feed-post-header .community-social-menu-toggle{display:grid;min-height:28px;place-items:center;width:28px;height:28px;padding:0;border:1px solid #e8eaf2;border-radius:8px;background:#fff;color:#66718a;font-size:18px;font-weight:800;line-height:1;cursor:pointer}
 .community-social-menu{position:absolute;right:0;top:calc(100% + 4px);min-width:160px;padding:5px;border:1px solid #e2e7f0;border-radius:12px;background:#fff;box-shadow:0 10px 25px #1f2c4d1c}
 .community-social-menu[hidden]{display:none}
 .community-social-menu .community-social-link{display:flex;width:100%;justify-content:flex-start;padding:11px 12px;border-radius:7px;text-align:left;white-space:nowrap}
