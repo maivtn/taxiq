@@ -170,6 +170,7 @@
       if(definition)button.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true'}));
       button.append(document.createTextNode(label));menu.insertBefore(button,root.getElementById('menuStartTour'));
     }
+    menu.querySelector('[data-quick-view="blog"]')?.remove();
     const menuIcons={feed:'LayoutList',market:'UsersRound',pages:'Building2',blog:'Newspaper',jobs:'BriefcaseBusiness',daywork:'CalendarDays',deals:'Ticket',connect:'MessageCircle',...ICONS};
     for(const button of menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')){
       const label=document.createElement('span');label.className='ecosystem-item-label';label.textContent=button.textContent.trim().replace(/^✦\s*/,'');
@@ -451,7 +452,7 @@
       }
     }
     root.addEventListener('click',event=>{
-      const button=event.target.closest('[data-community-extra]');if(button)navigate(button.dataset.communityExtra);
+      const button=event.target.closest('[data-community-extra]');if(button)navigate(button.dataset.communityExtra==='news'?'blog':button.dataset.communityExtra);
     });
     root.addEventListener('click',event=>{
       if(current&&event.target.closest('.tab[data-view],[data-top-sub-view],[data-quick-view],[data-side-view],#messagesButton,#accountButton,#viewNotification,#startTour,#menuStartTour'))deactivate();
