@@ -1,0 +1,27 @@
+/* PO review presentation: original copy, data, and matching actions are retained. */
+body.community-deal-module{background:#f7f8fc}
+body.community-deal-module>main{max-width:1200px;margin:0 auto;padding:18px 22px 56px}
+body.community-deal-module .roles{max-width:100%;width:max-content;gap:6px;margin:0 0 12px;padding:4px;border:1px solid #dfe4ef;border-radius:13px;background:#f0f2f8}
+body.community-deal-module .roles button{flex:0 0 auto;min-width:110px;min-height:42px;padding:9px 14px;border:1px solid transparent;border-radius:9px;background:transparent;color:#596987;font-size:12px}
+body.community-deal-module .roles button.on{border-color:#c9c1ff;background:#fff;color:#5143c9;box-shadow:0 2px 8px #242a5812}
+body.community-deal-module .roles .n{background:#eeeaff;color:#624bd5}
+body.community-deal-module #bDem{padding:22px 24px 26px}
+body.community-deal-module #bDem>h3{font-size:17px;line-height:1.35}
+body.community-deal-module #bDem>.muted{margin-top:4px}
+body.community-deal-module #demand{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:17px}
+body.community-deal-module #demand .dem{display:grid;grid-template-columns:56px minmax(0,1fr);align-items:start;gap:14px;min-width:0;min-height:142px;margin:0;padding:16px;border:1px solid #dfe4ef;border-radius:14px;background:#fff;box-shadow:0 2px 8px #273a7008}
+body.community-deal-module #demand .dem .cnt{width:56px;height:56px;border-radius:12px;font-size:19px}
+body.community-deal-module #demand .dem .cnt small{font-size:9px}
+body.community-deal-module #demand .dem h4{font-size:14px;line-height:1.35}
+body.community-deal-module #demand .dem .meta{gap:4px 10px;margin-top:5px;font-size:11px;line-height:1.45}
+body.community-deal-module #demand .dem .meta span{max-width:100%}
+body.community-deal-module #demand .dem .acts{margin-top:11px}
+body.community-deal-module #demand .dem .btn{min-height:40px;padding:8px 13px;font-size:11.5px}
+body.community-deal-module #bForm{border-color:#d5ccff;background:#fbfaff}
+body.community-deal-module #bForm .row{gap:12px}
+body.community-deal-module #bForm .f{margin-top:14px}
+body.community-deal-module #bForm .acts{margin-top:16px}
+body.community-deal-module .btn:focus-visible,body.community-deal-module .roles button:focus-visible{outline:3px solid #a99aff;outline-offset:2px}
+@media(max-width:900px){body.community-deal-module #demand{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:700px){body.community-deal-module>main{padding:12px 14px 40px}body.community-deal-module #bDem{padding:17px 15px 19px}body.community-deal-module .roles{width:100%}body.community-deal-module .roles button{flex:1;min-width:0;padding:9px 7px}body.community-deal-module #demand{gap:9px;margin-top:14px}body.community-deal-module #demand .dem{min-height:0;padding:13px;grid-template-columns:50px minmax(0,1fr);gap:11px}body.community-deal-module #demand .dem .cnt{width:50px;height:50px;font-size:17px}body.community-deal-module #bForm .row{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:420px){body.community-deal-module #demand .dem .btn{width:100%}body.community-deal-module #demand .dem .meta{gap:3px 8px}body.community-deal-module .roles button{font-size:11px}}

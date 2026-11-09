@@ -44,7 +44,7 @@
       const business=root.querySelector('.community-deals-business');
       if(business){business.dataset.active=String(['campaign','redeem'].includes(mainRoute(selected)));business.querySelector('[data-deal-route="campaign"]').setAttribute('aria-pressed',String(mainRoute(selected)==='campaign'));}
       const context=root.querySelector('.community-deals-context-actions');
-      const destination=selected==='nearby'?'industry':selected==='industry'?'nearby':adapter.role==='owner'&&selected==='opening'?'openingBusiness':selected==='openingBusiness'?'opening':null;
+      const destination=adapter.role==='owner'&&selected==='opening'?'openingBusiness':selected==='openingBusiness'?'opening':null;
       context.hidden=!destination;
       if(destination){const label=destination==='openingBusiness'?'Create opening campaign':destination==='opening'?'Opening soon near you':ROUTES[destination].label;context.innerHTML=`<button type="button" class="community-deals-tab" data-deal-route="${destination}">${icon(ROUTES[destination].icon)}<span>${label}</span></button>`;}
     }
