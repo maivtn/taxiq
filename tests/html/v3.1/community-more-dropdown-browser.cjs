@@ -97,8 +97,9 @@ const server = http.createServer(async (request, response) => {
           await page.mouse.click(app.x+app.width-4, app.y+app.height/2);
           await menu.waitFor({state:'hidden'});
           await more.click();
-          await menu.locator('[data-community-extra="people"]').click();
-          await page.waitForURL(url => url.searchParams.get('tab') === 'people');
+          assert.equal(await menu.locator('[data-community-extra="people"]').count(),0);
+          await menu.locator('[data-community-extra="friends"]').click();
+          await page.waitForURL(url => url.searchParams.get('tab') === 'friends');
           await menu.waitFor({state:'hidden'});
         });
         await open('feed');

@@ -202,7 +202,7 @@
     },true);
     document.addEventListener('click',event=>{const path=event.composedPath();if(!menu.hidden&&!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
     document.addEventListener('focusin',event=>{if(menu.hidden||compactMenu())return;const path=event.composedPath();if(!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
-    for(const [route,label] of Object.entries(LABELS)){if(['deals','page-tools','group-tools','food-market'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
+    for(const [route,label] of Object.entries(LABELS)){if(['deals','page-tools','group-tools','food-market','people'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
       const button=document.createElement('button');button.type='button';button.dataset.communityExtra=route;
       const definition=window.lucide?.icons[ICONS[route]];
       if(definition)button.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true'}));
@@ -242,7 +242,7 @@
       (route==='post'?createItems:toolRoutes.has(route)||button.id==='menuStartTour'?toolItems:businessRoutes.has(route)?businessItems:exploreRoutes.has(route)?exploreItems:communityItems).append(button);
     }
     // Match the PO directory order while retaining every existing destination.
-    for(const [items,routes] of [[communityItems,['connect','feed','market','pages','friends','people']],[businessItems,['shop','transfer','realestate','jobs','daywork']],[exploreItems,['food','deals','live','reels','news','blog','stories','explore']]]){
+    for(const [items,routes] of [[communityItems,['connect','feed','market','pages','friends']],[businessItems,['shop','transfer','realestate','jobs','daywork']],[exploreItems,['food','deals','live','reels','news','blog','stories','explore']]]){
       for(const route of routes){const button=[...items.children].find(button=>(button.dataset.quickView||button.dataset.communityExtra)===route);if(button)items.append(button);}
     }
     menuCount.textContent=(existingMenuItems.length-1)+' more sections';

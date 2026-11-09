@@ -31,6 +31,9 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      }else await groups.locator('[data-po-group-discover]').click();
      assert.ok((await groups.locator(':scope>.feature-intro').boundingBox()).height<=115);
      await groups.screenshot({path:path.join(output,`${width}-${account}-groups.png`)});
+     await hub.locator('.community-nav-more:visible').first().click();const menu=hub.locator('#ecosystemMenu');await menu.waitFor();
+     assert.equal(await menu.locator('[data-community-extra="people"]').count(),0);
+     await menu.locator('[data-community-extra="friends"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='friends');await menu.waitFor({state:'hidden'});
     });
     await check('market sell save persistence and two columns',async()=>{
      await open('market');const market=pane.locator('#marketView');await market.locator('#tabButtons #createSale').waitFor();
