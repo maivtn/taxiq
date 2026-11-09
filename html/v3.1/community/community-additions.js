@@ -446,6 +446,8 @@
     }
     async function navigate(route,context={},fromHost=false){
       original.closeLocation();
+      // Coupon shortcuts reuse the existing Feed form and its publishing controller.
+      if(route==='deals'&&context.composeKind==='deal')route='feed';
       createMenu?.close();
       if(route==='explore'||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))route='feed';
       if(route==='assistant')return openAssistant();
