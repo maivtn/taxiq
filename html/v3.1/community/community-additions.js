@@ -1,10 +1,10 @@
 /* Extend the cloned v2 shell through its existing app menu. */
 (() => {
   'use strict';
-  const LABELS={food:'Food Community',realestate:'Real Estate',shop:'My storefront',transfer:'Salon transfers',reels:'Reels',live:'Livestream',news:'News & Blog',wallet:'NEXORA Points',wheel:'Lucky Wheel',meet:'NEXORA Meet',account:'Profile',assistant:'AI assistant',notifications:'Notifications',stories:'Story',friends:'Friends',people:'Find people',post:'Create post','page-tools':'Pages','group-tools':'Groups & Market','food-market':'Food Community',explore:'Explore Community'};
-  const ICONS={food:'Utensils',realestate:'House',shop:'Store',transfer:'Store',reels:'Clapperboard',live:'Video',news:'Newspaper',wallet:'WalletCards',wheel:'CircleDot',meet:'Video',account:'UserRound',assistant:'Sparkles',notifications:'Bell',stories:'Images',friends:'UsersRound',people:'UsersRound',post:'SquarePen','page-tools':'Store','group-tools':'UsersRound','food-market':'Utensils',explore:'LayoutGrid'};
+  const LABELS={deals:'Deals & Coupons',food:'Food Community',realestate:'Real Estate',shop:'My storefront',transfer:'Salon transfers',reels:'Reels',live:'Livestream',news:'News & Blog',wallet:'NEXORA Points',wheel:'Lucky Wheel',meet:'NEXORA Meet',account:'Profile',assistant:'AI assistant',notifications:'Notifications',stories:'Story',friends:'Friends',people:'Find people',post:'Create post','page-tools':'Pages','group-tools':'Groups & Market','food-market':'Food Community',explore:'Explore Community'};
+  const ICONS={deals:'Ticket',food:'Utensils',realestate:'House',shop:'Store',transfer:'Store',reels:'Clapperboard',live:'Video',news:'Newspaper',wallet:'WalletCards',wheel:'CircleDot',meet:'Video',account:'UserRound',assistant:'Sparkles',notifications:'Bell',stories:'Images',friends:'UsersRound',people:'UsersRound',post:'SquarePen','page-tools':'Store','group-tools':'UsersRound','food-market':'Utensils',explore:'LayoutGrid'};
   const supports=route=>Object.hasOwn(LABELS,route);
-  const TOOLS=new Set(['shop','reels','live','news','stories','people','post','page-tools','group-tools','food-market','explore']);
+  const TOOLS=new Set(['deals','shop','reels','live','news','stories','people','post','page-tools','group-tools','food-market','explore']);
   function mount(root,options,original){
     const workspace=root.querySelector('.workspace'),frames=[root.getElementById('communityPane'),root.getElementById('connectPane')];
     const baseURL=options.baseURL,params=options.params||new URLSearchParams(location.search),modules=new Map();
@@ -185,7 +185,7 @@
     },true);
     document.addEventListener('click',event=>{const path=event.composedPath();if(!menu.hidden&&!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
     document.addEventListener('focusin',event=>{if(menu.hidden||compactMenu())return;const path=event.composedPath();if(!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
-    for(const [route,label] of Object.entries(LABELS)){if(['page-tools','group-tools','food-market'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
+    for(const [route,label] of Object.entries(LABELS)){if(['deals','page-tools','group-tools','food-market'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
       const button=document.createElement('button');button.type='button';button.dataset.communityExtra=route;
       const definition=window.lucide?.icons[ICONS[route]];
       if(definition)button.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true'}));
@@ -434,12 +434,13 @@
       internal=true;original.navigate('feed');internal=false;
       current=route;routeContext=context||{};pane.classList.toggle('community-tools-aligned',['post','reels','live'].includes(route));document.body.classList.add('community-extra-active');
       root.querySelector('.app').classList.add('community-extra-open');pane.classList.toggle('community-document-pane',['food','realestate'].includes(route));
-      frames.forEach(frame=>{frame.hidden=true;});pane.hidden=false;back.hidden=false;
+      frames.forEach(frame=>{frame.hidden=true;});pane.hidden=false;back.hidden=route==='deals';
       root.getElementById('ecosystemMenu').hidden=true;root.getElementById('ecosystemButton').setAttribute('aria-expanded','false');
       root.querySelector('.community-heading h1').textContent=LABELS[route];
       root.querySelectorAll('.tab').forEach(tab=>{tab.classList.remove('active');tab.setAttribute('aria-current','false');});
       root.querySelectorAll('.mobile-tab').forEach(tab=>{tab.hidden=false;});
       syncNavCount();
+      if(route==='deals')root.querySelectorAll('.tab[data-view="deals"]').forEach(tab=>{tab.classList.add('active');tab.setAttribute('aria-current','page');});
       pane.querySelector('.community-extra-platform')?.remove();pane.querySelector('.community-extra-error')?.remove();
       for(const element of pane.children)element.hidden=true;
       pane.removeAttribute('aria-busy');
@@ -476,6 +477,7 @@
       const button=event.target.closest('[data-community-extra]');if(button){menu.hidden=true;navigate(button.dataset.communityExtra==='news'?'blog':button.dataset.communityExtra);}
     });
     root.addEventListener('click',event=>{
+      if(event.target.closest('[data-view="deals"],[data-quick-view="deals"],[data-top-sub-view="deals"]')){event.preventDefault();event.stopImmediatePropagation();navigate('deals');return;}
       if(current&&event.target.closest('.tab[data-view],[data-top-sub-view],[data-quick-view],[data-side-view],#messagesButton,#accountButton,#viewNotification,#startTour,#menuStartTour'))deactivate();
     },true);
     root.addEventListener('keydown',event=>{

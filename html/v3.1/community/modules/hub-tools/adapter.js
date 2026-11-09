@@ -34,6 +34,15 @@
     for(const element of document.querySelectorAll('[data-global-menu="profile"]'))element.onclick=()=>parent.postMessage({type:'nexora-community-route',route:'account'},location.origin);
     for(const node of document.querySelectorAll('[data-nx-profile-id]'))node.textContent=shared.me().id;
   };
+  document.addEventListener('click',event=>{
+    if(current!=='deals')return;
+    const target=event.target.closest('[data-page-open],[data-section]');
+    if(!target)return;
+    const route=target.dataset.pageOpen?'pages':target.dataset.section;
+    if(!['pages','food','shop'].includes(route))return;
+    event.preventDefault();event.stopImmediatePropagation();
+    parent.postMessage({type:'nexora-community-route',route},location.origin);
+  },true);
   // Use the original Blog and Page stores rather than parallel module copies.
   document.addEventListener('click',event=>{const target=event.target.closest('[data-feed-kind],[data-social-type],[data-section],button[data-action]');if(!target)return;const action=target.dataset.action;if(shared.role!=='owner'&&(target.dataset.feedKind==='coupon'||target.dataset.socialType==='coupon')){event.preventDefault();event.stopImmediatePropagation();return;}if(target.dataset.section&&!shared.canAccessFeature(target.dataset.section)||!shared.canAccessFeature('shop')&&action?.startsWith('shop-')){event.preventDefault();event.stopImmediatePropagation();return;}if(target.dataset.feedKind==='blog'||target.dataset.section==='blog'){event.preventDefault();event.stopImmediatePropagation();parent.postMessage({type:'nexora-community-route',route:'blog'},location.origin);}if(['shop-page','shop-deal'].includes(action)){event.preventDefault();event.stopImmediatePropagation();parent.postMessage({type:'nexora-community-route',route:action==='shop-page'?'pages':'deals'},location.origin);}},true);
   const originalShowcase=reelShowcase;
