@@ -9,6 +9,10 @@
     border-radius:0;
     box-shadow:none;
   }
+  #communityPane #communityPageScreen .page-profile-cover {
+    width:100%;
+    min-height:0;
+  }
   #communityPane #communityPageScreen .page-profile-head {
     padding-inline:14px;
   }
