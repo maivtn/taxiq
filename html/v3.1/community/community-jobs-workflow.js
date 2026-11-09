@@ -270,7 +270,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if (result) render();
       return result;
     }
-    function isVisible(row) {if(!row)return false;if(own(row))return !['deleted'].includes(normalStatus(row));if(!active(row))return false;if(!seeking(row))return true;const profile=getProfile(String(row.ownerId||row.owner));return !(profile.hideFromCurrentShops&&profile.currentShopNames.includes(member()));}
+    function isVisible(row) {if(!row||row.kind==='transfer'&&role()!=='owner')return false;if(own(row))return !['deleted'].includes(normalStatus(row));if(!active(row))return false;if(!seeking(row))return true;const profile=getProfile(String(row.ownerId||row.owner));return !(profile.hideFromCurrentShops&&profile.currentShopNames.includes(member()));}
     function saveJob(input, mode = 'publish') {
       const rows=getJobs(), previous=input.id ? rows.find(row=>String(row.id)===String(input.id)) : null;
       if (input.id && !previous || previous && (!own(previous) || ['closed','hired','deleted'].includes(normalStatus(previous)))) return false;

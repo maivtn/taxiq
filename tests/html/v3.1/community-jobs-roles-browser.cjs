@@ -47,7 +47,7 @@ fs.mkdirSync(output,{recursive:true});
           assert.ok((await page.locator('#communityDemoRoleButton').innerText()).includes('Personal'));
         });
         await check('Personal cannot open hiring through a composer deep link',async()=>{
-          await blockedComposer('personal','hiring');
+          for(const kind of ['hiring','deal','dayhire'])await blockedComposer('personal',kind);
           await personalControls();
         });
         const title='Role QA seeking '+width;
@@ -111,7 +111,7 @@ fs.mkdirSync(output,{recursive:true});
           await open('community.html','tab=jobs');
         });
         await check('Salon cannot open seeking through a composer deep link',async()=>{
-          await blockedComposer('business','seeking');
+          for(const kind of ['seeking','daywork'])await blockedComposer('business',kind);
         });
         await check('Salon hiring composer URL opens salon recruitment',async()=>{
           await page.goto(base+'/html/v3.1/community.html?tab=jobs&composeKind=hiring',{waitUntil:'domcontentloaded'});

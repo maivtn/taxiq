@@ -5,7 +5,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.COMMUNITY_BASE_URL||'http://127.0.0.1:5504';
 const output=process.env.COMMUNITY_ROLE_OUTPUT||'/tmp/taxiq-community-demo-roles';
 fs.mkdirSync(output,{recursive:true});
-const routes=['feed','groups','market','pages','deals','jobs','shift','blog','connect','contacts','calls','privacy','food','realestate','reels','live','news','wallet','wheel','meet','account','notifications','stories','people','post','food-market'];
+const routes=['feed','groups','market','pages','deals','jobs','shift','blog','connect','contacts','calls','privacy','food','realestate','reels','live','news','wallet','wheel','meet','account','assistant','notifications','stories','people','post','food-market'];
 const rows=[],errors=[];
 (async()=>{
   const browser=await chromium.launch({headless:true});
@@ -23,9 +23,11 @@ const rows=[],errors=[];
         async function open(role,route,extra=''){
           await page.goto(base+'/html/v3.1/'+(role==='personal'?'staff-community.html?account=personal':'community.html?account=business')+'&tab='+route+extra,{waitUntil:'domcontentloaded'});
           await page.waitForFunction(()=>document.querySelector('#community-staging,#community-hub')?.communityHub);
+          if(['connect','contacts','calls','privacy'].includes(route)){await page.frameLocator('#connectPane').locator('body').waitFor();return;}
           await classic().locator('#feedView').waitFor({state:'attached'});
-          if(['food','realestate'].includes(route))await host.locator('.community-document-pane iframe').waitFor();
-          else if(['reels','live','news','wallet','wheel','meet','account','notifications','stories','people','post','food-market'].includes(route))await host.locator('.community-extra-pane>section:visible').waitFor();
+          if(route==='assistant')await host.locator('#ai-dialog:visible').waitFor();
+          else if(['food','realestate'].includes(route))await host.locator('.community-document-pane iframe').waitFor();
+          else if(['reels','live','news','wallet','wheel','meet','account','assistant','notifications','stories','people','post','food-market'].includes(route))await host.locator('.community-extra-pane>section:visible').waitFor();
           else if(route==='jobs')await classic().locator('#jobsWorkflow').waitFor();
           else if(route==='deals')await classic().locator('#communityDealsView').waitFor();
           else if(['feed','groups','market','pages','shift','blog'].includes(route))await classic().locator('#'+({feed:'feed',groups:'groups',market:'market',pages:'pages',shift:'daywork',blog:'blog'}[route])+'View').waitFor();
@@ -47,8 +49,12 @@ const rows=[],errors=[];
             if(route==='jobs'){
               for(const tab of ['transfer','workers','services'])assert.equal(await classic().locator('[data-jobs-tab="'+tab+'"]').count(),role==='personal'?0:1);
               assert.equal(await classic().locator('[data-jobs-action="open-pos"]').count(),role==='personal'?0:1);
-              assert.equal(await classic().locator('[data-template="hiring"]').isVisible(),role==='salon');
-              assert.equal(await classic().locator('[data-template="seeking"]').isVisible(),role==='personal');
+              assert.equal(await classic().locator('#jobTemplates [data-template="hiring"]').isVisible(),role==='salon');
+              assert.equal(await classic().locator('#jobTemplates [data-template="seeking"]').isVisible(),role==='personal');
+            }
+            if(route==='shift'){
+              assert.equal(await classic().locator('#shiftTemplates [data-template="dayhire"]').isVisible(),role==='salon');
+              assert.equal(await classic().locator('#shiftTemplates [data-template="daywork"]').isVisible(),role==='personal');
             }
             if(route==='deals')assert.equal(await classic().locator('.community-deals-business').count(),role==='personal'?0:1);
             assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
@@ -56,6 +62,8 @@ const rows=[],errors=[];
           });
           await check(role,'More drawer and Feed shortcuts',async()=>{
             await open(role,'feed');
+            await classic().locator('#feedActionsToggle').click();
+            assert.equal(await classic().locator('#feedActions [data-template="deal"]').count(),role==='personal'?0:1);
             for(const feature of ['shop','transfer'])assert.equal(await classic().locator('[data-community-shortcut="'+feature+'"]').count(),role==='personal'?0:1);
             await host.locator('.community-nav-more:visible').first().click();
             await host.locator('#ecosystemMenu').waitFor();
