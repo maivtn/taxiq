@@ -40,10 +40,14 @@
       [data-header-location-change]{flex:none;min-height:34px;padding:0;border:0;background:transparent;color:#6250c9;font:inherit;font-weight:750;white-space:nowrap;text-decoration:underline;text-decoration-color:#b7ace9;text-underline-offset:3px;cursor:pointer}
       [data-header-location-change]:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
       @container community (max-width:800px){
-        .community-heading:has(.community-header-location:not([hidden])){flex-wrap:wrap}
-        .community-heading-tools:has(.community-header-location:not([hidden])){flex-basis:100%;margin-top:2px;gap:8px}
-        .community-header-location{flex:1}
-        [data-header-location-change]{min-height:44px;margin-left:auto}
+        .community-heading:has(.community-header-location:not([hidden])){flex-wrap:nowrap}
+        .community-heading-tools:has(.community-header-location:not([hidden])){flex:1 1 0;margin-top:0;gap:8px}
+        .community-header-location{position:relative;flex:0 1 124px;max-width:124px;min-height:30px;padding:0 7px;gap:5px;border-radius:8px;font-size:10px}
+        .community-header-location svg{width:12px;height:12px}
+        .community-header-location::after{content:'';flex:none;width:5px;height:5px;margin-top:-3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg)}
+        [data-header-location-label]{flex:1;max-width:none}
+        [data-header-location-change]{position:absolute;inset:0;z-index:1;width:100%;min-height:0;margin:0;opacity:0}
+        .community-header-location:has([data-header-location-change]:focus-visible){outline:3px solid #a99fff;outline-offset:2px}
         .community-heading-tools:has(.community-header-location:not([hidden])) .tour-launch{min-height:44px}
       }
     `;
@@ -54,6 +58,7 @@
       const label=source?.getElementById('viewerLocationLabel'),button=source?.getElementById('changeViewerLocation');
       headerLocation.hidden=locationFrame.hidden||!bar||bar.classList.contains('hide')||!label||!button;
       if(label)headerLocation.querySelector('[data-header-location-label]').textContent=label.textContent.trim();
+      if(label)headerLocation.title=label.textContent.trim();
       if(button)headerLocation.querySelector('[data-header-location-change]').textContent=button.textContent.trim();
     }
     function bindHeaderLocation(){
