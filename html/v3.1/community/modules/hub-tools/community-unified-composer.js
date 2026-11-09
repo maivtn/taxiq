@@ -12,8 +12,8 @@
     const drafts=state.feedPosts.filter(row=>!row.demo&&row.status==='draft'&&row.pageId===(pageId||''));if(drafts.length)form.querySelector('.social-compose-main').insertAdjacentHTML('beforeend','<details class="po-composer-drafts"><summary>Drafts ('+drafts.length+')</summary>'+drafts.map(row=>'<button type="button" class="btn soft" data-composer-draft="'+esc(row.id)+'">'+esc(row.title||row.body)+'</button>').join('')+'</details>');
     versions=structuredClone(post?.languageVersions||{});language=post?.language||'en';
     form.dataset.unifiedComposer='1';
-    form.querySelector('[name=title]')?.closest('.social-edit-title')?.remove();form.querySelector('[name=title]')?.remove();
-    form.querySelector('[name=body]').insertAdjacentHTML('beforebegin','<label class="social-edit-title">'+tx('Tiêu đề','Title')+'<input name="title" maxlength="100" value="'+esc(post?.title||'')+'"></label>');
+    form.querySelector('[name=title]')?.remove();
+    form.querySelector('[name=body]').insertAdjacentHTML('beforebegin','<input type="hidden" name="title" value="'+esc(post?.title||'')+'">');
     if(page){form.elements.pageId.value=page.id;form.querySelector('.social-identity strong').textContent=page.name;}
     form.querySelector('.social-compose-main').insertAdjacentHTML('beforeend','<section class="po-language-versions"><label>'+tx('Phiên bản ngôn ngữ','Language version')+'<select name="language"><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label><button type="button" class="btn soft" data-composer-language>'+tx('Thêm phiên bản ngôn ngữ khác','Add another language version')+'</button><small>'+tx('Mỗi phiên bản là một bản đơn ngôn ngữ riêng.','Each language version is a separate monolingual post.')+'</small></section><input type="hidden" name="status" value="published"><label class="po-schedule" hidden>'+tx('Ngày và giờ đăng','Publish date and time')+'<input name="publishAt" type="datetime-local"></label>');
     form.elements.language.value=language;
@@ -21,8 +21,8 @@
     footer.insertAdjacentHTML('beforeend','<div class="po-publish-actions"><button type="submit" class="btn" name="publishAction" value="draft">'+tx('Lưu nháp','Save draft')+'</button><button type="button" class="btn" data-composer-schedule>'+tx('Hẹn giờ','Schedule')+'</button><button type="submit" class="btn primary" name="publishAction" value="published">'+tx('Đăng ngay','Publish now')+'</button></div><p role="alert" data-composer-error></p>');
     footer.querySelector('.social-post-bottom').hidden=true;
     const offers=JSON.parse(localStorage.getItem('nexora-community-templates-v1')||'{}').feed||[];
-    footer.querySelector('.social-add-actions').insertAdjacentHTML('beforeend','<button type="button" class="btn soft" data-composer-mode="stories">Story</button><button type="button" class="btn soft" data-composer-mode="reels">Reel</button>');
-    if(page)form.querySelector('.social-compose-main').insertAdjacentHTML('beforeend','<label class="social-edit-title">Attach deal<select name="attachedDealId"><option value="">None</option>'+offers.filter(row=>row.kind==='deal'&&row.pageId===page.id).map(row=>'<option value="'+esc(row.id)+'" '+(post?.attachedDealId===row.id?'selected':'')+'>'+esc(row.title)+'</option>').join('')+'</select></label>');
+    footer.querySelector('.social-add-actions').insertAdjacentHTML('beforeend','<button type="button" class="btn soft" data-composer-mode="stories">Story</button>');
+    if(page)form.querySelector('.social-compose-main').insertAdjacentHTML('beforeend','<label class="social-attach-deal">Attach deal<select name="attachedDealId"><option value="">None</option>'+offers.filter(row=>row.kind==='deal'&&row.pageId===page.id).map(row=>'<option value="'+esc(row.id)+'" '+(post?.attachedDealId===row.id?'selected':'')+'>'+esc(row.title)+'</option>').join('')+'</select></label>');
     form._retainedLegacyMedia=(post?.legacyMedia||[]).filter(item=>item.src&&item.type==='video');
     const legacyPreview=document.createElement('div');legacyPreview.className='po-legacy-media';
     const renderLegacy=()=>{legacyPreview.innerHTML=form._retainedLegacyMedia.map((item,index)=>'<div><video controls playsinline src="'+esc(item.src)+'"></video><button type="button" class="btn" data-remove-legacy="'+index+'">Remove video</button></div>').join('');};
