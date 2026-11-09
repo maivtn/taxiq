@@ -60,6 +60,14 @@
     additions=window.NEXORA_COMMUNITY_ADDITIONS.mount(root,{...options,baseURL:BASE_URL},original);
     host.communityHub=additions;
     await additions.ready;
+    const initialPane=root.querySelector('#communityPane:not([hidden]),#connectPane:not([hidden])');
+    if(initialPane&&!initialPane.dataset.communityReady&&!window.NEXORA_COMMUNITY_ADDITIONS.supports(initialRoute)){
+      await new Promise(resolve=>{
+        const done=()=>{initialPane.removeEventListener('load',done);initialPane.removeEventListener('error',done);resolve();};
+        initialPane.addEventListener('load',done);initialPane.addEventListener('error',done);
+      });
+    }
+    host.dataset.communityReady='true';
     return host.communityHub;
   }
   function start(root,context={}){

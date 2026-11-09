@@ -175,6 +175,7 @@
       var message=document.createElement('p');message.setAttribute('role','alert');message.textContent='Something went wrong. Please try again.';
       var retry=document.createElement('button');retry.type='button';retry.textContent='Try again';retry.addEventListener('click',function(){location.reload();});
       (frame.shadowRoot||frame).replaceChildren(message,retry);
+      frame.dataset.communityReady='true';
     });
   }
   recordInitialRoute();

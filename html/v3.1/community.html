@@ -2,6 +2,13 @@
 <html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style data-community-startup>
+    [data-community-region]:not([data-community-ready]) > :is(.app,.native-html){visibility:hidden;pointer-events:none}
+    :is(#community-staging,#community-hub):not([data-community-ready]){position:relative;min-height:calc(100dvh - 64px);max-height:calc(100dvh - 64px);overflow:hidden;background:#f7f8fc}
+    :is(#community-staging,#community-hub):not([data-community-ready])::after{content:"";position:absolute;top:72px;left:calc(50% - 16px);width:32px;height:32px;border:3px solid #e4dfff;border-top-color:#6550df;border-radius:50%;animation:community-startup-spin .8s linear infinite}
+    @keyframes community-startup-spin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){:is(#community-staging,#community-hub):not([data-community-ready])::after{animation:none}}
+  </style>
   <title>Nexora Touch - Community</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
