@@ -162,15 +162,17 @@
     }
     function filtersMarkup() {
       const options=(name,rows)=>`<label><span>${esc(t(name))}</span><select class="select" data-community-group-filter="${name}"><option value="">${esc(t('all'))}</option>${unique(rows).sort((a,b)=>a.localeCompare(b)).map(value=>`<option value="${esc(value)}"${selections[name]===value?' selected':''}>${esc(value)}</option>`).join('')}</select></label>`;
-      return `<div class="community-group-filters" id="communityGroupFilters" data-community-group-filters>${options('city',groups().map(city))}${options('topic',groups().map(topic))}<label><span>${esc(t('type'))}</span><select class="select" data-community-group-filter="type"><option value="">${esc(t('all'))}</option>${['Community','Marketplace'].map(type=>`<option value="${type}"${selections.type===type?' selected':''}>${esc(t(type==='Community'?'community':'marketplace'))}</option>`).join('')}</select></label></div>`;
+      return `<div class="community-group-filters" id="communityGroupFilters" data-community-group-filters${filtersOpen?'':' hidden'}>${options('city',groups().map(city))}${options('topic',groups().map(topic))}<label><span>${esc(t('type'))}</span><select class="select" data-community-group-filter="type"><option value="">${esc(t('all'))}</option>${['Community','Marketplace'].map(type=>`<option value="${type}"${selections.type===type?' selected':''}>${esc(t(type==='Community'?'community':'marketplace'))}</option>`).join('')}</select></label></div>`;
     }
     function enhance(root=document) {
       if(destroyed)return;
       const cards=root.querySelector?.('#groupCards')||(root.id==='groupCards'?root:null);if(!cards)return;
       // Filters belong to the list column, beside the existing PO sidebar.
       cards.parentElement.querySelector(':scope > [data-community-group-filters]')?.remove();
+      const toggle=document.querySelector('.community-group-filter-toggle');
       cards.innerHTML='<div class="community-group-search"><input type="search" class="field" data-po-group-search placeholder="Search groups or items..." value="'+esc(groupSearch)+'"><button type="button" class="btn small" data-po-my-groups aria-pressed="'+onlyJoined+'">'+(onlyJoined?'Discover':'My groups')+'</button></div>'+filtersMarkup()+directoryMarkup();cards.classList.add('community-group-directory');
-      const toggle=document.querySelector('.community-group-filter-toggle'),count=document.querySelector('[data-group-filter-count]'),active=Object.values(selections).filter(Boolean).length;document.getElementById('groupsView')?.classList.toggle('group-filters-open',filtersOpen);toggle?.setAttribute('aria-expanded',String(filtersOpen));if(count){count.hidden=!active;count.textContent=String(active);}
+      if(toggle)cards.querySelector('.community-group-search').append(toggle);
+      const count=toggle?.querySelector('[data-group-filter-count]'),active=Object.values(selections).filter(Boolean).length;document.getElementById('groupsView')?.classList.toggle('group-filters-open',filtersOpen);toggle?.setAttribute('aria-expanded',String(filtersOpen));toggle?.classList.toggle('has-filters',active>0);if(count){count.hidden=!active;count.textContent=String(active);}
     }
     function showDialog(group,body,footer,heading=title(group)) {
       if(!document.querySelector('[data-community-group-dialog]'))returnFocus=document.activeElement;
@@ -195,7 +197,7 @@
       const target=event.target.closest?.('[data-community-group-action]');
       if(!target){if(event.target.matches?.('[data-community-group-overlay]'))closeDialog();return;}
       event.preventDefault();event.stopPropagation();
-      const action=target.dataset.communityGroupAction;if(action==='filters'){filtersOpen=!filtersOpen;enhance();return;}const group=find(target.dataset.communityGroupId);if(action==='close'){closeDialog();return;}if(!group)return;
+      const action=target.dataset.communityGroupAction;if(action==='filters'){filtersOpen=!filtersOpen;enhance();document.querySelector('.community-group-filter-toggle')?.focus({preventScroll:true});return;}const group=find(target.dataset.communityGroupId);if(action==='close'){closeDialog();return;}if(!group)return;
       if(action==='detail')openGroup(group.id);
       else if(action==='membership'){if((joined(group.id)?leave(group.id):join(group.id))!==false)refresh();}
       else if(action==='feed')navigate('group:'+group.id);

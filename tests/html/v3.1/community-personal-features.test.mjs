@@ -15,6 +15,9 @@ for(const [query,expected] of [
   const {window}=dom;
   Object.defineProperty(window.document,'currentScript',{value:{src:'https://demo.test/html/v3.1/community/community-po-feed.js'}});
   window.eval(shared);window.eval(feed);
+  const owner=query==='account=business';
+  assert.equal(window.NEXORA_COMMUNITY_SHARED.canAccessFeature('shop'),owner);
+  for(const feature of ['transfer','workers','services','hiring','posRecruitment'])assert.equal(window.NEXORA_COMMUNITY_SHARED.canAccessFeature(feature),owner);
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
   await new Promise(resolve=>setTimeout(resolve,110));
   assert.deepEqual([...window.document.querySelectorAll('[data-community-shortcut]')].map(node=>node.dataset.communityShortcut),expected);

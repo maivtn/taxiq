@@ -8,7 +8,8 @@
   function change(operation){const data=read(),result=operation(data);if(result===false)return false;try{localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new CustomEvent('nexora-community-shared-changed'));return result===undefined?true:result;}catch{return false;}}
   const query=new URLSearchParams(location.search);
   const role=window.NEXORA_SHELL?.activePage==='staff'||['staff','tech'].includes(query.get('role'))||query.get('account')==='personal'?'staff':'owner';
-  const canAccessFeature=feature=>role==='owner'||!['shop','transfer','workers','services','hiring','posRecruitment'].includes(feature);
+  const businessFeatures=new Set(['shop','transfer','workers','services','hiring','posRecruitment']);
+  const canAccessFeature=feature=>!businessFeatures.has(feature)||role==='owner';
   const member=query.get('member')||window.NEXORA_SHELL?.profileName||(role==='staff'?document.querySelector('.staff-profile-name')?.textContent.trim():null)||(role==='staff'?'David Le':'BITCOIN NAIL BAR');
   function identity(name=member,alias){
     let legacyId;try{legacyId=JSON.parse(localStorage.getItem('nexora-connect-workflow-v1')||'{}').profiles?.[name]?.id;}catch{}
