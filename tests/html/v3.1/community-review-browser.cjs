@@ -87,6 +87,7 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      assert.equal(await first.locator('.friend-sample').innerText(),'SAMPLE');assert.equal(await second.locator('.friend-sample').innerText(),'SAMPLE');
      const layout=await cards.evaluateAll(nodes=>nodes.map(card=>{const rect=node=>node.getBoundingClientRect(),box=rect(card),avatar=rect(card.querySelector('.friends-avatar')),info=rect(card.querySelector('.friend-request-info')),buttons=[...card.querySelectorAll('.friend-request-actions button')].map(rect);return {width:box.width,avatar:avatar.width,left:avatar.right<=info.left,actions:buttons.length===2&&Math.abs(buttons[0].y-buttons[1].y)<1&&Math.abs(buttons[0].width-buttons[1].width)<2,height:Math.max(...buttons.map(b=>b.height))};}));
      assert.ok(layout.every(row=>row.left&&row.avatar===47&&row.actions&&row.height<=32),JSON.stringify(layout));
+     assert.equal(await first.locator('[data-friend-action=accept] span').evaluate(node=>getComputedStyle(node).color),'rgb(255, 255, 255)');
      const gridBox=await friends.locator('.friends-grid').boundingBox();assert.ok(layout.every(row=>Math.abs(row.width-gridBox.width)<2));
      assert.equal(await friends.locator('.friends-search').isVisible(),false);await friends.locator('.friends-content').screenshot({path:path.join(output,`${width}-${account}-friend-requests-po.png`)});
      await friends.locator('#findFriends').click();await page.waitForFunction(()=>document.querySelector('.friends-nav [data-friends-tab=suggestions]')?.getAttribute('aria-current')==='page');
@@ -156,6 +157,23 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      }
      await nav.locator(`[data-jobs-tab="${account==='personal'?'matched':'workers'}"]`).click();
      await jobs.locator('.jobs-workflow-head').screenshot({path:path.join(output,`${width}-${account}-jobs-full-width.png`)});
+     if(account==='business'){
+      const filters=jobs.locator('.jobs-worker-filters');await filters.locator('.ts-control').first().waitFor();
+      assert.equal(await filters.locator('.ts-control svg').count(),2);
+      const filterBox=await filters.boundingBox();assert.ok(filterBox.height<=40,JSON.stringify(filterBox));
+      const choose=async(id,value)=>{await filters.locator('[data-worker-filter="'+id+'"] .ts-control').click();const option=filters.locator('.ts-dropdown .option[data-value="'+value+'"]');await option.waitFor();assert.equal(await option.locator('svg').count(),1);await option.click();};
+      await choose('poWorkerGroup','nail');assert.equal(await jobs.locator('#poWorkerGroup').inputValue(),'nail');
+      await choose('poWorkerSkill','acrylic');assert.equal(await jobs.locator('#poWorkerSkill').inputValue(),'acrylic');assert.equal(await jobs.locator('#poWorkerGroup').inputValue(),'nail');
+      for(const card of await jobs.locator('.jobs-worker-card').all())assert.match(await card.locator('.chips').innerText(),/acrylic/i);
+      await choose('poWorkerSkill','');await choose('poWorkerGroup','all');
+      const card=jobs.locator('.jobs-worker-card').first();await card.waitFor();
+      const actions=card.locator('.jobs-worker-actions button');assert.equal(await actions.count(),2);
+      const boxes=await actions.evaluateAll(nodes=>nodes.map(node=>({height:node.getBoundingClientRect().height,y:node.getBoundingClientRect().y,icons:node.querySelectorAll('svg').length,label:node.textContent.trim()})));
+      assert.ok(boxes.every(box=>box.height<=30&&box.icons===1&&box.label)&&Math.abs(boxes[0].y-boxes[1].y)<2,JSON.stringify(boxes));
+      await jobs.screenshot({path:path.join(output,`${width}-business-workers-compact.png`)});
+      await card.locator('[data-jobs-extra=worker-profile]').click();await pane.locator('#modalTitle').waitFor();await pane.locator('#closeModal').click();
+      await card.locator('[data-jobs-extra=worker-invite]').click();await pane.locator('#jobsInviteForm').waitFor();await pane.locator('#closeModal').click();
+     }
      await nav.locator('[data-jobs-tab=browse]').click();await jobs.locator('#jobPosts').waitFor();
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
      await nav.screenshot({path:path.join(output,`${width}-${account}-jobs-tabs.png`)});
@@ -166,6 +184,7 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      const extra=hub.locator('.community-extra-pane'),editor=extra.locator('#editor[open]');await editor.locator('.social-identity').waitFor();
      const avatar=editor.locator('.social-identity .compose-avatar');
      assert.equal((await avatar.evaluate(node=>getComputedStyle(node).backgroundImage)).includes('nexora-bitcoin-nailbar.png'),account==='business');
+     assert.equal(await avatar.evaluate(node=>getComputedStyle(node).outlineStyle),'solid');
      await editor.screenshot({path:path.join(output,`${width}-${account}-composer-avatar.png`)});
      await editor.locator('[data-action=close-dialog]').first().click();
      await page.waitForFunction(()=>!document.querySelector('.community-extra-pane.community-composer-overlay'));
@@ -270,6 +289,7 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
       assert.equal(await sample.locator('.community-feed-post-byline .community-feed-post-location').innerText(),'Houston, TX');
       assert.equal(await sample.locator(':scope > .chips').getByText('Houston, TX',{exact:true}).count(),0);
       const timeBox=await sample.locator('.community-feed-post-byline time').boundingBox(),placeBox=await sample.locator('.community-feed-post-location').boundingBox();assert.ok(Math.abs(timeBox.y-placeBox.y)<3);
+      const bodyBox=await sample.locator(':scope>p').last().boundingBox(),viewsBox=await sample.locator('.community-po-post-meta').boundingBox();assert.ok(viewsBox.y-bodyBox.y-bodyBox.height<=10,JSON.stringify({bodyBox,viewsBox}));
       await pane.locator('[data-feed-post-id="sample-store-design"]').screenshot({path:path.join(output,`${width}-business-sample-photo.png`)});
      }
 

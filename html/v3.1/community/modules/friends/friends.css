@@ -33,3 +33,7 @@
 .friend-request-card .friend-request-actions svg{display:none}
 .friend-sample{position:absolute;top:9px;right:8px;padding:3px 5px;border-radius:5px;background:#f0ebff;color:#5e50c7;font-size:8px;font-weight:900}
 @container module (max-width:650px){.friend-request-info{padding-right:27px}}
+
+.friends-content[data-friends-view="received"] .friend-request-actions button>span{color:inherit;font:inherit}
+
+.friends-avatar{outline:1px solid #dfe3eb;outline-offset:0}

@@ -29,3 +29,10 @@
 :is(.compose-avatar,.social-live-avatar,.nexora-drawer-avatar,.post-avatar)[style*="url("]{font-size:0!important;color:transparent!important}
 .community-social-comment-avatar:has(img){background-image:none!important}
 .community-social-comment-avatar img{display:block;width:100%;height:100%;object-fit:contain;background:#fff}
+
+/* Keep light logos visible without changing uploaded photos or avatar sizes. */
+:is(.feed-avatar,.compose-avatar,.post-avatar,.community-feed-post-avatar,.community-social-comment-avatar,
+.story-avatar,.group-member-avatar,.page-person-avatar,.page-follower-avatar,.message-avatar,
+.social-live-avatar,.jobs-avatar,.member-hit-avatar,.chat-avatar,.call-avatar,.chat-inline-avatar,
+.nexora-drawer-avatar,.deal-card-avatar,.page-avatar,.page-detail-avatar,.page-preview-avatar,
+.friends-avatar,.contact-avatar,#privacyPanel .person .avatar){outline:1px solid #dfe3eb;outline-offset:0;background-color:#f3f4f7}

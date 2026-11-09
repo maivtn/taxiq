@@ -127,6 +127,8 @@
     ['[data-chat-confirm-delete]','Trash2'],
     ['[data-chat-confirm-report]','Flag'],
     ['#pageEditForm button[type="submit"]','Save'],
+    ['[data-jobs-extra="worker-profile"]','UserRound'],
+    ['[data-jobs-extra="worker-invite"]','Send'],
     ['#feedMore','ChevronDown']
   ];
   function addButtonIcon(button,name) {
