@@ -90,8 +90,7 @@
       :is(#community-staging,#community-hub) :is(
         .community-back,.menu-back,#tourBack,#backToCommunityBtn,
         button.back,.appbar>.back,.page-back,.friend-back,.group-back,
-        [data-community-back],[data-back-page],[data-back]:not(.chat-close),
-        [data-action="live-back"]
+        [data-community-back],[data-back-page],[data-back]:not(.chat-close)
       ){display:none!important}
     `;
     document.head.append(navigationStyle);
