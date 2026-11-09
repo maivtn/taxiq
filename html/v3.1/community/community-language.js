@@ -6,9 +6,9 @@
   const key='nexora-community-language',valid=new Set(data.languages.map(row=>row[0]));
   const read=()=>{try{return localStorage.getItem(key);}catch{return null;}};
   let language=valid.has(read())?read():'en';
-  const canonical=new Map(),originalText=new WeakMap(),originalAttrs=new WeakMap();
+  const canonical=new Map(),englishKeys=new Map(),originalText=new WeakMap(),originalAttrs=new WeakMap();
   for(const dictionary of Object.values(data.translations))for(const [en,value]of Object.entries(dictionary)){
-    canonical.set(en,en);if(value&&!canonical.has(value))canonical.set(value,en);
+    canonical.set(en,en);englishKeys.set(en.toLowerCase(),en);if(value&&!canonical.has(value))canonical.set(value,en);
   }
   // Current controls that correspond to the same named PO navigation entries.
   const aliases={'Deal & Coupon':'Deals & Coupons','Deals & Coupon':'Deals & Coupons','Photo video':'Photo/video','Search...':'Search'};
@@ -17,9 +17,11 @@
   function translate(value,locale=language){
     if(typeof value!=='string'||!value.trim())return value;
     const [,before,core,after]=value.match(/^(\s*)(.*?)(\s*)$/s);
-    const en=aliases[core]||canonical.get(core)||core;
+    const en=aliases[core]||canonical.get(core)||englishKeys.get(core.toLowerCase())||core;
     const translated=locale==='en'?(canonical.get(core)||core):data.translations[locale]?.[en];
     if(translated)return before+translated+after;
+    const plain=core.replace(/^[＋+✧☷◉◷✦⚡\s]+/u,'').replace(/[\s\u00a0]*[→⌄↔]+$/u,'').trim();
+    if(plain&&plain!==core){const next=translate(plain,locale);if(next!==plain)return before+core.replace(plain,next)+after;}
     const decorated=core.match(/^([＋+✦✧◈♧▣▤⌕✎☎•…⋯]\s*)(.+)$/u);
     if(decorated){const next=translate(decorated[2],locale);if(next!==decorated[2])return before+decorated[1]+next+after;}
     if(locale==='vi')for(const pattern of patterns){const match=en.match(pattern.re);if(match)return before+pattern.vi.replace(/\{\{(\d+)\}\}/g,(_,i)=>match[Number(i)+1]||'')+after;}
@@ -49,6 +51,17 @@
     for(const child of node.childNodes)element(child);
   }
   const pending=new Set(),frames=new Map();let scheduled=false,observer;
+  const regionLanguages=new WeakMap();
+  function syncRegions(){
+    const base=language==='vi'?'vi':'en';
+    document.querySelectorAll('[data-community-region]').forEach(region=>{
+      const api=region.communityModule,html=region.querySelector(':scope > .native-html'),previous=regionLanguages.get(region);
+      if(!api||!html||previous?.api===api&&previous.base===base&&html.lang===base)return;
+      regionLanguages.set(region,{api,base});
+      html.lang=base;
+      api.window.postMessage({type:'nexora-language',language:base},location.origin);
+    });
+  }
   function frame(iframe){
     try{
       const doc=iframe.contentDocument;if(!doc?.body)return;
@@ -61,6 +74,7 @@
   }
   function flush(){
     scheduled=false;observer?.disconnect();
+    syncRegions();
     for(const node of pending)if(node.isConnected)element(node);
     pending.clear();
     document.querySelectorAll('iframe').forEach(frame);
@@ -71,6 +85,7 @@
     document.documentElement.lang=language;
     document.documentElement.dir=language==='ar'?'rtl':'ltr';
     document.querySelectorAll('[data-community-region]').forEach(region=>region.dir=language==='ar'?'rtl':'ltr');
+    syncRegions();
     queue();
   }
   function set(next){

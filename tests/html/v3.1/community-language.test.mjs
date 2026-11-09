@@ -41,3 +41,12 @@ test('new and updated UI copy follows the selected locale and restores English',
   assert.equal(button.textContent,w.NEXORA_COMMUNITY_LOCALES.translations.fr['Groups & Market']);
   w.NEXORA_COMMUNITY_LANGUAGE.set('en');await pause();assert.equal(button.textContent,'Groups & Market');
 });
+test('locale changes reach existing native regions and localize decorated PO labels',async t=>{
+  const w=boot(t),region=w.document.createElement('section'),html=w.document.createElement('div'),messages=[];
+  region.dataset.communityRegion='test';html.className='native-html';html.lang='en';region.append(html);
+  region.communityModule={window:{postMessage:message=>messages.push(message)}};w.document.body.append(region);
+  w.NEXORA_COMMUNITY_LANGUAGE.set('vi');
+  assert.equal(html.lang,'vi');assert.equal(messages.at(-1).language,'vi');
+  assert.equal(w.NEXORA_COMMUNITY_LANGUAGE.translate('Groups & Market →'),w.NEXORA_COMMUNITY_LOCALES.translations.vi['Groups & Market']+' →');
+  w.NEXORA_COMMUNITY_LANGUAGE.set('fr');assert.equal(html.lang,'en');assert.equal(messages.at(-1).language,'en');
+});

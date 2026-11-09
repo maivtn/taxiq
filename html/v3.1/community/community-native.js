@@ -170,6 +170,7 @@
     host.communityModule = api;
     try { new Function('window','document','location','parent','__scope','with(window){\n' + program + '\n__scope.invoke=(code,event,element)=>eval("(function(event){"+code+"\\n}).call(element,event)");\n}').call(facade,facade,doc,location,parent,scope); }
     catch(error){host.communityModule=null;api.destroy();throw error;}
+    browser.NEXORA_COMMUNITY_LANGUAGE?.apply(host);
     host.dataset.communityReady='true';
     return api;
   }

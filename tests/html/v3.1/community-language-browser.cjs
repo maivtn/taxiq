@@ -25,8 +25,8 @@ const server=http.createServer(async(req,res)=>{try{const file=path.resolve(repo
         for(const locale of ['vi','en','es-MX','zh-Hans','fr','ar','pt']){
           try{
             await choose(locale);
-            const state=await page.evaluate(()=>{const api=window.NEXORA_COMMUNITY_LANGUAGE;return{selected:api.get(),stored:localStorage.getItem('nexora-community-language'),dir:document.documentElement.dir,expected:api.translate('Feed'),feed:document.getElementById('feedTitle').textContent.trim()};});
-            assert.equal(state.selected,locale);assert.equal(state.stored,locale);assert.equal(state.feed,state.expected);assert.equal(state.dir,locale==='ar'?'rtl':'ltr');
+            const state=await page.evaluate(()=>{const api=window.NEXORA_COMMUNITY_LANGUAGE;return{selected:api.get(),stored:localStorage.getItem('nexora-community-language'),dir:document.documentElement.dir,expected:api.translate('Feed'),feed:document.getElementById('feedTitle').textContent.trim(),base:document.getElementById('communityPane').communityModule.document.documentElement.lang};});
+            assert.equal(state.selected,locale);assert.equal(state.stored,locale);assert.equal(state.feed,state.expected);assert.equal(state.dir,locale==='ar'?'rtl':'ltr');assert.equal(state.base,locale==='vi'?'vi':'en');
             await toggle.click();assert.equal(await menu.locator('[aria-selected="true"]').getAttribute('data-shell-language'),locale);
             const box=await menu.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=width+1);await page.screenshot({path:path.join(output,`${width}-${account}-${locale}.png`)});
             await page.keyboard.press('Escape');assert.equal(await menu.isVisible(),false);
