@@ -49,7 +49,7 @@ const rows=[],errors=[];
             if(route==='jobs'){
               for(const tab of ['transfer','workers','services'])assert.equal(await classic().locator('[data-jobs-tab="'+tab+'"]').count(),role==='personal'?0:1);
               assert.equal(await classic().locator('[data-jobs-action="open-pos"]').count(),role==='personal'?0:1);
-              assert.equal(await classic().locator('#jobTemplates [data-template="hiring"]').isVisible(),role==='salon');
+              assert.equal(await classic().locator('#jobTemplates [data-template="hiring"]:visible,#localDiscovery [data-template="hiring"]:visible').count(),role==='salon'?1:0);
               assert.equal(await classic().locator('[data-template="seeking"]:visible').count(),role==='personal'?1:0);
               if(role==='personal'&&width===390)assert.equal(await classic().locator('#jobsView [data-view="daywork"]:visible,#localDiscovery [data-view="daywork"]:visible').count(),1);
             }
