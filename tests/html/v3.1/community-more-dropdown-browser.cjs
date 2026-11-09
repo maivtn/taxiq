@@ -108,8 +108,11 @@ const server = http.createServer(async (request, response) => {
           if (width <= 800) {
             assert.equal(await host.locator('.community-heading-tools').isVisible(), false);
           }
+          if (account === 'business') {
+            assert.equal(await host.locator('#communityPane #feedTitle').isVisible(), false);
+          }
           if (width > 800) {
-            await page.locator('#communityPane').locator('#feedTitle').waitFor();
+            await host.locator('#communityPane #feedComposerCard').waitFor();
             const tabs = await host.locator('.top .tabs').boundingBox();
             const content = await page.locator('#communityPane .native-body').boundingBox();
             assert.ok(content.y-tabs.y-tabs.height <= 36, 'Feed content should sit close below navigation');
