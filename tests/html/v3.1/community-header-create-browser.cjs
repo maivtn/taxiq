@@ -52,7 +52,7 @@ const server=http.createServer(async(req,res)=>{
           await open();const frame=page.locator('#communityPane');await frame.locator('#feedComposerCard').waitFor();
           for(const kind of ['showcase','tip','question','poll','event']){
             await trigger.tap();await menu.locator(`[data-create-kind="${kind}"]`).tap();
-            if(kind==='showcase'){await page.locator('[data-unified-composer]').waitFor();await page.locator('[data-unified-composer] .social-close').click();}
+            if(kind==='showcase'){await page.locator('[data-unified-composer]').waitFor();await page.locator('.community-extra-pane #editor[open] .social-close').click();}
             else {await frame.locator(`#templateForm[data-kind="${kind}"]`).waitFor();await frame.locator('#closeModal').click();}
           }
           for(const kind of ['sale','want']){await trigger.tap();await menu.locator(`[data-create-kind="${kind}"]`).tap();await frame.locator('#listingForm').waitFor();assert.equal(await frame.locator('#listingForm [name="type"]').inputValue(),kind);await frame.locator('#closeModal').click();}

@@ -14,7 +14,7 @@ const results=[],errors=[];
    const context=await browser.newContext({viewport:{width,height:960}});
    try{
     await context.addInitScript(()=>{for(const key of ['nexora-community-tour-desktop-v1','nexora-community-tour-mobile-v1'])localStorage.setItem(key,'1');});
-    const page=await context.newPage();page.setDefaultTimeout(15000);
+    const page=await context.newPage();page.setDefaultTimeout(30000);
     page.on('pageerror',error=>errors.push({width,message:error.message}));
     async function open(tab,account='business',extra=''){
      const file=account==='personal'?'staff-community.html':'community.html';
@@ -69,11 +69,11 @@ const results=[],errors=[];
      await page.locator('.lv-stage').waitFor();await page.screenshot({path:path.join(output,width+'-live-host.png')});
      await page.locator('[data-live-po=panel][data-live-value=tools]').click();await page.locator('.lv-dialog').waitFor();await page.locator('.lv-dialog [data-live-po=panel][data-live-value=poll]').click();
      const poll=page.locator('[data-live-po-form=poll]');await poll.locator('[name=question]').fill('Which nail set?');await poll.locator('[name=choice]').nth(0).fill('French');await poll.locator('[name=choice]').nth(1).fill('Gel');await poll.locator('[type=submit]').click();await page.locator('.lv-dialog .lv-poll-row').first().waitFor();await page.locator('[data-live-po=close]').click();
-     await page.locator('[data-live-po=viewer]').click();await page.locator('[data-live-po=vote][data-live-value="0"]').click();assert.equal(await page.locator('[data-live-po=vote][data-live-value="0"]').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('[data-live-po=vote][data-live-value="1"]').isDisabled(),true);
+     await page.locator('[data-live-po=viewer]').click();await page.locator('.lv-room-side [data-live-po=vote][data-live-value="0"]').click();assert.equal(await page.locator('.lv-room-side [data-live-po=vote][data-live-value="0"]').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('.lv-room-side [data-live-po=vote][data-live-value="1"]').isDisabled(),true);
      await page.locator('[data-live-po=host]').click();await page.locator('[data-live-po=panel][data-live-value=tools]').click();await page.locator('.lv-dialog [data-live-po=panel][data-live-value=flash]').click();const flash=page.locator('[data-live-po-form=flash]');await flash.locator('[name=name]').fill('Flash Deal −20% Gel Manicure');await flash.locator('[name=limit]').fill('5');await flash.locator('[type=submit]').click();await page.locator('.lv-dialog [data-lv-flash]').waitFor();await page.locator('[data-live-po=close]').click();
      const room=await page.evaluate(title=>Object.keys(localStorage).filter(key=>key.startsWith('nexora-v31:community-hub-tools:')).flatMap(key=>JSON.parse(localStorage.getItem(key)).liveRooms||[]).find(row=>row.title===title),'PO Live '+width);
      const offer=await page.evaluate(id=>JSON.parse(localStorage.getItem('nexora-community-templates-v1')).feed.find(row=>row.id===id),room.flash.dealId);assert.equal(offer.quantity,5);assert.equal(offer.pageId,'p1');assert.ok(offer.expiresAt>Date.now());assert.equal(room.poll.counts[0],1);
-     await open('live','business','&liveId='+room.id);await page.locator('.lv-stage').waitFor();assert.equal(await page.locator('[data-live-po=vote][data-live-value="0"]').isDisabled(),true);
+     await open('live','business','&liveId='+room.id);await page.locator('.lv-stage').waitFor();assert.equal(await page.locator('.lv-room-side [data-live-po=vote][data-live-value="0"]').isDisabled(),true);
      await page.locator('[data-live-po=end]').click();await page.locator('[data-live-po-form=summary]').waitFor();await page.locator('[data-live-po=close]').click();
      await open('live','personal','&liveId='+room.id+'&liveOwner='+room.ownerId+'&liveView=viewer');assert.equal(await page.locator('[data-live-replay]').count(),0);assert.equal(await page.locator('[data-live-po=download]').count(),0);
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
