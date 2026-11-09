@@ -32,6 +32,7 @@ const results=[],errors=[];
      else await hub.locator('#communityPane #'+(route==='deals'?'communityDealsView':route+'View')).waitFor();
      if(['groups','pages'].includes(route))assert.equal(await hub.locator('#'+route+'View>.feature-intro').isVisible(),true,'PO introduction visible');
      if(route==='pages')assert.equal(await hub.locator('#pageCards').evaluate(node=>getComputedStyle(node).flexDirection),'row','Fanpages scroll horizontally');
+     if(route==='pages')assert.equal(await hub.locator('#pageSectionTitle').evaluate(node=>getComputedStyle(node).clipPath),'none','PO directory heading is readable');
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'No page overflow');
      assert.equal(await hub.locator('[data-community-region]').evaluateAll(nodes=>nodes.some(node=>node.shadowRoot)),false);
      if(!['food','realestate'].includes(route))assert.equal(page.frames().length,1);

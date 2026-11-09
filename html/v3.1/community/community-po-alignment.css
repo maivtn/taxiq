@@ -44,7 +44,7 @@ body.embedded #pageCards .page-content>p{display:-webkit-box;-webkit-line-clamp:
 body.embedded #pageCards .page-actions{flex-wrap:nowrap;gap:6px;padding-top:8px}
 body.embedded #pageCards .page-actions .btn{min-height:40px;font-size:11px;padding:8px}
 body.embedded #pagesView>.section-heading{display:flex;position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;justify-content:flex-start;margin:18px 0 10px}
-body.embedded #pagesView>.section-heading h2{position:static;width:auto;height:auto;clip-path:none;white-space:normal;overflow:visible;font-size:15px}
+body.embedded #pagesView>.section-heading #pageSectionTitle{position:static;width:auto;height:auto;clip-path:none;white-space:normal;overflow:visible;font-size:15px}
 .native-body:has(#page-view){--ink:#25304b;--muted:#77839e;--violet:#6653df;--bg:#f7f7fc}
 .native-body #page-view :is(.btn.primary,.group-create-button){background:#6653df;border-color:#6653df}
 .native-body #page-view :is(.store-head h1,.news-hero h1,.live-hero h1){color:#25304b;letter-spacing:-.025em}
