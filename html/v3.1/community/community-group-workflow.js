@@ -174,6 +174,17 @@
       view?.querySelector('.community-group-search')?.remove();
       cards.innerHTML='<div class="community-group-search"><input type="search" class="field" data-po-group-search placeholder="'+esc(document.documentElement.lang==='en'?'Search groups or items...':'Tìm nhóm hoặc món hàng...')+'" value="'+esc(groupSearch)+'"></div>'+filtersMarkup()+directoryMarkup();cards.classList.add('community-group-directory');
       for(const groupTabs of [tabs,document.querySelector('#marketView > .subrow > .subtabs')].filter(Boolean)){const tabs=groupTabs,isMarket=tabs.closest('#marketView')!==null;let mine=tabs.querySelector('[data-po-my-groups]');if(!mine){mine=document.createElement('button');mine.type='button';mine.className='subtab';mine.dataset.poMyGroups='';mine.dataset.view='groups';tabs.querySelector('[data-view="market"]')?.before(mine);}mine.textContent=document.documentElement.lang==='en'?'My groups':'Nhóm của tôi';mine.classList.toggle('active',!isMarket&&onlyJoined);mine.setAttribute('aria-pressed',String(!isMarket&&onlyJoined));const discover=tabs.querySelector('[data-view="groups"]');discover.dataset.poGroupDiscover='';discover.textContent=document.documentElement.lang==='en'?'Discover':'Khám phá';discover.classList.toggle('active',!isMarket&&!onlyJoined);tabs.querySelector('[data-view="market"]')?.classList.toggle('active',isMarket);}
+      const market=document.getElementById('marketView'),marketNavigation=market?.querySelector(':scope > .subrow');
+      if(market&&marketNavigation){
+        if(!market.querySelector(':scope > .feature-intro')){
+          const hero=view.querySelector(':scope > .feature-intro')?.cloneNode(true);
+          if(hero){hero.querySelector('.community-group-filter-toggle')?.remove();market.prepend(hero);}
+        }
+        const toolbar=market.querySelector('.market-toolbar');
+        if(toolbar){marketNavigation.before(toolbar);const input=toolbar.querySelector('input[type="search"]');if(input)input.placeholder=cards.querySelector('[data-po-group-search]').placeholder;}
+        const info=marketNavigation.querySelector('[data-market-info-toggle]');
+        if(info)market.querySelector('#tabButtons')?.after(info);
+      }
       const search=cards.querySelector('.community-group-search');if(navigation)navigation.before(search);
       if(toggle)search.append(toggle);
       const count=toggle?.querySelector('[data-group-filter-count]'),active=Object.values(selections).filter(Boolean).length;document.getElementById('groupsView')?.classList.toggle('group-filters-open',filtersOpen);toggle?.setAttribute('aria-expanded',String(filtersOpen));toggle?.classList.toggle('has-filters',active>0);if(count){count.hidden=!active;count.textContent=String(active);}

@@ -434,7 +434,7 @@
       internal=true;original.navigate('feed');internal=false;
       current=route;routeContext=context||{};pane.classList.toggle('community-tools-aligned',['post','reels','live'].includes(route));document.body.classList.add('community-extra-active');
       root.querySelector('.app').classList.add('community-extra-open');pane.classList.toggle('community-document-pane',['food','realestate'].includes(route));
-      frames.forEach(frame=>{frame.hidden=true;});pane.hidden=false;back.hidden=route==='deals';
+      frames.forEach(frame=>{frame.hidden=true;});pane.hidden=false;back.hidden=['deals','shop'].includes(route);
       root.getElementById('ecosystemMenu').hidden=true;root.getElementById('ecosystemButton').setAttribute('aria-expanded','false');
       root.querySelector('.community-heading h1').textContent=LABELS[route];
       root.querySelectorAll('.tab').forEach(tab=>{tab.classList.remove('active');tab.setAttribute('aria-current','false');});
