@@ -1,13 +1,15 @@
 /* Decorative icons and label associations; existing business handlers stay unchanged. */
 (() => {
   const base=new URL('../icon-oneqr/',document.currentScript.src||document.baseURI);
-  const assets={settings:'issue-2040-oneqr-settings-3d.png',product:'issue-2040-oneqr-package-3d.png',service:'issue-2040-oneqr-wrench-3d.png',post:'issue-2040-oneqr-paintbrush-3d.png',deals:'issue-2040-oneqr-ticket-3d.png',pages:'issue-2040-oneqr-megaphone-3d.png',live:'issue-2040-oneqr-video-3d.png',messages:'issue-2040-oneqr-message-circle-3d.png',groups:'issue-2040-oneqr-users-round-3d.png',jobs:'issue-2040-oneqr-briefcase-3d.png',food:'issue-2040-oneqr-utensils-3d.png',realestate:'issue-2040-oneqr-building-2-3d.png',store:'issue-2040-oneqr-store-3d.png'};
+  const assets={settings:'issue-2040-oneqr-settings-3d.png',product:'issue-2040-oneqr-package-3d.png',service:'issue-2040-oneqr-list-3d.png',post:'issue-2040-oneqr-paintbrush-3d.png',deals:'issue-2040-oneqr-ticket-3d.png',pages:'issue-2040-oneqr-megaphone-3d.png',live:'issue-2040-oneqr-video-3d.png',messages:'issue-2040-oneqr-message-circle-3d.png',groups:'issue-2040-oneqr-users-round-3d.png',jobs:'issue-2040-oneqr-briefcase-3d.png',food:'issue-2040-oneqr-utensils-3d.png',realestate:'issue-2040-oneqr-building-2-3d.png',store:'issue-2040-oneqr-store-3d.png'};
   const actions={'edit-shop':'settings','shop-add-product':'product','shop-add-service':'service','shop-post':'post','shop-deal':'deals','shop-page':'pages'};
   function art(key){
     const holder=document.createElement('span');holder.className='store-action-art';holder.setAttribute('aria-hidden','true');
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 32 32');svg.setAttribute('focusable','false');
     const picture=document.createElementNS('http://www.w3.org/2000/svg','image');picture.setAttribute('href',new URL(assets[key],base).href);picture.setAttribute('width','32');picture.setAttribute('height','32');
-    svg.append(picture);holder.append(svg);return holder;
+    if(key==='post'){
+      svg.innerHTML='<rect x="5" y="3" width="22" height="26" rx="4" fill="#e8f2ff" stroke="#3879c9" stroke-width="1.5"/><rect x="9" y="7" width="14" height="7" rx="1.5" fill="#55a6df"/><path d="M10 18h12M10 22h12M10 26h8" stroke="#3879c9" stroke-width="2" stroke-linecap="round"/>';
+    }else svg.append(picture);holder.append(svg);return holder;
   }
   function polish(){
     const view=document.getElementById('page-view'),editor=document.getElementById('editor');
