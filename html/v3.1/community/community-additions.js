@@ -235,7 +235,7 @@
       const route=button.dataset.quickView||button.dataset.communityExtra;
       if(route==='reels')continue;
       const name=menuArtwork[route]||(button.id==='menuStartTour'?'sparkles':'image'),icon=button.querySelector('.ecosystem-item-icon'),image=document.createElement('img');
-      image.src=route==='news'?new URL('../../assets/icons/3d-fluency/news.png',baseURL).href:new URL('issue-2040-oneqr-'+name+'-3d.png',artworkBase).href;
+      image.src=['feed','pages'].includes(route)?new URL('nav-icons/'+(route==='feed'?'feed.webp':'pages.svg'),baseURL).href:route==='news'?new URL('../../assets/icons/3d-fluency/news.png',baseURL).href:new URL('issue-2040-oneqr-'+name+'-3d.png',artworkBase).href;
       image.alt='';image.width=image.height=24;image.draggable=false;icon.replaceChildren(image);
     }
     const postItems=document.createElement('div');postItems.className='community-menu-group-items';createItems.append(postItems);
