@@ -21,7 +21,7 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await open('groups');const groups=pane.locator('#groupsView');await groups.locator('.community-group-latest').waitFor();
      const location=hub.locator('#communityLocation');if(await location.isVisible()){
       const box=await location.boundingBox();assert.ok(box.height<=26&&box.width<=145,JSON.stringify(box));
-      const title=await hub.locator('.community-heading h1').boundingBox(),create=await hub.locator('#communityCreate').boundingBox();
+      const title=await hub.locator('.community-heading h1:visible').boundingBox(),create=await hub.locator('#communityCreate').boundingBox();
       assert.ok(Math.abs(create.y+create.height/2-(title.y+box.y+box.height)/2)<4);
       await location.click();await pane.locator('#viewerLocationTitle').waitFor();await pane.locator('#closeModal').click();
      }
