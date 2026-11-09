@@ -62,6 +62,8 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await open('reels');const extra=hub.locator('.community-extra-pane'),nav=extra.locator('.community-reels-shortcuts');await nav.waitFor();
      assert.equal(await nav.locator('button').count(),5);assert.equal(await nav.locator('button').nth(4).getAttribute('aria-current'),'page');
      await extra.locator('video').first().waitFor();
+     assert.ok((await extra.locator('.reels-hero').boundingBox()).height<=115);
+     await extra.locator('.reels-hero [data-feed-kind=reel]').click();await extra.locator('#editor[open]').waitFor();await extra.locator('#editor [data-action=close-dialog]').first().click();
      assert.equal(await extra.locator('[data-expansion-reel-like],[data-expansion-reel-comment],[data-expansion-reel-share]').count(),0);
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
      await page.screenshot({path:path.join(output,`${width}-${account}-reels.png`)});
@@ -80,6 +82,7 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
     });
     await check('storefront service tool add edit and compact layout',async()=>{
      await open('shop');const shop=hub.locator('.community-extra-pane #page-view');await shop.locator('.store-section-title').first().waitFor();
+     if(account==='personal')assert.equal((await shop.locator('.store-setup-top strong').innerText()).trim(),'3/6');
      const section=shop.locator('.store-section-title:has([data-action=shop-add-product])').first();
      const heading=await section.locator('h2').boundingBox(),button=await section.locator('button').boundingBox();assert.ok(button.x>heading.x+heading.width-2);assert.ok(button.y<heading.y+heading.height+12);
      const tiles=await shop.locator('.store-connect').evaluateAll(nodes=>nodes.map(node=>node.getBoundingClientRect().height));assert.ok(tiles.length>=6&&tiles.every(height=>height<=58));

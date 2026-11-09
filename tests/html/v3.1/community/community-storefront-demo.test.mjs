@@ -72,3 +72,15 @@ test('the sample design photo refreshes existing defaults and preserves custom p
   assert.equal(demo.seed(state,owner),false);
   assert.equal(state.feedPosts.some(row=>row.id==='sample-store-design'),false);
 });
+
+
+test('personal demo starts partly set up and preserves later edits and custom stores',t=>{
+  const demo=setup(t),shared={role:'staff',member:'David Le'},state=empty();
+  assert.equal(demo.seed(state,shared),true);
+  assert.equal(state.shop.name,'David Le');assert.ok(state.shop.cover);assert.ok(state.shop.hours);
+  assert.equal(state.shop.about,'');assert.equal(state.shop.phone,'');assert.equal(state.shop.items.length,0);
+  state.shop.cover='';state.shop.name='My name';const before=clone(state);
+  assert.equal(demo.seed(state,shared),false);assert.deepEqual(clone(state),before);
+  const customized=empty();customized.shop.name='Existing storefront';const shop=clone(customized.shop);
+  demo.seed(customized,shared);assert.deepEqual(customized.shop,shop);
+});

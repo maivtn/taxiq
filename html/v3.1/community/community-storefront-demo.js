@@ -26,12 +26,24 @@
     for(const [key,values]of Object.entries(source))if(Array.isArray(values)&&values.includes(target[key]))target[key]=text(values,language);
   }
   function localize(state,language=state.lang){
+    if(state.personalStorefrontDemoSeeded===1)translateFields(state.shop,{hours:profile.hours},language);
     if(state.storefrontDemoSeeded!==1)return;
     translateFields(state.shop,profile,language);
     for(const template of listings){const row=state.shop.items.find(item=>item.id===template.id);if(row)translateFields(row,template,language);}
     for(const template of posts){const row=state.feedPosts.find(post=>post.id===template.id);if(row)translateFields(row,template,language);}
   }
   function seed(state,shared){
+    if(shared?.role==='staff'&&shared.member==='David Le'){
+      if(state.personalStorefrontDemoSeeded===1)return false;
+      const customized=Object.entries(state.shop).some(([key,value])=>{
+        if(key==='type')return value&&value!=='personal';
+        if(key==='city')return value&&value!=='Houston, TX';
+        return Array.isArray(value)?value.length>0:!!value;
+      });
+      state.personalStorefrontDemoSeeded=1;
+      if(!customized)Object.assign(state.shop,{name:shared.member,cover:media.blue,hours:text(profile.hours,state.lang)});
+      return true;
+    }
     if(shared?.role!=='owner'||shared.member!=='BITCOIN NAIL BAR')return false;
     if(state.storefrontDemoSeeded===1){
       const post=state.feedPosts.find(row=>row.id==='sample-store-design'&&row.shopOrigin&&row.author===shared.member);
