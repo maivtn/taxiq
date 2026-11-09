@@ -24,7 +24,7 @@
     </div>
   </div>
   <script>
-    if(new URLSearchParams(location.search).get('role')==='tech')location.replace('staff-community.html'+location.search+location.hash);
+    if(['staff','tech'].includes(new URLSearchParams(location.search).get('role'))||new URLSearchParams(location.search).get('account')==='personal')location.replace('staff-community.html'+location.search+location.hash);
     window.NEXORA_SHELL={activePage:'community',isCommunity:true,activeTab:'feed',onNavigate:function(tab){if(window.navigateCommunityHub)window.navigateCommunityHub(tab);}};
   </script>
   <script src="../assets/nexora-icons.js"></script>

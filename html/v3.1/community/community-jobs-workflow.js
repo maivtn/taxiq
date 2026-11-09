@@ -52,7 +52,8 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     let editor = null, disposed = false, lastFocused = null, storageProblem = false;
     const member = () => { const value = typeof adapter.currentMember === 'function' ? adapter.currentMember() : adapter.currentMember; return String(value?.id || value?.name || value || ''); };
     const memberName = () => { const value = typeof adapter.currentMember === 'function' ? adapter.currentMember() : adapter.currentMember; return String(value?.name || value?.displayName || value || ''); };
-    const role = () => (typeof adapter.role === 'function' ? adapter.role() : adapter.role) === 'staff' ? 'staff' : 'owner';
+    const role = () => ['owner','business','salon'].includes(typeof adapter.role === 'function' ? adapter.role() : adapter.role) ? 'owner' : 'staff';
+    const canPost = kind => kind==='hiring'||kind==='transfer' ? role()==='owner' : kind==='seeking' ? role()==='staff' : ['service-request','service-offer'].includes(kind);
     const own = row => !!row && String(row.ownerId || row.owner || '') === member();
     const esc = adapter.escape || (value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])));
     const language = () => (typeof adapter.language === 'function' ? adapter.language() : document.documentElement.lang || 'vi').startsWith('en') ? 'en' : 'vi';
@@ -233,7 +234,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if (input.id && !previous || previous && (!own(previous) || ['closed','hired','deleted'].includes(normalStatus(previous)))) return false;
       if (previous && input.expectedSignature && signature(previous)!==input.expectedSignature) {toast(t('jobs.board.owner.errors.statusConflict'));return false;}
       const kind=previous?.kind || input.kind || (role()==='owner'?'hiring':'seeking');
-      if (!previous && (role()==='owner' && kind!=='hiring' || role()==='staff' && kind!=='seeking')) return false;
+      if (!['hiring','seeking'].includes(kind) || !canPost(kind)) return false;
       if(mode!=='draft'&&input.salaryType==='Guaranteed'&&!(kind==='seeking'&&(input.payFrom||input.payTo))&&(!/^\d+(\.\d{1,2})?$/.test(String(input.weeklySalary||input.pay||''))||Number(input.weeklySalary||input.pay)<=0)){toast(t('jobs.board.owner.errors.salaryInvalid'));return false;}
       if(kind==='seeking'&&(input.payFrom||input.payTo)&&((input.payFrom&&(!Number.isFinite(+input.payFrom)||+input.payFrom<0))||(input.payTo&&(!Number.isFinite(+input.payTo)||+input.payTo<0))||(input.payFrom&&input.payTo&&+input.payFrom>+input.payTo)))return false;
       const clean = {};
@@ -254,7 +255,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     }
     function closeJob(id) {
       const rows=getJobs(),row=rows.find(item=>String(item.id)===String(id));
-      if (!own(row) || !['open','paused','pending'].includes(normalStatus(row))) return false;
+      if (!own(row) || !canPost(row.kind) || !['open','paused','pending'].includes(normalStatus(row))) return false;
       row.status='closed'; row.closedAt=stamp();
       let success=false;try{success=adapter.saveJobs(rows)===true;}catch{}
       if (!success) {toast(t('jobs.board.myPosts.close.error'));return false;}
@@ -299,7 +300,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if(extras?.special(row))return extras.card(row,mine);
       const images=jobPhotos(row), application=myApplication(row.id), saved=(readState()?.savedJobs[member()]||[]).includes(row.id), match=role()==='staff'&&!seeking(row)&&!mine?extras?.match(row):null;
       let actions=button('detail',row.id,t('jobs.applications.details'));
-      if (mine) {
+      if (mine && own(row) && canPost(row.kind)) {
         if (!['closed','hired','deleted'].includes(normalStatus(row))) actions+=button('edit',row.id,t(normalStatus(row)==='draft'?'jobs.board.myPosts.actions.continueEditing':'jobs.board.myPosts.actions.edit'));
         if (!seeking(row)) actions+=button('applicants',row.id,t('jobs.applications.applicantsCount',{count:applicants(row.id).length}));
         if (['open','paused','pending'].includes(normalStatus(row))) actions+=button('close-post',row.id,t(seeking(row)?'jobs.board.myPosts.seeking.actions.close':'jobs.board.myPosts.actions.close'));
@@ -327,15 +328,15 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       view.classList.add('jobs-enhanced');
       let navigation=document.getElementById('jobsWorkflow');
       if (!navigation) {navigation=document.createElement('div');navigation.id='jobsWorkflow';view.querySelector('.feature-layout')?.before(navigation);if(!navigation.isConnected)view.append(navigation);}
-      if (role()==='owner'&&['applied','profile'].includes(tab))tab='browse';
       const tabs=[['browse','briefcase'],['myPosts','layout-dashboard'],...(role()==='staff'?[['applied','calendar-check'],['profile','users-round']]:[]),...(extras?.tabs()||[])];
+      if(!tabs.some(([value])=>value===tab))tab='browse';
       const templates=view.querySelector('#jobTemplates');
       navigation.innerHTML=`<div class="jobs-workflow-head"><div class="jobs-nav" role="tablist" aria-label="${esc(t('jobs.board.browse.title'))}">${tabs.map(([value,image])=>`<button type="button" role="tab" aria-selected="${tab===value}" class="jobs-tab${tab===value?' active':''}" data-jobs-tab="${value}">${icon(image)}<span>${esc(extras?.label(value)||t('jobs.board.nav.'+({profile:'techProfile'}[value]||value)))}</span></button>`).join('')}${role()==='owner'?`<button type="button" class="jobs-tab jobs-pos-link" data-jobs-action="open-pos">${icon('store')}<span>${esc(t('jobs.board.nav.openInPos'))}</span></button>`:''}</div><div class="jobs-compose-slot"></div></div><div id="jobsToolbar"></div>`;
       if(templates)navigation.querySelector('.jobs-compose-slot').append(templates);
       const toolbar=navigation.querySelector('#jobsToolbar');
       const listTitle=document.getElementById('jobListTitle'),count=document.getElementById('jobCount');
       if(listTitle)listTitle.textContent=t(tab==='myPosts'?'jobs.board.myPosts.title':tab==='applied'?'jobs.board.applied.title':tab==='profile'?'jobs.profile.title':'jobs.board.browse.title');
-      view.dataset.jobsTab=tab;view.querySelectorAll('#jobTemplates [data-template]').forEach(control=>{const card=control.closest('.template-card')||control,allowed=control.dataset.template===(role()==='owner'?'hiring':'seeking');card.hidden=false;control.disabled=!allowed;const hint=control.querySelector('small')?.textContent||'';control.title=hint;control.querySelector('.jobs-template-role')?.remove();if(!allowed){const badge=document.createElement('span');badge.className='jobs-template-role';badge.textContent=control.dataset.template==='hiring'?'Business':'Personal';control.append(badge);}});
+      view.dataset.jobsTab=tab;view.querySelectorAll('#jobTemplates [data-template]').forEach(control=>{const card=control.closest('.template-card')||control,allowed=canPost(control.dataset.template);card.hidden=!allowed;control.disabled=!allowed;control.title=control.querySelector('small')?.textContent||'';control.querySelector('.jobs-template-role')?.remove();});
       posts.classList.add('jobs-post-grid');
       if(extras?.render(tab,posts,toolbar))return;
       if (tab==='profile') {posts.innerHTML=profileMarkup();if(count)count.textContent='';return;}
@@ -348,7 +349,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if (tab==='myPosts') {
         toolbar.innerHTML=`<div class="jobs-filter-row" role="tablist" aria-label="${esc(t('jobs.board.myPosts.tabsLabel'))}">${['All','Recruiting',...(role()==='staff'?['Paused']:[]),'Draft','PendingReview','Closed'].map(value=>`<button type="button" role="tab" aria-selected="${postTab===value}" class="filter-chip${postTab===value?' active':''}" data-jobs-post-status="${value}">${esc(value==='Paused'?po('Tạm ẩn','Paused'):t('jobs.board.myPosts.tabs.'+value))}</button>`).join('')}</div>`;
         toolbar.insertAdjacentHTML('beforeend',`<label class="jobs-field"><span class="jobs-sr-only">${esc(t('jobs.board.myPosts.searchLabel'))}</span><input type="search" class="field" id="jobsSearch" placeholder="${esc(t('jobs.board.myPosts.searchPlaceholder'))}" value="${esc(query)}"></label>`);
-        rows=rows.filter(own).filter(row=>normalStatus(row)!=='deleted').filter(row=>postTab==='All'||(postTab==='Closed'&&normalStatus(row)==='hired')||normalStatus(row)===({Recruiting:'open',Paused:'paused',Draft:'draft',PendingReview:'pending',Closed:'closed'})[postTab]);
+        rows=rows.filter(own).filter(row=>canPost(row.kind)).filter(row=>normalStatus(row)!=='deleted').filter(row=>postTab==='All'||(postTab==='Closed'&&normalStatus(row)==='hired')||normalStatus(row)===({Recruiting:'open',Paused:'paused',Draft:'draft',PendingReview:'pending',Closed:'closed'})[postTab]);
       } else {
         const states=window.NEXORA_US_GEO?.states||{};
         const industry=adapter.getIndustryFilter?.()||document.querySelector('#jobIndustryFilters .active')?.dataset.jobIndustry||'all';
@@ -406,7 +407,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       const videos=(row.videoUrls||[]).map(safeLink).filter(Boolean);
       const body=`<div class="jobs-detail-header"><div><span class="kind ${seeking(row)?'want':'sale'}">${esc(t(seeking(row)?'jobs.board.card.typeSeeking':'jobs.board.card.typeHiring'))}</span><h3>${esc(row.title)}</h3><p class="meta">${esc(seeking(row)?postingName(row):row.businessName||row.owner)} · ${esc(row.city)} · ${esc(date(row.createdAt))}</p><strong class="jobs-pay">${esc(salary(row))}</strong></div>${currentGallery[0]?`<button class="jobs-detail-cover" type="button" data-jobs-action="image" data-jobs-index="0"><img src="${esc(currentGallery[0])}" alt="${esc(row.title)}"></button>`:''}</div>${facts([[t('jobs.board.detail.openings'),row.openings||(!seeking(row)?1:'')],[t('jobs.board.detail.schedule'),[row.schedule,(row.availableDays||[]).map(day=>po(({Monday:'T2',Tuesday:'T3',Wednesday:'T4',Thursday:'T5',Friday:'T6',Saturday:'T7',Sunday:'CN'})[day],day)).join(', '),row.workSession?({all:po('Cả ngày','All day'),morning:po('Sáng','Morning'),afternoon:po('Chiều','Afternoon'),flexible:po('Linh hoạt','Flexible')})[row.workSession]:''].filter(Boolean).join(' · ')],[po('Đi xa được','Willing to travel'),({city:po('Trong thành phố','Within the city'),'20miles':po('Trong bán kính 20 miles','Within 20 miles'),relocate:po('Sẵn sàng đi bang khác (cần chỗ ở)','Open to other states (needs housing)')})[row.travelRange]],[t('jobs.board.detail.experience'),row.experience?t('jobs.profile.options.experience.'+row.experience):''],[t('jobs.board.detail.applyBy'),date(row.applyBy)],[t('jobs.board.detail.address'),[row.address,row.city].filter(Boolean).join(', ')]])}${row.city?`<button type="button" class="btn small" data-jobs-action="map" data-jobs-id="${esc(row.id)}">${esc(t('jobs.board.detail.viewMap'))}</button>`:''}<section class="jobs-detail-section"><h3>${esc(t('jobs.board.detail.skills'))}</h3><div class="chips">${skillsText(row).split(/[,;]/).filter(Boolean).map(skill=>`<span class="chip">${esc(skill.trim())}</span>`).join('')}</div></section><section class="jobs-detail-section"><h3>${esc(t('jobs.board.detail.description'))}</h3><p class="jobs-long-text">${esc(textOnly(row.description||row.content))}</p></section>${row.specialNotes?`<section class="jobs-detail-section"><h3>${esc(t('jobs.board.detail.notes'))}</h3><p class="jobs-long-text">${esc(row.specialNotes)}</p></section>`:''}${contacts?`<section class="jobs-detail-section"><h3>${esc(t('jobs.board.detail.contact'))}</h3>${contacts}</section>`:''}${currentGallery.length?`<section class="jobs-detail-section"><h3>${esc(t('jobs.board.detail.images'))}</h3>${photoGrid(currentGallery,'detail')}</section>`:''}${videos.length?`<section class="jobs-detail-section"><h3>${esc(t('jobs.board.detail.videos'))}</h3>${videos.map((url,index)=>`<a class="jobs-video-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${icon('tv')}${esc(t('jobs.board.detail.videos'))} ${index+1}</a>`).join('')}</section>`:''}`;
       let footer='';
-      if (own(row)) {footer=button('edit',id,t('jobs.board.myPosts.actions.edit'),true,['closed','hired','deleted'].includes(normalStatus(row)));if(!seeking(row))footer+=button('applicants',id,t('jobs.applications.applicantsCount',{count:applicants(id).length}));}
+      if (own(row) && canPost(row.kind)) {footer=button('edit',id,t('jobs.board.myPosts.actions.edit'),true,['closed','hired','deleted'].includes(normalStatus(row)));if(!seeking(row))footer+=button('applicants',id,t('jobs.applications.applicantsCount',{count:applicants(id).length}));}
       else {
         footer=button('job-chat',id,t('jobs.board.detail.message'));
         if(role()==='staff'&&!seeking(row))footer+=button('apply',id,t(application?.status==='Submitted'?'jobs.applications.applied':application?.status==='Cancelled'?'jobs.applications.reapply':'jobs.applications.applyNow'),true,!active(row));
@@ -563,7 +564,8 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     function openEditor(kind = role()==='owner'?'hiring':'seeking', item = {}) {
       if(typeof kind==='object'){item=kind;kind=item.kind||'hiring';}
       if(item.id){const current=getJob(item.id);if(!current||!own(current)||['closed','hired','deleted'].includes(normalStatus(current))){toast(t('jobs.board.owner.closedNotice'));return false;}item={...current,...item};kind=current.kind;}
-      if(!item.id&&(role()==='staff'&&kind!=='seeking'||role()==='owner'&&kind!=='hiring'))return false;
+      if(!['hiring','seeking'].includes(kind)||!canPost(kind))return false;
+      if(!item.id&&kind==='hiring'){adapter.navigate?.('posRecruitment',{source:'jobs',jobsTab:tab});return false;}
       const profile=getProfile();
       if(kind==='seeking')item={city:[profile.cityName,profile.stateCode].filter(Boolean).join(', '),skills:profile.skills.join(', '),description:profile.bio,...item};
       adapter.closeDialog?.();const form=adapter.openTemplate?.(kind,item)||document.getElementById('templateForm');
@@ -680,7 +682,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
         const result=editor?.pending&&saveJob(editor.pending);
         if(result){editor=null;adapter.closeDialog?.();toast(po('Đã tạo bài.','Post created.'));}else{const error=document.getElementById('jobsPublishError');if(error)error.textContent=t('jobs.board.owner.errors.submitError');}return;
       }
-      if(action==='open-pos')return adapter.navigate?.('posRecruitment',{source:'jobs',jobsTab:tab});
+      if(action==='open-pos'&&role()==='owner')return adapter.navigate?.('posRecruitment',{source:'jobs',jobsTab:tab});
     }
     function onSubmit(event) {
       const form=event.target;
@@ -747,7 +749,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     document.addEventListener('change',onChange);
     document.addEventListener('keydown',onKeydown,true);
     window.addEventListener('storage',onStorage);
-    extras=window.NEXORA_COMMUNITY_JOBS_EXTRAS?.mount({adapter,role,member,esc,po,getJobs,getProfile,readState,transact,showDialog,render,chat,date,active,card,publicCandidate,openInvite,openJob});
+    extras=window.NEXORA_COMMUNITY_JOBS_EXTRAS?.mount({adapter,role,canPost,member,esc,po,getJobs,getProfile,readState,transact,showDialog,render,chat,date,active,card,publicCandidate,openInvite,openJob});
     seedDemo();render();
     return {onDialogClosed:()=>{detailId=null;},render,enhance:render,openJob,navigate,openEditor,enhanceForm,afterSave,getProfile:()=>getProfile(),saveProfile,savePrivacy,eligibility,apply,cancelApplication,applicants,applicantProfile,publicCandidate,isVisible,isActive:active,displayName:postingName,invite,respondInvite,saveJob,closeJob,toggleSaved,reset,destroy,listApplications:()=>clone((readState()?.applications||[]).filter(row=>row.applicantUserId===member())),listInvites:()=>clone((readState()?.invites||[]).filter(row=>row.from===member()||row.to===member()))};
   }
