@@ -213,7 +213,7 @@
       if(!document.querySelector('[data-social-dialog]'))returnFocus=document.activeElement;
       closeMenus();
       const form=options.form?`<form ${options.form}>`:'';
-      adapter.openDialog(`<div class="overlay community-social-overlay" data-social-overlay><section class="dialog community-social-dialog ${options.className||''}" data-social-dialog role="dialog" aria-modal="true" aria-labelledby="community-social-dialog-title" tabindex="-1"><div class="dialog-head"><h2 id="community-social-dialog-title">${esc(title)}</h2>${button('close','<span aria-hidden="true">×</span>','',` aria-label="${esc(t('close'))}"`,'icon-btn')}</div>${form}<div class="dialog-body">${body}</div><div class="dialog-footer">${footer}</div>${form?'</form>':''}</section></div>`);
+      adapter.openDialog(`<div class="overlay community-social-overlay" data-social-overlay><section class="dialog community-social-dialog ${options.className||''}" data-social-dialog role="dialog" aria-modal="true" aria-labelledby="community-social-dialog-title" tabindex="-1"><div class="dialog-head"><h2 id="community-social-dialog-title">${esc(title)}</h2>${button('close','<span aria-hidden="true">×</span>','',` aria-label="${esc(t('close'))}"`,'icon-btn')}</div>${form}<div class="dialog-body">${body}</div>${footer?`<div class="dialog-footer">${footer}</div>`:''}${form?'</form>':''}</section></div>`);
       const dialog=document.querySelector('[data-social-dialog]');
       (dialog?.querySelector('[autofocus]')||dialog?.querySelector('textarea,input,button')||dialog)?.focus({preventScroll:true});
     }
@@ -225,7 +225,7 @@
     function openPost(postId,options={}) {
       const post=findPost(postId);
       modal={kind:'post',id:String(postId),commentId:options.commentId||null,threadId:options.threadId||null};
-      if(!post){showDialog(t('notFound'),`<p>${esc(t('notFoundBody'))}</p>`,button('close',esc(t('back')),''));return false;}
+      if(!post){showDialog(t('notFound'),`<p>${esc(t('notFoundBody'))}</p>`,'');return false;}
       ensurePost(post);if(!options.preserveOpen)opened.add(String(post.id));
       const target=ensurePost(post).comments.find(row=>row.id===options.commentId),thread=options.threadId||target?.parentId;
       if(thread)threads.add(threadKey(post.id,thread));
@@ -233,7 +233,7 @@
       if(rootIndex>=PAGE_SIZE)limits.set(String(post.id),rootIndex+1);
       if(target?.parentId){const replies=ensurePost(post).comments.filter(row=>row.parentId===target.parentId);replyLimits.set(threadKey(post.id,target.parentId),Math.max(PAGE_SIZE,replies.findIndex(row=>row.id===target.id)+1));}
       const rendered=adapter.renderPost?.(post)||`<article class="content-card" data-feed-post-id="${esc(post.id)}"><h3 data-community-authored>${esc(post.title||'')}</h3><p class="community-social-post-body" data-community-authored>${esc(postBody(post))}</p></article>`;
-      showDialog(post.title||t('back'),`<div class="community-social-detail" data-social-post-detail="${esc(post.id)}">${rendered}</div>`,button('close',esc(t('back')),''));
+      showDialog(post.title||t('back'),`<div class="community-social-detail" data-social-post-detail="${esc(post.id)}">${rendered}</div>`,'');
       const detail=document.querySelector('[data-social-post-detail]');
       if(detail){const card=detail.querySelector('[data-feed-post-id], [data-post-id]');if(!card&&detail.firstElementChild)detail.firstElementChild.setAttribute('data-feed-post-id',String(post.id));enhance(detail);adapter.enhancePosts?.(detail);}
       if(options.commentId)for(const row of document.querySelectorAll('[data-social-comment-id]'))if(row.dataset.socialCommentId===options.commentId&&row.closest('[data-social-post-detail]')){row.focus({preventScroll:true});row.scrollIntoView?.({block:'center'});}
