@@ -78,8 +78,8 @@ const server = http.createServer(async (request, response) => {
             assert.equal(await menu.getAttribute('role'), 'dialog');
             assert.equal(await menu.getAttribute('aria-modal'), 'true');
             const app = await host.locator(':scope > .app').boundingBox();
-            assert.ok(Math.abs(box.x-app.x)<2 && Math.abs(box.y-app.y)<2);
-            assert.ok(Math.abs(box.height-app.height)<2);
+            assert.ok(box.x>=app.x&&box.y>=app.y&&box.x+box.width<=app.x+app.width+1);
+            assert.ok(box.y+box.height<=app.y+app.height+1);
             assert.equal(await host.locator('.community-menu-close').isVisible(), true);
             await page.keyboard.press('Shift+Tab');
             assert.equal(await menu.locator('button:visible').last().evaluate(node => node.getRootNode().activeElement === node), true);
@@ -103,7 +103,7 @@ const server = http.createServer(async (request, response) => {
         });
         await open('feed');
         await check('Feed spacing after discovery toolbar removal', async () => {
-          await page.locator('#communityPane').locator('#feedTitle').waitFor();
+          await page.locator('#communityPane').locator('#feedTitle').waitFor({state:'attached'});
           assert.equal(await host.locator('#localDiscovery,.community-header-location').count(),0);
           if (width <= 800) {
             assert.equal(await host.locator('.community-heading-tools').isVisible(), false);

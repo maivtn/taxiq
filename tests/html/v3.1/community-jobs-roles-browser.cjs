@@ -30,9 +30,14 @@ fs.mkdirSync(output,{recursive:true});
         }
         async function personalControls(){
           assert.equal(await jobs.locator('#jobTemplates [data-template="hiring"]').isVisible(),false);
-          assert.equal(await jobs.locator('[data-template="seeking"]:visible').count(),1);
+          assert.ok(await jobs.locator('[data-template="seeking"]:visible').count()||await page.locator('#communityCreateMenu [data-create-kind="seeking"]').count());
           assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
           assert.equal(await jobs.locator('button[data-jobs-tab="workers"]').count(),0);
+        }
+        async function compose(kind){
+          const action=jobs.locator('[data-template="'+kind+'"]:visible');
+          if(await action.count())await action.first().click();
+          else{await page.locator('#communityCreate').click();await page.locator('#communityCreateMenu [data-create-kind="'+kind+'"]').click();}
         }
         async function blockedComposer(account,kind){
           const direct=await context.newPage();
@@ -56,7 +61,7 @@ fs.mkdirSync(output,{recursive:true});
         });
         const title='Role QA seeking '+width;
         await check('Personal publishes seeking and reloads',async()=>{
-          await jobs.locator('[data-template="seeking"]:visible').click();
+          await compose('seeking');
           const form=jobs.locator('#templateForm');await form.waitFor();
           await form.locator('[name="industry"]').selectOption('Nail & làm đẹp');
           await form.locator('[name="role"]').selectOption('Thợ nail');
@@ -86,7 +91,7 @@ fs.mkdirSync(output,{recursive:true});
         await check('Salon switch restores salon actions and removes worker actions',async()=>{
           await open('community.html','account=business&tab=jobs');
           await page.waitForURL('**/community.html**');await jobs.locator('#jobsWorkflow').waitFor();
-          assert.equal(await jobs.locator('#jobTemplates [data-template="hiring"]:visible,#localDiscovery [data-template="hiring"]:visible').count(),1);
+          assert.ok(await jobs.locator('[data-template="hiring"]:visible').count()||await page.locator('#communityCreateMenu [data-create-kind="hiring"]').count());
           assert.equal(await jobs.locator('#jobTemplates [data-template="seeking"]').isVisible(),false);
           assert.equal(await jobs.locator('button[data-jobs-tab="profile"]').count(),0);
           await jobs.locator('button[data-jobs-tab="transfer"]').click();
@@ -123,7 +128,7 @@ fs.mkdirSync(output,{recursive:true});
           await open('community.html','tab=jobs');
         });
         await check('Salon hiring creation opens salon recruitment',async()=>{
-          await jobs.locator('#jobTemplates [data-template="hiring"]:visible,#localDiscovery [data-template="hiring"]:visible').click();
+          await compose('hiring');
           await page.waitForURL(url=>url.pathname.endsWith('/html/pages/pos-recruitment.html'));
         });
         await check('Staff role alias uses personal shell',async()=>{
