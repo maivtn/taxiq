@@ -78,6 +78,11 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
     await check('Community rooms samples open chat and return',async()=>{
      await open('live');const extra=hub.locator('.community-extra-pane'),cards=extra.locator('.live-card');await cards.first().waitFor();
      assert.equal(await cards.count(),7);assert.equal(await extra.getByText('No live rooms yet. Create a room.',{exact:true}).count(),0);
+     await extra.locator('.live-hero [data-feed-kind=video]').click();const videoForm=extra.locator('#feed-form');await videoForm.waitFor();
+     assert.equal(await videoForm.locator('[name=kind]').inputValue(),'video');
+     assert.equal(await videoForm.locator('select[name=pageId]').count(),account==='personal'?0:1);
+     assert.equal(await videoForm.locator('[name=media]').getAttribute('accept'),'video/*');
+     await extra.locator('#editor [data-action=close-dialog]').first().click();
      assert.ok((await cards.allTextContents()).every(text=>text.includes('SAMPLE ROOM')));
      const photos=cards.locator('.live-card-cover img');await photos.evaluateAll(async nodes=>Promise.all(nodes.map(image=>image.decode())));
      await cards.first().locator('[data-live-open]').click();await extra.locator('#live-chat-form').waitFor();
