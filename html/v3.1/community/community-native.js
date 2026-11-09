@@ -11,11 +11,16 @@
     return fetched.get(url);
   }
   function css(text, base) {
-    return text.replace(/:root\b/g, ':host')
+    const urls=[];
+    const scoped=text.replace(/url\((['"]?)([^)'"\s]+)\1\)/g, (all, quote, value) => {
+      urls.push(/^(?:data:|https?:|#)/.test(value)?all:'url("'+new URL(value,base).href+'")');
+      return '__NEXORA_NATIVE_URL_'+(urls.length-1)+'__';
+    });
+    return scoped.replace(/:root\b/g, ':host')
       .replace(/(?<![\w.-])html(?![\w-])/g, '.native-html')
       .replace(/(?<![\w.-])body(?![\w-])/g, '.native-body')
       .replace(/@media\s*\(\s*(max|min)-width\s*:\s*(\d+)px\s*\)/g, '@container module ($1-width: $2px)')
-      .replace(/url\((['"]?)([^)'"\s]+)\1\)/g, (all, quote, value) => /^(?:data:|https?:|#)/.test(value) ? all : 'url("' + new URL(value, base).href + '")');
+      .replace(/__NEXORA_NATIVE_URL_(\d+)__/g, (all,index)=>urls[Number(index)]);
   }
   async function mount(host, source, options = {}) {
     if (host.communityModule) return host.communityModule;
