@@ -15,7 +15,7 @@
   const timeLabel=value=>new Date(value).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
   const inputTime=value=>{const date=new Date(value);date.setMinutes(date.getMinutes()-date.getTimezoneOffset());return date.toISOString().slice(0,16);};
   const route=(name,context)=>parent.postMessage({type:'nexora-community-route',route:name,context},location.origin);
-  const liveLink=room=>new URL((shared.role==='staff'?'/html/v3.1/staff-community.html':'/html/v3.1/community.html')+'?tab=live&liveView=viewer&liveId='+encode(room.seriesId||room.id)+(room.ownerId?'&liveOwner='+encode(room.ownerId):''),location.origin).href;
+  const liveLink=room=>new URL((shared.role==='staff'?'/html/v3.1/staff-community.html':'/html/v3.1/community.html')+'?tab=live&liveView=viewer&liveId='+encode(room.id)+(room.ownerId?'&liveOwner='+encode(room.ownerId):''),location.origin).href;
   const t=tx;
   const action=(key,label,{value='',icon='',style='',pressed,disabled=false}={})=>
     '<button type="button" class="lv-btn '+style+'" data-live-po="'+key+'"'+(value?' data-live-value="'+esc(value)+'"':'')+(pressed===undefined?'':' aria-pressed="'+pressed+'"')+(disabled?' disabled':'')+'>'+icon+esc(label)+'</button>';
@@ -106,7 +106,8 @@
   const previousLookup=liveRoomById;
   liveRoomById=function(id){return previousLookup(id)||(foreignRoom?.id===id?foreignRoom:undefined);};
   function resolveLink(entries,id){
-    const series=entries.filter(room=>room.seriesId===id);
+    const exact=entries.find(room=>room.id===id);if(exact)return exact;
+    const series=entries.filter(room=>room.seriesId===id&&room.status!=='cancelled');
     if(!series.length)return entries.find(room=>room.id===id);
     return series.find(room=>room.status==='live')||
       series.filter(room=>room.status==='scheduled').sort((a,b)=>a.scheduledAt-b.scheduledAt)[0]||
@@ -242,9 +243,9 @@
     const upcoming=state.liveRooms.filter(row=>row.status==='scheduled'&&own(row)).sort((a,b)=>a.scheduledAt-b.scheduledAt);
     const scheduleFields=card(field(t('Tiêu đề buổi live','Live title'),'title',setup.title,'required maxlength="100"')+
       '<div class="lv-grid2">'+field(t('Ngày','Date'),'date',localTime.slice(0,10),'type="date" required')+field(t('Giờ bắt đầu','Start time'),'time',localTime.slice(11,16),'type="time" required')+'</div>'+
-      toggle('weekly',t('Lặp lại hằng tuần','Repeat weekly'),setup.weekly,t('Mỗi buổi có một trang chờ và link riêng.','Each session has its own waiting room and stable link.'))+
+      toggle('weekly',t('Lặp lại hằng tuần','Repeat weekly'),setup.weekly,t('Mỗi buổi tự sinh trang chờ + link riêng; sửa/hủy từng buổi không ảnh hưởng buổi khác','Each session has its own waiting room and link; editing or cancelling one does not affect the others'))+
       toggle('remind',t('Nhắc người theo dõi','Remind followers'),setup.remind,t('Gửi nhắc qua trung tâm thông báo.','Use in-app notifications for reminders.')));
-    const waiting=upcoming.length?card(head(t('Trang chờ của buổi đã lên lịch','Scheduled waiting rooms'))+upcoming.map(rowData=>row(roomName(rowData),dateLabel(rowData.scheduledAt)+' · '+timeLabel(rowData.scheduledAt),'<div class="lv-actions">'+action('copy',t('Sao chép link','Copy link'),{value:rowData.id})+action('edit-schedule',t('Sửa buổi này','Edit session'),{value:rowData.id})+'</div>',icon('CalendarDays'))).join('')):'';
+    const waiting=upcoming.length?card(head(t('Trang chờ của buổi đã lên lịch','Scheduled waiting rooms'))+upcoming.map(rowData=>row(roomName(rowData),dateLabel(rowData.scheduledAt)+' · '+timeLabel(rowData.scheduledAt),'<div class="lv-actions">'+action('copy',t('Sao chép link','Copy link'),{value:rowData.id})+action('edit-schedule',t('Sửa buổi này','Edit session'),{value:rowData.id})+action('cancel-schedule',t('Hủy buổi này','Cancel session'),{value:rowData.id})+'</div>',icon('CalendarDays'))).join('')):'';
     showDialog(label('schedule'),form('schedule',scheduleFields+waiting,t('Lưu lịch live','Save schedule')),'schedule');
   }
   function nextWeek(room){
@@ -280,7 +281,7 @@
     const before=state.liveRooms,beforePosts=state.feedPosts;
     state.liveRooms=[room,...before.filter(row=>row.id!==room.id)];
     if(scheduledAt&&room.weekly&&!editing){
-      room.seriesId=room.id;
+      room.seriesId='series-'+crypto.randomUUID();
       state.liveRooms.push(nextWeek(room));
     }
     if(!scheduledAt)announce(room);
@@ -301,7 +302,7 @@
     return originalLivePage().match(/<section class="live-hero">[\s\S]*?<\/section>/)?.[0]||'';
   }
   function listPage(){
-    const visible=rooms().filter(room=>!isPrivate(room)||own(room))
+    const visible=rooms().filter(room=>room.status!=='cancelled'&&(!isPrivate(room)||own(room)))
       .filter(room=>!directoryPageId||room.pageId===directoryPageId||room.destinations?.includes('page:'+directoryPageId))
       .filter(room=>category==='all'||(category==='houston'?room.city?.includes('Houston'):room.category===category));
     const live=visible.filter(room=>!['ended','scheduled','sample'].includes(room.status));
@@ -360,7 +361,7 @@
     return '<section class="lv-surface"><header class="lv-top">'+action('back',t('Đang live','Live Now'),{icon:icon('ArrowLeft')})+'</header>'+
       card('<div class="lv-cover">'+roomMark(room)+chip(t('Đã lên lịch','Scheduled'),'violet')+'</div>'+head(roomName(room),roomHost(room))+'<p>'+esc(newsText(room.description)||'')+'</p><p>'+dateLabel(room.scheduledAt)+' · '+timeLabel(room.scheduledAt)+'</p><div class="lv-actions">'+
       action('copy',t('Sao chép link','Copy link'),{value:room.id,icon:icon('Copy')})+
-      (hostMode(room)?action('edit-schedule',t('Sửa buổi này','Edit session'),{value:room.id})+action('start-scheduled',t('Phát live ngay','Go live now'),{style:'primary',icon:icon('Video')})
+      (hostMode(room)?action('edit-schedule',t('Sửa buổi này','Edit session'),{value:room.id})+action('cancel-schedule',t('Hủy buổi này','Cancel session'),{value:room.id})+action('start-scheduled',t('Phát live ngay','Go live now'),{style:'primary',icon:icon('Video')})
         :action('remind',prefs(room.id).remind?t('Đã đặt nhắc lịch','Reminder set'):t('Nhắc tôi','Remind me'),{pressed:!!prefs(room.id).remind,style:'primary',icon:icon('Bell')}))+'</div>')+'</section>';
   }
   function gate(room){
@@ -381,6 +382,7 @@
     const room=getRoom(id);
     if(!room)return listPage();
     if(!canWatchRoom(room)||(!hostMode(room)&&room.safety?.age&&!ageAccepted.has(room.id)))return gate(room);
+    if(room.status==='cancelled')return '<section class="lv-surface">'+card(head(t('Buổi live đã hủy','Livestream cancelled'))+action('back',t('Đang live','Live Now')))+'</section>';
     if(room.status==='scheduled')return waitingRoom(room);
     if(['ended','sample'].includes(room.status))return replayView(room);
     const host=hostMode(room),who=roomHost(room),name=roomName(room),info=overlay(room),follows=!!prefs(id).follow;
@@ -971,6 +973,7 @@
       if(key==='pick-purpose'){setup.purpose=value;purposePage();return;}
       if(key==='return-setup'){setupPage();return;}
       if(key==='schedule'){schedulePage();return;}
+      if(key==='cancel-schedule'){const selected=getRoom(value);if(!selected||!own(selected)||selected.status!=='scheduled')return;if(!updateRoom(selected,{status:'cancelled',cancelledAt:Date.now()}))return;setup=null;activeLiveRoom=null;closeDialog();render();return;}
       if(key==='edit-schedule'){const row=getRoom(value);if(row&&own(row))schedulePage(row);return;}
       if(key==='camera'){await preview();return;}
       if(key==='beauty'&&dialogPanel==='setup'){readSetup();setup.beauty=!setup.beauty;setupPage();return;}
