@@ -25,6 +25,7 @@
     const pane=document.createElement('section');pane.className='community-extra-pane';pane.hidden=true;workspace.append(pane);
     const loading=document.createElement('div');loading.className='community-route-loading';loading.setAttribute('role','status');loading.setAttribute('aria-live','polite');loading.textContent='Loading Real Estate…';loading.hidden=true;pane.append(loading);
     const menu=root.getElementById('ecosystemMenu');
+    const createMenu=window.NEXORA_COMMUNITY_CREATE_MENU.mount(root,{role:window.NEXORA_COMMUNITY_SHARED.role,navigate});
     const heading=root.querySelector('.community-heading h1');
     const tour=root.getElementById('startTour'),headingTools=document.createElement('span');
     headingTools.className='community-heading-tools';tour.before(headingTools);
@@ -370,6 +371,7 @@
       if(data&&typeof data==='object')notify(data);
     }
     async function navigate(route,context={},fromHost=false){
+      createMenu?.close();
       if(route==='explore'||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))route='feed';
       if(route==='assistant')return openAssistant();
       if(route==='friends')context={friendsView:['all','received','sent','suggestions'].includes(context.friendsView)?context.friendsView:'all'};
@@ -378,7 +380,7 @@
       closeComposer();
       const request=++generation;
       if(!supports(route)){
-        deactivate();if(route==='feed')original.restoreFeed();else original.navigate(route,context);
+        deactivate();if(route==='feed'){original.restoreFeed();if(Object.keys(context).length)original.navigate(route,context);}else original.navigate(route,context);
         if(!fromHost)notify({type:'nexora-community-route',route});return;
       }
       if(route==='transfer'){
