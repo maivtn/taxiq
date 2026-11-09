@@ -96,6 +96,15 @@ body #feedView #feedComposerCard #feedPostShortcuts {
   gap: 8px;
   margin-top: 10px;
 }
+body #feedView #feedComposerCard #feedPostShortcuts .feed-want-shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 7px 12px;
+}
 
 /* Retain the PO's three media shortcuts directly below the compose prompt. */
 body #feedView .feed-media-shortcuts {
