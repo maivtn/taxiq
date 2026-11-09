@@ -44,6 +44,13 @@ body.embedded #pageCards .page-identity .meta{font-size:11px}
 body.embedded #pageCards .page-content>p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.5;margin:8px 0}
 body.embedded #pageCards .page-actions{flex-wrap:nowrap;gap:6px;padding-top:8px}
 body.embedded #pageCards .page-actions .btn{min-height:40px;font-size:11px;padding:8px}
+@media(min-width:801px){
+ body.embedded #pageCards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));overflow:visible;scroll-snap-type:none;align-items:stretch}
+ body.embedded #pageCards>.page-card{display:flex;flex-direction:column;width:auto}
+ body.embedded #pageCards .page-content{display:flex;flex:1;flex-direction:column;min-width:0}
+ body.embedded #pageCards .page-actions{margin-top:auto}
+ body.embedded #pageCards>.empty{grid-column:1/-1}
+}
 body.embedded #pagesView>.section-heading{display:flex;position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;justify-content:flex-start;margin:18px 0 10px}
 body.embedded #pagesView>.section-heading #pageSectionTitle{position:static;width:auto;height:auto;clip-path:none;white-space:normal;overflow:visible;font-size:15px}
 .native-body:has(#page-view){--ink:#25304b;--muted:#77839e;--violet:#6653df;--bg:#f7f7fc}

@@ -17,8 +17,8 @@ const server=http.createServer(async(req,res)=>{
   try{
     browser=await chromium.launch({headless:true});
     const base=process.env.COMMUNITY_BASE_URL||'http://127.0.0.1:'+server.address().port;
-    for(const width of [320,390,430])for(const account of ['business','personal']){
-      const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+    for(const width of [320,390,430,834,1280,1440])for(const account of ['business','personal']){
+      const context=await browser.newContext({viewport:{width,height:844},isMobile:width<500,hasTouch:true,reducedMotion:'reduce'});
       try{
         await context.addInitScript(()=>{if(location.protocol!=='http:')return;localStorage.setItem('nexora-community-tour-mobile-v1','1');localStorage.setItem('nexora-community-tour-desktop-v1','1');});
         const page=await context.newPage();page.setDefaultTimeout(12000);

@@ -43,17 +43,20 @@ for(const name of ['community.html','staff-community.html']){
   doc.querySelectorAll('template[data-community-template]').forEach(n=>n.remove());
   host.insertAdjacentHTML('afterend',templates);
   doc.querySelectorAll('script[data-community-code]').forEach(n=>n.remove());
-  const bundle=doc.createElement('script');bundle.src='community/community-direct-code.js?v=20261109-contact-row-icons1';bundle.dataset.communityCode='';
+  const bundle=doc.createElement('script');bundle.src='community/community-direct-code.js?v=20261109-desktop-parity2';bundle.dataset.communityCode='';
   doc.querySelector('script[src*="community-native.js"]').before(bundle);
-  for(const script of doc.querySelectorAll('script[src*="community-native.js"],script[src*="community-integration.js"],script[src*="community-shared.js"]'))script.src=script.getAttribute('src').replace(/\?v=.*/,script.getAttribute('src').includes('community-native.js')?'?v=20261109-explicit-icons1':'?v=20261109-community-review4');
+  for(const script of doc.querySelectorAll('script[src*="community-native.js"],script[src*="community-integration.js"],script[src*="community-shared.js"]'))script.src=script.getAttribute('src').replace(/\?v=.*/,script.getAttribute('src').includes('community-native.js')?'?v=20261109-explicit-icons1':script.getAttribute('src').includes('community-integration.js')?'?v=20261109-desktop-parity1':'?v=20261109-community-review4');
   // Keep the outer sidebar styles outside the copied Community sections.
   // Existing scoped outer styles can include entry-specific fixes; only convert new links.
-  for(const link of [...doc.head.querySelectorAll('link[rel="stylesheet"]')].filter(n=>!n.href.startsWith('https:'))){
+  for(const link of [...doc.head.querySelectorAll('link[rel="stylesheet"]')].filter(n=>!n.href.startsWith('https:')&&!n.hasAttribute('data-community-shared-style'))){
     const style=doc.createElement('style');style.dataset.outerStyle=link.getAttribute('href');
     const source=local(link.getAttribute('href'),'/'+file);
     const css=read(source).replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,q,v)=>/^(?:data:|https?:|#)/.test(v)?all:'url("'+local(v,source)+'")');
     style.textContent='@scope (:root) to ([data-community-region] > *) {\n'+outerCSS(css)+'\n}';link.replaceWith(style);
   }
   for(const style of doc.head.querySelectorAll('style[data-outer-style]'))style.textContent=outerCSS(style.textContent);
+  // This shared layout reaches the shell and its nested native sections.
+  doc.head.querySelectorAll('[data-community-shared-style]').forEach(node=>node.remove());
+  const desktop=doc.createElement('link');desktop.rel='stylesheet';desktop.href='community/community-desktop.css?v=20261109-desktop-parity1';desktop.dataset.communitySharedStyle='';doc.head.append(desktop);
   fs.writeFileSync(path.join(repo,file),('<!doctype html>\n'+doc.documentElement.outerHTML+'\n').replace(/[ \t]+$/gm,'').replace(/\n{4,}/g,'\n\n\n'));
 }

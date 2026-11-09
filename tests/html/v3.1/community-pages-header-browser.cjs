@@ -10,7 +10,7 @@ const results = [], errors = [];
   await fs.mkdir(output, { recursive: true });
   const browser = await chromium.launch({ headless: true });
   try {
-    for (const width of [390, 662, 834, 1440]) for (const account of ['personal', 'business']) {
+    for (const width of [390, 662, 834, 1280, 1440]) for (const account of ['personal', 'business']) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
       try {
         await context.addInitScript(() => {
@@ -46,12 +46,90 @@ const results = [], errors = [];
           assert.equal((await view.innerText()).includes('undefined'), false, 'Translation preserves whitespace');
           assert.equal(await view.locator('.community-pages-hero button svg').count(), 1, 'Create has one plus icon');
           assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+          assert.equal(await hub.locator('.community-heading h1:visible').innerText(), 'Fanpage');
+          const navigation = hub.locator('.mobile-nav:visible,.top .tabs:visible').first();
+          assert.deepEqual(await navigation.locator('.tab:visible').evaluateAll(nodes => nodes.map(node => node.dataset.view || 'more')), ['feed', 'market', 'pages', 'jobs', 'more']);
+          assert.deepEqual(await navigation.locator('.tab:visible > span:not(.tab-new)').allTextContents(), ['Feed', 'Groups', 'Fanpage', 'Jobs', 'More']);
+          const navBoxes = await navigation.locator('.tab:visible').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().y));
+          assert.ok(navBoxes.every(y => Math.abs(y - navBoxes[0]) < 2), 'All five primary destinations fit on one row');
+          const cards = view.locator('#pageCards .page-card');
+          assert.equal(await cards.count(), 17, 'All existing Page records remain available');
+          const wide = (await hub.locator('#communityPane').boundingBox()).width > 800;
+          const geometry = await view.locator('#pageCards').evaluate(node => {
+            const bounds = node.getBoundingClientRect();
+            return { display: getComputedStyle(node).display, width: node.clientWidth, scroll: node.scrollWidth,
+              cards: [...node.children].map(card => { const box = card.getBoundingClientRect(); return {left:box.left-bounds.left,right:box.right-bounds.left,top:box.top}; }) };
+          });
+          assert.equal(geometry.display, wide ? 'grid' : 'flex');
+          if (wide) {
+            assert.ok(geometry.scroll <= geometry.width + 1, 'Desktop directory needs no horizontal scrolling');
+            assert.ok(geometry.cards.every(card => card.left >= -1 && card.right <= geometry.width + 1), 'Every Page card fits the desktop content area');
+            assert.ok(new Set(geometry.cards.map(card => Math.round(card.top))).size > 1, 'Pages flow onto additional rows');
+          } else assert.ok(geometry.scroll > geometry.width, 'Mobile retains its swipeable Page rail');
           if (width < 801) {
             const tabs = hub.locator('.mobile-nav .mobile-tab:visible');
             assert.equal(await tabs.count(), 5);
             assert.deepEqual(await tabs.evaluateAll(nodes => nodes.map(node => node.dataset.view || 'more')), ['feed', 'market', 'pages', 'jobs', 'more']);
           }
           await page.screenshot({ path: path.join(output, `header-${width}-${account}.png`) });
+        });
+        await check('shared location and role-specific Create from Pages', async () => {
+          await open();
+          const location = hub.locator('#communityLocation');
+          await location.click();
+          await hub.locator('#viewerLocationTitle').waitFor();
+          await hub.locator('#closeModal').click();
+          await hub.locator('#viewerLocationTitle').waitFor({ state: 'hidden' });
+          await page.waitForFunction(() => !history.state?.communityDetail);
+          const before = page.url();
+          await hub.locator('#communityCreate').click();
+          const menu = hub.locator('#communityCreateMenu');
+          await menu.waitFor();
+          assert.equal(page.url(), before, 'Opening Create preserves the current Page route');
+          const kinds = await menu.locator('[data-create-kind]').evaluateAll(nodes => nodes.map(node => node.dataset.createKind));
+          assert.deepEqual(kinds, ['blog','photos','reels','live','showcase','tip','question','poll','event','sale','want',...(account === 'personal' ? ['seeking'] : ['deal','hiring'])]);
+          await page.keyboard.press('Escape');
+          await menu.waitFor({ state: 'hidden' });
+        });
+        await check('secondary destinations remain accessible through More', async () => {
+          for (const [selector, route, content] of [
+            ['[data-quick-view="deals"]', 'deals', '.deal-hero'],
+            ['[data-quick-view="connect"]', 'connect', '#connectPane .native-body'],
+            ['[data-community-extra="news"]', 'blog', '#blogView'],
+            ['[data-quick-view="daywork"]', 'shift', '#dayworkView']
+          ]) {
+            await open();
+            await hub.locator('.community-nav-more:visible').click();
+            await hub.locator('#ecosystemMenu').locator(selector).click();
+            await page.waitForURL(url => url.searchParams.get('tab') === route);
+            await hub.locator(content).waitFor();
+            const navigation = hub.locator('.mobile-nav:visible,.top .tabs:visible').first();
+            assert.equal(await navigation.locator(route === 'shift' ? '[data-view="jobs"]' : '.community-nav-more').getAttribute('aria-current'), 'page');
+            await navigation.locator('[data-view="pages"]').click();
+            await view.locator('#pageCards .page-card').first().waitFor();
+          }
+        });
+        await check('direct secondary routes retain selection and a working location dialog', async () => {
+          for (const route of ['connect','blog','reels']) {
+            await page.goto(entry.replace('tab=pages', 'tab=' + route), { waitUntil:'domcontentloaded' });
+            await page.waitForFunction(() => document.querySelector('#community-staging,#community-hub')?.dataset.communityReady === 'true');
+            const more = hub.locator('.community-nav-more:visible');
+            assert.equal(await more.getAttribute('aria-current'), 'page', 'Direct links select More');
+            await hub.locator('#communityLocation').click();
+            await hub.locator('#viewerLocationTitle').waitFor();
+            await hub.locator('#viewerCity').selectOption('Dallas');
+            await hub.locator('#viewerLocationSave').click();
+            await hub.locator('#viewerLocationTitle').waitFor({ state:'hidden' });
+            await page.waitForFunction(() => !history.state?.communityDetail);
+            assert.equal(new URL(page.url()).searchParams.get('tab'), route, 'Saving location retains the active screen');
+            assert.equal(await hub.locator('#communityLocation').innerText(), 'Dallas, TX');
+            assert.equal(await hub.locator('.community-location-overlay').count(), 0);
+            await hub.locator('#communityLocation').click();
+            await hub.locator('#viewerLocationTitle').waitFor();
+            await page.goBack();
+            await hub.locator('#viewerLocationTitle').waitFor({ state:'hidden' });
+            assert.equal(new URL(page.url()).searchParams.get('tab'), route, 'Back closes the location dialog');
+          }
         });
         await check('Pages shares navigation styling and routes with other tabs', async () => {
           await open();

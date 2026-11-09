@@ -161,6 +161,8 @@
       more.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();ecosystemButton.click();});
       more.addEventListener('keydown',event=>{if(compactMenu()||!['ArrowDown','ArrowUp'].includes(event.key))return;event.preventDefault();if(menu.hidden)more.click();queueMicrotask(()=>{const items=menuControls();(event.key==='ArrowUp'?items.at(-1):items[0])?.focus({preventScroll:true});});});nav.append(more);navMore.push(more);
     }
+    const initialActive=root.querySelector('.top .tabs .tab[data-view].active')?.dataset.view;
+    if(initialActive&&!['feed','market','pages','jobs'].includes(initialActive))navMore.forEach(tab=>{tab.classList.add('active');tab.setAttribute('aria-current','page');});
     function syncNavCount(){root.querySelector('.mobile-nav').style.setProperty('--community-nav-count',String(root.querySelectorAll('.mobile-nav .mobile-tab:not([hidden])').length));}
     syncNavCount();
     let drawerOpen=false,drawerTrigger=null,drawerAnimation=null;
@@ -323,6 +325,7 @@
       root.querySelector('.community-heading h1').textContent='Community';
     }
     function receiveBase(data){
+      if(data.type==='nexora-community-detail'&&data.location)return true;
       if(internal)return false;
       if(current&&!['nexora-community-history-back','nexora-community-back'].includes(data.type))return false;
       return true;
@@ -442,6 +445,7 @@
       if(data&&typeof data==='object')notify(data);
     }
     async function navigate(route,context={},fromHost=false){
+      original.closeLocation();
       createMenu?.close();
       if(route==='explore'||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))route='feed';
       if(route==='assistant')return openAssistant();
@@ -467,6 +471,7 @@
       root.querySelectorAll('.tab').forEach(tab=>{tab.classList.remove('active');tab.setAttribute('aria-current','false');});
       root.querySelectorAll('.mobile-tab').forEach(tab=>{tab.hidden=false;});
       syncNavCount();
+      navMore.forEach(tab=>{tab.classList.add('active');tab.setAttribute('aria-current','page');});
       if(route==='deals')root.querySelectorAll('.tab[data-view="deals"]').forEach(tab=>{tab.classList.add('active');tab.setAttribute('aria-current','page');});
       pane.querySelector('.community-extra-platform')?.remove();pane.querySelector('.community-extra-error')?.remove();
       for(const element of pane.children)element.hidden=true;
@@ -516,7 +521,7 @@
     });
     const initial=params.get('tab')||'feed';
     const api={navigate:(route,context)=>navigate(route,context,true),setLanguage:()=>original.setLanguage('en'),receiveBase,isActive:()=>Boolean(current||composerSession||assistantSession),
-      closeDetail(){if(assistantSession){closeAssistant();return;}if(composerSession){closeComposer();return;}if(!current){original.closeDetail();return;}for(const task of modules.values())task.then(api=>api.root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close()));notify({type:'nexora-community-detail',open:false});}};
+      closeDetail(){if(original.closeLocation())return;if(assistantSession){closeAssistant();return;}if(composerSession){closeComposer();return;}if(!current){original.closeDetail();return;}for(const task of modules.values())task.then(api=>api.root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close()));notify({type:'nexora-community-detail',open:false});}};
     api.ready=supports(initial)?navigate(initial,Object.fromEntries(params),true):Promise.resolve();
     return api;
   }
