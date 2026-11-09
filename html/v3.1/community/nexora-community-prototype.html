@@ -254,10 +254,10 @@
       </div>
       </section>
       <section id="feedView" class="hide">
-        <div class="feature-intro"><div><h2 id="feedTitle">Bảng tin</h2><p>Bài viết, việc làm và mua bán trong cùng một nơi. Bài gần khu vực bạn xem sẽ lên trước.</p></div></div>
+        <div class="feature-intro feed-intro"><div class="feed-heading-row"><h2 id="feedTitle">Bảng tin</h2><div class="feed-create-control"><button type="button" class="btn primary" id="feedActionsToggle" aria-expanded="false" aria-haspopup="menu" aria-controls="feedActions"><svg class="feed-create-plus" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Tạo nội dung</span><svg class="feed-create-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="feedActions" class="feed-action-row" role="menu" aria-labelledby="feedActionsToggle" hidden></div></div></div><p>Bài viết, việc làm và mua bán trong cùng một nơi. Bài gần khu vực bạn xem sẽ lên trước.</p></div>
         <div id="dealLanding"><div><h2>Deal & Coupon</h2><p>Khám phá ưu đãi gần bạn và lưu mã trước khi hết hạn.</p></div><button type="button" class="btn primary" data-template="deal">＋ Đăng ưu đãi</button></div>
         <div id="dealSearchTools"><div class="deal-search-row"><label class="deal-search-field"><input id="dealSearchInput" class="field" type="search" placeholder="Tìm ưu đãi: pedicure, facial, coffee…" aria-label="Tìm ưu đãi: pedicure, facial, coffee…"></label><button type="button" id="dealFilterToggle" class="btn soft" aria-expanded="false" aria-controls="dealRefinements"><span>Bộ lọc</span><span id="dealFilterCount" hidden></span></button></div><div id="dealRefinements" hidden><label><span>Ngành nghề</span><select id="dealIndustryFilter" class="select"></select></label><label><span>Khu vực</span><select id="dealAreaFilter" class="select"></select></label></div></div>
-        <div class="panel feed-composer" id="feedComposerCard"><button class="feed-prompt" data-template="general"><span class="feed-avatar">BB</span><span class="feed-prompt-text">Bạn muốn chia sẻ điều gì?</span></button><div class="feed-action-label"><span aria-hidden="true">＋</span><span>Tạo bài</span></div><div id="feedActions" class="feed-action-row" aria-label="Đăng bài nhanh"></div><div class="feed-post-shortcuts" id="feedPostShortcuts"><button type="button" class="feed-want-shortcut" data-market-kind="want">＋ Đăng cần mua</button><button type="button" class="feed-want-shortcut deal-shortcut" data-template="deal">＋ Đăng Deal & Coupon</button></div></div>
+        <div class="panel feed-composer" id="feedComposerCard"><button class="feed-prompt" data-template="general"><span class="feed-avatar">BB</span><span class="feed-prompt-text">Bạn muốn chia sẻ điều gì?</span></button><div class="feed-post-shortcuts" id="feedPostShortcuts"><button type="button" class="feed-want-shortcut" data-market-kind="want">＋ Đăng cần mua</button><button type="button" class="feed-want-shortcut deal-shortcut" data-template="deal">＋ Đăng Deal & Coupon</button></div></div>
         <div class="feed-filter-bar"><div class="feed-filter-main"><label id="feedFilterLabel" for="feedFilterSelect" class="feed-filter-label">Lọc bài:</label><div class="feed-filter-control"><select id="feedFilterSelect" aria-label="Lọc loại bài trên bảng tin"></select></div></div><button class="feed-group-shortcut" data-view="groups">Nhóm của tôi →</button></div>
         <div class="feature-layout"><div class="stack"><div id="sponsoredFeed"></div><div class="section-heading"><h2 id="feedListTitle">Bài mới</h2></div><div id="feedPosts" class="mini-list"></div><button type="button" id="feedMore" class="btn feed-more hide">Xem thêm bài</button></div><aside class="stack"><div class="panel side-panel"><h3>✦ Đăng bài dễ hơn</h3><p class="tip">Mỗi mẫu chỉ hỏi thông tin cần thiết cho loại bài đó. Bài Hỏi đáp có trạng thái <strong>Đã giải đáp</strong>; sự kiện có ngày và hình thức tham gia.</p></div></aside></div>
       </section>
@@ -319,9 +319,10 @@
 <script src="community-feed-composer.js?v=20261106-community-v22-restoration-v59"></script>
 <script src="community-deals-selects.js?v=20261105-deals-controls-v5"></script>
 <script src="community-deals-workflow.js?v=20261106-community-v22-restoration-v59"></script>
-<script src="community-po-controls.js?v=20261109-photo-composer1"></script>
+<script src="community-po-controls.js?v=20261109-feed-create1"></script>
 <link rel="stylesheet" href="community-po-feed.css?v=20261107-feature-shortcuts1">
 <link rel="stylesheet" href="community-po-theme.css?v=20261107-feature-shortcuts1">
+<link rel="stylesheet" href="community-feed-create.css?v=20261109-feed-create1">
 <script src="community-po-feed.js?v=20261107-feature-shortcuts1"></script>
 <script>
 (() => {
@@ -486,21 +487,46 @@
       menu.append(summary,choices);bar.append(menu);
     }else bar.append(button);
   }
-  function setView(next){const previous=view;if(previous!==next){const root=$('#modalRoot');if(root.firstElementChild){const content=document.createDocumentFragment();while(root.firstChild)content.append(root.firstChild);viewDrafts.set(previous,{content,editing,blogEditing,blogCover,postPreviewUrls});postPreviewUrls=[];}const draft=viewDrafts.get(next);editing=draft?.editing||null;blogEditing=draft?.blogEditing||null;blogCover=draft?.blogCover||'';postPreviewUrls=draft?.postPreviewUrls||[];if(draft){root.replaceChildren(draft.content);viewDrafts.delete(next);}}if(next==='deals'){feedScope='all';feedKindFilter='deal';feedVisibleLimit=6;renderExtra();}else if(next==='feed'&&previous==='deals'&&feedKindFilter==='deal'){feedKindFilter='all';renderExtra();}view=next;$('#feedView').classList.toggle('deal-mode',next==='deals');const contentView=next==='deals'?'feed':next;$('#feedTitle').textContent=next==='deals'?'Deal & Coupon':'Bảng tin';$('#feedListTitle').textContent=next==='deals'?'Deal mới':'Bài mới';['market','feed','groups','pages','jobs','daywork','blog','messages'].forEach(k=>$('#'+k+'View').classList.toggle('hide',k!==contentView));$('#localDiscovery').classList.toggle('hide',!['feed','market','pages','jobs','daywork','blog'].includes(contentView));syncCompactContextAction(next);dealsWorkflow?.activate(next);document.querySelectorAll('.primary-tabs [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===(next==='groups'?'market':next)));document.querySelectorAll('.subrow [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===contentView));$('#notifyPanel').classList.add('hide');if(window.parent!==window){window.parent.postMessage({type:'nexora-prototype-view',view:next},parentMessageOrigin);window.parent.postMessage({type:'nexora-modal-state',open:!!$('#modalRoot').firstElementChild},parentMessageOrigin);}window.scrollTo({top:0,behavior:'smooth'});}
+  function setView(next){setFeedActionsOpen(false);const previous=view;if(previous!==next){const root=$('#modalRoot');if(root.firstElementChild){const content=document.createDocumentFragment();while(root.firstChild)content.append(root.firstChild);viewDrafts.set(previous,{content,editing,blogEditing,blogCover,postPreviewUrls});postPreviewUrls=[];}const draft=viewDrafts.get(next);editing=draft?.editing||null;blogEditing=draft?.blogEditing||null;blogCover=draft?.blogCover||'';postPreviewUrls=draft?.postPreviewUrls||[];if(draft){root.replaceChildren(draft.content);viewDrafts.delete(next);}}if(next==='deals'){feedScope='all';feedKindFilter='deal';feedVisibleLimit=6;renderExtra();}else if(next==='feed'&&previous==='deals'&&feedKindFilter==='deal'){feedKindFilter='all';renderExtra();}view=next;$('#feedView').classList.toggle('deal-mode',next==='deals');const contentView=next==='deals'?'feed':next;$('#feedTitle').textContent=next==='deals'?'Deal & Coupon':'Bảng tin';$('#feedListTitle').textContent=next==='deals'?'Deal mới':'Bài mới';['market','feed','groups','pages','jobs','daywork','blog','messages'].forEach(k=>$('#'+k+'View').classList.toggle('hide',k!==contentView));$('#localDiscovery').classList.toggle('hide',!['feed','market','pages','jobs','daywork','blog'].includes(contentView));syncCompactContextAction(next);dealsWorkflow?.activate(next);document.querySelectorAll('.primary-tabs [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===(next==='groups'?'market':next)));document.querySelectorAll('.subrow [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===contentView));$('#notifyPanel').classList.add('hide');if(window.parent!==window){window.parent.postMessage({type:'nexora-prototype-view',view:next},parentMessageOrigin);window.parent.postMessage({type:'nexora-modal-state',open:!!$('#modalRoot').firstElementChild},parentMessageOrigin);}window.scrollTo({top:0,behavior:'smooth'});}
   function activityDate(item){const value=item.createdAt||item.publishedAt;if(!value)return '';const date=new Date(value);return Number.isFinite(date.getTime())?' · '+esc(date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})):'';}
   function templateCard(kind){const x=templateCatalog[kind];const iconByKind={general:'write',showcase:'camera',tip:'bulb',question:'chathelp',poll:'ballot',event:'calendar',deal:'tag',group:'group',page:'page',hiring:'briefcase',seeking:'briefcase',daywork:'calendar',dayhire:'calendar'};return `<button class="template-card" data-template="${kind}"><span class="template-icon">${feedIcon(iconByKind[kind]||'write')}</span><strong>${esc(x.title)}</strong><small>${esc(x.hint)}</small></button>`;}
   const FEED_FILTERS=[['all','Tất cả','all'],['deal','Deal & Coupon','tag'],['market','Mua bán','bag'],['jobs','Việc làm','briefcase'],['pages','Fanpage','page'],['shifts','Ca làm thêm','calendar'],['blog','Blog','article'],['general','Bài viết','write'],['showcase','Khoe mẫu','camera'],['tip','Mẹo nghề','bulb'],['question','Hỏi đáp','chathelp'],['poll','Khảo sát','ballot'],['event','Sự kiện','calendar']];
   const FEED_ACTIONS=[['showcase','Ảnh mẫu','camera','template'],['tip','Chia sẻ mẹo','bulb','template'],['question','Đặt câu hỏi','chathelp','template'],['poll','Bình chọn','ballot','template'],['event','Sự kiện','calendar','template'],['sale','Đăng bán','tag','market-kind'],['hiring','Đăng tuyển','briefcase','template'],['blog','Viết blog','article','blog-create']];
   function renderFeedActions(){
-    const expanded=$('#feedComposerCard').classList.contains('feed-actions-expanded');
-    const actions=FEED_ACTIONS.map(item=>ROLE==='staff'&&item[0]==='hiring'?['seeking','Tìm việc',item[2],item[3]]:item).map(([kind,label,icon,target])=>`<button class="feed-action" data-${target}="${kind}">${feedIcon(icon)}<span>${kind==='showcase'?`<span class="feed-photos-label-full">${label}</span><span class="feed-photos-label-compact">Photos</span>`:label}</span></button>`);
-    $('#feedActions').innerHTML=actions.slice(0,3).join('')+`<button type="button" class="feed-action feed-actions-toggle" id="feedActionsToggle" aria-expanded="${expanded}" aria-controls="feedMoreActions feedPostShortcuts">${feedIcon('chevron')}<span data-feed-more-label>${expanded?'Thu gọn':'Thêm'}</span></button><div class="feed-more-actions" id="feedMoreActions">${actions.slice(3).join('')}</div>`;
+    const actions=FEED_ACTIONS.map(item=>ROLE==='staff'&&item[0]==='hiring'?['seeking','Tìm việc',item[2],item[3]]:item).map(([kind,label,icon,target])=>`<button type="button" class="feed-action" role="menuitem" data-${target}="${kind}">${feedIcon(icon)}<span>${label}</span></button>`);
+    $('#feedActions').innerHTML=`<div class="feed-more-actions" id="feedMoreActions" role="none">${actions.join('')}</div>`;
   }
-  function toggleFeedActions(button){
-    const expanded=$('#feedComposerCard').classList.toggle('feed-actions-expanded');
-    button.setAttribute('aria-expanded',String(expanded));
-    button.querySelector('[data-feed-more-label]').textContent=expanded?'Thu gọn':'Thêm';
+  function setFeedActionsOpen(expanded,restoreFocus=false){
+    $('#feedActions').hidden=!expanded;
+    $('#feedActionsToggle').setAttribute('aria-expanded',String(expanded));
+    if(restoreFocus)$('#feedActionsToggle').focus();
   }
+  function toggleFeedActions(){
+    const expanded=$('#feedActions').hidden;
+    setFeedActionsOpen(expanded);
+    if(expanded)$('#feedActions .feed-action')?.focus();
+  }
+  document.addEventListener('click',event=>{
+    if(!$('#feedActions').hidden&&(event.target.closest('#feedActions .feed-action')||!event.target.closest('.feed-create-control')))setFeedActionsOpen(false);
+  },true);
+  document.addEventListener('focusin',event=>{
+    if(!$('#feedActions').hidden&&!event.target.closest('.feed-create-control'))setFeedActionsOpen(false);
+  });
+  document.addEventListener('keydown',event=>{
+    const toggle=event.target.closest('#feedActionsToggle'),menu=$('#feedActions');
+    if(toggle&&['ArrowDown','ArrowUp'].includes(event.key)){
+      event.preventDefault();setFeedActionsOpen(true);
+      const items=[...menu.querySelectorAll('.feed-action')];
+      (event.key==='ArrowUp'?items.at(-1):items[0])?.focus();return;
+    }
+    if(menu.hidden)return;
+    if(event.key==='Escape'){event.preventDefault();setFeedActionsOpen(false,true);return;}
+    if(!menu.contains(event.target)||!['ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
+    event.preventDefault();
+    const items=[...menu.querySelectorAll('.feed-action')],index=items.indexOf(document.activeElement);
+    const next=event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowDown'?1:-1)+items.length)%items.length;
+    items[next]?.focus();
+  });
   function feedIcon(name){const paths={chevron:'<path d="m6 9 6 6 6-6"/>',all:'<path d="M4 6h16M4 12h16M4 18h16"/>',write:'<path d="M4 20h16M7 16l9-9 3 3-9 9H7zM15 8l2-2 3 3-2 2"/>',camera:'<path d="M3 7h4l2-2h6l2 2h4v12H3z"/><circle cx="12" cy="13" r="3"/>',bulb:'<path d="M9 18h6M10 21h4M8 15a7 7 0 1 1 8 0l-1 2H9z"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01"/>',chart:'<path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-7"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/>',bag:'<rect x="4" y="7" width="16" height="14" rx="2"/><path d="M8 9V7a4 4 0 0 1 8 0v2"/>',briefcase:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',book:'<path d="M3 5c3-1 6-1 9 1v14c-3-2-6-2-9-1zM21 5c-3-1-6-1-9 1v14c3-2 6-2 9-1z"/>',chathelp:'<path d="M4 5h16v12H9l-5 3zM10 9a2 2 0 0 1 4 0c0 1.5-2 1.5-2 3M12 14h.01"/>',ballot:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1"/><path d="M11 9h6"/><circle cx="8" cy="15" r="1"/><path d="M11 15h6"/>',group:'<circle cx="8" cy="8" r="2.5"/><circle cx="16" cy="8" r="2.5"/><path d="M3 19v-1a5 5 0 0 1 10 0v1M12 19v-1a5 5 0 0 1 9 0v1"/>',tag:'<path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9z"/><circle cx="8" cy="8" r="1"/>',page:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',article:'<path d="M6 3h9l3 3v5M6 3v18h7M15 3v4h3M14 19l5-5 2 2-5 5-3 1z"/>'};return `<span class="feed-icon"><svg viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.all}</svg></span>`;}
   function feedAvatar(owner){const page=extra.pages.find(item=>item.title===owner||item.owner===owner);return page?coverUrl(page.avatar):'';}
   function feedBusiness(owner){return extra.pages.some(item=>item.title===owner||item.owner===owner);}
@@ -961,7 +987,7 @@
   setInterval(()=>{if(extra.pagePosts.some(post=>post.status==='scheduled'&&post.publishAt&&new Date(post.publishAt).getTime()<=Date.now())){renderExtra();const open=document.querySelector('#communityPageScreen [data-page-detail-id],#modalRoot [data-page-detail-id]');if(open){const page=extra.pages.find(x=>x.id===open.dataset.pageDetailId),tab=open.querySelector('[data-page-tab].active')?.dataset.pageTab;if(page&&tab==='scheduled')pageDetail(page,'scheduled');}}},30000);
 })();
 </script>
-<script src="nexora-community-i18n.js?v=20261030-community-english-v32"></script>
+<script src="nexora-community-i18n.js?v=20261109-feed-create1"></script>
   <script src="../vendor/lucide.min.js" defer></script>
   <script src="../vendor/sweetalert2.all.min.js?v=11.26.25" defer></script>
   <script src="community-ui.js?v=20261106-community-form-lucide-v60" defer></script>

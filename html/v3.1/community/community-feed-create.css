@@ -1,0 +1,98 @@
+/* Keep the existing Feed actions in a dropdown beside its heading. */
+body #feedView > .feed-intro {
+  display: block;
+}
+body #feedView .feed-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 5px;
+}
+body #feedView .feed-heading-row h2 {
+  margin: 0;
+  min-width: 0;
+}
+body #feedView .feed-create-control {
+  position: relative;
+  flex: none;
+  margin-left: auto;
+}
+body #feedView .feed-create-control #feedActionsToggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 9px 44px 9px 12px;
+  white-space: nowrap;
+}
+body #feedView #feedActionsToggle svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+body #feedView #feedActionsToggle .feed-create-caret {
+  position: absolute;
+  right: 16px;
+}
+body #feedView #feedActionsToggle[aria-expanded="true"] .feed-create-caret {
+  transform: rotate(180deg);
+}
+body #feedView .feed-create-control #feedActions {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  display: block;
+  width: min(300px, calc(100vw - 32px));
+  max-height: min(70dvh, 540px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 6px;
+  border: 1px solid var(--line, #e3e8f4);
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 14px 36px #26376326;
+}
+body #feedView .feed-create-control #feedActions[hidden] {
+  display: none;
+}
+body #feedView .feed-create-control #feedMoreActions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  padding: 0;
+  border: 0;
+}
+body #feedView .feed-create-control #feedMoreActions .feed-action {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  text-align: left;
+}
+body #feedView .feed-create-control #feedMoreActions .feed-action > span:last-child {
+  width: auto;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+}
+body #feedView #feedComposerCard #feedPostShortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
