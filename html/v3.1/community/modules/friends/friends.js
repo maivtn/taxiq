@@ -22,6 +22,11 @@
     const name=esc(person.name),id=esc(person.id),initials=esc(person.name.split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase());
     const sample=sampleAvatars.get(person.name);
     const avatar=person.avatar&&/^(https?:\/\/|\/|\.\/|\.\.\/)/i.test(person.avatar)?'<img src="'+esc(person.avatar)+'" alt="" loading="lazy">':sample?'<span class="friends-sample-avatar" style="background-position:'+sample.join(' ')+'"></span>':initials;
+    if(tab==='received'){
+      const shared=window.NEXORA_COMMUNITY_SHARED,sampleRequest=(shared.read().friendRequests||[]).some(row=>row.from===person.name&&row.to===shared.member&&row.status==='pending'&&row.isSample);
+      const detail=[person.roleEn||(person.kind==='business'?'Business':'Member'),person.city||person.area].filter(Boolean).join(' · ');
+      return '<article class="friends-card friend-request-card" data-friend-card="'+id+'"><div class="friends-avatar" aria-hidden="true">'+avatar+'</div><div class="friend-request-info"><h3 data-user-text><a href="#" data-friend-action="profile" data-person-id="'+id+'">'+name+'</a></h3><p class="friends-handle" data-user-text>'+esc(person.handle||'')+'</p><p class="friends-detail" data-user-text>'+esc(detail)+'</p><div class="friends-actions friend-request-actions">'+button('accept',id,'Confirm')+button('decline',id,'Delete',false)+'</div></div>'+(sampleRequest?'<span class="friend-sample">SAMPLE</span>':'')+'</article>';
+    }
     let actions='',menu='';
     if(tab==='all'){
       actions=button('message',id,'Message',true,'MessageCircle');
@@ -33,6 +38,8 @@
   }
   function render(){
     if(!active)return;
+    document.querySelector('.friends-content').dataset.friendsView=tab;
+    $('findFriends').hidden=tab!=='received';
     const groups=lists(),rows=groups[tab].filter(person=>[person.name,person.handle,person.id].some(value=>String(value||'').toLocaleLowerCase().includes(query.toLocaleLowerCase()))).sort((a,b)=>a.name.localeCompare(b.name));
     $('friendsTitle').textContent=tabs[tab];$('friendsSummary').textContent=query?rows.length+' results':tab==='all'?groups.all.length+(groups.all.length===1?' friend':' friends'):groups[tab].length+(tab==='suggestions'?' suggestions':' requests');
     search.placeholder=tab==='all'?'Search friends':tab==='suggestions'?'Search suggestions':'Search requests';document.querySelector('label[for=friendsSearch]').textContent=search.placeholder;

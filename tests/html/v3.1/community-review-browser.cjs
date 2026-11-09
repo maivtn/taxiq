@@ -76,6 +76,26 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      await sent.screenshot({path:path.join(output,`${width}-${account}-sent-requests.png`)});
 
     });
+    await check('Friend request cards match PO and keep response persistence',async()=>{
+     await open('friends');const friends=hub.locator('.community-extra-pane .friends-shell');await friends.locator('.friends-nav').waitFor();
+     await page.evaluate(()=>{
+      const shared=window.NEXORA_COMMUNITY_SHARED,names=['Thảo Lê','Hà Nguyễn'];
+      shared.change(data=>{data.friendRequests=(data.friendRequests||[]).filter(row=>!(row.to===shared.member&&names.includes(row.from)));for(const name of names)data.friendRequests.push({id:'qa-request-'+name,from:name,to:shared.member,status:'pending',createdAt:new Date().toISOString(),isSample:true});});
+     });
+     await friends.locator('.friends-nav [data-friends-tab=received]').click();await friends.locator('.friend-request-card').first().waitFor();
+     const cards=friends.locator('.friend-request-card'),first=cards.filter({hasText:'Thảo Lê'}),second=cards.filter({hasText:'Hà Nguyễn'});
+     assert.equal(await first.locator('.friend-sample').innerText(),'SAMPLE');assert.equal(await second.locator('.friend-sample').innerText(),'SAMPLE');
+     const layout=await cards.evaluateAll(nodes=>nodes.map(card=>{const rect=node=>node.getBoundingClientRect(),box=rect(card),avatar=rect(card.querySelector('.friends-avatar')),info=rect(card.querySelector('.friend-request-info')),buttons=[...card.querySelectorAll('.friend-request-actions button')].map(rect);return {width:box.width,avatar:avatar.width,left:avatar.right<=info.left,actions:buttons.length===2&&Math.abs(buttons[0].y-buttons[1].y)<1&&Math.abs(buttons[0].width-buttons[1].width)<2,height:Math.max(...buttons.map(b=>b.height))};}));
+     assert.ok(layout.every(row=>row.left&&row.avatar===47&&row.actions&&row.height<=32),JSON.stringify(layout));
+     const gridBox=await friends.locator('.friends-grid').boundingBox();assert.ok(layout.every(row=>Math.abs(row.width-gridBox.width)<2));
+     assert.equal(await friends.locator('.friends-search').isVisible(),false);await friends.locator('.friends-content').screenshot({path:path.join(output,`${width}-${account}-friend-requests-po.png`)});
+     await friends.locator('#findFriends').click();await page.waitForFunction(()=>document.querySelector('.friends-nav [data-friends-tab=suggestions]')?.getAttribute('aria-current')==='page');
+     await friends.locator('.friends-nav [data-friends-tab=received]').click();await first.locator('[data-friend-action=accept]').click();await first.waitFor({state:'detached'});
+     await second.locator('[data-friend-action=decline]').click();await second.waitFor({state:'detached'});
+     await page.reload();await friends.locator('.friends-nav [data-friends-tab=received]').click();assert.equal(await cards.filter({hasText:'Thảo Lê'}).count(),0);assert.equal(await cards.filter({hasText:'Hà Nguyễn'}).count(),0);
+     await friends.locator('.friends-nav [data-friends-tab=all]').click();await friends.locator('.friends-card').filter({hasText:'Thảo Lê'}).waitFor();
+     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+    });
     await check('Contacts show avatars with message and call icons on the right',async()=>{
      await open('contacts');const connect=hub.locator('#connectPane'),rows=connect.locator('#contactRows .connect-contact');await rows.first().waitFor();
      const contacts=await rows.evaluateAll(nodes=>nodes.map(node=>{
