@@ -83,9 +83,29 @@
     }
   }
   const noticeBeforeComposer=notice;
-  notice=function(message){const dialog=$('editor'),feedback=dialog.open&&dialog.classList.contains('community-photo-composer')&&dialog.querySelector('[data-photo-composer-feedback]');if(!feedback)return noticeBeforeComposer(message);feedback.textContent=message;feedback.hidden=false;};
+  notice=function(message){if($('ai-dialog').open){aiStatus(message,message);return;}const dialog=$('editor'),feedback=dialog.open&&dialog.classList.contains('community-photo-composer')&&dialog.querySelector('[data-photo-composer-feedback]');if(!feedback)return noticeBeforeComposer(message);feedback.textContent=message;feedback.hidden=false;};
   $('editor').addEventListener('close',()=>{const dialog=$('editor');if(dialog.open||!dialog.classList.contains('community-photo-composer'))return;dialog.classList.remove('community-photo-composer');dialog.removeAttribute('aria-labelledby');});
   const moduleBeforeBridge=window.NEXORA_COMMUNITY_MODULE;
+  moduleBeforeBridge.assistantLauncher=()=>{
+    const launcher=$('ai-fab').cloneNode(true);launcher.classList.add('community-ai-launcher');
+    launcher.querySelector('#ai-fab-label').textContent=tx('Nói với AI','Talk to AI');
+    launcher.setAttribute('aria-label',tx('Nhấn để nói với Trợ lý AI','Tap to talk with the AI assistant'));launcher.title=launcher.getAttribute('aria-label');
+    $('mascot-video').pause();return launcher;
+  };
+  moduleBeforeBridge.openAssistant=section=>{
+    const previous={current,newsMode};
+    hydrate();current=({feed:'home',blog:'news','food-market':'food',daywork:'jobs',shift:'jobs'})[section]||section||'home';newsMode=section==='blog'?'blog':'news';
+    openAi();$('ai-prompt').placeholder=tx('Ví dụ: Tuyển thợ nail làm thứ Bảy tại Houston','What would you like to ask or post?');
+    $('ai-dialog').querySelector('[data-action="ai-close"]').setAttribute('aria-label',tx('Đóng','Close'));
+    return {dialog:$('ai-dialog'),restore(){stopAiVoice();current=previous.current;newsMode=previous.newsMode;}};
+  };
+  $('ai-dialog').setAttribute('aria-labelledby','ai-heading');
+  $('ai-dialog').addEventListener('close',()=>{$('ai-voice-video').pause();});
+  document.addEventListener('click',event=>{
+    if(!event.target.closest('[data-action="ai-use"]'))return;
+    if(current==='live'){event.preventDefault();event.stopImmediatePropagation();const draft=aiDraft;closeAi();openLiveComposer();$('dialog-content').querySelector('#live-form [name=description]').value=draft;}
+    else if(current==='food'&&!state.shop.name){event.preventDefault();event.stopImmediatePropagation();closeAi();openDishDialog();}
+  },true);
   window.NEXORA_COMMUNITY_MODULE={...moduleBeforeBridge,feedPreview,async navigate(section,context={}){if((section==='people'||section==='feed-preview')&&directory){await directory.ready();syncDiscovery();}hydrate();toolContext=context;poMode=['stories','people','post','food-market','explore'].includes(section)?section:'';if(section==='page-tools'){const page=pageById(context.pageId);if(!page){parent.postMessage({type:'nexora-community-route',route:'pages'},location.origin);return;}activePageId=page.id;pageTab=context.pageTab||(!page.sample?'manage':'services');current='pages';render();return;}if(section==='group-tools'){if(!state.customGroups.some(group=>group.id===context.groupId)){parent.postMessage({type:'nexora-community-route',route:'groups'},location.origin);return;}activeGroupId=context.groupId;groupDetailTab=context.groupTab||'admin';current='groups';render();return;}if(poMode){current='home';render();if(section==='stories'){if(context.storyId)openStoryViewer(context.storyId);else if(context.composeStory==='1')openStoryComposer();}if(section==='people'){if(context.personId)openPersonProfile(context.personId);else if(context.peopleView==='received')openMobileNotifications();else if(context.peopleView==='all')openPeopleDialog();}if(section==='post'){openSocialComposer(context.composeKind==='photos'?'photos':'post');enhancePhotoComposer();if(context.body){$('feed-form').elements.body.value=context.body;}}return;}moduleBeforeBridge.navigate(section,context);}};
   document.addEventListener('click',event=>{const kind=event.target.closest('[data-feed-kind],[data-social-type]')?.dataset;const type=kind?.feedKind||kind?.socialType;if(type&&['tips','ask','poll','events','sale','wanted','coupon','blog','job'].includes(type)){event.preventDefault();event.stopImmediatePropagation();const target=({tips:['feed','tip'],ask:['feed','question'],poll:['feed','poll'],events:['feed','event'],sale:['market','market'],wanted:['market','market'],coupon:['deals','deal'],blog:['blog','blog'],job:['jobs','']})[type];parent.postMessage({type:'nexora-community-route',route:target[0],context:{composeKind:target[1],marketType:type==='wanted'?'want':'sale'}},location.origin);return;}const route=event.target.closest('[data-section]')?.dataset.section;if(route&&['home','groups','pages','deals','jobs','food','realestate','messages','transfer'].includes(route)){event.preventDefault();event.stopImmediatePropagation();parent.postMessage({type:'nexora-community-route',route:route==='home'?'feed':route==='messages'?'connect':route},location.origin);}if(event.target.closest('[data-group-back]')&&poMode===''){event.preventDefault();event.stopImmediatePropagation();parent.postMessage({type:'nexora-community-route',route:'groups'},location.origin);}const editing=event.target.closest('[data-page-edit],[data-page-team-add],[data-page-service-add],[data-page-service-remove],[data-page-team-remove]');if(editing){const page=pageById(toolContext.pageId);if(page?.sample){event.preventDefault();event.stopImmediatePropagation();}}},true);
   window.NEXORA_PO_BRIDGE={hydrate,persist};

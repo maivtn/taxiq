@@ -368,9 +368,12 @@
   }
   const connect={
     customerContacts:[
-      {customer:'David Le',business:'BITCOIN NAIL BAR',isCustomer:true},
-      {customer:'David Le',business:'Garden Cafe',savedContact:true}
+      {business:'BITCOIN NAIL BAR',isCustomer:true},
+      {business:'Garden Cafe',savedContact:true},
+      {business:'Lotus Nails',isCustomer:true},
+      {business:'Bright Nail Supply',savedContact:true,isCustomer:true}
     ],
+    contacts:['Kim Tuyen','Sally Thanh Hoang','Linh Nguyễn'],
     members:[
       {name:'Linh Nguyễn',id:'NX-2044',handle:'@linh.nail',detail:'chat-demo-linh'},
       {name:'Thảo Lê',id:'NX-2045',handle:'@thao.le',detail:'chat-demo-thao'},

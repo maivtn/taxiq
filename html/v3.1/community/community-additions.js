@@ -9,7 +9,7 @@
     const workspace=root.querySelector('.workspace'),frames=[root.getElementById('communityPane'),root.getElementById('connectPane')];
     const baseURL=options.baseURL,params=options.params||new URLSearchParams(location.search),modules=new Map();
     window.NEXORA_COMMUNITY_PEOPLE=window.NEXORA_COMMUNITY_DIRECTORY.create(frames[1],baseURL,params);
-    let current='',routeContext={},internal=false,generation=0,composerSession=null,composerRequest=0;
+    let current='',routeContext={},internal=false,generation=0,composerSession=null,composerRequest=0,assistantSession=null,assistantRequest=0,assistantLauncher=null;
     const notify=data=>options.notify?.(data);
     const styles=document.createElement('style');
     styles.textContent='.community-extra-pane{--hub-bg:#f7f9fc;--hub-surface:#fff;--hub-text:#0b1220;--hub-muted:#64748b;--hub-border:#dde5ef;--hub-brand:#4648d8;position:relative;min-width:0;width:100%;height:100%;overflow:auto;color:var(--hub-text)}.community-extra-pane.community-tools-aligned{max-width:1200px;margin-inline:auto}.community-extra-platform{max-width:1140px;margin:auto;padding:24px}.community-extra-pane>section{min-height:100%}.community-extra-pane>[hidden]{display:none!important}.community-route-loading{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:12px;background:#f7f9fc;color:#43516b;font-size:15px;font-weight:700}.community-route-loading::before{content:"";width:24px;height:24px;border:3px solid #ddd9fa;border-top-color:#6552e7;border-radius:50%;animation:community-loading-spin .8s linear infinite}@keyframes community-loading-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.community-route-loading::before{animation:none}}.ecosystem-menu{max-height:min(640px,70vh);overflow-y:auto}.ecosystem-menu [data-community-extra]{display:flex;min-height:44px;align-items:center;gap:10px}.ecosystem-menu [data-community-extra] svg{flex:none;width:20px;height:20px}.community-extra-error{padding:24px;text-align:center}@container community (max-width:800px){.community-extra-platform{padding:16px}}';
@@ -20,6 +20,8 @@
       platformStyles.textContent=css.slice(start,end)+'@container community (max-width:800px){.platform-grid,.platform-form{grid-template-columns:1fr}.platform-heading h2{font-size:21px}.platform-card{padding:16px}}';
     }).catch(()=>{});
     root.append(platformStyles);
+    const assistantStyles=document.createElement('style');root.append(assistantStyles);
+    const assistantStylesReady=window.NEXORA_NATIVE.read(new URL('community-ai-assistant.css?v=20261109-ai-assistant1',baseURL).href).then(css=>{assistantStyles.textContent=css;});
     const pane=document.createElement('section');pane.className='community-extra-pane';pane.hidden=true;workspace.append(pane);
     const loading=document.createElement('div');loading.className='community-route-loading';loading.setAttribute('role','status');loading.setAttribute('aria-live','polite');loading.textContent='Loading Real Estate…';loading.hidden=true;pane.append(loading);
     const menu=root.getElementById('ecosystemMenu');
@@ -51,6 +53,7 @@
       button.append(document.createTextNode(label));menu.insertBefore(button,root.getElementById('menuStartTour'));
     }
     function deactivate(){
+      closeAssistant();
       closeComposer();
       generation++;
       if(!current&&pane.hidden)return;
@@ -95,6 +98,40 @@
       if(current&&current!=='notifications')return null;
       api.window.NEXORA_COMMUNITY_MODULE.setLanguage('en');return api.window.NEXORA_COMMUNITY_MODULE.feedPreview();
     },request:id=>window.NEXORA_COMMUNITY_PEOPLE.request(id)};
+    async function setupAssistant(){
+      const [api]=await Promise.all([ensure('tools','modules/hub-tools/index.html'),assistantStylesReady]);
+      api.window.NEXORA_COMMUNITY_MODULE.setLanguage('en');
+      assistantLauncher=api.window.NEXORA_COMMUNITY_MODULE.assistantLauncher();
+      assistantLauncher.addEventListener('click',()=>openAssistant());root.querySelector('.app').append(assistantLauncher);
+      if(matchMedia('(prefers-reduced-motion:reduce)').matches)assistantLauncher.querySelector('video').pause();
+      else assistantLauncher.querySelector('video').play().catch(()=>{});
+    }
+    function closeAssistant(){
+      assistantRequest++;
+      const session=assistantSession;if(!session)return;assistantSession=null;
+      session.body.removeEventListener('close',session.cleanup,true);
+      session.api.root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());session.restore();
+      session.api.root.host.style.cssText=session.hostStyle;session.api.root.host.hidden=session.hostHidden;
+      if(session.overlay){pane.classList.remove('community-ai-overlay');pane.hidden=session.paneHidden;}
+      notify({type:'nexora-community-detail',open:false});assistantLauncher?.focus({preventScroll:true});
+    }
+    async function openAssistant(){
+      if(assistantSession)return;menu.hidden=true;root.getElementById('ecosystemButton').setAttribute('aria-expanded','false');closeComposer();
+      const request=++assistantRequest;
+      try{
+        const api=await ensure('tools','modules/hub-tools/index.html');if(request!==assistantRequest)return;
+        const host=api.root.host,body=api.root.querySelector('.native-body'),overlay=pane.hidden;
+        const session={api,body,overlay,paneHidden:pane.hidden,hostHidden:host.hidden,hostStyle:host.style.cssText,restore:()=>{},cleanup:()=>queueMicrotask(()=>{if(assistantSession===session&&!api.root.querySelector('dialog[open]'))closeAssistant();})};
+        assistantSession=session;body.addEventListener('close',session.cleanup,true);
+        if(overlay){pane.classList.add('community-ai-overlay');pane.hidden=false;}
+        // Top-layer PO dialogs stay usable while the current Community screen stays in place.
+        if(host.hidden)host.style.cssText+=';position:absolute;inset:0 0 auto;height:0;min-height:0;';host.hidden=false;
+        const route=current||new URLSearchParams(location.search).get('tab')||'feed';
+        const opened=api.window.NEXORA_COMMUNITY_MODULE.openAssistant(route);session.restore=opened.restore;
+        notify({type:'nexora-community-detail',open:true});
+      }catch(error){if(request!==assistantRequest)return;closeAssistant();console.error('Community AI assistant',error);}
+    }
+    setupAssistant().catch(error=>console.error('Community AI launcher',error));
     function refreshFeed(){frames[0].contentWindow?.dispatchEvent(new Event('nexora-po-feed-refresh'));}
     function closeComposer(){
       composerRequest++;
@@ -108,6 +145,7 @@
       refreshFeed();notify({type:'nexora-community-detail',open:false});
     }
     async function openFeedComposer(context){
+      closeAssistant();
       if(composerSession)return;
       const request=++composerRequest;
       try{
@@ -143,6 +181,8 @@
       if(data&&typeof data==='object')notify(data);
     }
     async function navigate(route,context={},fromHost=false){
+      if(route==='assistant')return openAssistant();
+      closeAssistant();
       if(route==='post'&&context.modal==='1'&&!current)return openFeedComposer(context);
       closeComposer();
       const request=++generation;
@@ -209,8 +249,8 @@
       if(event.data?.type==='nexora-community-route'&&supports(event.data.route))navigate(event.data.route,event.data.context);
     });
     const initial=params.get('tab')||'feed';
-    const api={navigate:(route,context)=>navigate(route,context,true),setLanguage:()=>original.setLanguage('en'),receiveBase,isActive:()=>Boolean(current||composerSession),
-      closeDetail(){if(composerSession){closeComposer();return;}if(!current){original.closeDetail();return;}for(const task of modules.values())task.then(api=>api.root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close()));notify({type:'nexora-community-detail',open:false});}};
+    const api={navigate:(route,context)=>navigate(route,context,true),setLanguage:()=>original.setLanguage('en'),receiveBase,isActive:()=>Boolean(current||composerSession||assistantSession),
+      closeDetail(){if(assistantSession){closeAssistant();return;}if(composerSession){closeComposer();return;}if(!current){original.closeDetail();return;}for(const task of modules.values())task.then(api=>api.root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close()));notify({type:'nexora-community-detail',open:false});}};
     api.ready=supports(initial)?navigate(initial,Object.fromEntries(params),true):Promise.resolve();
     return api;
   }

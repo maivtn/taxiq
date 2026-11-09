@@ -11,15 +11,14 @@
   const defaults = {phone:'shared', email:'nobody', messages:'requests', calls:'shared', request:'pending', sentMessages:{}, sourceChats:{}, deletedCalls:[], createdGroups:[], joinedCommunities:[], connections:[], chatPrefs:{}, archivedChats:[], deletedChats:[], reportedChats:[],clearedChats:{},callHistory:[],messageMeta:{},profile:{}};
   // Show both relationship sources in the local demo without replacing existing contacts.
   const sharedContacts=window.NEXORA_COMMUNITY_SHARED;
-  const demoContacts=(window.NEXORA_COMMUNITY_DEMO?.connect?.customerContacts||[]).filter(row=>row.customer===currentMember);
-  if(sharedContacts&&demoContacts.length&&!sharedContacts.read().customerContactDemoMembers?.includes(currentMember)){
-    if(!(sharedContacts.read().customerContacts||[]).some(row=>row.customer===currentMember)){
-      for(const row of demoContacts){
-        if(row.savedContact)sharedContacts.saveBusinessContact(row.customer,row.business);
-        if(row.isCustomer)sharedContacts.registerCustomer(row.customer,row.business);
-      }
+  const demoContacts=(window.NEXORA_COMMUNITY_DEMO?.connect?.customerContacts||[]).filter(row=>row.business!==currentMember);
+  if(sharedContacts&&demoContacts.length&&!sharedContacts.read().customerContactDemoMembersV2?.includes(currentMember)){
+    for(const row of demoContacts){
+      if((sharedContacts.read().customerContacts||[]).some(saved=>saved.customer===currentMember&&saved.business===row.business))continue;
+      if(row.savedContact)sharedContacts.saveBusinessContact(currentMember,row.business);
+      if(row.isCustomer)sharedContacts.registerCustomer(currentMember,row.business);
     }
-    sharedContacts.change(data=>{data.customerContactDemoMembers=[...new Set([...(data.customerContactDemoMembers||[]),currentMember])];});
+    sharedContacts.change(data=>{data.customerContactDemoMembersV2=[...new Set([...(data.customerContactDemoMembersV2||[]),currentMember])];});
   }
   const members = [
     {name:'Mai Nguyễn', id:'NX-2041', handle:'@mai.nail', detail:'request'},
@@ -781,6 +780,11 @@
   });
   window.NEXORA_CONNECT_CORE={currentMember,currentRole,currentAccount,key,members,getState:()=>clone(state),read:()=>clone(load()),mutate,save,toast,showDetail,showSection,renderGroups,renderMessages,renderCalls,renderSummaries,renderMemberResults,rememberChatDraft,appendChatMessage,getContext:()=>({section,currentDetail,messages:clone(currentMessages),communityFilter,callFilter}),isBlocked,chatPref,escape:esc,initials,setProfileURL:value=>{profileUrl=value;},refresh:()=>{state=load();savedSnapshot=clone(state);renderSummaries();renderMessages();renderGroups();renderCalls();if(currentDetail)showDetail(currentDetail);}};
   window.addEventListener('nexora-community-shared-changed',()=>{renderConnections();changed();});
+  if(state.contactDemoVersion!==2){
+    const names=window.NEXORA_COMMUNITY_DEMO?.connect?.contacts||[];
+    const demoIds=members.filter(member=>member.name!==currentMember&&names.includes(member.name)).map(member=>member.id);
+    state.connections=[...new Set([...state.connections,...demoIds])];state.contactDemoVersion=2;save();
+  }
   renderSummaries();
   renderConversationPreviews();
   function setupCompactConnectTools(){

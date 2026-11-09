@@ -1,0 +1,18 @@
+/* Floating mascot from the PO Community shell; the original PO owns its dialog. */
+.ai-fab.mascot-fab.community-ai-launcher{position:fixed;z-index:31;display:flex;align-items:center;gap:9px;right:20px;bottom:20px;padding:5px 15px 5px 5px;min-height:68px;border:2px solid #fff;border-radius:999px;background:linear-gradient(120deg,#f8f6ff,#eae7ff);color:#4d3bb4;box-shadow:0 12px 30px #3527604d;font:900 13px/1.2 Inter,ui-sans-serif,system-ui,sans-serif;overflow:visible;cursor:pointer}
+.community-ai-launcher:hover{transform:translateY(-2px);box-shadow:0 16px 32px #35276066}
+.community-ai-launcher:focus-visible{outline:3px solid #a99fff;outline-offset:4px}
+.community-ai-launcher .mascot-video-frame{display:block;width:56px;height:56px;flex:none;overflow:hidden;border-radius:50%;border:2px solid #b8a7ff;background:#dceeff}
+.community-ai-launcher .mascot-video-frame video{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.community-ai-launcher .mascot-label{max-width:none;text-align:left}
+.community-ai-launcher .mascot-spark{position:absolute;top:-8px;right:-8px;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#5b4cdb;color:#fff;border:2px solid #fff}
+.community-ai-launcher .ai-mic-icon{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.app.detail-open .community-ai-launcher,:host-context(body.community-detail-open) .community-ai-launcher{display:none!important}
+.community-extra-pane.community-ai-overlay{position:absolute;inset:0 0 auto;height:0;min-height:0;overflow:hidden}
+@container community (max-width:800px){
+  .ai-fab.mascot-fab.community-ai-launcher{right:12px;bottom:calc(78px + env(safe-area-inset-bottom));min-height:52px;padding:3px}
+  .community-ai-launcher .mascot-video-frame{width:44px;height:44px}
+  .community-ai-launcher .mascot-label{display:none}
+  .community-ai-launcher .mascot-spark{width:27px;height:27px;top:-6px;right:-7px}
+}
+@media(prefers-reduced-motion:reduce){.community-ai-launcher:hover{transform:none}}
