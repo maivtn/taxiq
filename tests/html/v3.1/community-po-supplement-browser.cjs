@@ -53,8 +53,8 @@ const results=[],errors=[];
      const card=page.locator('[data-feed-post-id="'+record.id+'"]');await card.locator('[data-social-action=comments]').click();
      for(const body of ['First comment','Pinned comment']){const comments=card.locator('[data-social-comment-form]');await comments.locator('[name=comment]').fill(body);await comments.locator('[type=submit]').click();}
      await card.locator('[data-social-action=pin-comment]').last().click();assert.ok((await card.locator('.community-social-comment').first().innerText()).includes('Pinned comment'));
-     await page.locator('[data-po-page-action=edit-post][data-value="'+record.id+'"]').click();await form.waitFor();assert.equal(await form.locator('[name=visibility]').inputValue(),'private');await page.locator('.social-close').click();
-     await open('pages','personal','&pageId=p1&pageMode=view&pageTab=posts');await page.locator('.po-page-supplement').waitFor();assert.equal(await page.locator('[data-feed-post-id="'+record.id+'"]').count(),0);
+     await page.locator('[data-po-page-action=edit-post][data-value="'+record.id+'"]').click();await form.waitFor();assert.equal(await form.locator('[name=visibility]').inputValue(),'private');await page.locator('.social-close').click();await page.waitForFunction(()=>!document.body.classList.contains('community-detail-open')&&!history.state?.communityDetail);
+     await open('pages','personal','&pageId=p1&pageMode=view&pageTab=posts');await page.locator('.po-page-supplement').waitFor();assert.equal(new URL(page.url()).searchParams.get('account'),'personal');assert.equal(await page.evaluate(()=>window.NEXORA_COMMUNITY_SHARED.role),'staff');assert.equal(await page.locator('[data-feed-post-id="'+record.id+'"]').count(),0);
     });
     await check('BITCOIN PO tabs and contacts',async()=>{
      await open('pages','personal','&pageId=p1&pageMode=view&pageTab=posts');await page.locator('.po-page-supplement').waitFor();

@@ -20,7 +20,7 @@
     });
     window.addEventListener('nexora-community-search',event=>searchReady.then(search=>search.open(event.detail?.query||'')).catch(console.error));
     let current='',routeContext={},internal=false,generation=0,composerSession=null,composerRequest=0,assistantSession=null,assistantRequest=0,assistantLauncher=null;
-    window.addEventListener('nexora-community-locale',()=>{for(const button of root.querySelectorAll('[data-community-extra]')){const route=button.dataset.communityExtra;if(PERSONAL_VI[route]){const label=button.querySelector('.ecosystem-item-label');if(label)label.textContent=routeLabel(route);}}if(current.startsWith('personal-'))navigate(current,routeContext,true);});
+    window.addEventListener('nexora-community-locale',()=>{for(const button of root.querySelectorAll('[data-community-extra]')){const route=button.dataset.communityExtra;if(PERSONAL_VI[route]){const label=button.querySelector('.ecosystem-item-label');if(label)label.textContent=routeLabel(route);}}if(current.startsWith('personal-'))navigate(current,routeContext,true);if(current==='live')modules.get('tools')?.then(api=>api.window.dispatchEvent(new CustomEvent('nexora-community-locale')));});
     const notify=data=>options.notify?.(data);
     const blogTabs=document.createElement('div');
     blogTabs.className='community-news-tabs';blogTabs.setAttribute('role','tablist');blogTabs.setAttribute('aria-label','News and Blog');

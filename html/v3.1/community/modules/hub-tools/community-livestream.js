@@ -16,9 +16,10 @@
   const inputTime=value=>{const date=new Date(value);date.setMinutes(date.getMinutes()-date.getTimezoneOffset());return date.toISOString().slice(0,16);};
   const route=(name,context)=>parent.postMessage({type:'nexora-community-route',route:name,context},location.origin);
   const liveLink=room=>new URL((shared.role==='staff'?'/html/v3.1/staff-community.html':'/html/v3.1/community.html')+'?tab=live&liveView=viewer&liveId='+encode(room.id)+(room.ownerId?'&liveOwner='+encode(room.ownerId):''),location.origin).href;
-  const t=tx;
+  const liveBase=()=>window.NEXORA_COMMUNITY_LANGUAGE?.base()||state.lang;
+  const t=(vi,en)=>liveBase()==='vi'?vi:en;
   const action=(key,label,{value='',icon='',style='',pressed,disabled=false}={})=>
-    '<button type="button" class="lv-btn '+style+'" data-live-po="'+key+'"'+(value?' data-live-value="'+esc(value)+'"':'')+(pressed===undefined?'':' aria-pressed="'+pressed+'"')+(disabled?' disabled':'')+'>'+icon+esc(label)+'</button>';
+    '<button type="button" class="lv-btn '+style+'" data-live-po="'+key+'"'+(icon?' data-icon="live-po"':'')+(value?' data-live-value="'+esc(value)+'"':'')+(pressed===undefined?'':' aria-pressed="'+pressed+'"')+(disabled?' disabled':'')+'>'+icon+esc(label)+'</button>';
   const icon=name=>socialControlIcon(name,16);
   const art=(name,size=32)=>'<img class="lv-art" width="'+size+'" height="'+size+'" src="'+artwork+'issue-2040-oneqr-'+name+'-3d.png" alt="">';
   const card=(body,extra='')=>'<section class="lv-card '+extra+'">'+body+'</section>';
@@ -422,7 +423,7 @@
     const myInvite=!host?(room.guests||[]).find(guest=>!guest.accepted&&(guest.nxId===shared.me().id||guest.name===shared.member)):null;
     const inviteResponse=myInvite?card(head(t('Mời lên sóng','Invite on stage'),roomHost(room))+'<div class="lv-actions">'+action('accept-stage',t('Chấp nhận','Accept'),{style:'primary'})+action('decline-stage',t('Từ chối','Decline'),{style:'soft'})+'</div>'):'';
     const side=host?card(head(t('Trò chuyện trong phòng','Room chat'))+'<div class="lv-room-chat">'+chatRows(room,true)+'</div>'+commentForm(room))+
-      (room.purpose==='tutorial'?qaPanel(room):room.purpose==='music'?listPanel(room,'songs')+listPanel(room,'hands'):['explore','community'].includes(room.purpose)?listPanel(room,'hands'):'')+(tools.length?card(head(t('Theo mục đích buổi live','Purpose tools'))+'<div class="lv-tool-grid">'+tools.map(tile).join('')+'</div>'):'')
+      (room.purpose==='tutorial'?qaPanel(room):room.purpose==='music'?listPanel(room,'songs')+listPanel(room,'hands'):['explore','community'].includes(room.purpose)?listPanel(room,'hands'):'')+(tools.length&&!['tutorial','explore','music','community'].includes(room.purpose)?card(head(t('Theo mục đích buổi live','Purpose tools'))+'<div class="lv-tool-grid">'+tools.map(tile).join('')+'</div>'):'')
       :inviteResponse+'<div class="lv-actions">'+tile('share')+tile('contacts')+tile('qa')+tile('hands')+(room.purpose==='music'?tile('songs'):'')+(room.wheelOpen?tile('wheel'):'')+'</div><p class="lv-note">'+t('Quà tặng / Tip: chờ quyết định.','Gifts / Tips: awaiting decision.')+'</p>';
     return '<section class="lv-surface lv-active-room"><header class="lv-top lv-live-top"><div><h1>'+esc(name)+'</h1><p class="lv-note">'+t('Bản mẫu · camera chỉ xem trên thiết bị này.','Demo · camera preview stays on this device.')+'</p></div><div class="lv-actions">'+action('back',t('Đang live','Live Now'),{icon:icon('ArrowLeft')})+
       (own(room)?action(host?'viewer':'host',host?t('Góc người xem','Viewer view'):t('Góc chủ buổi','Host view'),{style:'soft'}):'')+'</div></header>'+
@@ -604,8 +605,8 @@
       case 'services':case 'deals':body=shelfPanel(room);break;
       case 'flash':{const progress=flashProgress(room);body=card(head(t('Tạo deal giới hạn ngay trong live','Create a limited offer during the live'),t('Deal sinh ra trong live nối thẳng kho Deal & Coupon và dùng tại POS.','Deals created during the live connect to Deals & Coupons for use at POS.'))+
         form('flash',field(t('Nội dung ưu đãi','Offer'),'name',room.flash?.name||(room.demo?t('Giảm 20% Gel Manicure — chỉ trong buổi live','20% off Gel Manicure — during this live only'):''),'required maxlength="100"')+
-        '<div class="lv-flash-fields">'+field(t('Thời gian chạy (phút)','Duration (minutes)'),'minutes','10','type="number" min="1" max="180" required')+
-        field(t('Số lượng tối đa','Coupon limit'),'limit','30','type="number" min="1" max="1000" required')+'</div>',t('Kích hoạt Flash Deal','Activate flash deal')))+
+        '<div class="lv-flash-fields">'+field(t('Thời gian chạy (phút)','Duration (minutes)'),'minutes',room.flash?.durationMinutes||'10','type="number" min="1" max="180" required')+
+        field(t('Số lượng tối đa','Coupon limit'),'limit',room.flash?.limit||'30','type="number" min="1" max="1000" required')+'</div>',t('Kích hoạt Flash Deal','Activate flash deal')))+
         (progress.active?card('<div class="lv-flash-heading">'+head(t('Đang chạy','Running'))+chip('LIVE DEAL','amber')+'</div>'+flashMarkup(room)+'<p><span data-flash-count>'+progress.claimed+'</span> / '+progress.limit+' '+t('coupon đã nhận · hết giờ hoặc hết suất, hệ thống tự tắt','coupons claimed · closes when time or stock runs out')+'</p><div class="lv-meter"><i data-flash-progress style="width:'+Math.min(100,progress.claimed/progress.limit*100)+'%"></i></div>','lv-flash-status'):'')+
         '<p class="lv-flash-note">'+t('Người xem thấy đồng hồ đếm ngược ngay trên màn hình live. Hết giờ, thẻ deal tự biến mất khỏi buổi live.','Viewers see the countdown on the live screen. When time runs out, the deal card disappears.')+'</p>';break;}
       case 'wheel':body=wheelPanel(room);break;
@@ -877,7 +878,7 @@
       industry:pageRecord(room.pageId)?.industry||'',channels:{community:false,page:false},createdAt:new Date().toISOString(),
     });
     localStorage.setItem(recordKey,JSON.stringify(data));
-    if(!updateRoom(room,{flash:{name,expiresAt,limit,dealId:id}})){
+    if(!updateRoom(room,{flash:{name,expiresAt,limit,durationMinutes:minutes,dealId:id}})){
       if(before===null)localStorage.removeItem(recordKey);else localStorage.setItem(recordKey,before);
       return;
     }
@@ -1138,6 +1139,7 @@
 
   const beforeRender=render;
   render=function(){
+    if(current==='live')state.lang=liveBase();
     beforeRender();syncCamera();bindDrawing();tick();
     const filter=document.querySelector('[data-live-category]');
     if(filter&&window.TomSelect&&!filter.tomselect)new window.TomSelect(filter,{create:false,maxItems:1,controlInput:null,hideSelected:false,closeAfterSelect:true});
@@ -1149,6 +1151,16 @@
     if(flashClock){clearInterval(flashClock);flashClock=null;}
     if(current==='live'&&activeLiveRoom)flashClock=setInterval(tick,1000);
   };
+  // The shell forwards locale changes to this native module's event target.
+  window.addEventListener('nexora-community-locale',()=>{
+    if(current!=='live')return;
+    const editor=$('editor'),panel=editor.open?dialogPanel:'',room=getRoom(dialogRoom),form=editor.open?editor.querySelector('form'):null;
+    const values=form?[...form.elements].filter(field=>field.name&&field.type!=='file').map(field=>({name:field.name,type:field.type,value:field.value,checked:field.checked})):[];
+    readSetup();state.lang=liveBase();render();
+    if(panel==='setup')setupPage();else if(panel==='purpose')purposePage();else if(panel==='schedule')schedulePage(room);else if(panel==='academy')academyPanel();else if(panel&&room)openPanel(panel,room);
+    const next=editor.querySelector('form'),used={};
+    if(next)for(const item of values){const fields=[...next.elements].filter(field=>field.name===item.name),index=used[item.name]||0,field=fields[index];used[item.name]=index+1;if(!field)continue;if(item.type==='checkbox'||item.type==='radio')field.checked=item.checked;else field.value=item.value;}
+  });
   const beforeNavigate=navigate;
   navigate=function(section,...args){if(section!=='live'){stopAllMedia();if(flashClock){clearInterval(flashClock);flashClock=null;}}return beforeNavigate(section,...args);};
   const module=window.NEXORA_COMMUNITY_MODULE;
