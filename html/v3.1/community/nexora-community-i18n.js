@@ -12,6 +12,8 @@ Khám phá các nhóm mẫu và bấm Tham gia để lưu vào mục này.	Explo
 Khám phá nhóm	Discover groups
 Lưu tin	Save listing
 Bài viết mới từ các Trang	New posts from Pages
+Vuốt ngang xem trang · kéo xuống xem bài viết	Swipe pages · scroll down for posts
+TRANG MẪU	SAMPLE PAGE
 Lối tắt cộng đồng	Community shortcuts
 Gian hàng	Store
 Lọc Fanpage	Filter Pages

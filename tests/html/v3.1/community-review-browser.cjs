@@ -4,12 +4,14 @@ const path=require('node:path');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.COMMUNITY_BASE_URL||'http://127.0.0.1:5547';
 const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
+const widths=(process.env.COMMUNITY_REVIEW_WIDTHS||'390,834,1440').split(',').map(Number);
+const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
 (async()=>{
  await fs.mkdir(output,{recursive:true});
- const browser=await chromium.launch({headless:true}),results=[],errors=[];
+ const browser=await chromium.launch({headless:true,...(process.env.COMMUNITY_BROWSER_CHANNEL?{channel:process.env.COMMUNITY_BROWSER_CHANNEL}:{})}),results=[],errors=[];
  try{
-  for(const width of [390,834,1440])for(const account of ['personal','business']){
-   const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+  for(const width of widths)for(const account of ['personal','business']){
+   const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
    try{
     await context.addInitScript(()=>{for(const key of ['nexora-community-tour-desktop-v1','nexora-community-tour-mobile-v1'])localStorage.setItem(key,'1');});
     const page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push({width,account,error:e.message}));
@@ -27,11 +29,20 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      }
      assert.equal(await groups.locator('.community-group-section>h3').first().innerText(),'Groups for you');
      assert.equal(await groups.locator('.community-group-latest>h3').innerText(),'New group posts');
+     if(width<=650){
+      const rails=groups.locator('.community-group-rail');
+      for(const rail of await rails.all()){
+       const section=rail.locator('..'),count=await rail.locator('.community-group-card').count();
+       assert.equal(await section.locator('.community-group-swipe').count(),count>1?1:0);
+       if(count>1){assert.equal(await section.locator('.community-group-swipe').isVisible(),true);assert.match(await section.locator('.community-group-swipe').innerText(),/Swipe to explore/);assert.equal(await rail.evaluate(node=>node.scrollWidth>node.clientWidth),true);}
+      }
+     }
      assert.ok(await groups.locator('.community-group-posts article').count()>0);
      const article=groups.locator('.community-group-posts article').first();await article.locator('[data-social-action=like]').click();assert.equal(await groups.locator('.community-group-posts article').first().locator('[data-social-action=like]').getAttribute('aria-pressed'),'true');
      await groups.locator('[data-po-my-groups]').click();
      if(account==='personal'){
       await groups.locator('.community-group-empty').waitFor();assert.equal(await groups.locator('.community-group-empty h4').innerText(),'No groups joined yet');
+      assert.equal(await groups.locator('.community-group-swipe').count(),0);
       await groups.locator('.community-group-empty [data-template=group]').click();await pane.locator('#templateForm[data-kind=group]').waitFor();await pane.locator('#closeModal').click();
       await groups.locator('.community-group-empty [data-po-group-discover]').click();
      }else await groups.locator('[data-po-group-discover]').click();
@@ -154,6 +165,12 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await extra.locator('#editor [data-action=close-dialog]').first().click();
      assert.ok((await cards.allTextContents()).every(text=>text.includes('SAMPLE ROOM')));
      const photos=cards.locator('.live-card-cover img');await photos.evaluateAll(async nodes=>Promise.all(nodes.map(image=>image.decode())));
+     if(width<=650){
+      const geometry=await cards.evaluateAll(nodes=>nodes.map(card=>{const rect=node=>{const r=node.getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right}};return {cover:rect(card.querySelector('.live-card-cover')),image:rect(card.querySelector('.live-card-cover img')),metadata:rect(card.querySelector('.live-card-body small'))};}));
+      assert.ok(geometry.every(({cover,image,metadata})=>image.top>=cover.top-1&&image.bottom<=cover.bottom+1&&image.left>=cover.left-1&&image.right<=cover.right+1&&metadata.top>=image.bottom),JSON.stringify(geometry));
+      assert.ok((await cards.first().locator('.live-card-body small').innerText()).includes('Houston, TX'));
+      await cards.first().scrollIntoViewIfNeeded();await cards.first().screenshot({path:path.join(output,`${width}-${account}-live-cover.png`)});
+     }
      await cards.first().locator('[data-live-open]').click();await extra.locator('#live-chat-form').waitFor();
      await extra.locator('#live-chat-form [name=message]').fill('QA sample room message');await extra.locator('#live-chat-form button').click();
      assert.ok((await extra.locator('.live-chat-list').innerText()).includes('QA sample room message'));
@@ -175,6 +192,23 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await open('pages');const pages=pane.locator('#pagesView');await pages.locator('#pageLatestPosts article').first().waitFor();
      assert.ok((await hub.locator('[data-i18n=pages]').allTextContents()).every(text=>text==='Fanpage'));
      assert.equal(await pages.locator('#pageLatestTitle').innerText(),'New posts from Pages');
+     if(width<=650){
+      const count=pages.locator('#pageCount'),hint=pages.locator('#pageSwipeHint'),cards=pages.locator('#pageCards>.page-card'),initial=await cards.count();
+      assert.equal(await count.isVisible(),true);assert.equal(parseInt(await count.innerText(),10),initial);
+      assert.equal(await hint.isVisible(),true);assert.match(await hint.innerText(),/Swipe pages · scroll down for posts/);
+      const sample=cards.filter({has:page.locator('[data-open-page=sample-nail]')});
+      assert.equal(await sample.locator('.community-page-sample').innerText(),'SAMPLE PAGE');
+      assert.equal(await cards.filter({has:page.locator('[data-open-page=p1]')}).locator('.community-page-sample').count(),0);
+      await pages.locator('#pageSearch').fill('Hoa Nail Studio');
+      await page.waitForFunction(()=>document.querySelector('#pageCount')?.textContent.trim().startsWith('1 '));
+      assert.equal(await cards.count(),1);assert.equal(await hint.isVisible(),false);assert.equal(await cards.locator('.community-page-sample').isVisible(),true);
+      await pages.locator('#pageSearch').fill('no-matching-fanpage-qa');
+      await page.waitForFunction(()=>document.querySelector('#pageCount')?.textContent.trim().startsWith('0 '));
+      assert.equal(await cards.count(),0);assert.equal(await hint.isVisible(),false);
+      await pages.locator('#pageSearch').fill('');
+      await page.waitForFunction(expected=>parseInt(document.querySelector('#pageCount')?.textContent,10)===expected,initial);
+      assert.equal(await hint.isVisible(),true);
+     }
      assert.ok((await pages.locator(':scope>.feature-intro').boundingBox()).height<=115);
      await pages.locator('#pageLatestPosts [data-open-page]').first().click();await pane.locator('[data-page-detail-id]').waitFor();
      await open('pages');await pages.locator('#pageLatestPosts article').first().waitFor();await pages.screenshot({path:path.join(output,`${width}-${account}-pages.png`)});
