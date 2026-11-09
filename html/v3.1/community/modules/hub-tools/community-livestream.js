@@ -282,7 +282,7 @@
     };
     const group=(name,rows)=>rows.length?'<h2 class="lv-subhead">'+esc(name)+'</h2><div class="lv-directory-grid">'+rows.map(cardMarkup).join('')+'</div>':'';
     return '<section class="lv-surface"><header class="lv-top live-hero"><div><h1>'+t('Đang live','Live Now')+'</h1><p class="lv-note">'+t('Phòng mẫu và phiên xem thử trên thiết bị.','Sample rooms and local preview sessions.')+'</p></div><div class="lv-actions">'+action('panel',label('notify'),{value:'notify',icon:icon('Bell')})+action('start',t('Tạo buổi live','Go live'),{style:'primary',icon:icon('Video')})+'</div></header>'+
-      '<div class="lv-chips lv-filter">'+categories.map(([id,vi,en,mark])=>action('filter',t(vi,en),{value:id,pressed:category===id,style:category===id?'primary':'',icon:mark?art(mark,16):''})).join('')+'</div>'+
+      '<div class="lv-filter"><select data-live-category aria-label="'+esc(t('Bộ lọc','Filters'))+'">'+categories.map(([id,vi,en])=>'<option value="'+id+'"'+(category===id?' selected':'')+'>'+esc(t(vi,en))+'</option>').join('')+'</select></div>'+
       (live.length?'<div class="lv-directory-grid">'+live.map(cardMarkup).join('')+'</div>':card(empty()))+
       group(t('Đã lên lịch','Scheduled'),schedule)+group(t('Bản xem lại','Replays'),replays)+'</section>';
   }
@@ -979,6 +979,7 @@
     $('editor').querySelectorAll('[data-live-person]').forEach(node=>{node.hidden=!node.dataset.livePerson.includes(query);});
   });
   document.addEventListener('change',event=>{
+    if(event.target.matches('[data-live-category]')){category=event.target.value;render();return;}
     if(event.target.matches('[data-live-quality]')){quality=event.target.value;return;}
     if(event.target.matches('[data-live-po-form="setup"] [name="destinations"]')){
       readSetup();
@@ -992,6 +993,8 @@
   const beforeRender=render;
   render=function(){
     beforeRender();syncCamera();bindDrawing();tick();
+    const filter=document.querySelector('[data-live-category]');
+    if(filter&&window.TomSelect&&!filter.tomselect)new window.TomSelect(filter,{create:false,maxItems:1,controlInput:null,hideSelected:false,closeAfterSelect:true});
     const oneQr=document.querySelector('.lv-oneqr');
     if(oneQr&&window.QRCode){
       const art=oneQr.querySelector('svg'),code=document.createElement('span');
