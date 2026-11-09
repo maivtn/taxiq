@@ -223,7 +223,7 @@ dialog.lv-dialog{width:min(100% - 20px,560px);max-height:min(90dvh,820px);paddin
  .lv-dialog .lv-actions{gap:8px}
  .lv-dialog form>.lv-actions>.lv-btn{flex:1;min-height:44px}
  .lv-dialog-body>.lv-actions>.lv-btn{flex:1}
- .lv-stage-picture{min-height:480px}
+ .lv-stage-picture{min-height:360px;aspect-ratio:3/4}
  .lv-room-side>.lv-card{padding:14px 12px}
  .lv-pins .lv-row{flex-wrap:wrap}
  .lv-pins .lv-grow{min-width:100px}
