@@ -114,6 +114,11 @@ fs.mkdirSync(output,{recursive:true});
           await page.waitForLoadState('networkidle');
           assert.equal(await jobs.locator('#templateForm').count(),0);
         });
+        await check('Salon hiring composer URL opens salon recruitment',async()=>{
+          await page.goto(base+'/html/v3.1/community.html?tab=jobs&composeKind=hiring',{waitUntil:'domcontentloaded'});
+          await page.waitForURL('**/html/pages/pos-recruitment.html');
+          await open('community.html','tab=jobs');
+        });
         await check('Salon hiring creation opens salon recruitment',async()=>{
           await jobs.locator('#jobTemplates [data-template="hiring"]').click();
           await page.waitForURL('**/html/pages/pos-recruitment.html');
