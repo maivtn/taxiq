@@ -138,8 +138,7 @@
   function setMessageView(next) {
     $('#directPanel').classList.toggle('hidden', next !== 'direct');
     $('#groupsPanel').classList.toggle('hidden', next !== 'groups');
-    document.querySelectorAll('.message-intro').forEach(element => element.classList.toggle('hidden', next === 'groups'));
-    $('#messagesPanel').setAttribute('aria-labelledby', next === 'groups' ? 'groupsTitle' : 'messagesTitle');
+    $('#messagesPanel').setAttribute('aria-labelledby', next === 'groups' ? 'groupsTab' : 'messagesTab');
   }
   function showSection(next) {
     rememberChatDraft();mediaGeneration++;
@@ -443,7 +442,6 @@
       return '<button class="row-button" data-detail="' + detail + '" data-initials="' + esc(initials) + '"><span><strong>' + esc(member.name) + '</strong><small>' + esc(member.handle) + ' · ' + esc(member.id) + '</small></span><span class="arrow">›</span></button>';
     }).join('');
     const contacts=connected.filter(member=>!isBlocked(member.name)).sort((a,b)=>a.name.localeCompare(b.name));
-    $('#contactCount').textContent=String(contacts.length);
     $('#contactRows').innerHTML=contacts.map(member=>{
       const detail=member.detail==='request'?'chat-mai':member.detail;
       return '<article class="connect-contact"><button type="button" class="row-button contact-main" data-contact-member="'+esc(member.name)+'" data-detail="'+esc(detail)+'" data-initials="'+esc(initials(member.name))+'"><span><strong>'+esc(member.name)+'</strong><small>'+esc(member.handle)+' · '+esc(member.id)+'</small></span></button><div class="contact-actions"><button type="button" class="secondary" data-contact-member="'+esc(member.name)+'" data-detail="'+esc(detail)+'" aria-label="'+esc(ui('Message ','Tin nhắn ')+member.name)+'">'+ui('Message','Tin nhắn')+'</button><button type="button" class="secondary" data-start-call="voice" data-call-name="'+esc(member.name)+'" aria-label="'+esc(ui('Voice call ','Gọi thoại ')+member.name)+'">'+phoneIcon+ui('Voice call','Gọi thoại')+'</button></div></article>';

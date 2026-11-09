@@ -23,7 +23,6 @@
 /* Saved people and customer-to-business contacts. */
 .page-tabs [data-section="contacts"]{order:4}.page-tabs [data-section="contacts"] img{width:24px;height:24px;object-fit:contain}
 body.embedded .page-tabs [data-section="privacy"]{order:5}body.embedded .page-tabs #tourStartBtn{order:6}
-.contacts-heading{display:flex;align-items:center;gap:8px}.contacts-heading span{font-size:12px;color:var(--muted)}
 .connect-contact{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:8px 0;min-width:0}.connect-contact:last-child{border-bottom:0}
 .connect-contact .contact-main{flex:1;min-width:0;border:0}.connect-contact .contact-main>span{min-width:0}.connect-contact .contact-main small{overflow-wrap:anywhere}
 .contact-actions{display:flex;gap:6px;flex:none}.contact-actions button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:8px 10px;white-space:nowrap}.contact-actions svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
