@@ -10,7 +10,7 @@ const results = [], errors = [];
   await fs.mkdir(output, { recursive: true });
   const browser = await chromium.launch({ headless: true });
   try {
-    for (const width of [390, 834, 1440]) for (const account of ['personal', 'business']) {
+    for (const width of [390, 662, 834, 1440]) for (const account of ['personal', 'business']) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
       try {
         await context.addInitScript(() => {
@@ -50,9 +50,38 @@ const results = [], errors = [];
             const tabs = hub.locator('.mobile-nav .mobile-tab:visible');
             assert.equal(await tabs.count(), 5);
             assert.deepEqual(await tabs.evaluateAll(nodes => nodes.map(node => node.dataset.view || 'more')), ['feed', 'market', 'pages', 'jobs', 'more']);
-            await page.waitForFunction(() => getComputedStyle(document.querySelector('.mobile-nav [data-view="pages"]')).backgroundColor === 'rgb(101, 81, 223)');
           }
           await page.screenshot({ path: path.join(output, `header-${width}-${account}.png`) });
+        });
+        await check('Pages shares navigation styling and routes with other tabs', async () => {
+          await open();
+          const nav = hub.locator('.mobile-nav:visible,.top .tabs:visible').first();
+          const snapshot = () => nav.evaluate(node => {
+            const active = node.querySelector('.tab.active');
+            const style = getComputedStyle(active);
+            return {
+              active: Object.fromEntries(['backgroundColor', 'backgroundImage', 'borderRadius', 'fontSize', 'padding', 'minHeight'].map(key => [key, style[key]])),
+              buttons: [...node.querySelectorAll('.tab')].filter(button => button.getClientRects().length).map(button => {
+                const box = button.getBoundingClientRect();
+                return { route: button.dataset.view || 'more', x: Math.round(box.x), width: Math.round(box.width), height: Math.round(box.height) };
+              })
+            };
+          });
+          const pages = await snapshot();
+          for (const [view, route] of [['feed', 'feed'], ['market', 'groups'], ['jobs', 'jobs'], ['pages', 'pages']]) {
+            await nav.locator(`.tab[data-view="${view}"]`).click();
+            await page.waitForURL(url => url.searchParams.get('tab') === route);
+            await page.waitForFunction(view => document.querySelector('.mobile-nav .tab.active')?.dataset.view === view, view);
+            if (width < 801) assert.deepEqual(await snapshot(), pages, 'Mobile tab geometry and selected styling stay consistent on ' + route);
+          }
+          await view.locator('.community-pages-hero').waitFor();
+          await nav.locator('.community-nav-more').click();
+          const menu = hub.locator('#ecosystemMenu');
+          await menu.waitFor();
+          assert.equal(await menu.locator('[data-quick-view="deals"]').isVisible(), true);
+          assert.equal(await menu.locator('[data-quick-view="connect"]').isVisible(), true);
+          await page.keyboard.press('Escape');
+          await menu.waitFor({ state: 'hidden' });
         });
         await check('search submit and category filters', async () => {
           await open();
