@@ -122,6 +122,7 @@ const results = [], errors = [];
           const deposit=panel.locator('#shift-assignment-shift-demo-personal-nexora2-deposit');
           await deposit.locator('[data-shifts-action="settlement"]').first().click();await hub.locator('.shifts-dialog').waitFor();
           await hub.locator('.shifts-dialog [data-shifts-action="close"]').click();
+          await shifts.locator('[data-shifts-tab="my-shifts"]').click();
           await deposit.locator('[data-shifts-action="cancelAssignment"]').click();
           await hub.locator('.shifts-dialog [data-shifts-action="confirmCancel"]').click();
           await page.reload();await shifts.locator('#communityShiftsWorkflow').waitFor();
