@@ -36,6 +36,7 @@
   };
   document.addEventListener('click',event=>{
     if(current!=='deals')return;
+    if(event.target.closest('.deal-hero [data-feed-kind="coupon"]')&&shared.role==='owner'){event.preventDefault();event.stopImmediatePropagation();openFeedDialog('coupon');return;}
     const target=event.target.closest('[data-page-open],[data-section]');
     if(!target)return;
     const route=target.dataset.pageOpen?'pages':target.dataset.section;
