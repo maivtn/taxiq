@@ -22,6 +22,7 @@ body.embedded .community-group-section>h3{margin:8px 0 12px;text-transform:none;
 body.embedded .community-group-card{flex:0 0 270px;min-width:0;padding:0 12px 12px;overflow:hidden;scroll-snap-align:start;border-radius:14px}
 .community-group-cover{height:112px;margin:0 -12px 0;background:linear-gradient(120deg,#6252df,#879df2);background-size:cover;background-position:center}
 .community-group-cover img{display:block;width:100%;height:100%;object-fit:cover}
+[data-community-group-card="g2"] .community-group-cover:not(:has(img)){background-image:url('/html/v3.1/community-staging/5cecfe52c32c201a.jpg')}
 .community-group-avatar{position:relative;display:grid;place-items:center;width:38px;height:38px;margin:-20px 0 10px;background:#fff;border-radius:12px;box-shadow:0 3px 9px #25304b1a}
 .community-group-avatar img{width:28px;height:28px;object-fit:contain}
 body.embedded .community-group-card-heading>h3{font-size:15px;line-height:1.3;margin-bottom:5px}
@@ -42,7 +43,7 @@ body.embedded #pageCards .page-identity .meta{font-size:11px}
 body.embedded #pageCards .page-content>p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.5;margin:8px 0}
 body.embedded #pageCards .page-actions{flex-wrap:nowrap;gap:6px;padding-top:8px}
 body.embedded #pageCards .page-actions .btn{min-height:40px;font-size:11px;padding:8px}
-body.embedded #pagesView>.section-heading{display:flex;margin:18px 0 10px}
+body.embedded #pagesView>.section-heading{display:flex;position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;justify-content:flex-start;margin:18px 0 10px}
 body.embedded #pagesView>.section-heading h2{position:static;width:auto;height:auto;clip-path:none;white-space:normal;overflow:visible;font-size:15px}
 .native-body:has(#page-view){--ink:#25304b;--muted:#77839e;--violet:#6653df;--bg:#f7f7fc}
 .native-body #page-view :is(.btn.primary,.group-create-button){background:#6653df;border-color:#6653df}
@@ -75,6 +76,8 @@ body.embedded #pagesView>.section-heading h2{position:static;width:auto;height:a
  body.embedded :is(#groupsView,#pagesView)>.feature-intro>.btn{flex:none;font-size:11px;padding:8px 10px;min-height:40px}
  body.embedded #pagesView>.feature-intro{align-items:flex-start;flex-direction:column}
  body.embedded .community-group-card{flex-basis:226px}
+ body.embedded .community-group-card>p{display:none}
+ body.embedded #groupsView>.community-group-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-bottom:10px}
  body.embedded #pageCards>.page-card{flex-basis:285px}
  body.embedded #pageCards .page-cover{height:105px}
  .native-body #page-view .store-head{gap:12px}
