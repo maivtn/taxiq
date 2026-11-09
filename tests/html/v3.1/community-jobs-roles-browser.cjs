@@ -18,19 +18,20 @@ fs.mkdirSync(output,{recursive:true});
           localStorage.setItem('nexora-community-tour-mobile-v1','1');
         });
         const page=await context.newPage();page.setDefaultTimeout(15000);
+        const jobs=page.frameLocator('#communityPane');
         page.on('pageerror',error=>errors.push({width,message:error.message}));
         async function open(file,query){
           await page.goto(base+'/html/v3.1/'+file+'?'+query,{waitUntil:'domcontentloaded'});
-          await page.locator('#jobsWorkflow').waitFor();
+          await jobs.locator('#jobsWorkflow').waitFor();
         }
         async function check(name,fn){
           await fn();results.push({width,name,pass:true});console.log('PASS '+width+' '+name);
         }
         async function personalControls(){
-          assert.equal(await page.locator('[data-template="hiring"]').isVisible(),false);
-          assert.equal(await page.locator('[data-template="seeking"]').isVisible(),true);
-          assert.equal(await page.locator('[data-jobs-action="open-pos"]').count(),0);
-          assert.equal(await page.locator('[data-jobs-tab="workers"]').count(),0);
+          assert.equal(await jobs.locator('[data-template="hiring"]').isVisible(),false);
+          assert.equal(await jobs.locator('[data-template="seeking"]').isVisible(),true);
+          assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
+          assert.equal(await jobs.locator('[data-jobs-tab="workers"]').count(),0);
         }
         await check('Personal route and posting controls',async()=>{
           await open('community.html','account=personal&tab=jobs');
@@ -39,8 +40,8 @@ fs.mkdirSync(output,{recursive:true});
         });
         const title='Role QA seeking '+width;
         await check('Personal publishes seeking and reloads',async()=>{
-          await page.locator('[data-template="seeking"]').click();
-          const form=page.locator('#templateForm');await form.waitFor();
+          await jobs.locator('[data-template="seeking"]').click();
+          const form=jobs.locator('#templateForm');await form.waitFor();
           await form.locator('[name="industry"]').selectOption('Nail & làm đẹp');
           await form.locator('[name="role"]').selectOption('Thợ nail');
           await form.locator('[name="skills"]').fill('Gel-X');
@@ -50,49 +51,49 @@ fs.mkdirSync(output,{recursive:true});
           await form.locator('[name="jobTitle"]').fill(title);
           await form.locator('[name="phone"]').fill('7135550199');
           await form.locator('[type="submit"]').click();
-          await page.locator('#jobPosts').getByText(title,{exact:true}).waitFor();
-          await page.reload({waitUntil:'domcontentloaded'});await page.locator('#jobsWorkflow').waitFor();
-          await page.locator('[data-jobs-tab="myPosts"]').click();
-          await page.locator('#jobPosts').getByText(title,{exact:true}).waitFor();
+          await jobs.locator('#jobPosts').getByText(title,{exact:true}).waitFor();
+          await page.reload({waitUntil:'domcontentloaded'});await jobs.locator('#jobsWorkflow').waitFor();
+          await jobs.locator('[data-jobs-tab="myPosts"]').click();
+          await jobs.locator('#jobPosts').getByText(title,{exact:true}).waitFor();
         });
         await check('Personal transfers allow browsing and contact only',async()=>{
-          await page.locator('[data-jobs-tab="transfer"]').click();
-          assert.equal(await page.locator('[data-jobs-extra="new-transfer"]').count(),0);
-          assert.equal(await page.locator('[data-jobs-extra="transfer-template"]').count(),0);
-          assert.equal(await page.locator('[data-jobs-extra="edit"]').count(),0);
-          await page.locator('#jobsExtraSearch').fill('');
+          await jobs.locator('[data-jobs-tab="transfer"]').click();
+          assert.equal(await jobs.locator('[data-jobs-extra="new-transfer"]').count(),0);
+          assert.equal(await jobs.locator('[data-jobs-extra="transfer-template"]').count(),0);
+          assert.equal(await jobs.locator('[data-jobs-extra="edit"]').count(),0);
+          await jobs.locator('#jobsExtraSearch').fill('');
           await page.screenshot({path:path.join(output,'personal-transfer-'+width+'.png')});
         });
         await check('Linked staff remains a worker and rejects owner deep link',async()=>{
           await open('staff-community.html','role=tech&account=business&tab=jobs&jobsTab=workers');
-          await personalControls();assert.equal(await page.locator('#jobsView').getAttribute('data-jobs-tab'),'browse');
+          await personalControls();assert.equal(await jobs.locator('#jobsView').getAttribute('data-jobs-tab'),'browse');
         });
         await check('Salon switch restores salon actions and removes worker actions',async()=>{
           await page.locator('#communityDemoRoleButton').click();await page.locator('[data-demo-account="salon"]').click();
-          await page.waitForURL('**/community.html**');await page.locator('#jobsWorkflow').waitFor();
-          assert.equal(await page.locator('[data-template="hiring"]').isVisible(),true);
-          assert.equal(await page.locator('[data-template="seeking"]').isVisible(),false);
-          assert.equal(await page.locator('[data-jobs-tab="profile"]').count(),0);
-          await page.locator('[data-jobs-tab="transfer"]').click();
-          await page.locator('[data-jobs-extra="new-transfer"]').waitFor();
+          await page.waitForURL('**/community.html**');await jobs.locator('#jobsWorkflow').waitFor();
+          assert.equal(await jobs.locator('[data-template="hiring"]').isVisible(),true);
+          assert.equal(await jobs.locator('[data-template="seeking"]').isVisible(),false);
+          assert.equal(await jobs.locator('[data-jobs-tab="profile"]').count(),0);
+          await jobs.locator('[data-jobs-tab="transfer"]').click();
+          await jobs.locator('[data-jobs-extra="new-transfer"]').waitFor();
         });
         const transferTitle='Role QA salon transfer '+width;
         await check('Salon publishes transfer and reloads',async()=>{
-          await page.locator('[data-jobs-extra="new-transfer"]').click();
-          const form=page.locator('#jobsExtraForm');await form.waitFor();
+          await jobs.locator('[data-jobs-extra="new-transfer"]').click();
+          const form=jobs.locator('#jobsExtraForm');await form.waitFor();
           assert.equal(await form.locator('[name="transferType"]').inputValue(),'sell');
           await form.locator('[name="title"]').fill(transferTitle);
           await form.locator('[name="city"]').fill('Houston, TX');
           await form.locator('[name="description"]').fill('Salon available for transfer in Houston.');
           await form.locator('[type="submit"]').click();
-          await page.locator('#jobPosts').getByText(transferTitle,{exact:true}).waitFor();
-          await page.reload({waitUntil:'domcontentloaded'});await page.locator('#jobsWorkflow').waitFor();
-          await page.locator('[data-jobs-tab="transfer"]').click();
-          await page.locator('#jobPosts').getByText(transferTitle,{exact:true}).waitFor();
+          await jobs.locator('#jobPosts').getByText(transferTitle,{exact:true}).waitFor();
+          await page.reload({waitUntil:'domcontentloaded'});await jobs.locator('#jobsWorkflow').waitFor();
+          await jobs.locator('[data-jobs-tab="transfer"]').click();
+          await jobs.locator('#jobPosts').getByText(transferTitle,{exact:true}).waitFor();
           await page.screenshot({path:path.join(output,'salon-transfer-'+width+'.png')});
         });
         await check('Salon hiring creation opens salon recruitment',async()=>{
-          await page.locator('[data-template="hiring"]').click();
+          await jobs.locator('[data-template="hiring"]').click();
           await page.waitForURL('**/html/pages/pos-recruitment.html');
         });
         await check('Staff role alias uses personal shell',async()=>{
