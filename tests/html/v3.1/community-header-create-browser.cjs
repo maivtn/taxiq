@@ -78,11 +78,10 @@ const server=http.createServer(async(req,res)=>{
     try{
       await desktop.addInitScript(()=>{if(location.protocol==='http:')localStorage.setItem('nexora-community-tour-desktop-v1','1');});
       const page=await desktop.newPage();await page.goto(base+'/html/v3.1/community.html?tab=feed',{waitUntil:'domcontentloaded'});
-      const frame=page.locator('#communityPane');await frame.locator('#feedActionsToggle').waitFor();
-      assert.equal(await page.locator('#communityCreate').isVisible(),false);
-      await frame.locator('#feedActionsToggle').click();await frame.locator('#feedActions').waitFor();
-      await frame.locator('#feedActions [data-template="tip"]').click();await frame.locator('#templateForm[data-kind="tip"]').waitFor();
-      results.push({width:1440,account:'business',name:'desktop Create content retained',pass:true});console.log('PASS desktop Create content retained');
+      const frame=page.locator('#communityPane'),trigger=page.locator('#communityCreate');await trigger.waitFor();
+      await trigger.click();await page.locator('#communityCreateMenu').waitFor();
+      await page.locator('#communityCreateMenu [data-create-kind="tip"]').click();await frame.locator('#templateForm[data-kind="tip"]').waitFor();
+      results.push({width:1440,account:'business',name:'desktop shared Create opens the existing tip form',pass:true});console.log('PASS desktop shared Create opens the existing tip form');
     }finally{await desktop.close();}
   }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));await fs.writeFile(path.join(output,'results.json'),JSON.stringify(results,null,2));}
   assert.ok(results.every(row=>row.pass),'Create menu browser regression failed');

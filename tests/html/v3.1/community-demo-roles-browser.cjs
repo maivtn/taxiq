@@ -64,9 +64,12 @@ const rows=[],errors=[];
           });
           await check(role,'More drawer and Feed shortcuts',async()=>{
             await open(role,'feed');
-            await host.locator('#communityCreate').click();
-            assert.equal(await host.locator('#communityCreateMenu [data-create-kind="deal"]').count(),role==='personal'?0:1);
-            await host.locator('#communityCreate').click();
+            const headerCreate=host.locator('#communityCreate');
+            if(await headerCreate.isVisible()){
+              await headerCreate.click();assert.equal(await host.locator('#communityCreateMenu [data-create-kind="deal"]').count(),role==='personal'?0:1);await headerCreate.click();
+            }else{
+              await classic().locator('#feedActionsToggle').click();assert.equal(await classic().locator('#feedActions [data-template="deal"]').count(),role==='personal'?0:1);await classic().locator('#feedActionsToggle').click();
+            }
             for(const feature of ['shop','transfer'])assert.equal(await classic().locator('[data-community-shortcut="'+feature+'"]').count(),role==='personal'&&feature==='transfer'?0:1);
             await host.locator('.community-nav-more:visible').first().click();
             await host.locator('#ecosystemMenu').waitFor();
