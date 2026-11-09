@@ -28,7 +28,7 @@
     panel.classList.remove('dialog');panel.classList.add('page-screen-panel');
     panel.setAttribute('role','region');panel.removeAttribute('aria-modal');
     const close=panel.querySelector('#closeModal');
-    if(close){close.removeAttribute('id');close.removeAttribute('aria-label');close.className='btn small';close.textContent=mode==='edit'?'← Quay lại Fanpage':'← Quay lại danh sách Fanpage';close.dataset.pageScreenBack=mode==='edit'?'view':'list';}
+    close?.remove();
     const footer=panel.querySelector('#cancelModal');
     if(footer){if(mode==='view')footer.closest('.dialog-footer').remove();else{footer.removeAttribute('id');footer.dataset.pageScreenBack='list';}}
     screen.replaceChildren(panel);modal.replaceChildren();

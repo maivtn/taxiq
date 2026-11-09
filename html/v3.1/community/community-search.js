@@ -3,7 +3,7 @@
   'use strict';
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const normal=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  const icons={search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',back:'<path d="m14 5-7 7 7 7"/>',clock:'<circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/><path d="M12 7v5l3 2" stroke="white"/>',more:'<circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/>',like:'<path d="M7 10v11H3V10Zm0 1 5-8c2 0 3 2 2 5l-1 2h6a2 2 0 0 1 2 2l-2 7a3 3 0 0 1-3 2H7"/>',check:'<path d="m5 12 4 4L19 6"/>'};
+  const icons={search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',close:'<path d="m6 6 12 12M6 18 18 6"/>',clock:'<circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/><path d="M12 7v5l3 2" stroke="white"/>',more:'<circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/>',like:'<path d="M7 10v11H3V10Zm0 1 5-8c2 0 3 2 2 5l-1 2h6a2 2 0 0 1 2 2l-2 7a3 3 0 0 1-3 2H7"/>',check:'<path d="m5 12 4 4L19 6"/>'};
   const svg=name=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+icons[name]+'</svg>';
   function mount({directory,baseURL,navigate,feed}) {
     if(window.NEXORA_COMMUNITY_SEARCH.instance)return window.NEXORA_COMMUNITY_SEARCH.instance;
@@ -13,7 +13,7 @@
     const state={recent:Array.isArray(stored?.recent)?stored.recent.filter(value=>typeof value==='string').slice(0,20):['blog','setting'],hidden:Array.isArray(stored?.hidden)?stored.hidden:[],hideLiked:stored?.hideLiked===true};
     let ready=false,failed=false,likedOnly=false,opener=null,suppressFocus=false,scrollPositions=[],scrollMode='auto';
     const dialog=document.createElement('dialog');dialog.id='community-search-dialog';dialog.className='community-search-dialog';dialog.setAttribute('aria-label','Search Community');
-    dialog.innerHTML='<form class="community-search-head" role="search"><button type="button" data-search-back aria-label="Back">'+svg('back')+'</button><input name="query" type="search" placeholder="Search..." aria-label="Search Community" autocomplete="off" maxlength="120"><button type="submit" aria-label="Search">'+svg('search')+'</button></form><div class="community-search-body"></div><p class="community-search-status" role="status" aria-live="polite"></p>';
+    dialog.innerHTML='<form class="community-search-head" role="search"><button type="button" data-search-close aria-label="Close">'+svg('close')+'</button><input name="query" type="search" placeholder="Search..." aria-label="Search Community" autocomplete="off" maxlength="120"><button type="submit" aria-label="Search">'+svg('search')+'</button></form><div class="community-search-body"></div><p class="community-search-status" role="status" aria-live="polite"></p>';
     document.body.append(dialog);
     const input=dialog.querySelector('input'),body=dialog.querySelector('.community-search-body'),status=dialog.querySelector('[role="status"]');
     const sections=[['feed','Feed'],['groups','Groups & Market'],['pages','Pages'],['friends','Friends'],['jobs','Jobs'],['shift','Extra shifts'],['deals','Deals & Coupons'],['blog','Blog'],['connect','Messages & Calls'],['privacy','Settings'],['food','Food Community'],['realestate','Real Estate'],['shop','My storefront'],['reels','Reels'],['news','News & Blog']];
@@ -66,7 +66,7 @@
     dialog.addEventListener('click',event=>{
       const button=event.target.closest('button');if(!button)return;
       const data=button.dataset;
-      if('searchBack' in data){close();return;}
+      if('searchClose' in data){close();return;}
       if('searchRetry' in data){load();return;}
       if('searchRecent' in data){input.value=data.searchRecent;remember(input.value);render();input.focus();return;}
       if('searchLiked' in data){likedOnly=true;input.value='';render();return;}

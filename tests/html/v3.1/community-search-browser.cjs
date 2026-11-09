@@ -32,7 +32,7 @@ const server=http.createServer(async(req,res)=>{try{const file=path.resolve(repo
           const box=await dialog.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=width+1);if(width<=800){assert.equal(box.y,0);assert.equal(Math.round(box.height),900);}
           assert.equal(await dialog.evaluate(el=>el.scrollWidth>el.clientWidth),false);
           await dialog.screenshot({path:path.join(output,`${width}-${account}-search.png`)});
-          await dialog.locator('[data-search-back]').click();await dialog.waitFor({state:'hidden'});
+          await dialog.locator('[data-search-close]').click();await dialog.waitFor({state:'hidden'});
         });
         await check('Back and Escape retain the Community route and Feed scroll',async()=>{
           await feed.evaluate(el=>el.querySelector('.native-body').scrollTop=240);
@@ -50,11 +50,11 @@ const server=http.createServer(async(req,res)=>{try{const file=path.resolve(repo
           await dialog.locator('input').fill('Mai');await dialog.locator('input').press('Enter');await dialog.locator('[data-search-person]').first().waitFor();
           assert.match(await dialog.locator('.community-search-body').innerText(),/Mai/);
           await dialog.locator('input').fill('blog');await dialog.locator('[data-search-route="blog"]').waitFor();
-          await dialog.locator('[data-search-back]').click();await dialog.waitFor({state:'hidden'});
+          await dialog.locator('[data-search-close]').click();await dialog.waitFor({state:'hidden'});
           await page.reload({waitUntil:'domcontentloaded'});await feed.locator('#feedPosts article').first().waitFor();await open();
           assert.equal(await dialog.locator('[data-search-recent="setting"]').count(),0);assert.equal(await dialog.locator('[data-search-recent="Mai"]').count(),1);
           assert.equal(await page.evaluate(id=>window.NEXORA_COMMUNITY_PEOPLE.state().sent.includes(id),id),true);assert.equal(await dialog.locator(`[data-search-hide="${hidden}"]`).count(),0);
-          await dialog.locator('[data-search-back]').click();await dialog.waitFor({state:'hidden'});
+          await dialog.locator('[data-search-close]').click();await dialog.waitFor({state:'hidden'});
         });
         await check('liked posts and Community result navigation',async()=>{
           const like=feed.locator('[data-social-action="like"]').first(),id=await like.getAttribute('data-social-post');if(await like.getAttribute('aria-pressed')!=='true')await like.click();

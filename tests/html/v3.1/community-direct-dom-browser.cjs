@@ -58,12 +58,12 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-direct-dom';
             await open('feed');await feed.locator('[data-footer-route="'+route+'"]').click();await page.waitForURL(url=>url.searchParams.get('tab')===route);
             if(route==='food'){await hub.locator('.community-document-pane iframe').waitFor();await page.frameLocator('.community-document-pane iframe').locator('#hero').waitFor();}
             else await hub.locator(route==='live'?'.live-hero':'.news-hero').waitFor();
-            await hub.locator('.community-back-to-feed').click();await page.waitForURL(url=>url.searchParams.get('tab')==='feed');await feed.locator('#communityFeedFooter').waitFor();
+            await hub.locator('.top .tabs [data-view="feed"]:visible,.mobile-nav [data-view="feed"]:visible').first().click();await page.waitForURL(url=>url.searchParams.get('tab')==='feed');await feed.locator('#communityFeedFooter').waitFor();
           }
         });
         await check('Real Estate iframe and Back',async()=>{
           await open('realestate');await hub.locator('.community-document-pane iframe').waitFor();await page.frameLocator('.community-document-pane iframe').locator('.hero').waitFor();
-          assert.equal(page.frames().length,2);await hub.locator('.community-back-to-feed').click();await feed.locator('#feedView').waitFor();
+          assert.equal(page.frames().length,2);await hub.locator('.top .tabs [data-view="feed"]:visible,.mobile-nav [data-view="feed"]:visible').first().click();await feed.locator('#feedView').waitFor();
         });
       }finally{await context.close();}
     }

@@ -30,7 +30,7 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/taxiq-community-feed-ord
         async function returnToFeed(){
           const close=tools().locator('#editor[open] [data-action="close-dialog"]').first();
           if(await close.isVisible())await close.click();
-          await page.locator('.community-back-to-feed').click();
+          await page.locator('.top .tabs [data-view="feed"]:visible,.mobile-nav [data-view="feed"]:visible').first().click();
           await ready();await ordered();
         }
         async function state(){return frame.evaluate(()=>{

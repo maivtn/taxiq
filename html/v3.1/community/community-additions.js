@@ -67,16 +67,17 @@
     }
     frames[0].addEventListener('load',removeLocalDiscovery);
     removeLocalDiscovery();
-    const back=document.createElement('button');back.type='button';back.className='community-back-to-feed';back.hidden=true;
-    back.textContent='← Back to Feed';back.addEventListener('click',event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      // Close the active module first, then synchronize the outer URL and sidebar.
-      navigate('feed',{},true);
-      window.navigateCommunityHub?.('feed');
-    });
-    root.querySelector('.community-heading').prepend(back);
-    styles.textContent+=' .community-back-to-feed{display:inline-flex;align-items:center;justify-content:center;flex:none;min-height:44px;padding:9px 13px;border:1px solid #dedcf1;border-radius:9px;background:#fff;color:#5548c8;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.community-back-to-feed[hidden]{display:none!important}.community-back-to-feed:hover{background:#efedff}.community-back-to-feed:focus-visible{outline:3px solid #a99fff;outline-offset:2px}@container community (max-width:650px){.community-back-to-feed{font-size:12px;padding:8px 10px}}';
+    // The shared tabs replace Back controls throughout the Community modules.
+    const navigationStyle=document.createElement('style');
+    navigationStyle.textContent=`
+      :is(#community-staging,#community-hub) :is(
+        .community-back,.menu-back,#tourBack,#backToCommunityBtn,
+        button.back,.appbar>.back,.page-back,.friend-back,.group-back,
+        [data-community-back],[data-back-page],[data-back]:not(.chat-close),
+        [data-action="live-back"]
+      ){display:none!important}
+    `;
+    document.head.append(navigationStyle);
     styles.textContent+=' .app.community-extra-open .top{position:relative;flex:0 0 auto;z-index:10}.app.community-extra-open .workspace{flex:1 1 0%;min-height:0;overflow:hidden}.app.community-extra-open .community-back{display:none!important}.community-extra-pane.community-document-pane{overflow:hidden}.community-document-pane>section{height:100%;min-height:0;overflow:hidden}.community-document-pane iframe{display:block;width:100%;height:100%;border:0}';
     // Keep Feed visible while the PO dialog renders in the browser's top layer.
     styles.textContent+=' .community-extra-pane.community-composer-overlay{position:absolute;inset:0 0 auto;height:0;min-height:0;overflow:hidden}.community-composer-overlay>section{height:0;min-height:0}';
@@ -291,7 +292,7 @@
       generation++;
       if(!current&&pane.hidden)return;
       for(const task of modules.values())task.then(api=>api.window.NEXORA_COMMUNITY_MODULE?.deactivate?.());
-      current='';loading.hidden=true;pane.removeAttribute('aria-busy');pane.hidden=true;back.hidden=true;root.querySelector('.app').classList.remove('community-extra-open');queueMicrotask(refreshFeed);document.body.classList.remove('community-extra-active');
+      current='';loading.hidden=true;pane.removeAttribute('aria-busy');pane.hidden=true;root.querySelector('.app').classList.remove('community-extra-open');queueMicrotask(refreshFeed);document.body.classList.remove('community-extra-active');
       if(frames.every(frame=>frame.hidden))frames[0].hidden=false;
       root.querySelector('.community-heading h1').textContent='Community';
     }
@@ -434,7 +435,7 @@
       internal=true;original.navigate('feed');internal=false;
       current=route;routeContext=context||{};pane.classList.toggle('community-tools-aligned',['post','reels','live'].includes(route));document.body.classList.add('community-extra-active');
       root.querySelector('.app').classList.add('community-extra-open');pane.classList.toggle('community-document-pane',['food','realestate'].includes(route));
-      frames.forEach(frame=>{frame.hidden=true;});pane.hidden=false;back.hidden=['deals','shop'].includes(route);
+      frames.forEach(frame=>{frame.hidden=true;});pane.hidden=false;
       root.getElementById('ecosystemMenu').hidden=true;root.getElementById('ecosystemButton').setAttribute('aria-expanded','false');
       root.querySelector('.community-heading h1').textContent=LABELS[route];
       root.querySelectorAll('.tab').forEach(tab=>{tab.classList.remove('active');tab.setAttribute('aria-current','false');});

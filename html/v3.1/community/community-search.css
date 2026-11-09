@@ -11,7 +11,7 @@ body.community-hub-active .header .mobile-brand>.brand-logo,body.community-hub-a
 .community-search-dialog [hidden]{display:none!important}
 .community-search-head{display:flex;flex:none;align-items:center;gap:6px;min-height:53px;margin:0;padding:4px 8px;border-bottom:1px solid var(--search-border);background:#fff}
 .community-search-head button{display:grid;place-items:center;flex:none;width:38px;height:44px;padding:0;border:0;background:transparent;color:var(--search-ink)}
-.community-search-head [data-search-back]{color:var(--search-muted)}
+.community-search-head [data-search-close]{color:var(--search-muted)}
 .community-search-head input{width:0;min-width:0;flex:1;height:38px;padding:0 13px;border:0;border-radius:24px;background:var(--search-surface);color:var(--search-ink);font:16px Arial,sans-serif;outline:none}
 .community-search-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 12px 12px;background:var(--search-surface)}
 .community-search-dialog h2{margin:0;font-size:16px;line-height:24px;font-weight:700}

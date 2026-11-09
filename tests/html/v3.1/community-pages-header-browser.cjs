@@ -68,7 +68,7 @@ const results = [], errors = [];
             };
           });
           const pages = await snapshot();
-          for (const [view, route] of [['feed', 'feed'], ['market', 'groups'], ['jobs', 'jobs'], ['pages', 'pages']]) {
+          for (const [view, route] of [['feed', 'feed'], ['market', 'market'], ['jobs', 'jobs'], ['pages', 'pages']]) {
             await nav.locator(`.tab[data-view="${view}"]`).click();
             await page.waitForURL(url => url.searchParams.get('tab') === route);
             await page.waitForFunction(view => document.querySelector('.mobile-nav .tab.active')?.dataset.view === view, view);
@@ -137,7 +137,7 @@ const results = [], errors = [];
           assert.equal(await view.locator('.community-pages-hero').isVisible(), false);
           assert.equal(await view.locator('.community-pages-shortcuts').isVisible(), false);
           await page.reload();
-          await hub.locator('#communityPageScreen [data-page-screen-back="list"]').click();
+          await hub.locator('.top .tabs [data-view="pages"]:visible,.mobile-nav [data-view="pages"]:visible').first().click();
           await page.waitForURL(url => !url.searchParams.has('pageId'));
           await view.locator('.community-pages-hero').waitFor();
           assert.equal(await filters.locator('[data-page-scope="following"]').getAttribute('aria-pressed'), 'true');
@@ -146,7 +146,7 @@ const results = [], errors = [];
           await open();
           await view.locator(`.community-pages-shortcuts :is([data-po-route="${route}"],[data-view="${route}"])`).click();
           await page.waitForURL(url => url.searchParams.get('tab') === route);
-          await hub.locator({ feed: '#feedView', shop: '.store-head', deals: '#communityDealsView', reels: '.reels-hero' }[route]).waitFor();
+          await hub.locator({ feed: '#feedView', shop: '.store-head', deals: '.deal-hero', reels: '.reels-hero' }[route]).waitFor();
           assert.equal(page.frames().length, 1);
         });
       } finally { await context.close(); }
