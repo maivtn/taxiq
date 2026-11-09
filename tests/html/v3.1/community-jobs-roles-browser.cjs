@@ -23,7 +23,7 @@ fs.mkdirSync(output,{recursive:true});
         page.on('pageerror',error=>errors.push({width,message:error.message}));
         async function open(file,query){
           await page.goto(base+'/html/v3.1/'+file+'?'+query,{waitUntil:'domcontentloaded'});
-          await jobs.locator('#jobsWorkflow').waitFor();
+          await jobs.locator('#jobsWorkflow').waitFor({state:'attached'});
         }
         async function check(name,fn){
           await fn();results.push({width,name,pass:true});console.log('PASS '+width+' '+name);
@@ -43,7 +43,7 @@ fs.mkdirSync(output,{recursive:true});
           const direct=await context.newPage();
           try{
             await direct.goto(base+'/html/v3.1/community/nexora-community-prototype.html?view=jobs&account='+account+'&composeKind='+kind,{waitUntil:'domcontentloaded'});
-            await direct.locator('#jobsWorkflow').waitFor();
+            await direct.locator('#jobsWorkflow').waitFor({state:'attached'});
             assert.equal(await direct.locator('#templateForm').count(),0);
           }finally{await direct.close();}
         }
@@ -73,7 +73,7 @@ fs.mkdirSync(output,{recursive:true});
           await form.locator('[name="phone"]').fill('7135550199');
           await form.locator('[type="submit"]').click();
           await jobs.locator('#jobPosts').getByText(title,{exact:true}).waitFor();
-          await page.reload({waitUntil:'domcontentloaded'});await jobs.locator('#jobsWorkflow').waitFor();
+          await page.reload({waitUntil:'domcontentloaded'});await jobs.locator('#jobsWorkflow').waitFor({state:'attached'});
           await jobs.locator('button[data-jobs-tab="myPosts"]').click();
           await jobs.locator('#jobPosts').getByText(title,{exact:true}).waitFor();
         });
@@ -90,7 +90,7 @@ fs.mkdirSync(output,{recursive:true});
         });
         await check('Salon switch restores salon actions and removes worker actions',async()=>{
           await open('community.html','account=business&tab=jobs');
-          await page.waitForURL('**/community.html**');await jobs.locator('#jobsWorkflow').waitFor();
+          await page.waitForURL('**/community.html**');await jobs.locator('#jobsWorkflow').waitFor({state:'attached'});
           assert.ok(await jobs.locator('[data-template="hiring"]:visible').count()||await page.locator('#communityCreateMenu [data-create-kind="hiring"]').count());
           assert.equal(await jobs.locator('#jobTemplates [data-template="seeking"]').isVisible(),false);
           assert.equal(await jobs.locator('button[data-jobs-tab="profile"]').count(),0);
@@ -107,7 +107,7 @@ fs.mkdirSync(output,{recursive:true});
           await form.locator('[name="description"]').fill('Salon available for transfer in Houston.');
           await form.locator('[type="submit"]').click();
           await jobs.locator('#jobPosts').getByText(transferTitle,{exact:true}).waitFor();
-          await page.reload({waitUntil:'domcontentloaded'});await jobs.locator('#jobsWorkflow').waitFor();
+          await page.reload({waitUntil:'domcontentloaded'});await jobs.locator('#jobsWorkflow').waitFor({state:'attached'});
           await jobs.locator('button[data-jobs-tab="transfer"]').click();
           await jobs.locator('#jobPosts').getByText(transferTitle,{exact:true}).waitFor();
           await page.screenshot({path:path.join(output,'salon-transfer-'+width+'.png')});

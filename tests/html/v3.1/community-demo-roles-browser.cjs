@@ -28,7 +28,7 @@ const rows=[],errors=[];
           if(route==='assistant')await host.locator('#ai-dialog:visible').waitFor();
           else if(['food','realestate'].includes(route))await host.locator('.community-document-pane iframe').waitFor();
           else if(['reels','live','news','wallet','wheel','meet','account','assistant','notifications','stories','people','post','food-market','shop'].includes(route))await host.locator('.community-extra-pane>section:visible').waitFor();
-          else if(route==='jobs')await classic().locator('#jobsWorkflow').waitFor();
+          else if(route==='jobs')await classic().locator('#jobsWorkflow').waitFor({state:'attached'});
           else if(route==='deals')await classic().locator('#communityDealsView').waitFor();
           else if(['feed','groups','market','pages','shift','blog'].includes(route))await classic().locator('#'+({feed:'feed',groups:'groups',market:'market',pages:'pages',shift:'daywork',blog:'blog'}[route])+'View').waitFor();
         }

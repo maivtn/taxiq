@@ -800,7 +800,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     document.addEventListener('change',onChange);
     document.addEventListener('keydown',onKeydown,true);
     window.addEventListener('storage',onStorage);
-    extras=window.NEXORA_COMMUNITY_JOBS_EXTRAS?.mount({adapter,role,canPost,member,esc,po,getJobs,getProfile,readState,transact,showDialog,render,chat,date,active,card,publicCandidate,openInvite,openJob});
+    extras=window.NEXORA_COMMUNITY_JOBS_EXTRAS?.mount({adapter,role,canPost,member,esc,po,getJobs,getProfile,readState,transact,showDialog,render,navigate,chat,date,active,card,publicCandidate,openInvite,openJob});
     seedDemo();render();
     return {onDialogClosed:()=>{detailId=null;},render,enhance:render,openJob,navigate,openEditor,enhanceForm,afterSave,getProfile:()=>getProfile(),saveProfile,savePrivacy,eligibility,apply,cancelApplication,applicants,applicantProfile,publicCandidate,isVisible,isActive:active,displayName:postingName,invite,respondInvite,saveJob,closeJob,toggleSaved,reset,destroy,listApplications:()=>clone((readState()?.applications||[]).filter(row=>row.applicantUserId===member())),listInvites:()=>clone((readState()?.invites||[]).filter(row=>row.from===member()||row.to===member()))};
   }

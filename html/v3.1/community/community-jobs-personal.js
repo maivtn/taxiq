@@ -6,7 +6,8 @@
     let saved;
     try { saved = JSON.parse(localStorage.getItem(key) || '{}'); } catch { saved = {}; }
     if (!saved || typeof saved !== 'object' || Array.isArray(saved)) saved = {};
-    let root, shiftsNav, hero, view, tab, editing = false, draft = null;
+    let root, jobsNav, shiftsNav, hero, view, tab, editing = false, draft = null;
+    const isPersonal = () => role() === 'staff' && new URLSearchParams(location.search).get('account') === 'personal';
     const defaults = {
       heroTitle: ['Tôi muốn làm việc', 'I want to work'],
       heroDesc: ['Tìm việc phù hợp, đăng lịch rảnh nhận ca thêm hoặc giới thiệu dịch vụ bạn có thể làm. Kết nối trực tiếp với chủ tiệm và doanh nghiệp.', 'Find the right job, share when you are free for extra shifts, or show the services you offer. Connect directly with shops and businesses.'],
@@ -31,7 +32,8 @@
       const actions = editing
         ? `<button type="button" class="btn" data-jobs-copy-action="cancel">${esc(po('Hủy', 'Cancel'))}</button><button type="button" class="btn primary" data-jobs-copy-action="save">${esc(po('Lưu thay đổi', 'Save changes'))}</button>`
         : `<button type="button" class="btn primary" data-jobs-copy-action="edit">✎ ${esc(po('Chỉnh sửa', 'Edit'))}</button>`;
-      root.innerHTML = `${sectionNav()}<section class="jobs-personal-panel"${tab !== 'browse' ? ' hidden' : ''}><div class="jobs-personal-demo">✦ ${esc(po('Bản mẫu · Tin đăng và hồ sơ lưu trên máy này.', 'Demo · Posts and profiles stay in this browser.'))}</div><div class="jobs-personal-editbar" role="toolbar" aria-label="${esc(po('Thanh chỉnh sửa nội dung', 'Content editing toolbar'))}"><strong>✎ ${esc(po('Chỉnh sửa nội dung trực tiếp', 'Edit page content directly'))}</strong><div>${actions}</div></div><div class="jobs-personal-start">${field('h2', 'startTitle')}${field('p', 'startDesc')}</div><section class="jobs-personal-paths">${[
+      root.hidden = tab !== 'browse';
+      root.innerHTML = `<section class="jobs-personal-panel"><div class="jobs-personal-demo">✦ ${esc(po('Bản mẫu · Tin đăng và hồ sơ lưu trên máy này.', 'Demo · Posts and profiles stay in this browser.'))}</div><div class="jobs-personal-editbar" role="toolbar" aria-label="${esc(po('Thanh chỉnh sửa nội dung', 'Content editing toolbar'))}"><strong>✎ ${esc(po('Chỉnh sửa nội dung trực tiếp', 'Edit page content directly'))}</strong><div>${actions}</div></div><div class="jobs-personal-start">${field('h2', 'startTitle')}${field('p', 'startDesc')}</div><section class="jobs-personal-paths">${[
         ['career', '◉', 'data-template="seeking"', 'Đăng hồ sơ tìm việc', 'Post job search'],
         ['shift', '◷', 'data-jobs-extra="availability-new"', 'Đăng lịch rảnh', 'Post availability'],
         ['service', '✦', 'data-jobs-extra="new-service-offer"', 'Đăng dịch vụ của tôi', 'Post my services']
@@ -48,7 +50,7 @@
     }
     function onClick(event) {
       const action = event.target.closest('[data-jobs-copy-action]')?.dataset.jobsCopyAction;
-      if (!action || role() !== 'staff') return;
+      if (!action || !isPersonal()) return;
       if (action === 'edit') { draft = JSON.parse(JSON.stringify(saved)); editing = true; }
       if (action === 'cancel') { editing = false; draft = null; toast(po('Đã hủy thay đổi chưa lưu.', 'Unsaved changes discarded.')); }
       if (action === 'save') {
@@ -63,24 +65,29 @@
     }
     function render(nextView, nextTab, nextHero, navigation) {
       view = nextView; tab = nextTab; hero = nextHero;
-      const personal = role() === 'staff';
+      if (!jobsNav) {
+        jobsNav = document.createElement('div'); jobsNav.className = 'jobs-section-nav'; view.prepend(jobsNav);
+      }
+      jobsNav.innerHTML = sectionNav();
+      if (!shiftsNav && document.getElementById('dayworkView')) {
+        shiftsNav = document.createElement('div'); shiftsNav.className = 'jobs-section-nav jobs-personal-shifts-nav';
+        document.getElementById('dayworkView').prepend(shiftsNav);
+      }
+      if (shiftsNav) shiftsNav.innerHTML = sectionNav(true);
+      const personal = isPersonal();
       view.classList.toggle('jobs-personal-entry', personal);
       if (!personal) {
         if (root?.contains(hero)) navigation.before(hero);
-        root?.remove(); shiftsNav?.remove(); root = null; shiftsNav = null; editing = false; return;
+        root?.remove(); root = null; editing = false; return;
       }
       if (editing && root) capture();
       if (!root) {
         root = document.createElement('section'); root.className = 'jobs-personal-entry-content';
-        root.addEventListener('click', onClick); view.prepend(root);
-      }
-      if (!shiftsNav && document.getElementById('dayworkView')) {
-        shiftsNav = document.createElement('div'); shiftsNav.className = 'jobs-personal-shifts-nav';
-        shiftsNav.innerHTML = sectionNav(true); document.getElementById('dayworkView').prepend(shiftsNav);
+        root.addEventListener('click', onClick); jobsNav.after(root);
       }
       paint();
     }
-    return {render, destroy() { root?.remove(); shiftsNav?.remove(); }};
+    return {render, destroy() { root?.remove(); jobsNav?.remove(); shiftsNav?.remove(); }};
   }
   window.NEXORA_COMMUNITY_JOBS_PERSONAL = {create};
 })();

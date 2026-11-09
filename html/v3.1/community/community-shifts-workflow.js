@@ -507,7 +507,7 @@
       let root=document.getElementById('communityShiftsWorkflow');
       if(!root){root=document.createElement('div');root.id='communityShiftsWorkflow';container.querySelector('#shiftTemplates')?.after(root);if(!root.isConnected)container.append(root);}
       // Retain PO intro and short forms; workflow replaces only their old flat listing and filters.
-      [...container.children].forEach(child=>{if(child!==root&&!child.classList.contains('feature-intro')&&child.id!=='shiftTemplates')child.dataset.shiftsReplaced='true';});
+      [...container.children].forEach(child=>{if(child!==root&&!child.classList.contains('feature-intro')&&!child.classList.contains('jobs-section-nav')&&child.id!=='shiftTemplates')child.dataset.shiftsReplaced='true';});
       document.querySelectorAll('#shiftTemplates [data-template]').forEach(button=>{button.hidden=button.dataset.template!==(role()==='owner'?'dayhire':'daywork');});
       const state=read();if(sweep(state)){try{persist(state);}catch{errorMessage=t('errors.generic');}}
       const tabs=role()==='owner'?['my-shifts','payments']:['browse','my-shifts','payments'];if(!tabs.includes(view.tab))view.tab=tabs[0];

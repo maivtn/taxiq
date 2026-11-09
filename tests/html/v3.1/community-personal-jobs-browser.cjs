@@ -22,7 +22,7 @@ const results = [], errors = [];
         const landing = jobs.locator('.jobs-personal-entry-content');
         async function open(query='account=personal&tab=jobs',entry='community.html') {
           await page.goto(`${base}/html/v3.1/${entry}?${query}`, {waitUntil:'domcontentloaded'});
-          await jobs.locator('#jobsWorkflow').waitFor();
+          await jobs.locator('#jobsWorkflow').waitFor({state:'attached'});
         }
         async function check(name,run) {
           try {await run();results.push({width,name,pass:true});console.log('PASS',width,name);}
@@ -34,11 +34,29 @@ const results = [], errors = [];
           assert.equal(url.searchParams.get('account'),'business');assert.equal(url.searchParams.get('rev'),'url-check');assert.equal(url.hash,'#kept');
           assert.equal(await landing.count(),0);
           assert.equal(await page.evaluate(()=>NEXORA_COMMUNITY_SHARED.role),'owner');
-          await page.reload();await jobs.locator('#jobsWorkflow').waitFor();assert.equal(new URL(page.url()).searchParams.get('account'),'business');
+          await page.reload();await jobs.locator('#jobsWorkflow').waitFor({state:'attached'});assert.equal(new URL(page.url()).searchParams.get('account'),'business');
           await open('account=personal&tab=jobs&rev=url-check#kept');
           assert.ok(new URL(page.url()).pathname.endsWith('/staff-community.html'));
           assert.equal(new URL(page.url()).searchParams.get('account'),'personal');assert.equal(new URL(page.url()).searchParams.get('rev'),'url-check');
           await page.reload();await landing.waitFor();assert.equal(new URL(page.url()).searchParams.get('account'),'personal');
+        });
+        await check('business keeps its workflow under the two section tabs',async()=>{
+          await open('account=business&tab=jobs');
+          assert.equal(await landing.count(),0);
+          assert.equal(await jobs.locator('#jobsWorkflow').isVisible(),true);
+          assert.equal(await jobs.locator('.jobs-nav [data-jobs-tab="transfer"]').isVisible(),true);
+          assert.equal(await jobs.locator('.jobs-nav [data-jobs-action="open-pos"]').isVisible(),true);
+          assert.deepEqual(await jobs.locator('.jobs-personal-sections button').allTextContents(),['All jobs','Extra shifts']);
+          await jobs.locator('.jobs-personal-sections [data-view="daywork"]').click();
+          await page.waitForURL(url=>url.searchParams.get('tab')==='shift');
+          const shifts=hub.locator('#dayworkView');
+          await shifts.locator('#communityShiftsWorkflow').waitFor();
+          assert.equal(await shifts.locator('.jobs-personal-sections .active').innerText(),'Extra shifts');
+          assert.equal(await shifts.locator('[data-shifts-action="post"]').isVisible(),true);
+          await shifts.locator('.jobs-personal-sections [data-view="jobs"]').click();
+          await jobs.locator('#jobsWorkflow').waitFor();
+          assert.equal(new URL(page.url()).searchParams.get('account'),'business');
+          await page.screenshot({path:path.join(output,`business-jobs-${width}.png`)});
         });
         await check('personal PO hero and three starting paths',async()=>{
           await open();await landing.waitFor();
@@ -46,8 +64,9 @@ const results = [], errors = [];
           assert.equal(await landing.locator('.community-po-jobs-hero h2').innerText(),'I want to work');
           const hero = await landing.locator('.community-po-jobs-hero').boundingBox();
           const paths = await landing.locator('.jobs-personal-paths').boundingBox();
-          const workflow = await jobs.locator('#jobsWorkflow').boundingBox();
-          assert.ok(paths.y>=hero.y+hero.height);assert.ok(workflow.y>=paths.y+paths.height);
+          assert.ok(paths.y>=hero.y+hero.height);
+          for (const selector of ['#jobsWorkflow',':scope > .feature-intro',':scope > .feature-layout']) assert.equal(await jobs.locator(selector).isVisible(),false,'Old Jobs content hidden on personal entry');
+          assert.equal(await jobs.locator('.jobs-personal-sections button').count(),2);
           assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
           assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
           assert.equal(page.frames().length,1);
@@ -79,8 +98,8 @@ const results = [], errors = [];
         await check('matches and shifts return preserve account',async()=>{
           await open();await landing.locator('[data-jobs-tab="matched"]').click();await page.waitForURL(url=>url.searchParams.get('jobsTab')==='matched');
           assert.equal(await landing.locator('.jobs-personal-panel').isVisible(),false);
-          await landing.locator('.jobs-personal-sections [data-jobs-tab="browse"]').click();await landing.locator('.jobs-personal-panel').waitFor();
-          await landing.locator('.jobs-personal-sections [data-view="daywork"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='shift');
+          await jobs.locator('.jobs-personal-sections [data-jobs-tab="browse"]').click();await landing.locator('.jobs-personal-panel').waitFor();
+          await jobs.locator('.jobs-personal-sections [data-view="daywork"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='shift');
           assert.equal(new URL(page.url()).searchParams.get('account'),'personal');
           await hub.locator('#dayworkView .jobs-personal-shifts-nav [data-view="jobs"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='jobs');
           await landing.locator('.jobs-personal-panel').waitFor();
@@ -103,7 +122,10 @@ const results = [], errors = [];
           assert.equal(new URL(page.url()).searchParams.get('account'),'business');
           assert.equal(new URL(page.url()).searchParams.get('role'),'tech');
           assert.equal(await page.evaluate(()=>NEXORA_COMMUNITY_SHARED.role),'staff');
-          await landing.waitFor();assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
+          assert.equal(await landing.count(),0);
+          assert.equal(await jobs.locator('#jobsWorkflow').isVisible(),true);
+          assert.equal(await jobs.locator('.jobs-personal-sections button').count(),2);
+          assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
         });
       } finally {await context.close();}
     }
