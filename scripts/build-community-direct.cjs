@@ -41,9 +41,9 @@ for(const name of ['community.html','staff-community.html']){
   doc.querySelectorAll('template[data-community-template]').forEach(n=>n.remove());
   host.insertAdjacentHTML('afterend',templates);
   doc.querySelectorAll('script[data-community-code]').forEach(n=>n.remove());
-  const bundle=doc.createElement('script');bundle.src='community/community-direct-code.js?v=20261109-page-header1';bundle.dataset.communityCode='';
+  const bundle=doc.createElement('script');bundle.src='community/community-direct-code.js?v=20261109-personal-jobs1';bundle.dataset.communityCode='';
   doc.querySelector('script[src*="community-native.js"]').before(bundle);
-  for(const script of doc.querySelectorAll('script[src*="community-native.js"],script[src*="community-integration.js"],script[src*="community-shared.js"]'))script.src=script.getAttribute('src').replace(/\?v=.*/,'?v=20261109-po-alignment1');
+  for(const script of doc.querySelectorAll('script[src*="community-native.js"],script[src*="community-integration.js"],script[src*="community-shared.js"]'))script.src=script.getAttribute('src').replace(/\?v=.*/,script.getAttribute('src').includes('community-integration.js')?'?v=20261109-account-url1':'?v=20261109-po-alignment1');
   // Keep the outer sidebar styles outside the copied Community sections.
   // Existing scoped outer styles can include entry-specific fixes; only convert new links.
   for(const link of [...doc.head.querySelectorAll('link[rel="stylesheet"]')].filter(n=>!n.href.startsWith('https:'))){

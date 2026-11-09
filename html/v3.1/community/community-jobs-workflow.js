@@ -64,6 +64,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     const postingName = row => row.hideLastName?shortName(row.contactName||row.owner):row.contactName||row.owner;
     const workTypeLabel=value=>t((['Weekend','ShiftCover'].includes(value)?'jobs.profile.options.jobType.':'jobs.board.workSchedule.')+value);
     const toast = message => adapter.toast?.(message);
+    const personalEntry = window.NEXORA_COMMUNITY_JOBS_PERSONAL?.create({member, role, language, po, esc, toast});
     const getJobs = () => clone(adapter.getJobs() || []);
     const getJob = id => getJobs().find(row => String(row.id) === String(id));
     const signature = row => row ? JSON.stringify(row) : null;
@@ -379,6 +380,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       const personal=role()==='staff';
       hero.innerHTML=`<div><span class="community-po-eyebrow">NEXORA TOUCH COMMUNITY</span><h2>${esc(personal?po('Tôi muốn làm việc','I want to work'):po('Tìm thợ cho tiệm của bạn','Find people for your business'))}</h2><p>${esc(personal?po('Tìm việc phù hợp, đăng lịch rảnh nhận ca thêm hoặc giới thiệu dịch vụ bạn có thể làm. Kết nối trực tiếp với chủ tiệm và doanh nghiệp.','Find the right job, share when you are free for extra shifts, or show the services you offer. Connect directly with shops and businesses.'):po('Đăng tuyển thợ nail full-time, part-time hoặc theo giờ. Cần người quản lý, dọn dẹp, sửa điện nước hay công việc khác cũng đăng tại đây.','Hire nail technicians full-time, part-time or by the hour. Post needs for management, cleaning, electrical and plumbing work, or other tasks here too.'))}</p></div><div class="community-po-hero-actions">${personal?`<button type="button" class="btn primary" data-template="seeking">${esc(po('Đăng nhu cầu làm việc','Post your availability'))}</button><button type="button" class="btn" data-jobs-tab="matched">${esc(po('Xem việc phù hợp','See my matches'))}</button>`:`<button type="button" class="btn primary" data-jobs-action="open-pos">${esc(po('Đăng tìm thợ','Post a hiring need'))}</button><button type="button" class="btn" data-view="daywork">${esc(po('Cần người theo ngày/giờ','Need day or hourly help'))}</button>`}</div>`;
       const templates=view.querySelector('#jobTemplates');
+      personalEntry?.render(view, tab, hero, navigation);
       navigation.innerHTML=`<div class="jobs-workflow-head"><div class="jobs-nav" role="tablist" aria-label="${esc(t('jobs.board.browse.title'))}">${tabs.map(([value,image])=>`<button type="button" role="tab" aria-selected="${tab===value}" class="jobs-tab${tab===value?' active':''}" data-jobs-tab="${value}">${icon(image)}<span>${esc(extras?.label(value)||t('jobs.board.nav.'+({profile:'techProfile'}[value]||value)))}</span></button>`).join('')}${role()==='owner'?`<button type="button" class="jobs-tab jobs-pos-link" data-jobs-action="open-pos">${icon('store')}<span>${esc(t('jobs.board.nav.openInPos'))}</span></button>`:''}</div><div class="jobs-compose-slot"></div></div><div id="jobsToolbar"></div>`;
       const intro=view.querySelector('.feature-intro'),shifts=intro?.querySelector('[data-view="daywork"]');
       if(templates){if(shifts)shifts.before(templates);else navigation.querySelector('.jobs-compose-slot').append(templates);}
@@ -791,7 +793,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     }
     function onStorage(event) {if(event.key===STORAGE_KEY||event.key===null){if(document.querySelector('[data-jobs-dialog]'))adapter.closeDialog?.();render();}}
     function reset() {try{localStorage.removeItem(STORAGE_KEY);}catch{return false;}pendingJob=null;detailId=null;profileStep=0;query='';tab='browse';seedDemo();render();return true;}
-    function destroy() {disposed=true;document.removeEventListener('click',onClick,true);document.removeEventListener('submit',onSubmit,true);document.removeEventListener('input',onInput);document.removeEventListener('change',onChange);document.removeEventListener('keydown',onKeydown,true);window.removeEventListener('storage',onStorage);}
+    function destroy() {disposed=true;personalEntry?.destroy();document.removeEventListener('click',onClick,true);document.removeEventListener('submit',onSubmit,true);document.removeEventListener('input',onInput);document.removeEventListener('change',onChange);document.removeEventListener('keydown',onKeydown,true);window.removeEventListener('storage',onStorage);}
     document.addEventListener('click',onClick,true);
     document.addEventListener('submit',onSubmit,true);
     document.addEventListener('input',onInput);

@@ -12,6 +12,11 @@
   var current = '';
   var detailOpen = false;
   var ready = false;
+  function accountType() {
+    var declared = new URLSearchParams(location.search).get('account');
+    if (declared === 'personal' || declared === 'business') return declared;
+    return window.NEXORA_SHELL?.activePage === 'staff' && window.NEXORA_SHELL.salonLinked === false ? 'personal' : 'business';
+  }
   var routes = ['feed', 'groups', 'market', 'pages', 'deals', 'jobs', 'shift', 'blog', 'connect', 'chatgroups', 'contacts', 'calls', 'privacy', 'food', 'realestate', 'shop', 'transfer', 'reels', 'live', 'news', 'wallet', 'wheel', 'meet', 'account', 'assistant', 'notifications', 'stories', 'friends', 'people', 'post', 'page-tools', 'group-tools', 'food-market', 'explore'];
   var aliases = {mkt:'market', fanpage:'pages', daywork:'shift', shifts:'shift', profile:'jobs', 'jobs-my-posts':'jobs', 'jobs-applied':'jobs', 'shift-payments':'shift', learning:'feed', events:'feed', explore:'feed', dcats:'deals', dmatch:'deals', dopen:'deals', dlast:'deals', dlastt:'deals', dlastb:'deals', dcamp:'deals', dwallet:'deals', dcreate:'deals', dmanage:'deals', dredeem:'deals', dwish:'deals'};
 
@@ -50,6 +55,7 @@
     var changed = next !== current;
     current = next;
     var url = new URL(location.href);
+    url.searchParams.set('account', accountType());
     url.searchParams.set('tab', next);if(next!=='friends')url.searchParams.delete('friendsView');if(!['pages','page-tools'].includes(next))for(var pageKey of ['pageId','pageMode','pageTab'])url.searchParams.delete(pageKey);var legacy={profile:['jobsTab','profile'],'jobs-my-posts':['jobsTab','myPosts'],'jobs-applied':['jobsTab','applied'],'shift-payments':['shiftTab','payments']}[value];if(legacy)url.searchParams.set(legacy[0],legacy[1]);
     // Legacy group links retain their group context in the parent URL.
     if(detailBackPending) {

@@ -1,0 +1,113 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const base = process.env.COMMUNITY_BASE_URL || 'http://127.0.0.1:5530';
+const output = process.env.COMMUNITY_PERSONAL_JOBS_OUTPUT || '/tmp/community-personal-jobs';
+const results = [], errors = [];
+(async () => {
+  await fs.mkdir(output, {recursive:true});
+  const browser = await chromium.launch({headless:true});
+  try {
+    for (const width of [390, 834, 1440]) {
+      const context = await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+      try {
+        await context.addInitScript(() => {
+          for (const key of ['nexora-community-tour-desktop-v1','nexora-community-tour-mobile-v1']) localStorage.setItem(key,'1');
+        });
+        const page = await context.newPage(); page.setDefaultTimeout(20000);
+        page.on('pageerror', error => errors.push({width,error:error.message}));
+        const hub = page.locator('#community-staging,#community-hub');
+        const jobs = hub.locator('#jobsView');
+        const landing = jobs.locator('.jobs-personal-entry-content');
+        async function open(query='account=personal&tab=jobs',entry='community.html') {
+          await page.goto(`${base}/html/v3.1/${entry}?${query}`, {waitUntil:'domcontentloaded'});
+          await jobs.locator('#jobsWorkflow').waitFor();
+        }
+        async function check(name,run) {
+          try {await run();results.push({width,name,pass:true});console.log('PASS',width,name);}
+          catch (error) {results.push({width,name,pass:false,error:error.stack});console.log('FAIL',width,name,error.message);await page.screenshot({path:path.join(output,`${width}-${name.replace(/\W+/g,'-')}-failed.png`)}).catch(()=>{});}
+        }
+        await check('account URLs preserve context and reload',async()=>{
+          await open('tab=jobs&rev=url-check&member=URL%20Business#kept');
+          let url = new URL(page.url());
+          assert.equal(url.searchParams.get('account'),'business');assert.equal(url.searchParams.get('rev'),'url-check');assert.equal(url.hash,'#kept');
+          assert.equal(await landing.count(),0);
+          assert.equal(await page.evaluate(()=>NEXORA_COMMUNITY_SHARED.role),'owner');
+          await page.reload();await jobs.locator('#jobsWorkflow').waitFor();assert.equal(new URL(page.url()).searchParams.get('account'),'business');
+          await open('account=personal&tab=jobs&rev=url-check#kept');
+          assert.ok(new URL(page.url()).pathname.endsWith('/staff-community.html'));
+          assert.equal(new URL(page.url()).searchParams.get('account'),'personal');assert.equal(new URL(page.url()).searchParams.get('rev'),'url-check');
+          await page.reload();await landing.waitFor();assert.equal(new URL(page.url()).searchParams.get('account'),'personal');
+        });
+        await check('personal PO hero and three starting paths',async()=>{
+          await open();await landing.waitFor();
+          assert.deepEqual(await landing.locator('.jobs-personal-path h3').allTextContents(),['I am looking for work','I am free for a shift','I offer services']);
+          assert.equal(await landing.locator('.community-po-jobs-hero h2').innerText(),'I want to work');
+          const hero = await landing.locator('.community-po-jobs-hero').boundingBox();
+          const paths = await landing.locator('.jobs-personal-paths').boundingBox();
+          const workflow = await jobs.locator('#jobsWorkflow').boundingBox();
+          assert.ok(paths.y>=hero.y+hero.height);assert.ok(workflow.y>=paths.y+paths.height);
+          assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+          assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
+          assert.equal(page.frames().length,1);
+          await page.screenshot({path:path.join(output,`personal-jobs-${width}.png`)});
+        });
+        await check('seeking and service entry open retained forms',async()=>{
+          await open();
+          for (const selector of ['.community-po-hero-actions [data-template="seeking"]','[data-jobs-path="career"] button']) {
+            await landing.locator(selector).click();await hub.locator('#templateForm[data-kind="seeking"]').waitFor();
+            await hub.locator('#closeModal').click();await hub.locator('#templateForm').waitFor({state:'hidden'});
+          }
+          await landing.locator('[data-jobs-path="service"] button').click();
+          await hub.locator('#jobsExtraForm[data-kind="service-offer"]').waitFor();
+          await hub.locator('[data-jobs-action="dismiss"]').click();
+          assert.equal(new URL(page.url()).searchParams.get('account'),'personal');
+        });
+        await check('availability save and reload',async()=>{
+          await open();await landing.locator('[data-jobs-path="shift"] button').click();
+          const form = hub.locator('#jobsAvailabilityForm');await form.waitFor();
+          await form.locator('[name="kind"]').selectOption('weekly');await form.locator('[name="day"]').selectOption('1');
+          await form.locator('[name="start"]').fill('09:00');await form.locator('[name="end"]').fill('12:00');
+          await form.locator('[type="submit"]').click();await form.waitFor({state:'hidden'});
+          await jobs.locator('.jobs-nav [data-jobs-tab="availability"]').click();
+          await page.waitForURL(url=>url.searchParams.get('jobsTab')==='availability');
+          await page.reload();await jobs.locator('.po-availability-week').waitFor();
+          assert.ok((await jobs.locator('.po-availability-week').innerText()).includes('09:00–12:00'));
+          assert.equal(new URL(page.url()).searchParams.get('account'),'personal');
+        });
+        await check('matches and shifts return preserve account',async()=>{
+          await open();await landing.locator('[data-jobs-tab="matched"]').click();await page.waitForURL(url=>url.searchParams.get('jobsTab')==='matched');
+          assert.equal(await landing.locator('.jobs-personal-panel').isVisible(),false);
+          await landing.locator('.jobs-personal-sections [data-jobs-tab="browse"]').click();await landing.locator('.jobs-personal-panel').waitFor();
+          await landing.locator('.jobs-personal-sections [data-view="daywork"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='shift');
+          assert.equal(new URL(page.url()).searchParams.get('account'),'personal');
+          await hub.locator('#dayworkView .jobs-personal-shifts-nav [data-view="jobs"]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='jobs');
+          await landing.locator('.jobs-personal-panel').waitFor();
+          await page.goBack();await hub.locator('#dayworkView').waitFor();
+          assert.equal(new URL(page.url()).searchParams.get('account'),'personal');
+          await page.goForward();await landing.locator('.jobs-personal-panel').waitFor();
+        });
+        await check('PO copy editing saves cancels and is identity scoped',async()=>{
+          await open();await landing.locator('[data-jobs-copy-action="edit"]').click();
+          await landing.locator('[data-jobs-copy="heroTitle"]').fill('My work availability');
+          await landing.locator('[data-jobs-copy-action="save"]').click();await page.reload();await landing.waitFor();
+          assert.equal(await landing.locator('[data-jobs-copy="heroTitle"]').innerText(),'My work availability');
+          await landing.locator('[data-jobs-copy-action="edit"]').click();await landing.locator('[data-jobs-copy="heroTitle"]').fill('Unsaved heading');
+          await landing.locator('[data-jobs-copy-action="cancel"]').click();assert.equal(await landing.locator('[data-jobs-copy="heroTitle"]').innerText(),'My work availability');
+          await open('account=personal&tab=jobs&member=Other%20Member');
+          assert.equal(await landing.locator('[data-jobs-copy="heroTitle"]').innerText(),'I want to work');
+        });
+        await check('linked staff keeps business context and worker permissions',async()=>{
+          await open('role=tech&tab=jobs','staff-community.html');
+          assert.equal(new URL(page.url()).searchParams.get('account'),'business');
+          assert.equal(new URL(page.url()).searchParams.get('role'),'tech');
+          assert.equal(await page.evaluate(()=>NEXORA_COMMUNITY_SHARED.role),'staff');
+          await landing.waitFor();assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
+        });
+      } finally {await context.close();}
+    }
+  } finally {await browser.close();await fs.writeFile(path.join(output,'results.json'),JSON.stringify({results,errors},null,2));}
+  console.log('TOTAL',results.filter(row=>row.pass).length+'/'+results.length,'errors='+errors.length);
+  process.exitCode=results.some(row=>!row.pass)||errors.length?1:0;
+})().catch(error=>{console.error(error);process.exitCode=1;});

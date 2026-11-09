@@ -1,0 +1,46 @@
+/* PO jobs.html: personal entry, compact mobile hero and three starting paths. */
+#jobsView.jobs-personal-entry>.feature-intro{display:none!important}
+.jobs-personal-sections{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 10px;border:1px solid #e0e1f0;border-radius:12px;background:#ececf8}
+.jobs-personal-sections>button{border:0;border-radius:8px;background:transparent;color:#64708a;min-height:36px;padding:8px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.jobs-personal-sections>button.active{background:#6551d8;color:#fff}
+.jobs-personal-sections :is(svg,img){display:none}
+.jobs-personal-panel{padding:12px;border:1px solid #e4e5ef;border-radius:14px;background:#fff}
+.jobs-personal-panel[hidden]{display:none!important}
+.jobs-personal-demo{display:inline-flex;align-items:center;max-width:100%;min-height:24px;padding:3px 8px;margin:0 0 9px;border-radius:999px;background:#f4f1ff;color:#6756a8;font-size:10px;line-height:1.25}
+.jobs-personal-editbar{display:flex;align-items:center;justify-content:space-between;gap:7px;min-height:42px;padding:5px 7px;margin:0 0 10px;border:1px solid #d6c8ff;border-radius:10px;background:#faf9ff;color:#6540c8}
+.jobs-personal-editbar>strong{min-width:0;font-size:11px;line-height:1.2;font-weight:850}
+.jobs-personal-editbar>div{display:flex;gap:5px;flex:none}
+.jobs-personal-editbar .btn{min-height:30px;padding:5px 8px;font-size:10px;white-space:nowrap}
+.jobs-personal-panel .community-po-jobs-hero{display:block;margin:0;padding:17px 21px;border:1px solid #e5dfff;border-radius:13px;background:linear-gradient(115deg,#f0edff,#f8f7ff 72%,#edf3ff)}
+.jobs-personal-panel .community-po-jobs-hero h2{margin:0 0 5px;font-size:28px;line-height:1.12;font-weight:850;letter-spacing:-.03em}
+.jobs-personal-panel .community-po-jobs-hero p{font-size:12px;line-height:1.4;margin:0;color:#616b85}
+.jobs-personal-panel .community-po-hero-actions{margin-top:12px;max-width:none;grid-template-columns:1fr 1fr;gap:7px}
+.jobs-personal-panel .community-po-hero-actions .btn{min-height:37px;padding:7px 6px;font-size:11px;line-height:1.2}
+.jobs-personal-start{margin:16px 0 9px}
+.jobs-personal-start h2{margin:0 0 3px;font-size:18px;line-height:1.2;color:#25304b}
+.jobs-personal-start p{margin:0;color:#8490a6;font-size:11px;line-height:1.3}
+.jobs-personal-paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.jobs-personal-path{display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:auto auto auto;align-items:start;column-gap:9px;padding:12px 13px;border:1px solid #dfe3ef;border-radius:12px;background:#fff;min-width:0}
+.jobs-personal-symbol{grid-column:1;grid-row:1/3;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#f1ebff;color:#6b4ce6;font-size:16px}
+[data-jobs-path="shift"]>.jobs-personal-symbol{background:#eaf4ff;color:#528bec}
+[data-jobs-path="service"]>.jobs-personal-symbol{background:#e7f6ee;color:#32906d}
+.jobs-personal-path h3{grid-column:2;grid-row:1;margin:1px 0 3px;color:#25304b;font-size:13px;line-height:1.25}
+.jobs-personal-path p{grid-column:2;grid-row:2;margin:0 0 7px;color:#8490a6;font-size:10.5px;line-height:1.35}
+.jobs-personal-path>.btn{grid-column:2;grid-row:3;justify-self:start;min-height:27px;padding:5px 8px;font-size:10px}
+.jobs-personal-panel [contenteditable="true"]{outline:1px dashed #a898ea;outline-offset:3px;cursor:text;white-space:pre-wrap;overflow-wrap:anywhere}
+.jobs-personal-panel [contenteditable="true"]:focus{outline:2px solid #7856e5}
+@media(max-width:840px){.jobs-personal-paths{grid-template-columns:1fr}}
+@media(max-width:700px){
+ body.embedded:has(#jobsView.jobs-personal-entry:not(.hide)) .content{padding-top:6px}
+ .jobs-personal-panel{padding:10px 11px 12px}
+ .jobs-personal-panel .community-po-jobs-hero{padding:15px 14px}
+ .jobs-personal-panel .community-po-jobs-hero h2{font-size:22px;line-height:1.1}
+ .jobs-personal-panel .community-po-jobs-hero p:not([contenteditable="true"]){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+ .jobs-personal-panel .community-po-jobs-hero p{font-size:11.5px;line-height:1.4}
+ .jobs-personal-panel .community-po-hero-actions .btn{font-size:10px}
+ .jobs-personal-start{margin:14px 0 7px}
+ .jobs-personal-start h2{font-size:15px}.jobs-personal-start p{font-size:10.5px}
+ .jobs-personal-paths{gap:7px}.jobs-personal-path{grid-template-columns:31px minmax(0,1fr);padding:10px 11px}
+ .jobs-personal-symbol{width:29px;height:29px}
+ .jobs-personal-path h3{font-size:12.5px}.jobs-personal-path p{font-size:10.5px;line-height:1.25;margin-bottom:5px}
+}
