@@ -25,7 +25,15 @@ dialog.lv-dialog{width:min(100% - 20px,560px);max-height:min(90dvh,820px);paddin
 .lv-actions{margin-top:5px}
 .lv-top .lv-actions{margin:0}
 .lv-chips{gap:6px}
-.lv-filter{width:min(100%,360px);margin:0 0 12px auto}
+.lv-directory-toolbar{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+.lv-surface .lv-directory-toolbar>.lv-top.live-hero{flex:none;margin:0!important}
+.lv-directory-toolbar .lv-btn{min-height:44px}
+.lv-filter{display:flex;align-items:center;min-width:0;width:min(100%,360px);margin:0 0 0 auto;border:1px solid #d8dfeb;border-radius:10px;background:#fff}
+.lv-filter-label{flex:none;padding-left:12px;color:#334155;font-size:14px}
+.lv-filter>select,.lv-filter>.ts-wrapper{flex:1;min-width:0;width:0}
+.lv-filter .ts-wrapper{margin:0}
+.lv-filter>select,.lv-filter .ts-control{border:0!important;padding-left:5px!important}
+.lv-filter:focus-within{outline:2px solid #8b7bea;outline-offset:1px}
 .lv-filter>select,.lv-filter .ts-control{width:100%;min-height:44px;padding:9px 44px 9px 12px;border:1px solid #d8dfeb;border-radius:10px;background-color:#fff;color:#334155;font:inherit;font-size:14px;cursor:pointer}
 .lv-filter>select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2365728a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-size:16px;background-position:right 16px center}
 .lv-filter .ts-control{align-items:center;flex-wrap:nowrap}

@@ -289,8 +289,8 @@
         '<div><strong>'+esc(roomName(room))+'</strong><small>'+esc(roomHost(room))+' · '+esc(room.status==='scheduled'?dateLabel(room.scheduledAt)+' · '+timeLabel(room.scheduledAt):room.city||'')+(room.sample?' · '+t('Mẫu','Sample'):'')+'</small></div></div></button></article>';
     };
     const group=(name,rows)=>rows.length?'<h2 class="lv-subhead">'+esc(name)+'</h2><div class="lv-directory-grid">'+rows.map(cardMarkup).join('')+'</div>':'';
-    return originalLiveHero()+'<section class="lv-surface"><header class="lv-top live-hero"><div class="lv-actions">'+action('panel',label('notify'),{value:'notify',icon:icon('Bell')})+'</div></header>'+
-      '<div class="lv-filter"><select data-live-category aria-label="'+esc(t('Bộ lọc','Filters'))+'">'+categories.map(([id,vi,en])=>'<option value="'+id+'"'+(category===id?' selected':'')+'>'+esc(t(vi,en))+'</option>').join('')+'</select></div>'+
+    return originalLiveHero()+'<section class="lv-surface"><div class="lv-directory-toolbar"><header class="lv-top live-hero"><div class="lv-actions">'+action('panel',label('notify'),{value:'notify',icon:icon('Bell')})+'</div></header>'+
+      '<label class="lv-filter"><span class="lv-filter-label">'+esc(t('Lọc:','Filter:'))+'</span><select data-live-category aria-label="'+esc(t('Bộ lọc','Filters'))+'">'+categories.map(([id,vi,en])=>'<option value="'+id+'"'+(category===id?' selected':'')+'>'+esc(t(vi,en))+'</option>').join('')+'</select></label></div>'+
       (live.length?'<div class="lv-directory-grid">'+live.map(cardMarkup).join('')+'</div>':card(empty()))+
       group(t('Đã lên lịch','Scheduled'),schedule)+group(t('Bản xem lại','Replays'),replays)+'</section>';
   }
