@@ -382,6 +382,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       const templates=view.querySelector('#jobTemplates');
       personalEntry?.render(view, tab, hero, navigation);
       navigation.innerHTML=`<div class="jobs-workflow-head"><div class="jobs-nav" role="tablist" aria-label="${esc(t('jobs.board.browse.title'))}">${tabs.map(([value,image])=>`<button type="button" role="tab" aria-selected="${tab===value}" class="jobs-tab${tab===value?' active':''}" data-jobs-tab="${value}">${icon(image)}<span>${esc(extras?.label(value)||t('jobs.board.nav.'+({profile:'techProfile'}[value]||value)))}</span></button>`).join('')}${role()==='owner'?`<button type="button" class="jobs-tab jobs-pos-link" data-jobs-action="open-pos">${icon('store')}<span>${esc(t('jobs.board.nav.openInPos'))}</span></button>`:''}</div><div class="jobs-compose-slot"></div></div><div id="jobsToolbar"></div>`;
+      if(role()==='owner')navigation.querySelector('.jobs-workflow-head').after(hero);
       const intro=view.querySelector('.feature-intro'),shifts=intro?.querySelector('[data-view="daywork"]');
       if(templates){if(shifts)shifts.before(templates);else navigation.querySelector('.jobs-compose-slot').append(templates);}
       const toolbar=navigation.querySelector('#jobsToolbar');

@@ -37,6 +37,12 @@ test('personal and staff see only seeking creation and cannot open employer rout
 
 test('salon creation opens recruitment in the salon and excludes seeking tools',t=>{
   const s=setup(t,{role:'owner'});
+  const hero=s.document.querySelector('.community-po-jobs-hero');
+  assert.equal(hero.previousElementSibling.className,'jobs-workflow-head');
+  assert.equal(hero.nextElementSibling.id,'jobsToolbar');
+  s.api.render();
+  assert.equal(s.document.querySelectorAll('.community-po-jobs-hero').length,1);
+  assert.equal(s.document.querySelector('.community-po-jobs-hero').previousElementSibling.className,'jobs-workflow-head');
   assert.equal(s.document.querySelector('[data-template="hiring"]').hidden,false);
   assert.equal(s.document.querySelector('[data-template="seeking"]').hidden,true);
   s.document.querySelector('[data-template="hiring"]').click();
