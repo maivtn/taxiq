@@ -83,8 +83,9 @@
       if (editing && root) capture();
       if (!root) {
         root = document.createElement('section'); root.className = 'jobs-personal-entry-content';
-        root.addEventListener('click', onClick); jobsNav.after(root);
+        root.addEventListener('click', onClick);
       }
+      navigation.querySelector('.jobs-workflow-head').after(root);
       paint();
     }
     return {render, destroy() { root?.remove(); jobsNav?.remove(); shiftsNav?.remove(); }};
