@@ -39,6 +39,7 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await groups.screenshot({path:path.join(output,`${width}-${account}-groups.png`)});
      await hub.locator('.community-nav-more:visible').first().click();const menu=hub.locator('#ecosystemMenu');await menu.waitFor();
      assert.equal(await menu.locator('[data-community-extra="people"]').count(),0);
+     assert.equal(await menu.locator('[data-community-extra="explore"]').count(),0);
      const tools=menu.locator('[data-community-menu-group=tools] .ecosystem-item');
      assert.equal(await tools.count(),7);
      const menuURL=page.url();

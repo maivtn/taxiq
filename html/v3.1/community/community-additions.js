@@ -202,7 +202,7 @@
     },true);
     document.addEventListener('click',event=>{const path=event.composedPath();if(!menu.hidden&&!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
     document.addEventListener('focusin',event=>{if(menu.hidden||compactMenu())return;const path=event.composedPath();if(!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
-    for(const [route,label] of Object.entries(LABELS)){if(['deals','page-tools','group-tools','food-market','people'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
+    for(const [route,label] of Object.entries(LABELS)){if(['deals','page-tools','group-tools','food-market','people','explore'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
       const button=document.createElement('button');button.type='button';button.dataset.communityExtra=route;
       const definition=window.lucide?.icons[ICONS[route]];
       if(definition)button.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true'}));
