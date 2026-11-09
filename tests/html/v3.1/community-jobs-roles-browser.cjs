@@ -29,7 +29,7 @@ fs.mkdirSync(output,{recursive:true});
         }
         async function personalControls(){
           assert.equal(await jobs.locator('#jobTemplates [data-template="hiring"]').isVisible(),false);
-          assert.equal(await jobs.locator('#jobTemplates [data-template="seeking"]').isVisible(),true);
+          assert.equal(await jobs.locator('[data-template="seeking"]:visible').count(),1);
           assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
           assert.equal(await jobs.locator('button[data-jobs-tab="workers"]').count(),0);
         }
@@ -55,7 +55,7 @@ fs.mkdirSync(output,{recursive:true});
         });
         const title='Role QA seeking '+width;
         await check('Personal publishes seeking and reloads',async()=>{
-          await jobs.locator('#jobTemplates [data-template="seeking"]').click();
+          await jobs.locator('[data-template="seeking"]:visible').click();
           const form=jobs.locator('#templateForm');await form.waitFor();
           await form.locator('[name="industry"]').selectOption('Nail & làm đẹp');
           await form.locator('[name="role"]').selectOption('Thợ nail');
