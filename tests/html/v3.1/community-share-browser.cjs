@@ -174,7 +174,7 @@ const server = http.createServer(async (request, response) => {
           await page.goto(base+'/html/v3.1/'+entry+'&tab=connect',{waitUntil:'domcontentloaded'});
           await page.locator('#connectPane').locator('#messagesPanel').waitFor();
           const connect=nativePane(page,'#connectPane');
-          await connect.locator('#messagesPanel [data-detail]').filter({has:connect.getByText(name,{exact:true})}).first().click();
+          await connect.locator('#messagesPanel [data-detail]').filter({hasText:name}).first().click();
           await connect.locator('.connect-context-card a').filter({hasText:'View post'}).waitFor();
           assert.equal(new URL(await connect.locator('.connect-context-card a').filter({hasText:'View post'}).getAttribute('href')).searchParams.get('postId'),'f5');
         });

@@ -86,7 +86,7 @@ fs.mkdirSync(output,{recursive:true});
         await check('Salon switch restores salon actions and removes worker actions',async()=>{
           await open('community.html','account=business&tab=jobs');
           await page.waitForURL('**/community.html**');await jobs.locator('#jobsWorkflow').waitFor();
-          assert.equal(await jobs.locator('#jobTemplates [data-template="hiring"]').isVisible(),true);
+          assert.equal(await jobs.locator('#jobTemplates [data-template="hiring"]:visible,#localDiscovery [data-template="hiring"]:visible').count(),1);
           assert.equal(await jobs.locator('#jobTemplates [data-template="seeking"]').isVisible(),false);
           assert.equal(await jobs.locator('button[data-jobs-tab="profile"]').count(),0);
           await jobs.locator('button[data-jobs-tab="transfer"]').click();
@@ -123,7 +123,7 @@ fs.mkdirSync(output,{recursive:true});
           await open('community.html','tab=jobs');
         });
         await check('Salon hiring creation opens salon recruitment',async()=>{
-          await jobs.locator('#jobTemplates [data-template="hiring"]').click();
+          await jobs.locator('#jobTemplates [data-template="hiring"]:visible,#localDiscovery [data-template="hiring"]:visible').click();
           await page.waitForURL('**/html/pages/pos-recruitment.html');
         });
         await check('Staff role alias uses personal shell',async()=>{

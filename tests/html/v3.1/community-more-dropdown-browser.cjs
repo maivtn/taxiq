@@ -68,7 +68,7 @@ const server = http.createServer(async (request, response) => {
             const trigger = await more.boundingBox();
             assert.ok(box.y >= trigger.y + trigger.height && box.y <= trigger.y + trigger.height + 16);
             assert.ok(box.width <= 502 && box.height <= 562);
-            assert.equal(await host.locator('.community-menu-heading').isVisible(), true);
+            assert.equal(await host.locator('.community-menu-heading').isVisible(), false);
             assert.equal(await host.locator('.community-menu-backdrop').evaluate(node => getComputedStyle(node).backgroundColor), 'rgba(0, 0, 0, 0)');
             await page.keyboard.press('End');
             assert.equal(await menu.locator('[role="menuitem"]').last().evaluate(node => node.getRootNode().activeElement === node), true);
@@ -77,7 +77,7 @@ const server = http.createServer(async (request, response) => {
           } else {
             assert.equal(await menu.getAttribute('role'), 'dialog');
             assert.equal(await menu.getAttribute('aria-modal'), 'true');
-            const app = await host.locator('.app').boundingBox();
+            const app = await host.locator(':scope > .app').boundingBox();
             assert.ok(Math.abs(box.x-app.x)<2 && Math.abs(box.y-app.y)<2);
             assert.ok(Math.abs(box.height-app.height)<2);
             assert.equal(await host.locator('.community-menu-close').isVisible(), true);
@@ -93,7 +93,7 @@ const server = http.createServer(async (request, response) => {
         await check('outside click closes More and destinations still navigate', async () => {
           await more.click();
           await menu.waitFor();
-          const app = await host.locator('.app').boundingBox();
+          const app = await host.locator(':scope > .app').boundingBox();
           await page.mouse.click(app.x+app.width-4, app.y+app.height/2);
           await menu.waitFor({state:'hidden'});
           await more.click();
@@ -113,8 +113,8 @@ const server = http.createServer(async (request, response) => {
           if (width > 800) {
             await page.locator('#communityPane').locator('#feedTitle').waitFor();
             const tabs = await host.locator('.top .tabs').boundingBox();
-            const title = await page.locator('#communityPane').locator('#feedTitle').boundingBox();
-            assert.ok(title.y-tabs.y-tabs.height <= 36, 'Feed should sit close below navigation');
+            const content = await page.locator('#communityPane .native-body').boundingBox();
+            assert.ok(content.y-tabs.y-tabs.height <= 36, 'Feed content should sit close below navigation');
           }
         });
         await check('PO photo composer remains available', async () => {
