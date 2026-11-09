@@ -144,3 +144,8 @@ body.embedded #marketView #listings .chips{display:none}
 
 body.embedded #marketView .market-search-row{gap:6px}
 body.embedded #marketSearchButton{flex:none;min-height:44px;padding:8px 10px;font-size:12px}
+
+/* Compact card actions retain both their icon and label. */
+body.embedded #marketView #listings .listing-actions{display:flex;flex-wrap:wrap;gap:5px}
+body.embedded #marketView #listings .listing-actions>.btn{display:inline-flex;align-items:center;justify-content:center;flex:0 1 auto;gap:4px;min-height:28px;padding:4px 6px;font-size:10px;line-height:18px;white-space:normal}
+body.embedded #marketView #listings .listing-actions>.btn .community-action-icon{flex:none;width:12px;height:12px}

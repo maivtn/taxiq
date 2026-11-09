@@ -60,12 +60,38 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await sale.click();await pane.locator('#listingForm').waitFor();await pane.locator('#closeModal').click();
      const cards=market.locator('#listings>.listing');assert.ok(await cards.count()>1);
      assert.equal(await cards.locator('.chips:visible').count(),0);
+     await page.waitForFunction(()=>[...document.querySelectorAll('#marketView #listings .listing-actions>.btn')].every(button=>button.querySelector('svg,img')));
+     const actions=await cards.locator('.listing-actions>.btn').evaluateAll(nodes=>nodes.map(node=>({height:node.getBoundingClientRect().height,label:node.textContent.trim(),icon:!!node.querySelector('svg,img')})));
+     assert.ok(actions.length>0&&actions.every(action=>action.height<=28&&action.label&&action.icon),JSON.stringify(actions));
      const first=cards.first(),id=await first.getAttribute('data-listing-id');await first.locator('.community-market-save').click();assert.equal(await first.locator('.community-market-save').getAttribute('aria-pressed'),'true');
      const a=await cards.nth(0).boundingBox(),b=await cards.nth(1).boundingBox();assert.ok(Math.abs(a.y-b.y)<2);assert.ok(b.x>=a.x+a.width);assert.ok(Math.abs(a.width-b.width)<2);
      const c=await cards.nth(2).boundingBox();assert.ok(c.y>=a.y+a.height);assert.ok(Math.abs(c.x-a.x)<2);
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
      await page.reload();const saved=market.locator(`[data-listing-id="${id}"] .community-market-save`);await saved.waitFor();assert.equal(await saved.getAttribute('aria-pressed'),'true');await saved.click();assert.equal(await saved.getAttribute('aria-pressed'),'false');
      await market.screenshot({path:path.join(output,`${width}-${account}-market.png`)});
+    });
+    await check('Jobs role tabs stay compact on one horizontal row',async()=>{
+     await open('jobs');const jobs=pane.locator('#jobsView'),nav=jobs.locator('.jobs-nav');await nav.waitFor();
+     const sizes=await nav.locator('.jobs-tab').evaluateAll(nodes=>nodes.map(node=>{const rect=node.getBoundingClientRect();return {y:rect.y,height:rect.height,width:rect.width,label:node.textContent.trim(),icon:!!node.querySelector('img,svg')};}));
+     assert.ok(sizes.length>=6&&sizes.every(tab=>tab.height<=30&&Math.abs(tab.y-sizes[0].y)<2&&tab.label&&tab.icon),JSON.stringify(sizes));
+     assert.ok(new Set(sizes.map(tab=>Math.round(tab.width))).size>1);
+     await nav.locator('[data-jobs-tab=myPosts]').click();await jobs.locator('[data-jobs-post-status]').first().waitFor();
+     await nav.locator('[data-jobs-tab=browse]').click();await jobs.locator('#jobPosts').waitFor();
+     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+     await nav.screenshot({path:path.join(output,`${width}-${account}-jobs-tabs.png`)});
+    });
+    await check('Business identity uses salon logo in composer live and profile',async()=>{
+     await open('feed');await hub.locator('#communityCreate').click();await hub.locator('#communityCreateMenu [data-create-kind=photos]').click();
+     const extra=hub.locator('.community-extra-pane'),editor=extra.locator('#editor[open]');await editor.locator('.social-identity').waitFor();
+     const avatar=editor.locator('.social-identity .compose-avatar');
+     assert.equal((await avatar.evaluate(node=>getComputedStyle(node).backgroundImage)).includes('nexora-bitcoin-nailbar.png'),account==='business');
+     await editor.screenshot({path:path.join(output,`${width}-${account}-composer-avatar.png`)});
+     await editor.locator('[data-action=close-dialog]').first().click();
+     await hub.locator('#communityCreate').click();await hub.locator('#communityCreateMenu [data-create-kind=photos]').click();await editor.locator('.social-add-more').click();await editor.locator('[data-action=social-more-live]').click();
+     await editor.locator('.social-live-avatar').waitFor();assert.equal((await editor.locator('.social-live-avatar').evaluate(node=>getComputedStyle(node).backgroundImage)).includes('nexora-bitcoin-nailbar.png'),account==='business');
+     await editor.locator('[data-action=close-dialog]').first().click();
+     await open('privacy');const profile=hub.locator('#connectPane #privacyPanel .person .avatar');await profile.waitFor();
+     assert.equal((await profile.evaluate(node=>getComputedStyle(node).backgroundImage)).includes('nexora-bitcoin-nailbar.png'),account==='business');
     });
     await check('Reels keeps five working shortcuts without social actions',async()=>{
      await open('reels');const extra=hub.locator('.community-extra-pane'),nav=extra.locator('.community-reels-shortcuts');await nav.waitFor();

@@ -24,3 +24,8 @@
 .story-tile:nth-child(6n+5) .story-avatar,.feed-post:nth-child(6n+4) .post-avatar{--sample-avatar-x:0%;--sample-avatar-y:100%}
 .story-tile:nth-child(6n+6) .story-avatar,.feed-post:nth-child(6n+5) .post-avatar{--sample-avatar-x:50%;--sample-avatar-y:100%}
 .story-tile:nth-child(6n+1) .story-avatar,.feed-post:nth-child(6n+6) .post-avatar{--sample-avatar-x:100%;--sample-avatar-y:100%}
+
+/* Logos supplied by the active identity take precedence over sample portraits. */
+:is(.compose-avatar,.social-live-avatar,.nexora-drawer-avatar,.post-avatar)[style*="url("]{font-size:0!important;color:transparent!important}
+.community-social-comment-avatar:has(img){background-image:none!important}
+.community-social-comment-avatar img{display:block;width:100%;height:100%;object-fit:contain;background:#fff}
