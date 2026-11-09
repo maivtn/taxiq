@@ -32,6 +32,7 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      if(width<=650){
       const rails=groups.locator('.community-group-rail');
       for(const rail of await rails.all()){
+       await rail.scrollIntoViewIfNeeded();
        const section=rail.locator('..'),count=await rail.locator('.community-group-card').count();
        assert.equal(await section.locator('.community-group-swipe').count(),count>1?1:0);
        if(count>1){assert.equal(await section.locator('.community-group-swipe').isVisible(),true);assert.match(await section.locator('.community-group-swipe').innerText(),/Swipe to explore/);assert.equal(await rail.evaluate(node=>node.scrollWidth>node.clientWidth),true);}
