@@ -176,7 +176,7 @@
   <link rel="stylesheet" href="community-feed-composer.css?v=20261106-community-v22-restoration-v59">
   <link rel="stylesheet" href="community-layout.css?v=20261109-compact-content-gap1">
 <link rel="stylesheet" href="community-group-workflow.css?v=20261109-group-filters1">
-<link rel="stylesheet" href="community-jobs-workflow.css?v=20261109-seeking-first1">
+<link rel="stylesheet" href="community-jobs-workflow.css?v=20261109-seeking-first2">
 <link rel="stylesheet" href="community-shifts-workflow.css?v=20261106-community-v22-restoration-v59">
 <style>
 #dealSearchTools{display:none}
@@ -315,7 +315,7 @@
 <script src="community-group-workflow.js?v=20261109-group-filters1"></script>
 <script src="community-po-job-catalog.js?v=20261107-feature-shortcuts1"></script>
 <script src="community-jobs-expansion.js?v=20261109-demo-role3"></script>
-<script src="community-jobs-workflow.js?v=20261109-seeking-first1"></script>
+<script src="community-jobs-workflow.js?v=20261109-seeking-first2"></script>
 <script src="community-shifts-workflow.js?v=20261109-reliability1"></script>
 <script src="community-feed-social.js?v=20261109-feed-share1"></script>
 <script src="community-feed-composer.js?v=20261109-coverage1"></script>
@@ -477,11 +477,19 @@
     let location=bar.querySelector('.community-context-location');
     if(!location){location=document.createElement('div');location.className='community-context-location';location.append($('#viewerLocationLabel'),$('#changeViewerLocation'));bar.prepend(location);}
     bar.querySelector('.community-context-action')?.remove();
+    bar.querySelector('.community-seeking-context-action')?.remove();
+    bar.classList.toggle('has-seeking-action',next==='jobs'&&ROLE==='staff');
     if(next==='deals'&&dealsWorkflow){bar.classList.remove('has-context-action');return;}
     const action=next==='jobs'?{label:'Ca làm thêm',attribute:'data-view',value:'daywork'}:next==='deals'?{label:'Đăng ưu đãi',attribute:'data-template',value:'deal'}:next==='pages'?{label:'Tạo Fanpage',attribute:'data-template',value:'page'}:next==='blog'?{label:'Viết Blog',attribute:'data-blog-create',value:''}:next==='daywork'?{label:'Việc làm',attribute:'data-view',value:'jobs'}:next==='market'?{label:'Tạo bài đăng',attribute:'data-market-create',value:''}:null;
     bar.classList.toggle('has-context-action',Boolean(action));
     if(!action)return;
     const button=document.createElement('button');button.type='button';button.className='btn '+(['deals','pages','blog'].includes(next)?'primary':'soft')+' community-context-action';button.textContent=action.label;button.setAttribute(action.attribute,action.value);
+    if(next==='jobs'&&ROLE==='staff'){
+      const seeking=document.createElement('button');seeking.type='button';seeking.className='btn primary community-seeking-context-action';seeking.dataset.template='seeking';
+      const source=document.querySelector('#jobTemplates [data-template="seeking"]');
+      const icon=source?.querySelector('.template-icon')?.cloneNode(true);if(icon)seeking.append(icon);
+      seeking.append(document.createTextNode(source?.querySelector('strong')?.textContent||'Seeking work'));bar.append(seeking);
+    }
     if(next==='market'){
       const menu=document.createElement('details');menu.className='community-context-action community-market-create';
       const summary=document.createElement('summary');summary.className='btn primary';summary.textContent=action.label;

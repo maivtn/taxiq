@@ -375,12 +375,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if(!tabs.some(([value])=>value===tab))tab='browse';
       const templates=view.querySelector('#jobTemplates');
       navigation.innerHTML=`<div class="jobs-workflow-head"><div class="jobs-nav" role="tablist" aria-label="${esc(t('jobs.board.browse.title'))}">${tabs.map(([value,image])=>`<button type="button" role="tab" aria-selected="${tab===value}" class="jobs-tab${tab===value?' active':''}" data-jobs-tab="${value}">${icon(image)}<span>${esc(extras?.label(value)||t('jobs.board.nav.'+({profile:'techProfile'}[value]||value)))}</span></button>`).join('')}${role()==='owner'?`<button type="button" class="jobs-tab jobs-pos-link" data-jobs-action="open-pos">${icon('store')}<span>${esc(t('jobs.board.nav.openInPos'))}</span></button>`:''}</div><div class="jobs-compose-slot"></div></div><div id="jobsToolbar"></div>`;
-      const intro=view.querySelector('.feature-intro');
-      intro?.classList.toggle('jobs-staff-actions',role()==='staff');
-      if(templates){
-        if(role()==='staff'&&intro?.querySelector('[data-view="daywork"]'))intro.querySelector('[data-view="daywork"]').before(templates);
-        else navigation.querySelector('.jobs-compose-slot').append(templates);
-      }
+      if(templates)navigation.querySelector('.jobs-compose-slot').append(templates);
       const toolbar=navigation.querySelector('#jobsToolbar');
       const listTitle=document.getElementById('jobListTitle'),count=document.getElementById('jobCount');
       if(listTitle)listTitle.textContent=t(tab==='myPosts'?'jobs.board.myPosts.title':tab==='applied'?'jobs.board.applied.title':tab==='profile'?'jobs.profile.title':'jobs.board.browse.title');
