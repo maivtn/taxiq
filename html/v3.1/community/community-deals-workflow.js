@@ -13,8 +13,8 @@
     manage: {module:'nearby',view:'manage',label:'Live coupons',icon:'ticket',business:true},
     redeem: {module:'nearby',view:'redeem',label:'Redeem counter',icon:'scan',business:true},
     campaign: {module:'campaigns',label:'Campaigns',icon:'chart',business:true},
-    openingBusiness: {module:'grand-opening',label:'Grand opening · 30 days',icon:'store',business:true},
-    demand: {module:'deal-match',view:'biz',label:'Deal Match · client demand',icon:'sparkles',business:true}
+    openingBusiness: {module:'grand-opening',label:'Grand opening',icon:'store',business:true},
+    demand: {module:'deal-match',view:'biz',label:'Deal Match',icon:'sparkles',business:true}
   };
   const ALIASES = {deals:'nearby',dcats:'industry',dmatch:'match',dopen:'opening',dwallet:'wallet',dwish:'saved',dcreate:'create',dmanage:'manage',dredeem:'redeem',dcamp:'campaign'};
   const ART = {map:'issue-2040-oneqr-map-3d.png',percent:'issue-2040-oneqr-percent-3d.png',store:'issue-2040-oneqr-store-3d.png',clock:'issue-2040-oneqr-clock-3d.png',wallet:'vlinkpay-wallet-show-wallet.png',sparkles:'issue-2040-oneqr-sparkles-3d.png',heart:'issue-2040-oneqr-heart-3d.png',plus:'issue-2040-oneqr-ticket-3d.png',ticket:'issue-2040-oneqr-ticket-3d.png',scan:'issue-2040-oneqr-scan-line-3d.png',chart:'issue-2040-oneqr-layout-dashboard-3d.png',tools:'issue-2040-oneqr-settings-3d.png'};
@@ -27,10 +27,10 @@
     feed.before(anchor);
     const root = document.createElement('section');
     root.id='communityDealsView';root.hidden=true;root.setAttribute('translate','no');root.setAttribute('data-community-authored','');
-    const tabs=['nearby','industry','match','opening','wallet'];
-    const businessTabs=adapter.role==='owner'?['create','manage','redeem','campaign','openingBusiness','demand']:[];
+    const tabs=['nearby','match','opening','wallet'];
+    const businessTabs=adapter.role==='owner'?['campaign','redeem']:[];
     const tabButton = (key,main=false) => `<button type="button" class="community-deals-tab" data-deal-route="${key}" ${main?'role="tab" aria-selected="false" aria-controls="communityDealsStage"':'aria-pressed="false"'}>${icon(ROUTES[key].icon)}<span>${ROUTES[key].label}</span></button>`;
-    root.innerHTML=`<div class="community-deals-nav"><nav class="community-deals-nav-tabs" role="tablist" aria-label="Deals &amp; Coupons">${tabs.map(key=>tabButton(key,true)).join('')}</nav>${businessTabs.length?`<nav class="community-deals-business" aria-label="Business tools">${businessTabs.map(key=>tabButton(key)).join('')}</nav>`:''}<button type="button" class="btn primary community-deals-post" data-template="deal">＋ Post an offer</button></div><div class="community-deals-stage" id="communityDealsStage" role="tabpanel"><div class="community-deals-frames"></div></div>`;
+    root.innerHTML=`<div class="community-deals-nav"><nav class="community-deals-nav-tabs" role="tablist" aria-label="Deals &amp; Coupons">${tabs.map(key=>tabButton(key,true)).join('')}</nav><div class="community-deals-actions">${businessTabs.length?`<details class="community-deals-business"><summary class="community-deals-tab">${icon('tools')}<span>Business tools</span><svg class="community-deals-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><nav class="community-deals-business-menu" aria-label="Business tools">${businessTabs.map(key=>tabButton(key)).join('')}</nav></details><button type="button" class="btn primary community-deals-post" data-deal-route="create" aria-pressed="false">${icon('plus')}<span>${ROUTES.create.label}</span></button>`:'<button type="button" class="btn primary community-deals-post" data-template="deal">＋ Post an offer</button>'}</div></div><div class="community-deals-stage" id="communityDealsStage" role="tabpanel"><div class="community-deals-context-actions" hidden></div><div class="community-deals-frames"></div></div>`;
     anchor.before(root);
     const frames=new Map(), frameHost=root.querySelector('.community-deals-frames');
     const initial=new URLSearchParams(location.search).get('dealTab');
@@ -38,6 +38,16 @@
     if(ROUTES[selected].business&&adapter.role!=='owner')selected='nearby';
     const messageOrigin=location.protocol==='file:'?'*':location.origin;
     const send=(record,data)=>{if(record.ready)record.frame.contentWindow.postMessage(data,messageOrigin);};
+    const mainRoute=name=>({industry:'nearby',demand:'match',openingBusiness:'opening',manage:'campaign'}[name]||name);
+    function updateNavigation(){
+      root.querySelectorAll('[data-deal-route]').forEach(button=>{const main=button.getAttribute('role')==='tab',chosen=button.dataset.dealRoute===(main?mainRoute(selected):selected);button.setAttribute(main?'aria-selected':'aria-pressed',String(chosen));});
+      const business=root.querySelector('.community-deals-business');
+      if(business){business.dataset.active=String(['campaign','redeem'].includes(mainRoute(selected)));business.querySelector('[data-deal-route="campaign"]').setAttribute('aria-pressed',String(mainRoute(selected)==='campaign'));}
+      const context=root.querySelector('.community-deals-context-actions');
+      const destination=selected==='nearby'?'industry':selected==='industry'?'nearby':adapter.role==='owner'&&selected==='opening'?'openingBusiness':selected==='openingBusiness'?'opening':null;
+      context.hidden=!destination;
+      if(destination){const label=destination==='openingBusiness'?'Create opening campaign':destination==='opening'?'Opening soon near you':ROUTES[destination].label;context.innerHTML=`<button type="button" class="community-deals-tab" data-deal-route="${destination}">${icon(ROUTES[destination].icon)}<span>${label}</span></button>`;}
+    }
     let controlsQueued=false;
     const controlsObserver=new MutationObserver(()=>{
       if(controlsQueued)return;controlsQueued=true;
@@ -71,14 +81,14 @@
       if(frames.has(name))return frames.get(name);
       const frame=document.createElement('iframe');frame.className='community-deals-frame';frame.title=ROUTES[selected].label;frame.hidden=true;
       const record={frame,ready:false};frames.set(name,record);
-      const url=new URL('deals/'+name+'.html?v=20261105-deals-controls-v5',BASE);url.searchParams.set('member',adapter.member);url.searchParams.set('role',adapter.role);
+      const url=new URL('deals/'+name+'.html?v=20261109-deals-navigation1',BASE);url.searchParams.set('member',adapter.member);url.searchParams.set('role',adapter.role);url.searchParams.set('communityNav','merged');
       frame.src=url.href;frameHost.append(frame);
       frame.addEventListener('load',()=>{record.ready=true;if(active&&ROUTES[selected].module===name)configure(record);});
       return record;
     }
     function render(){
       if(!active)return;
-      root.querySelectorAll('[data-deal-route]').forEach(button=>{const chosen=button.dataset.dealRoute===selected;button.setAttribute(button.getAttribute('role')==='tab'?'aria-selected':'aria-pressed',String(chosen));});
+      updateNavigation();
       for(const record of frames.values()){record.frame.hidden=true;send(record,{cmd:'stopTour'});}
       feed.classList.add('hide');const record=ensureFrame(ROUTES[selected].module);record.frame.hidden=false;record.frame.title=ROUTES[selected].label;if(record.ready)configure(record);
       adapter.onModal?.(false);
@@ -86,6 +96,7 @@
     function navigate(route,notify=true){
       const next=ALIASES[route]||route;if(!ROUTES[next]||ROUTES[next].business&&adapter.role!=='owner')return;
       selected=next;
+      const business=root.querySelector('.community-deals-business');if(business)business.open=false;
       if(!active)adapter.navigate();
       render();
       if(notify)adapter.onState?.({dealTab:next});
@@ -97,7 +108,9 @@
     }
     function closeDetail(){for(const record of frames.values())if(!record.frame.hidden)send(record,{type:'nexora-deals-close-modal'});}
     root.addEventListener('click',event=>{const button=event.target.closest('[data-deal-route]');if(button)navigate(button.dataset.dealRoute);});
+    document.addEventListener('click',event=>{if(!event.target.closest('.community-deals-business')){const business=root.querySelector('.community-deals-business');if(business)business.open=false;}});
     root.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){const business=root.querySelector('.community-deals-business');if(business?.open){business.open=false;business.querySelector('summary').focus();event.preventDefault();return;}}
       const button=event.target.closest('[role="tab"]');if(!button||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
       event.preventDefault();const list=[...root.querySelectorAll('[role="tab"]')],index=list.indexOf(button);
       const next=event.key==='Home'?0:event.key==='End'?list.length-1:(index+(event.key==='ArrowRight'?1:-1)+list.length)%list.length;
@@ -113,7 +126,7 @@
       if(data.type==='nexora-deals-height'&&Number.isFinite(data.height))record.frame.style.height=Math.max(650,Math.min(30000,data.height+12))+'px';
       if(data.type==='nexora-deals-page')adapter.openPage?.(data.pageId);
       if(data.type==='nexora-deals-modal'&&active&&!record.frame.hidden){viewport();adapter.onModal?.(Boolean(data.open));}
-      if(data.type==='nexora-deals-route'&&active&&!record.frame.hidden){const found=Object.keys(ROUTES).find(key=>ROUTES[key].module===name&&ROUTES[key].view===data.view);if(found&&found!==selected){selected=found;root.querySelectorAll('[role="tab"]').forEach(button=>button.setAttribute('aria-selected',String(button.dataset.dealRoute===selected)));adapter.onState?.({dealTab:found});}}
+      if(data.type==='nexora-deals-route'&&active&&!record.frame.hidden){const found=Object.keys(ROUTES).find(key=>ROUTES[key].module===name&&ROUTES[key].view===data.view);if(found&&found!==selected){selected=found;updateNavigation();adapter.onState?.({dealTab:found});}}
       if(data.cmd==='needTerms')send(record,{cmd:'consentSync'});
       if(data.cmd==='go')navigate(data.r);
       if(data.type==='nexora-deals-claim-match'){
