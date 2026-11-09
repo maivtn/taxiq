@@ -22,7 +22,7 @@
     const posts=document.getElementById('feedPosts');
     if(posts){
       const cards=[...posts.children].filter(node=>node.matches('article.content-card'));
-      const anchor=cards[1]||cards[0];
+      const anchor=cards[0];
       if(anchor){if(people.previousElementSibling!==anchor)anchor.after(people);}
       else if(people.parentElement!==posts)posts.append(people);
     }else if(people.previousElementSibling!==stories)stories.after(people);

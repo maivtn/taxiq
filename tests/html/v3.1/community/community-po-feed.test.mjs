@@ -25,9 +25,9 @@ function fixture(t,count=6){
   return {window,document:window.document,previews:()=>previews};
 }
 const order=document=>[...document.getElementById('feedPosts').children].map(node=>node.dataset.feedPostId||node.id);
-const expected=count=>['post-0','post-1'].slice(0,count).concat('communityPOPeople','communityPOReels',Array.from({length:Math.max(0,count-2)},(_,index)=>'post-'+(index+2)));
+const expected=count=>['post-0'].slice(0,count).concat('communityPOPeople','communityPOReels',Array.from({length:Math.max(0,count-1)},(_,index)=>'post-'+(index+1)));
 
-test('The retained Feed places People and Reels after two posts without replacing post nodes',async t=>{
+test('The retained Feed places People and Reels after one post without replacing post nodes',async t=>{
   const {document,previews}=fixture(t);
   const original=[...document.querySelectorAll('article')];
   await waitFor(()=>document.querySelector('#communityPOReels button'));
