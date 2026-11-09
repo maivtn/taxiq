@@ -55,6 +55,9 @@ for(const name of ['community.html','staff-community.html']){
     style.textContent='@scope (:root) to ([data-community-region] > *) {\n'+outerCSS(css)+'\n}';link.replaceWith(style);
   }
   for(const style of doc.head.querySelectorAll('style[data-outer-style]'))style.textContent=outerCSS(style.textContent);
+  if(doc.querySelector('script[src*="community-language.js"]'))for(const script of doc.querySelectorAll('script[src*="community-direct-code.js"],script[src*="community-integration.js"],script[src*="nexora-shell.js"]')){
+    const value=script.getAttribute('src');if(!value.endsWith('-language1'))script.setAttribute('src',value+'-language1');
+  }
   // This shared layout reaches the shell and its nested native sections.
   doc.head.querySelectorAll('[data-community-shared-style]').forEach(node=>node.remove());
   const desktop=doc.createElement('link');desktop.rel='stylesheet';desktop.href='community/community-desktop.css?v=20261109-desktop-parity1';desktop.dataset.communitySharedStyle='';doc.head.append(desktop);

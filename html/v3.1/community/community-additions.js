@@ -97,7 +97,7 @@
     styles.textContent+=' .app.community-extra-open .top{position:relative;flex:0 0 auto;z-index:10}.app.community-extra-open .workspace{flex:1 1 0%;min-height:0;overflow:hidden}.app.community-extra-open .community-back{display:none!important}.community-extra-pane.community-document-pane{overflow:hidden}.community-document-pane>section{height:100%;min-height:0;overflow:hidden}.community-document-pane iframe{display:block;width:100%;height:100%;border:0}';
     // Keep Feed visible while the PO dialog renders in the browser's top layer.
     styles.textContent+=' .community-extra-pane.community-composer-overlay{position:absolute;inset:0 0 auto;height:0;min-height:0;overflow:hidden}.community-composer-overlay>section{height:0;min-height:0}';
-    new MutationObserver(()=>{if(current&&heading.textContent!==LABELS[current])heading.textContent=LABELS[current];}).observe(heading,{childList:true});
+    new MutationObserver(()=>{const label=window.NEXORA_COMMUNITY_LANGUAGE?.translate(LABELS[current])||LABELS[current];if(current&&heading.textContent!==label)heading.textContent=label;}).observe(heading,{childList:true,characterData:true,subtree:true});
     const app=root.querySelector('.app'),ecosystemButton=root.getElementById('ecosystemButton'),navMore=[];
     const backdrop=document.createElement('div');backdrop.className='community-menu-backdrop';backdrop.hidden=true;backdrop.setAttribute('aria-hidden','true');
     const drawerHeading=document.createElement('div');drawerHeading.className='community-menu-heading';drawerHeading.append(menu.querySelector('h2'));
@@ -483,7 +483,7 @@
       try{
         if(['wallet','account','assistant','notifications'].includes(route)){
           const panel=document.createElement('section');panel.className='community-extra-platform';pane.append(panel);
-          window.NEXORA_COMMUNITY_PLATFORM.mount(panel,{route,language:'en',context:routeContext,navigate});
+          window.NEXORA_COMMUNITY_PLATFORM.mount(panel,{route,language:window.NEXORA_COMMUNITY_LANGUAGE?.base()||'en',context:routeContext,navigate});
         }else{
           const key=TOOLS.has(route)?'tools':route;
           const api=await ensure(key,'modules/'+(key==='tools'?'hub-tools':key)+'/index.html');

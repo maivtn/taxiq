@@ -632,6 +632,7 @@
       }
     }
     function setOpen(open, restoreFocus) {
+      if (open) window.dispatchEvent(new CustomEvent('nexora-header-menu', {detail:{menu:'ecosystem'}}));
       panel.hidden = !open;
       backdrop.hidden = !open;
       toggle.setAttribute('aria-expanded', String(open));
@@ -670,6 +671,57 @@
     });
     window.addEventListener('resize', syncScroll);
     window.addEventListener('nexora-community-search', function() { setOpen(false); });
+    window.addEventListener('nexora-header-menu', function(event) { if (event.detail.menu !== 'ecosystem') setOpen(false); });
+  }
+
+  var headerLanguages = [['vi','VI','Tiếng Việt'],['en','EN','English'],['es-MX','ES','Español (México)'],['zh-Hans','中','简体中文'],['fr','FR','Français'],['ar','AR','العربية'],['pt','PT','Português']];
+  function headerLanguage() {
+    return '<div class="shell-language" data-nexora-language-ui><button class="shell-header-language" type="button" aria-label="Switch language" aria-haspopup="listbox" aria-expanded="false" aria-controls="shell-language-menu"><i data-lucide="globe" aria-hidden="true"></i><span data-shell-language-code>EN</span></button>' +
+      '<div class="shell-language-menu" id="shell-language-menu" role="listbox" aria-label="Language" hidden>' + headerLanguages.map(function(row) {
+        return '<button class="shell-language-option" type="button" role="option" tabindex="-1" aria-selected="' + (row[0] === 'en') + '" data-shell-language="' + row[0] + '"><span class="shell-language-name" lang="' + row[0] + '" dir="auto">' + row[2] + '</span><svg class="shell-language-check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+      }).join('') + '</div></div>';
+  }
+  function initHeaderLanguage(header) {
+    var root = header && header.querySelector('.shell-language');
+    if (!root) return;
+    if (!document.querySelector('link[data-shell-language-style]')) {
+      var style = document.createElement('link');style.rel = 'stylesheet';
+      style.href = new URL('nexora-header-language.css?v=20261109-language1', shellAssetBase).href;
+      style.setAttribute('data-shell-language-style', '');document.head.appendChild(style);
+    }
+    var toggle = root.querySelector('.shell-header-language'), menu = root.querySelector('.shell-language-menu');
+    var items = Array.from(menu.querySelectorAll('[data-shell-language]'));
+    var locale = cfg.isCommunity && window.NEXORA_COMMUNITY_LANGUAGE ? window.NEXORA_COMMUNITY_LANGUAGE.get() : 'en';
+    function sync(next) {
+      var row = headerLanguages.find(function(item) { return item[0] === next; });if (!row) return;
+      locale = next;root.querySelector('[data-shell-language-code]').textContent = row[1];
+      items.forEach(function(item) { item.setAttribute('aria-selected', String(item.dataset.shellLanguage === next)); });
+    }
+    function open(value, focus) {
+      if (value) window.dispatchEvent(new CustomEvent('nexora-header-menu', {detail:{menu:'language'}}));
+      menu.hidden = !value;toggle.setAttribute('aria-expanded', String(value));header.classList.toggle('shell-language-open', value);
+      if (focus) toggle.focus();
+    }
+    function choose(next) {
+      if (cfg.isCommunity && window.NEXORA_COMMUNITY_LANGUAGE) window.NEXORA_COMMUNITY_LANGUAGE.set(next);
+      sync(next);open(false, true);
+    }
+    toggle.addEventListener('click', function() { open(menu.hidden); });
+    items.forEach(function(item) { item.addEventListener('click', function() { choose(item.dataset.shellLanguage); }); });
+    root.addEventListener('keydown', function(event) {
+      var index = items.indexOf(document.activeElement), next;
+      if (event.key === 'ArrowDown') next = index < 0 ? items.findIndex(function(item) { return item.dataset.shellLanguage === locale; }) : (index + 1) % items.length;
+      if (event.key === 'ArrowUp') next = index < 0 ? items.length - 1 : (index + items.length - 1) % items.length;
+      if (event.key === 'Home') next = 0;if (event.key === 'End') next = items.length - 1;
+      if (next === undefined) return;event.preventDefault();open(true);items[next].focus();
+    });
+    document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && !menu.hidden) { event.preventDefault();open(false, true); } });
+    document.addEventListener('click', function(event) { if (!root.contains(event.target)) open(false); });
+    root.addEventListener('focusout', function(event) { if (!root.contains(event.relatedTarget)) open(false); });
+    window.addEventListener('nexora-header-menu', function(event) { if (event.detail.menu !== 'language') open(false); });
+    window.addEventListener('nexora-community-search', function() { open(false); });
+    window.addEventListener('nexora-community-locale', function(event) { sync(event.detail.language); });
+    sync(locale);
   }
 
   function merchantHeader() {
@@ -678,7 +730,7 @@
     var messages = personalOnly ? 'staff-community.html?account=personal&amp;role=tech&amp;tab=connect' : 'community.html?tab=connect';
     return '<div class="mobile-brand"><button class="icon-button" type="button" data-shell-drawer-open aria-label="Open navigation menu" aria-controls="nexora-sidebar" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' + '</button><a href="' + home + '"><img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Touch"></a></div>' +
       '<form class="shell-workspace-search" action="dashboard.html"><label class="search"><i data-lucide="search" aria-hidden="true"></i><input name="q" type="search" aria-label="' + (pos ? 'Search SI POS tools' : 'Search products') + '" placeholder="' + (pos ? 'Search SI POS tools...' : 'Search products or features…') + '" autocomplete="off"' + (pos ? ' data-shell-function-search' : '') + '></label><div class="shell-function-results" hidden></div></form>' +
-      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '<a class="shell-header-notification" href="news-library.html?tab=news" aria-label="Nexora news"><i data-lucide="bell" aria-hidden="true"></i><span class="shell-header-badge" aria-hidden="true">30</span></a><a class="shell-header-messages" href="' + messages + '" aria-label="Community messages"><i data-lucide="messages-square" aria-hidden="true"></i></a><button class="shell-header-language" type="button" aria-label="Switch language"><i data-lucide="globe" aria-hidden="true"></i><span>EN</span></button>' + headerEcosystem() + '</div>';
+      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '<a class="shell-header-notification" href="news-library.html?tab=news" aria-label="Nexora news"><i data-lucide="bell" aria-hidden="true"></i><span class="shell-header-badge" aria-hidden="true">30</span></a><a class="shell-header-messages" href="' + messages + '" aria-label="Community messages"><i data-lucide="messages-square" aria-hidden="true"></i></a>' + headerLanguage() + headerEcosystem() + '</div>';
   }
 
   function navigate(tab) {
@@ -1099,6 +1151,7 @@
     if (header) header.innerHTML = personalOnly || (treeNav && activePage !== 'staff') ? merchantHeader() : HEADER_HTML;
     initHeaderSearch(header);
     initHeaderEcosystem(header);
+    initHeaderLanguage(header);
     saveExpandedGroups();
 
     // drawer backdrop (once)

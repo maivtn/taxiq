@@ -71,7 +71,7 @@
     function configure(record){
       const route=ROUTES[selected];
       const role=route.business?'owner':adapter.role==='owner'?'owner':'tech';
-      send(record,{type:'nexora-deals-context',member:adapter.member,role,language:'en'});
+      send(record,{type:'nexora-deals-context',member:adapter.member,role,language:localStorage.getItem('nexora-community-language')==='vi'?'vi':'en'});
       send(record,{cmd:'role',role});send(record,{cmd:'consentSync'});
       if(route.view)send(record,{cmd:'view',v:route.view});
       sync(true);send(record,{type:'nexora-deals-page-scope',pageId:pageScope});

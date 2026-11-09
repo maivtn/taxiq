@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community/community-hub.js?v=20261109-desktop-parity1',document.currentScript.src);
+  var componentURL=new URL('community/community-hub.js?v=20261109-desktop-parity1-language1',document.currentScript.src);
   var hub=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false,closedJobsTab=null;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -79,20 +79,21 @@
     window.NEXORA_SHELL.isCommunity = true;
     window.NEXORA_SHELL.onNavigate = window.navigateCommunityHub;
   }
-  function communityLanguage(){return 'en';}
-  localStorage.setItem('nexora-community-language','en');
+  function communityLanguage(){return window.NEXORA_COMMUNITY_LANGUAGE?.get()||localStorage.getItem('nexora-community-language')||'en';}
   function syncLanguageControl(){
     var select=document.querySelector('.sidebar-account-language select');
     if(!select)return;
-    select.querySelector('option[value="vi"]')?.remove();
+    if(!select.dataset.communityLocales){
+      select.replaceChildren(...(window.NEXORA_COMMUNITY_LOCALES?.languages||[['en','EN','English']]).map(function(row){var option=document.createElement('option');option.value=row[0];option.textContent=row[2];return option;}));
+      select.dataset.communityLocales='true';select.setAttribute('data-nexora-language-ui','');
+    }
     select.value=communityLanguage();
   }
   document.addEventListener('change',function(event){
     if(!event.target.matches('.sidebar-account-language select'))return;
-    var language='en';event.target.value='en';
-    localStorage.setItem('nexora-community-language',language);
-    if(ready)send('nexora-community-language',{language:language});
+    window.NEXORA_COMMUNITY_LANGUAGE?.set(event.target.value);
   });
+  window.addEventListener('nexora-community-locale',function(event){syncLanguageControl();if(ready)send('nexora-community-language',{language:event.detail.base});});
   var sidebarElement=document.querySelector('.sidebar');
   if(sidebarElement)new MutationObserver(syncLanguageControl).observe(sidebarElement,{childList:true,subtree:true});
   syncLanguageControl();

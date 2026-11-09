@@ -163,7 +163,7 @@
       button.innerHTML=`<span class="deal-compact-photo ${image?'':'is-illustration'}"><img src="${html(image||window.NEXORA_DEAL_SELECTS.iconFor(row.cat,category.n))}" alt="" loading="lazy"></span><span class="deal-compact-copy"><b class="deal-compact-badge">${html(badge)}</b><strong>${html(opening?row.biz:row.title)}</strong><small>${html(opening?row.founder:row.biz)}</small><span>${opening?row.mi+' mi':left(row)+' spots left'}</span></span>`;
     }
     const result=document.getElementById('catList');
-    if(result){let heading=document.getElementById('industryResultHeading');if(!heading){heading=document.createElement('div');heading.id='industryResultHeading';heading.className='deal-results-heading';result.before(heading);}const count=result.querySelectorAll('[data-card]').length;const text=count+' coupons'; if(heading.textContent!==text)heading.textContent=text;}
+    if(result){let heading=document.getElementById('industryResultHeading');if(!heading){heading=document.createElement('div');heading.id='industryResultHeading';heading.className='deal-results-heading';result.before(heading);}const count=result.querySelectorAll('[data-card]').length;const text=window.NEXORA_COMMUNITY_LANGUAGE?.translate(count+' coupons')||count+' coupons'; if(heading.textContent!==text)heading.textContent=text;}
   }
   function schedule(){
     if(renderQueued)return;renderQueued=true;
@@ -181,7 +181,7 @@
     const data=event.data||{};
     if(data.type==='nexora-deals-page-scope'&&module==='deals'){walletPage=data.pageId||'';if(typeof view==='string'&&view==='wallet')drawWallet();}
     if(data.type==='nexora-deals-page-claim'&&module==='deals'){walletPage=data.pageId||'';const offer=state().D.find(row=>row.sourceId===data.sourceId);if(offer){claim(offer.id);save();}}
-    if(data.type==='nexora-deals-context'){document.documentElement.lang='en';document.body.classList.add('lang-en');schedule();}
+    if(data.type==='nexora-deals-context'){document.documentElement.lang=data.language==='vi'?'vi':'en';document.body.classList.toggle('lang-en',document.documentElement.lang==='en');schedule();}
     if(data.type==='nexora-deals-viewport'){if(Number.isFinite(data.top))document.documentElement.style.setProperty('--deal-modal-top',Math.max(16,data.top)+'px');if(Number.isFinite(data.height))document.documentElement.style.setProperty('--deal-modal-height',Math.max(240,data.height)+'px');}
     if(data.type==='nexora-deals-close-modal'){document.getElementById('modal')?.classList.add('hidden');lastFocus?.focus({preventScroll:true});schedule();}
     if(data.type==='nexora-deals-offers'&&Array.isArray(data.offers))importOffers(data.offers);
@@ -211,7 +211,7 @@
   window.NEXORA_DEAL_ITEMS.setup(module,state(),demoState);
   if(module==='deals'){const originalWallet=drawWallet;drawWallet=function(){originalWallet();document.querySelectorAll('#walList>[data-coupon-id]').forEach(card=>{card.hidden=Boolean(walletPage&&state().D.find(row=>row.id===card.dataset.couponId)?.pageId!==walletPage);});};}
   if(module==='deals')card=modernCard;
-  document.documentElement.lang='en';document.body.classList.add('lang-en');
+  document.documentElement.lang=localStorage.getItem('nexora-community-language')==='vi'?'vi':'en';document.body.classList.toggle('lang-en',document.documentElement.lang==='en');
   // Keep all module subviews reachable while the shared Community header stays in place.
   const localNav=document.querySelector('.top > .tabs,.top > .phases,.top > .roles');
   if(localNav){localNav.classList.add('deal-module-subnav');document.querySelector('main')?.before(localNav);}

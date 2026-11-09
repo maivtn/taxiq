@@ -179,13 +179,12 @@ const results = [], errors = [];
           assert.equal(new URL(page.url()).searchParams.get('account'),'personal');
           await page.goForward();await landing.locator('.jobs-personal-panel').waitFor();
         });
-        await check('PO copy editing saves cancels and is identity scoped',async()=>{
-          await open();await landing.locator('[data-jobs-copy-action="edit"]').click();
-          await landing.locator('[data-jobs-copy="heroTitle"]').fill('My work availability');
-          await landing.locator('[data-jobs-copy-action="save"]').click();await page.reload();await landing.waitFor();
+        await check('Final Spec D4 removes prototype editing tools and preserves existing copy by identity',async()=>{
+          await open();await landing.waitFor();
+          assert.equal(await landing.locator('.jobs-personal-editbar,.jobs-personal-demo,[contenteditable="true"],[data-jobs-copy-action]').count(),0);
+          await page.evaluate(()=>localStorage.setItem('nexora-v31:jobs-page-copy:'+encodeURIComponent(NEXORA_COMMUNITY_SHARED.member),JSON.stringify({en:{heroTitle:'My work availability'}})));
+          await page.reload();await landing.waitFor();
           assert.equal(await landing.locator('[data-jobs-copy="heroTitle"]').innerText(),'My work availability');
-          await landing.locator('[data-jobs-copy-action="edit"]').click();await landing.locator('[data-jobs-copy="heroTitle"]').fill('Unsaved heading');
-          await landing.locator('[data-jobs-copy-action="cancel"]').click();assert.equal(await landing.locator('[data-jobs-copy="heroTitle"]').innerText(),'My work availability');
           await open('account=personal&tab=jobs&member=Other%20Member');
           assert.equal(await landing.locator('[data-jobs-copy="heroTitle"]').innerText(),'I want to work');
         });

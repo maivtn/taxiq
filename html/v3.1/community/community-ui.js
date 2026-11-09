@@ -181,8 +181,8 @@
       }
       const groupLabel=input.getAttribute('aria-label')||input.labels?.[0]?.textContent.trim()||(vi?'Ảnh':'Photos');
       if(state.controls.getAttribute('aria-label')!==groupLabel)state.controls.setAttribute('aria-label',groupLabel);
-      const takeLabel=vi?'Chụp ảnh':'Take photo';if(state.take.label.textContent!==takeLabel)state.take.label.textContent=takeLabel;
-      if(state.upload.label.textContent!=='Upload')state.upload.label.textContent='Upload';
+      const takeLabel=window.NEXORA_COMMUNITY_LANGUAGE?.translate(vi?'Chụp ảnh':'Take photo')||(vi?'Chụp ảnh':'Take photo');if(state.take.label.textContent!==takeLabel)state.take.label.textContent=takeLabel;
+      const uploadLabel=window.NEXORA_COMMUNITY_LANGUAGE?.translate('Upload')||'Upload';if(state.upload.label.textContent!==uploadLabel)state.upload.label.textContent=uploadLabel;
       for(const control of [state.take.button,state.upload.button,state.camera])if(control.disabled!==input.disabled)control.disabled=input.disabled;
     }
   }

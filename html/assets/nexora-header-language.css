@@ -1,0 +1,24 @@
+.header.shell-header { direction:ltr; }
+.header.shell-header.shell-language-open { z-index:45; }
+.header.shell-header .shell-language { position:relative; flex:none; }
+.header.shell-header .shell-header-language { border-radius:8px; }
+.header.shell-header .shell-header-language[aria-expanded="true"] { background:#f5f6fb; }
+.header.shell-header .shell-language-menu {
+  position:absolute; z-index:3; top:calc(100% + 4px); right:0; box-sizing:border-box;
+  width:224px; max-width:calc(100vw - 24px); padding:4px;
+  border:1px solid #dde5ef; border-radius:12px; background:#fff;
+  box-shadow:0 8px 20px #0f172a1f; color:#17233e; font-family:Inter,sans-serif;
+}
+.header.shell-header .shell-language-menu[hidden] { display:none; }
+.header.shell-header .shell-language-option {
+  display:flex; align-items:center; gap:10px; width:100%; min-height:40px; margin:0;
+  border:0; border-radius:8px; background:#fff; padding:6px 8px;
+  color:#17233e; font:inherit; font-size:14px; font-weight:400; text-align:left; cursor:pointer;
+}
+.header.shell-header .shell-language-option[aria-selected="true"],
+.header.shell-header .shell-language-option:hover { background:#efebff; color:#5740ed; }
+.header.shell-header .shell-language-name { flex:1; }
+.header.shell-header .shell-language-check { width:16px; height:16px; flex:none; color:#5740ed; }
+.header.shell-header .shell-language-option:not([aria-selected="true"]) .shell-language-check { visibility:hidden; }
+.header.shell-header .shell-header-language:focus-visible,
+.header.shell-header .shell-language-option:focus-visible { outline:2px solid #7a65ee; outline-offset:1px; }
