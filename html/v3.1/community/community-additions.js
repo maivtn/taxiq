@@ -98,6 +98,8 @@
     const app=root.querySelector('.app'),ecosystemButton=root.getElementById('ecosystemButton'),navMore=[];
     const backdrop=document.createElement('div');backdrop.className='community-menu-backdrop';backdrop.hidden=true;backdrop.setAttribute('aria-hidden','true');
     const drawerHeading=document.createElement('div');drawerHeading.className='community-menu-heading';drawerHeading.append(menu.querySelector('h2'));
+    const menuTitle=drawerHeading.querySelector('h2');menuTitle.textContent='Explore Community';menuTitle.id='communityMenuTitle';menu.setAttribute('aria-labelledby',menuTitle.id);
+    const menuHeadingCopy=document.createElement('div'),menuCount=document.createElement('small');menuCount.className='community-menu-count';menuHeadingCopy.append(menuTitle,menuCount);drawerHeading.append(menuHeadingCopy);
     const closeDrawer=document.createElement('button');closeDrawer.type='button';closeDrawer.className='community-menu-close';closeDrawer.setAttribute('aria-label','Close');closeDrawer.textContent='×';drawerHeading.append(closeDrawer);menu.prepend(drawerHeading);
     menu.setAttribute('role','dialog');menu.setAttribute('aria-modal','true');app.append(backdrop,menu);
     styles.textContent+=`
@@ -106,7 +108,7 @@
       .community-menu-backdrop[hidden]{display:none}
       .app>.header-menu.ecosystem-menu{inset:0 auto 0 0;z-index:81;width:min(360px,calc(100% - 24px));height:100%;max-height:none;margin:0;border-radius:0 16px 16px 0;align-content:start;overflow-y:auto;overscroll-behavior:contain;box-shadow:12px 0 35px #19274924}
       .community-menu-backdrop.is-dropdown{background:transparent}
-      .app>.header-menu.ecosystem-menu.community-menu-dropdown{inset:var(--community-menu-top) auto auto var(--community-menu-left);width:min(300px,calc(100% - 24px));height:auto;max-height:var(--community-menu-height);padding:8px;border:1px solid #dfe5f0;border-radius:13px;box-shadow:0 14px 36px #19274926}
+      .app>.header-menu.ecosystem-menu.community-menu-dropdown{inset:var(--community-menu-top) auto auto var(--community-menu-left);width:min(500px,calc(100% - 24px));height:auto;max-height:var(--community-menu-height);padding:12px;border:1px solid #dfe5f0;border-radius:13px;box-shadow:0 14px 36px #19274926}
       .community-menu-heading{position:sticky;top:-14px;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 10px;background:#fff;border-bottom:1px solid #e5e9f2}
       .community-menu-heading[hidden]{display:none}
       .community-menu-heading h2{margin:0}
@@ -119,6 +121,33 @@
       .community-menu-group+.community-menu-group{margin-top:8px;padding-top:10px;border-top:1px solid #e5e9f2}
       .community-menu-group-title{margin:0 0 3px;padding:4px 10px;color:#62708c;font-size:10px;line-height:1.4;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
       .community-nav-more:focus-visible,.ecosystem-menu button:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
+      .app>.header-menu.ecosystem-menu{display:flex;flex-direction:column;inset:12px auto auto 50%;transform:translateX(-50%);width:min(480px,calc(100% - 24px));height:auto;max-height:calc(100% - 24px);padding:12px;border:1px solid #dedff0;border-radius:16px;overflow:hidden;box-shadow:0 18px 50px #19274933}
+      .app>.header-menu.ecosystem-menu[hidden]{display:none}
+      .app>.header-menu.ecosystem-menu.community-menu-dropdown{transform:none}
+      .community-menu-heading{position:relative;top:auto;flex:none;padding:0 0 10px;gap:10px}
+      .community-menu-heading h2{font-size:14px;line-height:1.4;color:#263149}
+      .community-menu-count{display:block;margin-top:2px;color:#737d98;font-size:11px;line-height:1.3}
+      .ecosystem-menu .community-menu-close{width:32px;min-height:32px;border:0;border-radius:9px;background:#f1eefb;color:#6e57ca;font-size:23px}
+      .community-menu-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 1px 10px;scrollbar-width:thin}
+      .community-menu-group{gap:7px;padding-top:10px}
+      .community-menu-group+.community-menu-group{margin-top:10px;padding-top:12px}
+      .community-menu-group-title{margin:0;padding:0;color:#697795;font-size:10px;letter-spacing:.1em}
+      .community-menu-group-items{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+      .ecosystem-menu .ecosystem-item{gap:7px;min-width:0;min-height:43px;padding:7px;border:1px solid #dfe2f0;border-radius:10px;background:#fff;color:#2b3650;box-shadow:0 2px 5px #25304704;font-size:11px;font-weight:750;line-height:1.2}
+      .ecosystem-menu .ecosystem-item:hover{background:#f7f5ff;border-color:#b9a7ed}
+      .ecosystem-menu .ecosystem-item:active{transform:translateY(1px)}
+      .ecosystem-item-icon{flex:0 0 26px;width:26px;height:26px;border-radius:7px;background:#f2efff}
+      .ecosystem-item-icon img{display:block;width:24px;height:24px;object-fit:contain}
+      .ecosystem-item-icon svg{width:18px;height:18px}
+      .ecosystem-item-label{line-height:1.3;overflow-wrap:anywhere}
+      .community-menu-create{flex:0 1 auto;min-height:0;margin:0!important;padding:10px 0 0!important;border-top:1px solid #ececf5!important;gap:8px}
+      .ecosystem-menu .community-menu-create-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:36px;padding:8px 10px;border:0;border-radius:9px;background:#f4f0ff;color:#5c43d5;text-align:left;font:inherit;font-size:12px;font-weight:800}
+      .community-menu-post-count{flex:none;font-size:10px}
+      #communityMenuPostTypes{display:block;max-height:min(40vh,300px);overflow-y:auto;overscroll-behavior:contain;padding:1px}
+      #communityMenuPostTypes[hidden]{display:none}
+      #communityMenuPostTypes>[data-community-extra="post"]{margin-bottom:7px}
+      @container community (max-width:380px){.ecosystem-menu .ecosystem-item{font-size:10px;gap:5px;padding:6px}.ecosystem-item-icon{flex-basis:24px;width:24px;height:24px}}
+
     `;
     for(const nav of [root.querySelector('.top .tabs'),root.querySelector('.mobile-nav')]){
       const more=document.createElement('button');more.type='button';more.className='tab community-nav-more'+(nav.classList.contains('mobile-nav')?' mobile-tab community-version-more':'');more.setAttribute('aria-haspopup','dialog');more.setAttribute('aria-controls',menu.id);more.setAttribute('aria-expanded','false');
@@ -133,14 +162,14 @@
     const menuControls=()=>[...menu.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),[tabindex="0"]')].filter(element=>!element.closest('[hidden]'));
     function updateMenuLayout(){
       const compact=compactMenu();
-      menu.classList.toggle('community-menu-dropdown',!compact);backdrop.classList.toggle('is-dropdown',!compact);drawerHeading.hidden=!compact;
+      menu.classList.toggle('community-menu-dropdown',!compact);backdrop.classList.toggle('is-dropdown',!compact);drawerHeading.hidden=false;
       menu.setAttribute('role',compact?'dialog':'menu');
       if(compact)menu.setAttribute('aria-modal','true');else menu.removeAttribute('aria-modal');
       for(const button of [...navMore,ecosystemButton])button.setAttribute('aria-haspopup',compact?'dialog':'menu');
-      for(const button of menu.querySelectorAll('[data-quick-view],[data-community-extra],[data-community-compose],#menuStartTour')){if(compact)button.removeAttribute('role');else button.setAttribute('role','menuitem');}
+      for(const button of menu.querySelectorAll('[data-quick-view],[data-community-extra],[data-community-compose],#menuStartTour,.community-menu-close,.community-menu-create-toggle')){if(compact)button.removeAttribute('role');else button.setAttribute('role','menuitem');}
       if(compact||menu.hidden)return;
       const trigger=navMore.find(button=>!button.classList.contains('mobile-tab'))||ecosystemButton;
-      const bounds=app.getBoundingClientRect(),anchor=trigger.getBoundingClientRect(),width=Math.min(300,bounds.width-24);
+      const bounds=app.getBoundingClientRect(),anchor=trigger.getBoundingClientRect(),width=Math.min(500,bounds.width-24);
       menu.style.setProperty('--community-menu-left',Math.max(12,Math.min(anchor.right-bounds.left-width,bounds.width-width-12))+'px');
       menu.style.setProperty('--community-menu-top',anchor.bottom-bounds.top+8+'px');
       menu.style.setProperty('--community-menu-height',Math.max(120,Math.min(560,bounds.bottom-anchor.bottom-20))+'px');
@@ -149,7 +178,7 @@
       const open=!menu.hidden;if(open===drawerOpen)return;drawerOpen=open;updateMenuLayout();backdrop.hidden=!open;ecosystemButton.setAttribute('aria-expanded',String(open));navMore.forEach(button=>button.setAttribute('aria-expanded',String(open)));drawerAnimation?.cancel();
       if(open){
         drawerTrigger=root.activeElement||ecosystemButton;
-        if(compactMenu()&&!matchMedia('(prefers-reduced-motion:reduce)').matches)drawerAnimation=menu.animate([{transform:'translateX(-100%)',opacity:.4},{transform:'translateX(0)',opacity:1}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
+        if(compactMenu()&&!matchMedia('(prefers-reduced-motion:reduce)').matches)drawerAnimation=menu.animate([{transform:'translate(-50%,8px) scale(.98)',opacity:.4},{transform:'translate(-50%,0) scale(1)',opacity:1}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
         (compactMenu()?closeDrawer:menuControls()[0])?.focus({preventScroll:true});
       }else if(!root.activeElement||menu.contains(root.activeElement))drawerTrigger?.focus({preventScroll:true});
     }).observe(menu,{attributes:true,attributeFilter:['hidden']});
@@ -188,12 +217,31 @@
       const items=document.createElement('div');items.className='community-menu-group-items';section.append(title,items);menu.append(section);return items;
     }
     const existingMenuItems=[...menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')];
-    const sectionItems=menuGroup('sections','Go to a Community section'),createItems=menuGroup('create','Create a post'),toolItems=menuGroup('tools','NEXORA');
+    const menuBody=document.createElement('div');menuBody.className='community-menu-body';menu.append(menuBody);
+    const communityItems=menuGroup('community','Community'),businessItems=menuGroup('business','Business'),exploreItems=menuGroup('explore','Explore'),toolItems=menuGroup('tools','NEXORA');
+    for(const items of [communityItems,businessItems,exploreItems,toolItems])menuBody.append(items.parentElement);
+    const createItems=menuGroup('create','Create a post'),createSection=createItems.parentElement;
+    createSection.classList.add('community-menu-create');
+    const createTitle=createSection.querySelector('h3');createTitle.hidden=true;
+    const createToggle=document.createElement('button');createToggle.type='button';createToggle.className='community-menu-create-toggle';createToggle.setAttribute('aria-expanded','false');createToggle.setAttribute('aria-controls','communityMenuPostTypes');
+    createToggle.innerHTML='<span>＋ Create a post</span><span class="community-menu-post-count"></span>';
+    createItems.id='communityMenuPostTypes';createItems.hidden=true;createSection.insertBefore(createToggle,createItems);
+    createToggle.addEventListener('click',()=>{const open=createItems.hidden;createItems.hidden=!open;createToggle.setAttribute('aria-expanded',String(open));updateMenuLayout();});
     const toolRoutes=new Set(['wallet','wheel','meet','account','assistant','notifications']);
+    const businessRoutes=new Set(['shop','transfer','realestate','jobs','daywork']);
+    const exploreRoutes=new Set(['food','deals','live','reels','news','blog','stories','explore']);
     for(const button of existingMenuItems){
       const route=button.dataset.quickView||button.dataset.communityExtra;
-      (route==='post'?createItems:toolRoutes.has(route)||button.id==='menuStartTour'?toolItems:sectionItems).append(button);
+      (route==='post'?createItems:toolRoutes.has(route)||button.id==='menuStartTour'?toolItems:businessRoutes.has(route)?businessItems:exploreRoutes.has(route)?exploreItems:communityItems).append(button);
     }
+    // Match the PO directory order while retaining every existing destination.
+    for(const [items,routes] of [[communityItems,['connect','feed','market','pages','friends','people']],[businessItems,['shop','transfer','realestate','jobs','daywork']],[exploreItems,['food','deals','live','reels','news','blog','stories','explore']]]){
+      for(const route of routes){const button=[...items.children].find(button=>(button.dataset.quickView||button.dataset.communityExtra)===route);if(button)items.append(button);}
+    }
+    menuCount.textContent=(existingMenuItems.length-1)+' more sections';
+    const artworkBase=new URL('../../assets/icon-oneqr/',baseURL);
+    const menuArtwork={connect:'message-circle',feed:'layout-list',market:'users-round',pages:'building-2',friends:'users-round',people:'user-round',shop:'store',transfer:'hand-coins',realestate:'home',jobs:'briefcase',daywork:'calendar-clock',food:'utensils',deals:'ticket',live:'video',reels:'youtube',news:'receipt',blog:'receipt',stories:'image',explore:'globe-2',wallet:'wallet',wheel:'gift',meet:'video',account:'user-cog',assistant:'bot',notifications:'bell'};
+    for(const button of existingMenuItems){const name=menuArtwork[button.dataset.quickView||button.dataset.communityExtra]||(button.id==='menuStartTour'?'sparkles':'image'),icon=button.querySelector('.ecosystem-item-icon'),image=document.createElement('img');image.src=new URL('issue-2040-oneqr-'+name+'-3d.png',artworkBase).href;image.alt='';image.width=image.height=24;image.draggable=false;icon.replaceChildren(image);}
     const postItems=document.createElement('div');postItems.className='community-menu-group-items';createItems.append(postItems);
     // Reuse the Feed's role-filtered actions, labels and permission checks.
     const postSources=[
@@ -213,6 +261,7 @@
       const source=frames[0].contentDocument;
       const entries=postSources.flatMap(([kind,selector,icon])=>{const button=source?.querySelector(selector);if(!button||button.hidden)return [];const label=button.querySelector(':scope > span:last-child')?.textContent.trim()||button.textContent.trim();return label?[{kind,selector,label,disabled:button.disabled,icon:button.dataset.template==='seeking'?'UserRoundSearch':icon}]:[];});
       const signature=JSON.stringify(entries);if(signature===postMenuSignature)return;postMenuSignature=signature;
+      createToggle.querySelector('.community-menu-post-count').textContent=entries.length+' post types ⌄';
       postItems.replaceChildren(...entries.map(entry=>{
         const button=document.createElement('button');button.type='button';button.className='ecosystem-item';button.dataset.communityCompose=entry.kind;button.disabled=entry.disabled;
         const icon=document.createElement('span');icon.className='ecosystem-item-icon';icon.setAttribute('aria-hidden','true');const definition=window.lucide?.icons[entry.icon];if(definition)icon.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true',focusable:'false'}));
