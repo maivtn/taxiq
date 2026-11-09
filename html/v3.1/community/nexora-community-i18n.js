@@ -33,7 +33,7 @@ bài viết	posts
 Danh sách người theo dõi chỉ hiển thị khi có dữ liệu tài khoản thật.	The follower list appears when real account data is available.
 Ảnh hoặc video (tùy chọn) · tối đa 4 ảnh hoặc 1 video	Photos or video (optional) · up to 4 photos or 1 video
 Thời điểm đăng	Publish time
-Đăng ngay	Publish now
+Đăng ngay	Post
 Lên lịch	Schedule
 Ngày và giờ đăng	Publish date and time
 ĐÃ LÊN LỊCH	SCHEDULED

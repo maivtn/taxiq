@@ -1429,7 +1429,7 @@
       "frames": [
         {
           "url": "https://taxiq-nexora-touch.vercel.app/html/assets/community-v2/nexora-community-prototype.html?embedded=1&view=feed&rev=20261105-community-deals-controls-v58&pageId=p1&pageMode=view&pageTab=posts&pageScope=discover",
-          "text": "PAGE\n← Back to Pages\nTake photo\nUpload\nBITCOIN NAIL BAR\n@bitcoin.nail.bar · Nail & beauty · Houston, TX\n16 followers · 5 posts\n\nA Houston beauty spot for polished nails and a relaxing break after work. We offer Gel-X, manicures and pedicures; message ahead to choose a technician and a time that suits you.\n\nManage Page\nEdit\nCreate post\nShare\nManage Page · Only Page owners see this\n\n5 published posts · 0 scheduled posts · 16 followers. Posts and offers are free; promotion is optional.\n\nEdit Page\nPost an offer\nPromote Page\nPosts\nAbout\nPhotos\nVideo\nFollowers\nOffers\nScheduled (0)\nPost from Page\nPhotos or video (optional) · up to 4 photos or 1 video\nTake photo\nUpload\nPublish time\nPublish now\nSchedule\nPost\nBITCOIN NAIL BAR\nNov 6, 2026\n\nA collection of milky pink and subtle shimmer nail styles for the weekend. Message us with the style you like to discuss color and length before booking.\n\nBITCOIN NAIL BAR\nNov 6, 2026\n\nA few weekday morning slots remain for manicures and pedicures. Message your preferred service and time; we will confirm before reserving.\n\nBITCOIN NAIL BAR\nNov 5, 2026\n\nA collection of blue shimmer nails and fine flowers on nude bases. Watch the styles in the video and send us your favorite for a consultation before your appointment.\n\nBITCOIN NAIL BAR\nNov 5, 2026\n\nWe have refreshed our waiting area and added gel colors for the season. If you have a weekend appointment, send your preferred design ahead so we can allow enough time.\n\nBITCOIN NAIL BAR\nNov 4, 2026\n\nMilky pink nails with a little shimmer for the weekend. If you like this style, message us to see the color in natural light at the salon.",
+          "text": "PAGE\n← Back to Pages\nTake photo\nUpload\nBITCOIN NAIL BAR\n@bitcoin.nail.bar · Nail & beauty · Houston, TX\n16 followers · 5 posts\n\nA Houston beauty spot for polished nails and a relaxing break after work. We offer Gel-X, manicures and pedicures; message ahead to choose a technician and a time that suits you.\n\nManage Page\nEdit\nCreate post\nShare\nManage Page · Only Page owners see this\n\n5 published posts · 0 scheduled posts · 16 followers. Posts and offers are free; promotion is optional.\n\nEdit Page\nPost an offer\nPromote Page\nPosts\nAbout\nPhotos\nVideo\nFollowers\nOffers\nScheduled (0)\nPost from Page\nPhotos or video (optional) · up to 4 photos or 1 video\nTake photo\nUpload\nPublish time\nPost\nSchedule\nPost\nBITCOIN NAIL BAR\nNov 6, 2026\n\nA collection of milky pink and subtle shimmer nail styles for the weekend. Message us with the style you like to discuss color and length before booking.\n\nBITCOIN NAIL BAR\nNov 6, 2026\n\nA few weekday morning slots remain for manicures and pedicures. Message your preferred service and time; we will confirm before reserving.\n\nBITCOIN NAIL BAR\nNov 5, 2026\n\nA collection of blue shimmer nails and fine flowers on nude bases. Watch the styles in the video and send us your favorite for a consultation before your appointment.\n\nBITCOIN NAIL BAR\nNov 5, 2026\n\nWe have refreshed our waiting area and added gel colors for the season. If you have a weekend appointment, send your preferred design ahead so we can allow enough time.\n\nBITCOIN NAIL BAR\nNov 4, 2026\n\nMilky pink nails with a little shimmer for the weekend. If you like this style, message us to see the color in natural light at the salon.",
           "controls": [
             {
               "tag": "BUTTON",
@@ -1706,8 +1706,8 @@
               "id": "pagePostMode",
               "name": "mode",
               "type": null,
-              "label": "Publish time\nPublish now\nSchedule",
-              "text": "Publish now\nSchedule",
+              "label": "Publish time\nPost\nSchedule",
+              "text": "Post\nSchedule",
               "placeholder": null,
               "aria": null,
               "title": "",
@@ -1715,7 +1715,7 @@
               "disabled": false,
               "options": [
                 {
-                  "text": "Publish now",
+                  "text": "Post",
                   "value": "now"
                 },
                 {
