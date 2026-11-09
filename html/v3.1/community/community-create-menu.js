@@ -18,7 +18,7 @@
     ['seeking','Seeking work',oneqr('user-round'),'jobs',{composeKind:'seeking'},'staff'],
     ['blog','Write blog',artwork('blog-1352524.png'),'blog',{composeKind:'blog'}],
     ['photos','Photo video',oneqr('image'),'post',{modal:'1',composeKind:'photos'}],
-    ['reels','Reel','nav-icons/blog.svg','reels',{}],
+    ['reels','Reel',oneqr('video'),'reels',{}],
     ['live','Live video',oneqr('video'),'live',{}]
   ];
   function mount(root,{role,navigate}){
@@ -36,9 +36,9 @@
       .community-create-menu:popover-open{display:grid;gap:4px}
       .community-create-menu::backdrop{background:transparent}
       .community-create-menu button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;box-sizing:border-box;padding:8px 10px;border:1px solid #dcd5ff;border-radius:9px;background:#f6f3ff;box-shadow:0 3px 0 #e2dcf8;color:inherit;text-align:left;font:750 12px/1.35 Inter,Arial,sans-serif;cursor:pointer}
-      .community-create-menu button:nth-child(4n+2){border-color:#f2d79a;background:#fff9e9;box-shadow:0 3px 0 #f0dfb2}
-      .community-create-menu button:nth-child(4n+3){border-color:#f4cab2;background:#fff3eb;box-shadow:0 3px 0 #f1d4c4}
-      .community-create-menu button:nth-child(4n+4){border-color:#eee19b;background:#fffde3;box-shadow:0 3px 0 #eee2a8}
+      .community-create-menu button:is([data-create-kind="tip"],[data-create-kind="sale"]){border-color:#f2d79a;background:#fff9e9;box-shadow:0 3px 0 #f0dfb2}
+      .community-create-menu button:is([data-create-kind="question"],[data-create-kind="hiring"],[data-create-kind="seeking"]){border-color:#f4cab2;background:#fff3eb;box-shadow:0 3px 0 #f1d4c4}
+      .community-create-menu button[data-create-kind="poll"]{border-color:#eee19b;background:#fffde3;box-shadow:0 3px 0 #eee2a8}
       .community-create-menu button[data-create-kind="event"]{border-color:#f0cade;background:#fff4f8;box-shadow:0 3px 0 #eecddd}
       .community-create-menu button:hover{filter:brightness(.97)}
       .community-create-menu button:focus-visible{outline:2px solid #7961e9;outline-offset:-3px}

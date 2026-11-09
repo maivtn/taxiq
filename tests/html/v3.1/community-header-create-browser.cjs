@@ -58,10 +58,24 @@ const server=http.createServer(async(req,res)=>{
           if(account==='personal'){await trigger.tap();await menu.locator('[data-create-kind="seeking"]').tap();await frame.locator('#templateForm[data-kind="seeking"]').waitFor();await frame.locator('#closeModal').click();}
           await trigger.tap();await menu.locator('[data-create-kind="photos"]').tap();await page.locator('.community-extra-pane #editor[open]').waitFor();assert.equal(await menu.isVisible(),false);
           await page.locator('.community-extra-pane #editor[open] [data-action="close-dialog"]').click();
+          if(account==='business'){
+            await trigger.tap();await menu.locator('[data-create-kind="deal"]').tap();await frame.locator('#templateForm[data-kind="deal"]').waitFor();await frame.locator('#closeModal').click();
+            await trigger.tap();await menu.locator('[data-create-kind="hiring"]').tap();await page.waitForURL('**/pos-recruitment.html*');
+          }
         });
         assert.deepEqual(errors,[]);
       }finally{await context.close();}
     }
+    const desktop=await browser.newContext({viewport:{width:1440,height:1000}});
+    try{
+      await desktop.addInitScript(()=>{if(location.protocol==='http:')localStorage.setItem('nexora-community-tour-desktop-v1','1');});
+      const page=await desktop.newPage();await page.goto(base+'/html/v3.1/community.html?tab=feed',{waitUntil:'domcontentloaded'});
+      const frame=page.frameLocator('#communityPane');await frame.locator('#feedActionsToggle').waitFor();
+      assert.equal(await page.locator('#communityCreate').isVisible(),false);
+      await frame.locator('#feedActionsToggle').click();await frame.locator('#feedActions').waitFor();
+      await frame.locator('#feedActions [data-template="tip"]').click();await frame.locator('#templateForm[data-kind="tip"]').waitFor();
+      results.push({width:1440,account:'business',name:'desktop Create content retained',pass:true});console.log('PASS desktop Create content retained');
+    }finally{await desktop.close();}
   }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));await fs.writeFile(path.join(output,'results.json'),JSON.stringify(results,null,2));}
   assert.ok(results.every(row=>row.pass),'Create menu browser regression failed');
 })().catch(error=>{console.error(error);process.exitCode=1;});
