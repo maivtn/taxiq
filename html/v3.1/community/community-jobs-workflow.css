@@ -210,3 +210,5 @@
   body.embedded #localDiscovery .community-seeking-context-action .feed-icon{width:18px;height:18px}
   body.embedded #jobsView.jobs-staff-layout .jobs-compose-slot #jobTemplates{display:none}
 }
+
+@media(max-width:767px){body.embedded #jobsView .jobs-workflow-head .jobs-pos-link{grid-column:1/-1;flex-direction:row;min-height:36px;padding:4px;border-top:1px solid #dce1ed;border-radius:0}}
