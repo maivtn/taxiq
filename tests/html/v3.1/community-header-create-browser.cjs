@@ -20,7 +20,7 @@ const server=http.createServer(async(req,res)=>{
     for(const width of [320,390,430])for(const account of ['business','personal']){
       const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
       try{
-        await context.addInitScript(()=>{localStorage.setItem('nexora-community-tour-mobile-v1','1');localStorage.setItem('nexora-community-tour-desktop-v1','1');});
+        await context.addInitScript(()=>{if(location.protocol!=='http:')return;localStorage.setItem('nexora-community-tour-mobile-v1','1');localStorage.setItem('nexora-community-tour-desktop-v1','1');});
         const page=await context.newPage();page.setDefaultTimeout(12000);
         const errors=[];page.on('pageerror',error=>errors.push(error.message));
         const entry=account==='personal'?'staff-community.html?account=personal&role=tech':'community.html?account=business';
@@ -42,7 +42,7 @@ const server=http.createServer(async(req,res)=>{
           await menu.evaluate(el=>el.scrollTop=0);await page.screenshot({path:path.join(output,`${width}-${account}-dropdown.png`)});
           await page.keyboard.press('Escape');await menu.waitFor({state:'hidden'});
           await trigger.press('ArrowDown');await expanded();await page.keyboard.press('End');assert.equal(await menu.locator('[data-create-kind="live"]').evaluate(el=>el.getRootNode().activeElement===el),true);
-          await page.keyboard.press('Escape');await trigger.tap();await page.locator('.community-heading h1').tap();await menu.waitFor({state:'hidden'});
+          await page.keyboard.press('Escape');await trigger.tap();await page.locator('.community-heading h1[data-i18n="community"]').tap();await menu.waitFor({state:'hidden'});
         });
         await check('open from Pages without changing route',async()=>{
           await open('pages');const before=page.url();await trigger.tap();await expanded();assert.equal(page.url(),before);await page.keyboard.press('Escape');
