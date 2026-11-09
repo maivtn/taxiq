@@ -10,7 +10,6 @@ Tìm	Search
 Tìm Fanpage, tiệm, nhà hàng...	Search pages, shops, restaurants...
 Tiệm nail	Nail salons
 Ẩm thực	Food
-
 Tạo nhóm theo nghề, quản lý thành viên, đăng bài và mua bán quanh bạn.	Create trade groups, manage members, post and shop nearby.
 Trang / Fanpage	Pages & Fanpages
 Tạo trang doanh nghiệp, đăng bài và quản lý nội dung ngay trong Community.	Create a business Page, post and manage content in Community.

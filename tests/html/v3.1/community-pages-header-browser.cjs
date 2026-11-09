@@ -11,7 +11,7 @@ const results = [], errors = [];
   const browser = await chromium.launch({ headless: true });
   try {
     for (const width of [390, 834, 1440]) for (const account of ['personal', 'business']) {
-      const context = await browser.newContext({ viewport: { width, height: 900 } });
+      const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
       try {
         await context.addInitScript(() => {
           for (const key of ['nexora-community-tour-desktop-v1', 'nexora-community-tour-mobile-v1']) localStorage.setItem(key, '1');
@@ -43,12 +43,14 @@ const results = [], errors = [];
           for (let i = 1; i < boxes.length; i++) assert.ok(boxes[i].y >= boxes[i - 1].y + boxes[i - 1].height - 1, 'Header blocks follow the PO order');
           assert.deepEqual((await filters.locator('button').allTextContents()).slice(0, 5), ['All', 'My Pages', 'Nail salons', 'Food', 'Community']);
           assert.equal(await view.locator('#pageIndustryFilter').isVisible(), false);
+          assert.equal((await view.innerText()).includes('undefined'), false, 'Translation preserves whitespace');
+          assert.equal(await view.locator('.community-pages-hero button svg').count(), 1, 'Create has one plus icon');
           assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
           if (width < 801) {
             const tabs = hub.locator('.mobile-nav .mobile-tab:visible');
             assert.equal(await tabs.count(), 5);
             assert.deepEqual(await tabs.evaluateAll(nodes => nodes.map(node => node.dataset.view || 'more')), ['feed', 'market', 'pages', 'jobs', 'more']);
-            assert.equal(await hub.locator('.mobile-nav [data-view="pages"]').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(101, 81, 223)');
+            await page.waitForFunction(() => getComputedStyle(document.querySelector('.mobile-nav [data-view="pages"]')).backgroundColor === 'rgb(101, 81, 223)');
           }
           await page.screenshot({ path: path.join(output, `header-${width}-${account}.png`) });
         });
@@ -113,7 +115,7 @@ const results = [], errors = [];
         });
         for (const route of ['feed', 'shop', 'deals', 'reels']) await check('shortcut ' + route, async () => {
           await open();
-          await view.locator(`.community-pages-shortcuts [data-po-route="${route}"]`).click();
+          await view.locator(`.community-pages-shortcuts :is([data-po-route="${route}"],[data-view="${route}"])`).click();
           await page.waitForURL(url => url.searchParams.get('tab') === route);
           await hub.locator({ feed: '#feedView', shop: '.store-head', deals: '#communityDealsView', reels: '.reels-hero' }[route]).waitFor();
           assert.equal(page.frames().length, 1);

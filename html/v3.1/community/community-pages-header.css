@@ -9,6 +9,7 @@ body.embedded #pagesView>.community-pages-hero .community-po-eyebrow{font-size:1
 body.embedded #pagesView>.community-pages-hero h2{margin:4px 0 3px;font-size:20px;line-height:1.2;letter-spacing:0;color:#25304b;font-weight:800}
 body.embedded #pagesView>.community-pages-hero p{margin:0;max-width:550px;font-size:11px;line-height:1.4;color:#79839c}
 body.embedded #pagesView>.community-pages-hero>.btn{display:inline-flex;align-items:center;gap:2px;min-height:35px;padding:8px 11px;border:0;border-radius:10px;background:#6551df;color:#fff;box-shadow:none;font-size:11px;font-weight:800;line-height:1.4}
+body.embedded #pagesView>.community-pages-hero>.btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 body.embedded #pagesView>.community-pages-search{display:flex;gap:7px;margin:0 0 11px;padding:0;border:0;background:transparent}
 body.embedded #pagesView .community-pages-search #pageSearch{flex:1;min-width:0;width:100%;height:42px;min-height:42px;padding:11px 13px;border:1px solid #d9deea;border-radius:10px;background:#fff;font:inherit;font-size:12px!important;box-shadow:none}
 body.embedded #pagesView>.community-pages-search>button{display:flex;align-items:center;justify-content:center;gap:3px;flex:none;min-height:42px;padding:0 12px;border:0;border-radius:11px;background:#6551df;color:#fff;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
