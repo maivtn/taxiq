@@ -117,12 +117,15 @@ const server = http.createServer(async (request, response) => {
           await page.frameLocator('#communityPane').locator('.feed-media-shortcuts [data-po-route="post"]').click();
           const dialog = host.locator('#editor.community-photo-composer');
           await dialog.waitFor();
+          await page.waitForFunction(() => history.state?.communityDetail === true);
           assert.equal(await dialog.locator('.social-media-pick img').count(), 1);
           await dialog.locator('[data-action="social-more-toggle"]').click();
           await dialog.locator('#social-more-sheet').waitFor();
           await dialog.locator('[data-action="social-more-close"]').click();
           await dialog.locator('[data-action="close-dialog"]').click();
           await dialog.waitFor({state:'hidden'});
+          // Closing a modal traverses the parent's history asynchronously.
+          await page.waitForFunction(() => !history.state?.communityDetail && !document.body.classList.contains('community-detail-open'));
         });
         await check('Connect section headings stay removed', async () => {
           for (const [tab,panel] of [['chatgroups','groups'],['calls','calls'],['contacts','contacts']]) {
