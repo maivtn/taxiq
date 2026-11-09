@@ -66,7 +66,8 @@
         const rules=[[/spin|quay/i,'RotateCw'],[/close|cancel|đóng|hủy|×|✕/i,'X'],[/mic|micro|voice|giọng/i,'Mic'],[/video|reel/i,'Video'],[/photo|image|ảnh|camera/i,'Camera'],[/delete|remove|xóa|xoá/i,'Trash2'],[/save|lưu/i,'Save'],[/search|find|tìm/i,'Search'],[/back|prev|quay lại|trước/i,'ArrowLeft'],[/next|tiếp/i,'ArrowRight'],[/send|gửi|reply|trả lời/i,'Send'],[/create|add|new|thêm|tạo/i,'Plus'],[/edit|sửa/i,'SquarePen'],[/share|chia sẻ/i,'Share2'],[/call|gọi/i,'Phone'],[/copy|sao chép/i,'Copy'],[/filter|lọc/i,'SlidersHorizontal'],[/download|tải về/i,'Download'],[/check|approve|accept|duyệt|chấp nhận/i,'Check'],[/service|dịch vụ/i,'Wrench']];
         const name=rules.find(([pattern])=>pattern.test(action))?.[1]||(button.type==='submit'&&button.closest('form')?'Send':null),definition=name&&browser.lucide?.icons[name];
         if(!definition)continue;
-        for(const node of [...button.childNodes])if(node.nodeType===3)node.nodeValue=node.nodeValue.replace(/^\s*[\p{Extended_Pictographic}\uFE0F\u200D＋✦✧▣▤✎⌕↻▶⏸★☆🗑]+\s*/u,'');
+        if(name==='X'&&/^[×✕]$/.test(button.textContent.trim())&&!button.hasAttribute('aria-label')&&!button.hasAttribute('aria-labelledby'))button.setAttribute('aria-label','Close');
+        for(const node of [...button.childNodes])if(node.nodeType===3)node.nodeValue=node.nodeValue.replace(/^\s*[\p{Extended_Pictographic}\uFE0F\u200D＋✦✧▣▤✎⌕↻▶⏸★☆🗑×✕]+\s*/u,'');
         const svg=browser.lucide.createElement(definition,{width:18,height:18,class:'community-action-icon','aria-hidden':'true',focusable:'false'});button.prepend(svg);button.style.display='inline-flex';button.style.alignItems='center';button.style.justifyContent='center';button.style.gap='6px';
       }
     }
