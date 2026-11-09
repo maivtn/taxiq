@@ -50,6 +50,9 @@ const results=[],errors=[];
      const record=await page.evaluate(()=>JSON.parse(localStorage.getItem('nexora-community-templates-v1')).pagePosts.find(row=>row.status==='draft'&&row.title.startsWith('PO draft')));assert.equal(record.pageId,'p1');
      await page.locator('[data-po-page-action=edit-post][data-value="'+record.id+'"]').click();await form.waitFor();assert.equal(await form.locator('[name=title]').inputValue(),'PO draft '+width);
      await form.locator('#social-visibility-button').click();await form.locator('[data-visibility-choice=private]').click();await form.locator('[name=publishAction][value=published]').click();await page.locator('[data-feed-post-id="'+record.id+'"]').waitFor();
+     const card=page.locator('[data-feed-post-id="'+record.id+'"]');await card.locator('[data-social-action=comments]').click();
+     for(const body of ['First comment','Pinned comment']){const comments=card.locator('[data-social-comment-form]');await comments.locator('[name=comment]').fill(body);await comments.locator('[type=submit]').click();}
+     await card.locator('[data-social-action=pin-comment]').last().click();assert.ok((await card.locator('.community-social-comment').first().innerText()).includes('Pinned comment'));
      await page.locator('[data-po-page-action=edit-post][data-value="'+record.id+'"]').click();await form.waitFor();assert.equal(await form.locator('[name=visibility]').inputValue(),'private');await page.locator('.social-close').click();
      await open('pages','personal','&pageId=p1&pageMode=view&pageTab=posts');await page.locator('.po-page-supplement').waitFor();assert.equal(await page.locator('[data-feed-post-id="'+record.id+'"]').count(),0);
     });
