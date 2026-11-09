@@ -75,9 +75,9 @@ test('the sample design photo refreshes existing defaults and preserves custom p
 
 
 test('personal demo starts partly set up and preserves later edits and custom stores',t=>{
-  const demo=setup(t),shared={role:'staff',member:'David Le'},state=empty();
+  const demo=setup(t),shared={role:'staff',member:'nexora 2'},state=empty();
   assert.equal(demo.seed(state,shared),true);
-  assert.equal(state.shop.name,'David Le');assert.ok(state.shop.cover);assert.ok(state.shop.hours);
+  assert.equal(state.shop.name,shared.member);assert.ok(state.shop.cover);assert.ok(state.shop.hours);
   assert.equal(state.shop.about,'');assert.equal(state.shop.phone,'');assert.equal(state.shop.items.length,0);
   state.shop.cover='';state.shop.name='My name';const before=clone(state);
   assert.equal(demo.seed(state,shared),false);assert.deepEqual(clone(state),before);

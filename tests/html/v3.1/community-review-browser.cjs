@@ -72,6 +72,18 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
       await open('reels');await nav.waitFor();
      }
     });
+    await check('Community rooms samples open chat and return',async()=>{
+     await open('live');const extra=hub.locator('.community-extra-pane'),cards=extra.locator('.live-card');await cards.first().waitFor();
+     assert.equal(await cards.count(),7);assert.equal(await extra.getByText('No live rooms yet. Create a room.',{exact:true}).count(),0);
+     assert.ok((await cards.allTextContents()).every(text=>text.includes('SAMPLE ROOM')));
+     const photos=cards.locator('.live-card-cover img');await photos.evaluateAll(async nodes=>Promise.all(nodes.map(image=>image.decode())));
+     await cards.first().locator('[data-live-open]').click();await extra.locator('#live-chat-form').waitFor();
+     await extra.locator('#live-chat-form [name=message]').fill('QA sample room message');await extra.locator('#live-chat-form button').click();
+     assert.ok((await extra.locator('.live-chat-list').innerText()).includes('QA sample room message'));
+     await extra.locator('[data-action=live-back]').click();await cards.first().waitFor();
+     await cards.nth(1).locator('[data-live-open]').click();await extra.locator('#live-chat-form').waitFor();await extra.locator('[data-action=live-back]').click();
+     await page.screenshot({path:path.join(output,`${width}-${account}-live.png`)});
+    });
     await check('Fanpage navigation latest posts and page links',async()=>{
      await open('pages');const pages=pane.locator('#pagesView');await pages.locator('#pageLatestPosts article').first().waitFor();
      assert.ok((await hub.locator('[data-i18n=pages]').allTextContents()).every(text=>text==='Fanpage'));

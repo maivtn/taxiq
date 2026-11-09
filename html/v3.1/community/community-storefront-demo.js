@@ -33,7 +33,7 @@
     for(const template of posts){const row=state.feedPosts.find(post=>post.id===template.id);if(row)translateFields(row,template,language);}
   }
   function seed(state,shared){
-    if(shared?.role==='staff'&&shared.member==='David Le'){
+    if(shared?.role==='staff'&&['David Le','nexora 2'].includes(shared.member)){
       if(state.personalStorefrontDemoSeeded===1)return false;
       const customized=Object.entries(state.shop).some(([key,value])=>{
         if(key==='type')return value&&value!=='personal';
