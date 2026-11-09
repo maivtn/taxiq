@@ -2,17 +2,30 @@
 (() => {
   'use strict';
   const base=new URL('./',document.currentScript.src);
-  const pages=[
-    ['sample-food','Bếp Việt Houston','Restaurant','Houston, TX','dbaf5871be9452a3.jpg'],
-    ['sample-cafe','Mây Cafe & Bakery','Cafe & bakery','Katy, TX','b22d0f1e982c5559.jpg'],
-    ['sample-nail','Hoa Nail Studio','Nail salon','Sugar Land, TX','5cecfe52c32c201a.jpg']
-  ];
+  const featuredPageIds=['sample-nail','p1','p3','sample-community','sample-food','sample-cafe'];
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  function featuredPages(){
+    let saved=window.NEXORA_COMMUNITY_PAGES?.records().pages;
+    // The direct Feed runs this script before its Page API is initialized.
+    if(!Array.isArray(saved)){try{saved=JSON.parse(localStorage.getItem('nexora-community-templates-v1')||'{}').pages;}catch{}}
+    if(!Array.isArray(saved))saved=[];
+    const seeds=window.NEXORA_COMMUNITY_DEMO?.extra.pages||[];
+    return featuredPageIds.map(id=>saved.find(page=>page.id===id)||seeds.find(page=>page.id===id)).filter(Boolean);
+  }
+  function pageCategory(page){
+    if(page.id==='sample-cafe')return 'Cafe & bakery';
+    return ({salon:'Nail salon',community:'Community',food:'Restaurant'})[page.poCategory]||({'Nail & làm đẹp':'Nail salon','Nhà hàng & ăn uống':'Restaurant','Dịch vụ khác':'Business'})[page.industry]||page.industry||'';
+  }
+  function pageCover(page){
+    return page.cover?"background-image:url('"+new URL(page.cover,base).href.replaceAll("'","%27")+"')":'';
+  }
   function mount(){
     const feed=document.getElementById('feedView');if(!feed||document.getElementById('communityFeedFooter'))return;
+    const pages=featuredPages();
     const footer=document.createElement('div');footer.id='communityFeedFooter';footer.setAttribute('translate','no');
     footer.innerHTML=`<section class="page-discovery-feed" aria-label="Explore sample pages">
       <div class="page-discovery-head"><div><span>DISCOVER COMMUNITY</span><h3>Pages near you</h3></div><button type="button" data-footer-route="pages">See all →</button></div>
-      <div class="page-discovery-rail" role="region" tabindex="0" aria-label="Swipe sample pages">${pages.map(([id,name,category,area,cover])=>`<button type="button" class="page-discovery-card" data-footer-page="${id}" aria-label="View Page ${name.replaceAll('&','&amp;')}"><span class="page-discovery-photo" style="background-image:url('${new URL('modules/hub-tools/media/'+cover,base).href}')"><b>SAMPLE PAGE</b></span><span class="page-discovery-info"><strong>${name.replaceAll('&','&amp;')}</strong><small>${category} · ${area}</small><em>View Page →</em></span></button>`).join('')}</div>
+      <div class="page-discovery-rail" role="region" tabindex="0" aria-label="Swipe sample pages">${pages.map(page=>`<button type="button" class="page-discovery-card" data-footer-page="${esc(page.id)}" aria-label="View Page ${esc(page.title)}"><span class="page-discovery-photo" style="${esc(pageCover(page))}">${page.isSample?'<b>SAMPLE PAGE</b>':''}</span><span class="page-discovery-info"><strong>${esc(page.title)}</strong><small>${esc(pageCategory(page))} · ${esc(page.city)}</small><em>View Page →</em></span></button>`).join('')}</div>
       <button type="button" class="page-discovery-food-link" data-footer-route="food">🍜 Explore Food &amp; Restaurants →</button>
     </section>
     <section class="live-home"><div><h3>🔴 Livestream in Community</h3><p>Show products, share tips or talk with others.</p></div><button type="button" class="btn primary" data-footer-route="live">Explore livestream →</button></section>

@@ -118,7 +118,8 @@
   pages.push(...[
     ['sample-food','Bếp Việt Houston','food','Nhà hàng & ăn uống','Houston, TX','Sample restaurant page with Vietnamese dishes, menus and weekly offers.','dbaf5871be9452a3.jpg'],
     ['sample-cafe','Mây Cafe & Bakery','food','Nhà hàng & ăn uống','Katy, TX','Sample cafe page with new treats, photos and shop updates.','b22d0f1e982c5559.jpg'],
-    ['sample-nail','Hoa Nail Studio','salon','Nail & làm đẹp','Sugar Land, TX','Sample nail salon page with services, bookings and fresh nail designs.','5cecfe52c32c201a.jpg']
+    ['sample-nail','Hoa Nail Studio','salon','Nail & làm đẹp','Sugar Land, TX','Sample nail salon page with services, bookings and fresh nail designs.','5cecfe52c32c201a.jpg'],
+    ['sample-community','Hội thợ Việt Houston','community','Cộng đồng','Houston, TX','Sample community page for skills, questions and local work connections.','86e09c12c6661e84.svg']
   ].map(([id,title,poCategory,industry,city,description,cover])=>({id,kind:'page',owner:title,title,poCategory,industry,city,description,cover:'/html/v3.1/community/modules/hub-tools/media/'+cover,followers:0,primaryAction:'message',isSample:true})));
   const pagePosts = [
     {id:'page-video-bitcoin-weekend',pageId:'p1',body:'A collection of milky pink and subtle shimmer nail styles for the weekend. Message us with the style you like to discuss color and length before booking.',media:[{id:'page-video-weekend',type:'video',src:videos.weekend,poster:images.blush,name:'nail-weekend.mp4'}],createdAt:at(0,10,15),status:'published'},
