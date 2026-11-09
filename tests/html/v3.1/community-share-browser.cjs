@@ -134,6 +134,15 @@ const server = http.createServer(async (request, response) => {
         await check('search choose group and persist destination',async()=>{
           await open(); await share();
           await dialog().locator('[data-share-action="groups"]').first().click();
+          if(!await dialog().locator('[data-share-group]').count()) {
+            assert.match(await dialog().innerText(),/No groups to share to/);
+            await dialog().locator('[data-share-action="close"]').click();
+            await page.goto(base+'/html/v3.1/'+entry+'&tab=groups',{waitUntil:'domcontentloaded'});
+            await page.frameLocator('#communityPane').locator('.community-group-section').first().waitFor();
+            frame=page.frames().find(item=>item.url().includes('nexora-community-prototype.html'));
+            await frame.locator('.community-group-section').first().locator('[data-community-group-action="membership"][aria-pressed="false"]:enabled').first().click();
+            await open();await share();await dialog().locator('[data-share-action="groups"]').first().click();
+          }
           const choice=dialog().locator('[data-share-group]').first();await choice.waitFor();
           const id=await choice.getAttribute('data-share-group'),title=await choice.locator('strong').innerText();
           await dialog().locator('[data-share-search]').fill(title);
@@ -167,6 +176,23 @@ const server = http.createServer(async (request, response) => {
           await connect.locator('#messagesPanel [data-detail]').filter({has:connect.getByText(name,{exact:true})}).first().click();
           await connect.locator('.connect-context-card a').filter({hasText:'View post'}).waitFor();
           assert.equal(new URL(await connect.locator('.connect-context-card a').filter({hasText:'View post'}).getAttribute('href')).searchParams.get('postId'),'f5');
+        });
+        if(width===1280&&account==='business')await check('partial message failure keeps draft and retry avoids duplicates',async()=>{
+          await open();await share();await dialog().locator('[data-share-action="messages"]').click();
+          await dialog().locator('[data-share-recipient="Kim Tuyen"]').waitFor();
+          await dialog().locator('[data-share-recipient="Kim Tuyen"]').click();
+          await dialog().locator('[data-share-recipient="Sally Thanh Hoang"]').click();
+          const caption='Retry share without duplicate messages';
+          await dialog().locator('#communityShareCaption').fill(caption);
+          await page.evaluate(()=>{const directory=window.NEXORA_COMMUNITY_PEOPLE;window.qaOriginalSend=directory.sendPost;directory.sendPost=(name,post)=>name==='Sally Thanh Hoang'?Promise.resolve(false):window.qaOriginalSend(name,post);});
+          await dialog().locator('[data-share-action="send"]').click();
+          await dialog().locator('.community-share-status').filter({hasText:'Something went wrong.'}).waitFor();
+          assert.equal(await dialog().locator('#communityShareCaption').inputValue(),caption);
+          assert.equal(await dialog().locator('[data-share-recipient="Kim Tuyen"]').isDisabled(),true);
+          await page.evaluate(()=>{window.NEXORA_COMMUNITY_PEOPLE.sendPost=window.qaOriginalSend;delete window.qaOriginalSend;});
+          await dialog().locator('[data-share-action="send"]').click();await dialog().waitFor({state:'hidden'});
+          const sent=await page.evaluate(caption=>Object.entries(localStorage).flatMap(([,value])=>{try{return Object.values(JSON.parse(value)?.messages||{}).flat().filter(row=>row.text===caption);}catch{return [];}}),caption);
+          assert.equal(sent.length,2);
         });
         await check('narrow audience cannot be widened',async()=>{
           await open();
