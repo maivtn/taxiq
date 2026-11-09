@@ -1,4 +1,5 @@
 /* Shared semantic icons for the homepage and its separate PO review. */
+.nexora-icon-upgrade #journey .journey-card > small { display: none; }
 .nexora-icon-upgrade .review-icon { position: relative; flex-shrink: 0; isolation: isolate; }
 .nexora-icon-upgrade :is(.product-icon, .journey-icon, .start-path-icon, .eco-node-icon,
   .eco-nexora-icon, .about-pillar-icon, .contact-detail-icon,
