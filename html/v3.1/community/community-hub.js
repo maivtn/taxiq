@@ -113,7 +113,12 @@
       root.querySelectorAll('.tab-sub-toggle').forEach(toggle=>toggle.addEventListener('click',()=>{const menu=root.getElementById(toggle.getAttribute('aria-controls')),open=menu.hidden;closeMenus();menu.hidden=!open;toggle.setAttribute('aria-expanded',String(open));}));
       root.getElementById('communityBack').addEventListener('click',()=>{stopTour(false);closeMenus();if(hosted)notifyHost({type:'nexora-community-history-back'});else if(history.length>1&&document.referrer)history.back();else setView('feed',false);});
       root.getElementById('communityFindPeople')?.addEventListener('click',()=>{connectSection='contacts';setView('connect');});
-      root.getElementById('communityCreate')?.addEventListener('click',()=>sendToFrame(community,{type:'nexora-open-create-menu'}));
+      root.getElementById('communityCreate')?.addEventListener('click',()=>{
+        setView('feed',false);
+        const toggle=community.contentDocument?.getElementById('feedActionsToggle');
+        if(toggle){toggle.click();return;}
+        sendToFrame(community,{type:'nexora-open-create-menu'});
+      });
       root.getElementById('communityLocation')?.addEventListener('click',()=>sendToFrame(community,{type:'nexora-open-location'}));
       root.getElementById('languageBack').addEventListener('click',()=>{closeMenus();languageButton.focus();});
       root.querySelectorAll('[data-side-view],[data-quick-view]').forEach(el=>el.addEventListener('click',()=>setView(el.dataset.sideView||el.dataset.quickView)));
