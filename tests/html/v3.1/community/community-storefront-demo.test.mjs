@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {JSDOM} from 'jsdom';
 
-const source=readFileSync(new URL('../../../html/v3.1/community/community-storefront-demo.js',import.meta.url),'utf8');
+const source=readFileSync(new URL('../../../../html/v3.1/community/community-storefront-demo.js',import.meta.url),'utf8');
 const clone=value=>JSON.parse(JSON.stringify(value));
 const empty=()=>({lang:'en',shop:{name:'',type:'personal',category:'',city:'Houston, TX',phone:'',email:'',hours:'',website:'',about:'',logo:'',cover:'',fanpageId:'',fulfillment:[],items:[]},fanpages:[],feedPosts:[]});
 const owner={role:'owner',member:'BITCOIN NAIL BAR'};
