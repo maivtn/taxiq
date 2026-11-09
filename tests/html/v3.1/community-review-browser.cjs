@@ -75,6 +75,20 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      await sent.screenshot({path:path.join(output,`${width}-${account}-sent-requests.png`)});
 
     });
+    await check('Contacts show avatars with message and call icons on the right',async()=>{
+     await open('contacts');const connect=hub.locator('#connectPane'),rows=connect.locator('#contactRows .connect-contact');await rows.first().waitFor();
+     const contacts=await rows.evaluateAll(nodes=>nodes.map(node=>{
+      const avatar=node.querySelector('.contact-avatar'),main=node.querySelector('.contact-main'),actions=node.querySelector('.contact-actions'),a=avatar?.getBoundingClientRect(),m=main.getBoundingClientRect(),b=actions.getBoundingClientRect();
+      return {avatar:!!avatar&&(!!avatar.querySelector('img')||!!avatar.textContent.trim()),inline:!!a&&a.right<=m.left+1&&m.right<=b.left+1&&Math.abs(a.y+a.height/2-b.y-b.height/2)<2,icons:[...actions.children].map(button=>({count:button.querySelectorAll('svg').length,label:button.getAttribute('aria-label'),text:button.textContent.trim()}))};
+     }));assert.ok(contacts.length>0&&contacts.every(row=>row.avatar&&row.inline&&row.icons.length===2&&row.icons.every(icon=>icon.count===1&&icon.label&&!icon.text)),JSON.stringify(contacts));
+     await rows.first().screenshot({path:path.join(output,`${width}-${account}-contact-row.png`)});
+     const name=await rows.first().locator('.contact-main strong').innerText();await rows.first().locator('.contact-actions [data-contact-member]').click();
+     await connect.locator('#detailTitle').waitFor();assert.equal(await connect.locator('#detailTitle').innerText(),name);
+     await open('contacts');await rows.first().waitFor();await rows.first().locator('[data-start-call=voice]').click();
+     const call=connect.locator('#connectActiveCall');await call.waitFor();assert.equal(await call.locator('h3').innerText(),name);
+     await call.locator('[data-connect-action=end-call]').click();await call.waitFor({state:'detached'});
+     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+    });
     await check('market sell save persistence and two columns',async()=>{
      await open('market');const market=pane.locator('#marketView');await market.locator('#tabButtons #createSale').waitFor();
      const hero=market.locator(':scope>.feature-intro'),sale=market.locator('#tabButtons #createSale');
