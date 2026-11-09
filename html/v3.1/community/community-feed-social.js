@@ -106,7 +106,7 @@
     }
     const attr=(postId,extra='')=>' data-social-post="'+esc(postId)+'"'+extra;
     const button=(action,label,postId,extra='',className='community-social-link')=>`<button type="button" class="${className}" data-social-action="${action}"${attr(postId,extra)}>${label}</button>`;
-    const icon=kind=>`<svg class="community-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${kind==='heart'?'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>':'<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/>'}</svg>`;
+    const icon=kind=>`<svg class="community-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${kind==='heart'?'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>':kind==='share'?'<path d="m14 4 8 7-8 7v-4C8 14 4 16 2 20c0-7 4-11 12-11V4Z"/>':'<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/>'}</svg>`;
     const threadKey=(postId,rootId)=>postId+':'+rootId;
     const isVisible=post=>!['pending','removed'].includes(post.groupStatus)&&!(own(post)&&state.deletedPostIds.includes(String(post.id)))&&(!post.paused||own(post));
     const commentCount=post=>ensurePost(post).comments.length;
@@ -117,7 +117,7 @@
     function sharePost(post){const text=[post.title,postBody(post)].filter(Boolean).join('\n\n');adapter.openDialog?.('<div class="overlay" data-social-overlay><section class="dialog" role="dialog" aria-modal="true"><div class="dialog-head"><h2>Share post</h2>'+button('close','×',post.id,' aria-label="Close"','icon-btn')+'</div><div class="dialog-body"><p>Review and copy this post to send to others.</p><textarea class="field" data-po-share-text readonly rows="7">'+esc(text)+'</textarea><div class="listing-actions">'+button('share-native','Share to app',post.id,'','btn primary')+button('share-copy','Copy post text',post.id,'','btn')+'</div></div></section></div>');}
     function actionsMarkup(post) {
       const entry=ensurePost(post),liked=entry.likedBy.includes(member),count=entry.baseLikes+entry.likedBy.length;
-      return `<div class="community-social-actions" data-social-ui="actions">${button('like',icon('heart')+`<span>${esc(t('like'))} · ${count}</span>`,post.id,` aria-pressed="${liked}" title="${esc(t(liked?'unlike':'like'))}"`)}${button('comments',icon('message-circle')+`<span>${esc(t('comments',{count:commentCount(post)}))}</span>`,post.id,` aria-expanded="${opened.has(String(post.id))}"`)}${button('share-post','Share',post.id)}</div>`;
+      return `<div class="community-social-actions" data-social-ui="actions">${button('like',icon('heart')+`<span>${esc(t('like'))} · ${count}</span>`,post.id,` aria-pressed="${liked}" title="${esc(t(liked?'unlike':'like'))}"`)}${button('comments',icon('message-circle')+`<span>${esc(t('comments',{count:commentCount(post)}))}</span>`,post.id,` aria-expanded="${opened.has(String(post.id))}"`)}${button('share-post',icon('share')+'<span>Share</span>',post.id)}</div>`;
     }
     function menuMarkup(post) {
       const owner=own(post);
