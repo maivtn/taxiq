@@ -12,7 +12,31 @@
     const root=window.NEXORA_NATIVE.regionRoot(host);
     const style=document.createElement('style');
     style.textContent=scopedCSS(window.NEXORA_COMMUNITY_SHELL_CSS,BASE_URL)+`\n:host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host .tour-card,:host .tour-card.menu-step{top:auto;}}`;
+    style.textContent+=`
+      @container community (max-width:800px) {
+        :host .main > .workspace { order:1; }
+        :host .main > .mobile-nav:not([hidden]) {
+          flex:none;
+          border-top:0;
+          border-bottom:1px solid #e2e8f0;
+          box-shadow:none;
+        }
+        :host .main > .mobile-nav.is-docked:not([hidden]) {
+          order:2;
+          border-top:1px solid #e2e8f0;
+          border-bottom:0;
+          box-shadow:0 -4px 18px #0f172a06;
+        }
+      }
+    `;
     root.append(style);
+    const mobileNav=root.querySelector('.mobile-nav');
+    const workspace=root.querySelector('.workspace');
+    workspace.addEventListener('scroll',event=>{
+      const scroller=event.target;
+      if(!scroller.matches('.workspace,.native-body,.community-extra-pane')||scroller.closest('[hidden]'))return;
+      mobileNav.classList.toggle('is-docked',scroller.scrollTop>=mobileNav.offsetHeight&&mobileNav.offsetHeight>0);
+    },{capture:true,passive:true});
     let additions;
     const initialRoute=options.params?.get('tab')||'feed';
     const notify=data=>{
@@ -74,7 +98,7 @@
       function updateDetailState(){const detailOpen=view==='connect'?(connectDetailOpen||connectDialogOpen):communityModalOpen;app.classList.toggle('detail-open',detailOpen);root.querySelector('.mobile-nav').hidden=detailOpen;}
       function notifyRequest(){let pending=true;try{const saved=JSON.parse(localStorage.getItem('nexora-connect-preview-v2'));if(saved&&saved.request)pending=saved.request==='pending';}catch{}root.getElementById('requestBadge').hidden=!pending;root.getElementById('notificationItem').hidden=!pending;root.getElementById('notificationEmpty').hidden=pending;}
       function updateMobileHeading(){const heading=root.querySelector('.community-heading h1');const name=({feed:translations[language].community,groups:translations[language].groups,market:translations[language].groups,pages:translations[language].pages,jobs:translations[language].jobs,daywork:translations[language].daywork,deals:translations[language].deals,blog:'Blog',connect:translations[language].mobileConnect})[view]||translations[language].community;heading.textContent=isCompact()?name:translations[language].community;}
-      function setView(next,push=true,fromChild=false){if(push&&params.get('pageId')&&next==='pages'&&view==='pages'&&!fromChild){notifyHost({type:'nexora-community-page-navigate',pageScope:params.get('pageScope')||'discover'});return;}if(next!=='pages'){if(params.get('pageId')&&communityLoaded)sendToFrame(community,{type:'nexora-page-screen-deactivate'});for(const key of ['pageId','pageMode','pageTab'])params.delete(key);}closeMenus();app.classList.remove('nav-open');if(communityModalOpen&&view!==next){communityModalOpen=false;root.querySelector('.mobile-nav').hidden=false;}view=next;const isConnect=next==='connect';ensurePane(isConnect?connect:community);if(!isConnect)connectDetailOpen=false;community.hidden=isConnect;connect.hidden=!isConnect;tabs.forEach(tab=>{const active=tab.dataset.view===(tab.classList.contains('mobile-tab')?({groups:'market',daywork:'jobs'}[next]||next):({groups:'market',daywork:'jobs'}[next]||next));tab.classList.toggle('active',active);tab.setAttribute('aria-current',active?'page':'false');tab.hidden=tab.classList.contains('mobile-tab')&&active;});root.querySelector('.mobile-nav').style.setProperty('--community-nav-count',String(root.querySelectorAll('.mobile-nav .mobile-tab:not([hidden])').length||1));root.querySelectorAll('[data-side-view]').forEach(el=>el.classList.toggle('active',el.dataset.sideView===(['groups'].includes(next)?'market':next)));root.querySelectorAll('[data-top-sub-view]').forEach(el=>{const active=el.dataset.topSubView===next;el.classList.toggle('active',active);el.setAttribute('aria-current',active?'page':'false');});if(!isConnect&&!fromChild){pendingCommunityView=next;if(communityLoaded)sendToFrame(community,{type:'nexora-open-view',view:next});}if(isConnect&&connectLoaded)sendToFrame(connect,{type:'nexora-open-section',section:connectSection});if(push&&!context.native&&location.protocol!=='file:')(()=>{const url=new URL(location.href);url.searchParams.set('view',next);url.searchParams.set('tab',currentRoute());history.replaceState(null,'',url);})();updateDetailState();updateMobileHeading();notifyHostRoute(!push);notifyHostDetail();}
+      function setView(next,push=true,fromChild=false){if(push&&params.get('pageId')&&next==='pages'&&view==='pages'&&!fromChild){notifyHost({type:'nexora-community-page-navigate',pageScope:params.get('pageScope')||'discover'});return;}if(next!=='pages'){if(params.get('pageId')&&communityLoaded)sendToFrame(community,{type:'nexora-page-screen-deactivate'});for(const key of ['pageId','pageMode','pageTab'])params.delete(key);}closeMenus();app.classList.remove('nav-open');if(communityModalOpen&&view!==next){communityModalOpen=false;root.querySelector('.mobile-nav').hidden=false;}if(view!==next)root.querySelector('.mobile-nav').classList.remove('is-docked');view=next;const isConnect=next==='connect';ensurePane(isConnect?connect:community);if(!isConnect)connectDetailOpen=false;community.hidden=isConnect;connect.hidden=!isConnect;tabs.forEach(tab=>{const active=tab.dataset.view===(tab.classList.contains('mobile-tab')?({groups:'market',daywork:'jobs'}[next]||next):({groups:'market',daywork:'jobs'}[next]||next));tab.classList.toggle('active',active);tab.setAttribute('aria-current',active?'page':'false');tab.hidden=tab.classList.contains('mobile-tab')&&active;});root.querySelector('.mobile-nav').style.setProperty('--community-nav-count',String(root.querySelectorAll('.mobile-nav .mobile-tab:not([hidden])').length||1));root.querySelectorAll('[data-side-view]').forEach(el=>el.classList.toggle('active',el.dataset.sideView===(['groups'].includes(next)?'market':next)));root.querySelectorAll('[data-top-sub-view]').forEach(el=>{const active=el.dataset.topSubView===next;el.classList.toggle('active',active);el.setAttribute('aria-current',active?'page':'false');});if(!isConnect&&!fromChild){pendingCommunityView=next;if(communityLoaded)sendToFrame(community,{type:'nexora-open-view',view:next});}if(isConnect&&connectLoaded)sendToFrame(connect,{type:'nexora-open-section',section:connectSection});if(push&&!context.native&&location.protocol!=='file:')(()=>{const url=new URL(location.href);url.searchParams.set('view',next);url.searchParams.set('tab',currentRoute());history.replaceState(null,'',url);})();updateDetailState();updateMobileHeading();notifyHostRoute(!push);notifyHostDetail();}
       const tourSteps=[
         {view:'feed',label:{vi:'Bảng tin',en:'Feed'},copy:{vi:'Xem tin mới và đăng chia sẻ, ảnh, câu hỏi hoặc mẹo nghề.',en:'See new posts and share updates, photos, questions, or tips.'}},
         {view:'market',label:{vi:'Nhóm & Chợ',en:'Groups & Market'},copy:{vi:'Vào nhóm để trao đổi; ở Mua bán, đăng Cần bán hoặc Cần mua miễn phí và nhắn tin trực tiếp.',en:'Join groups to talk. In Buy & sell, post items for sale or wanted for free, then message directly.'}},
