@@ -177,6 +177,16 @@
 
 /* The compact Jobs actions show Seeking work before Extra shifts. */
 .community-seeking-context-action{display:none!important}
+@media(min-width:801px){
+  #jobsView.jobs-staff-layout>.feature-intro{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}
+  #jobsView.jobs-staff-layout>.feature-intro>div:first-child{flex:1 1 350px;min-width:0}
+  #jobsView.jobs-staff-layout>.feature-intro #jobTemplates{display:flex;flex:0 0 auto;width:auto;margin:0;gap:0}
+  #jobsView.jobs-staff-layout>.feature-intro #jobTemplates .template-card{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;width:auto;padding:9px 11px;border:1px solid #6b52e8;border-radius:9px;background:#6b52e8;color:#fff;box-shadow:0 2px 4px #6951d514}
+  #jobsView.jobs-staff-layout>.feature-intro #jobTemplates .template-icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin:0;background:transparent;color:#fff}
+  #jobsView.jobs-staff-layout>.feature-intro #jobTemplates .template-icon .feed-icon{width:18px;height:18px}
+  #jobsView.jobs-staff-layout>.feature-intro #jobTemplates .template-card strong{margin:0;color:inherit;font-size:12px;white-space:nowrap}
+  #jobsView.jobs-staff-layout>.feature-intro #jobTemplates .template-card small{display:none}
+}
 @media(max-width:800px){
   body.embedded:has(#jobsView.jobs-staff-layout:not(.hide)) #localDiscovery.has-seeking-action.has-context-action{display:flex!important}
   body.embedded #localDiscovery.has-seeking-action{flex-wrap:wrap}
