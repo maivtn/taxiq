@@ -49,7 +49,7 @@ const server=http.createServer(async(req,res)=>{
           await open('pages');const before=page.url();await trigger.tap();await expanded();assert.equal(page.url(),before);await page.keyboard.press('Escape');
         });
         await check('create actions open their existing forms',async()=>{
-          await open();const frame=page.frameLocator('#communityPane');await frame.locator('#feedComposerCard').waitFor();
+          await open();const frame=page.locator('#communityPane');await frame.locator('#feedComposerCard').waitFor();
           for(const kind of ['showcase','tip','question','poll','event']){
             await trigger.tap();await menu.locator(`[data-create-kind="${kind}"]`).tap();
             await frame.locator(`#templateForm[data-kind="${kind}"]`).waitFor();await frame.locator('#closeModal').click();
@@ -78,7 +78,7 @@ const server=http.createServer(async(req,res)=>{
     try{
       await desktop.addInitScript(()=>{if(location.protocol==='http:')localStorage.setItem('nexora-community-tour-desktop-v1','1');});
       const page=await desktop.newPage();await page.goto(base+'/html/v3.1/community.html?tab=feed',{waitUntil:'domcontentloaded'});
-      const frame=page.frameLocator('#communityPane');await frame.locator('#feedActionsToggle').waitFor();
+      const frame=page.locator('#communityPane');await frame.locator('#feedActionsToggle').waitFor();
       assert.equal(await page.locator('#communityCreate').isVisible(),false);
       await frame.locator('#feedActionsToggle').click();await frame.locator('#feedActions').waitFor();
       await frame.locator('#feedActions [data-template="tip"]').click();await frame.locator('#templateForm[data-kind="tip"]').waitFor();

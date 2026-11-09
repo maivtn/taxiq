@@ -10,7 +10,7 @@
   }
   async function mount(host,options={}){
     if(host.communityHub)return host.communityHub;
-    const url=new URL('nexora-community-complete.html?v=20261109-native-create1',BASE_URL);
+    const url=new URL('nexora-community-complete.html?v=20261109-direct-panes1',BASE_URL);
     const parsed=new DOMParser().parseFromString(await read(url),'text/html');
     const styles=await Promise.all([...parsed.head.querySelectorAll('style,link[rel="stylesheet"]')].map(async node=>{const source=node.tagName==='STYLE'?url:new URL(node.getAttribute('href'),url);return scopedCSS(node.tagName==='STYLE'?node.textContent:await read(source),source);}));
     parsed.body.querySelectorAll('script').forEach(node=>node.remove());
@@ -40,6 +40,7 @@
       root.querySelectorAll('.tab[data-view]').forEach(button=>{const file=artwork[button.dataset.view],previous=button.querySelector('svg');if(!file||!previous)return;const image=document.createElement('img');image.className='community-nav-art';image.src=new URL('nav-icons/'+file,BASE_URL).href;image.alt='';image.setAttribute('aria-hidden','true');image.width=image.height=28;image.draggable=false;previous.replaceWith(image);});
 
       const community=root.getElementById('communityPane'),connect=root.getElementById('connectPane');
+      for(const pane of [community,connect])window.NEXORA_NATIVE.bind(pane);
       const messageOrigin=location.protocol==='file:'?'*':location.origin;
       const sendToFrame=(frame,data)=>frame.contentWindow.postMessage(data,messageOrigin);
       const tabs=[...root.querySelectorAll('.tab')];

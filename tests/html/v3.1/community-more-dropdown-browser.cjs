@@ -111,14 +111,14 @@ const server = http.createServer(async (request, response) => {
             assert.equal(await host.locator('.community-heading-tools').isVisible(), false);
           }
           if (width > 800) {
-            await page.frameLocator('#communityPane').locator('#feedTitle').waitFor();
+            await page.locator('#communityPane').locator('#feedTitle').waitFor();
             const tabs = await host.locator('.top .tabs').boundingBox();
-            const title = await page.frameLocator('#communityPane').locator('#feedTitle').boundingBox();
+            const title = await page.locator('#communityPane').locator('#feedTitle').boundingBox();
             assert.ok(title.y-tabs.y-tabs.height <= 36, 'Feed should sit close below navigation');
           }
         });
         await check('PO photo composer remains available', async () => {
-          await page.frameLocator('#communityPane').locator('.feed-media-shortcuts [data-po-route="post"]').click();
+          await page.locator('#communityPane').locator('.feed-media-shortcuts [data-po-route="post"]').click();
           const dialog = host.locator('#editor.community-photo-composer');
           await dialog.waitFor();
           await page.waitForFunction(() => history.state?.communityDetail === true);
@@ -134,7 +134,7 @@ const server = http.createServer(async (request, response) => {
         await check('Connect section headings stay removed', async () => {
           for (const [tab,panel] of [['chatgroups','groups'],['calls','calls'],['contacts','contacts']]) {
             await open(tab);
-            const connect = page.frameLocator('#connectPane');
+            const connect = page.locator('#connectPane');
             await connect.locator('#'+panel+'Panel').waitFor();
             assert.equal(await connect.locator('#'+panel+'Panel .screen-title').count(), 0);
           }

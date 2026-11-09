@@ -42,7 +42,8 @@
       return {url: scriptURL.href, code: node.src ? await read(scriptURL.href) : node.textContent};
     }));
     parsed.querySelectorAll('script,style,link[rel="stylesheet"]').forEach(node => node.remove());
-    const root = host.attachShadow({mode:'open'});
+    const root = host.shadowRoot || host.attachShadow({mode:'open'});
+    root.replaceChildren();
     const html = document.createElement('div'), head = document.createElement('div'), body = document.createElement('div');
     html.className = 'native-html'; html.lang = parsed.documentElement.lang || 'en';
     head.className = 'native-head'; body.className = 'native-body ' + parsed.body.className;
@@ -90,8 +91,8 @@
         const code=node.getAttribute?.(attribute);if(!code)continue;node.dataset.nativeAction=code;node.removeAttribute(attribute);node.addEventListener(attribute.slice(2),event=>{const result=scope.invoke?.(code,event,node);if(result===false){event.preventDefault();event.stopPropagation();}});
       }
     };
-    rewrite(body);controls(body);
-    const observer = new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) if (node.nodeType === 1){rewrite(node);controls(node);} });
+    rewrite(body);if(options.controls!==false)controls(body);
+    const observer = new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) if (node.nodeType === 1){rewrite(node);if(options.controls!==false)controls(node);} });
     observer.observe(body, {childList:true,subtree:true});
     const doc = new Proxy(browser.document, {
       get(target, key) {
@@ -136,6 +137,8 @@
       receiveMessage(data,source=parent){const event=new Event('message');Object.defineProperties(event,{data:{value:data},source:{value:source},origin:{value:browser.location.origin}});events.dispatchEvent(event);},
       postMessage(data){windowAPI.receiveMessage(data,parent);},
       scrollTo(...args){body.scrollTo(...args);},
+      get scrollY(){return body.scrollTop;},get scrollX(){return body.scrollLeft;},
+      get pageYOffset(){return body.scrollTop;},get pageXOffset(){return body.scrollLeft;},
       setInterval(fn, delay, ...args){const id=browser.setInterval(fn,delay,...args);timers.add(id);return id;},
       setTimeout(fn, delay, ...args){const id=browser.setTimeout(fn,delay,...args);timers.add(id);return id;},
       NEXORA_NATIVE:browser.NEXORA_NATIVE,
@@ -147,11 +150,44 @@
       set(target,key,value){if(key in windowAPI)windowAPI[key]=value;else target[key]=value;return true;}
     });
     const program = sources.map(script => '__scope.setScript(' + JSON.stringify(script.url) + ');\n' + script.code + '\n;' + (/\/qrcode\.min\.js(?:\?|$)/.test(script.url)?'window.QRCode=QRCode;':'')).join('\n');
-    const api = {document:doc,window:facade,root,url,send(data){facade.postMessage(data);},destroy(){observer.disconnect();for(const [target,type,fn,opts] of listeners)target.removeEventListener(type,fn,opts);for(const id of timers){browser.clearTimeout(id);browser.clearInterval(id);}host.replaceChildren();}};
+    const api = {document:doc,window:facade,root,url,send(data){facade.postMessage(data);},destroy(){observer.disconnect();for(const [target,type,fn,opts] of listeners)target.removeEventListener(type,fn,opts);for(const id of timers){browser.clearTimeout(id);browser.clearInterval(id);}root.replaceChildren();host.communityModule=null;}};
     host.communityModule = api;
     try { new Function('window','document','location','parent','__scope','with(window){\n' + program + '\n__scope.invoke=(code,event,element)=>eval("(function(event){"+code+"\\n}).call(element,event)");\n}').call(facade,facade,doc,location,parent,scope); }
     catch(error){host.communityModule=null;api.destroy();throw error;}
     return api;
   }
-  browser.NEXORA_NATIVE = {mount,read,css};
+  // Keep the existing controller contract while rendering every pane in this document.
+  // Messages are local events; these sections never create a browsing context.
+  function bind(host, options = {}) {
+    const owner=options.owner||browser;
+    let task;
+    const parent=new Proxy(owner, {get(target,key){
+      if(key==='postMessage')return data=>queueMicrotask(()=>{
+        const event=new Event('message');
+        Object.defineProperties(event,{data:{value:data},source:{value:host.contentWindow},origin:{value:browser.location.origin}});
+        owner.dispatchEvent(event);
+      });
+      const value=target[key];return typeof value==='function'?value.bind(target):value;
+    }});
+    Object.defineProperties(host,{
+      contentWindow:{get:()=>host.communityModule?.window},
+      contentDocument:{get:()=>host.communityModule?.document},
+      src:{get:()=>host.getAttribute('src'),set(source){
+        if(task)return;
+        host.setAttribute('src',source);host.setAttribute('aria-busy','true');
+        task=mount(host,source,{parent,controls:false,navigate:options.navigate||((url)=>owner.location.assign(url))}).then(api=>{
+          host.removeAttribute('aria-busy');host.dispatchEvent(new Event('load'));return api;
+        }).catch(error=>{
+          task=null;host.removeAttribute('src');host.removeAttribute('aria-busy');
+          const target=host.shadowRoot||host;
+          const message=browser.document.createElement('p');message.setAttribute('role','alert');message.textContent='Something went wrong. Please try again.';
+          const retry=browser.document.createElement('button');retry.type='button';retry.textContent='Try again';retry.onclick=()=>{host.src=source;};
+          target.replaceChildren(message,retry);host.dispatchEvent(new Event('error'));console.error('Community pane',source,error);
+        });
+      }}
+    });
+    host.dataset.nativePane='';
+    return host;
+  }
+  browser.NEXORA_NATIVE = {mount,read,css,bind};
 })();

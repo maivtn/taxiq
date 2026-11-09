@@ -79,7 +79,7 @@
     }
     function ensureFrame(name){
       if(frames.has(name))return frames.get(name);
-      const frame=document.createElement('iframe');frame.className='community-deals-frame';frame.title=ROUTES[selected].label;frame.hidden=true;
+      const frame=window.NEXORA_NATIVE.bind(document.createElement('section'),{owner:window});frame.className='community-deals-frame';frame.title=ROUTES[selected].label;frame.hidden=true;
       const record={frame,ready:false};frames.set(name,record);
       const url=new URL('deals/'+name+'.html?v=20261109-deals-navigation1',BASE);url.searchParams.set('member',adapter.member);url.searchParams.set('role',adapter.role);url.searchParams.set('communityNav','merged');
       frame.src=url.href;frameHost.append(frame);
@@ -123,7 +123,7 @@
       if(!entry||location.protocol!=='file:'&&event.origin!==location.origin)return;
       const [name,record]=entry,data=event.data||{};
       if(data.type==='nexora-deals-ready'){record.ready=true;if(active&&ROUTES[selected].module===name)configure(record);}
-      if(data.type==='nexora-deals-height'&&Number.isFinite(data.height))record.frame.style.height=Math.max(650,Math.min(30000,data.height+12))+'px';
+      if(data.type==='nexora-deals-height'&&Number.isFinite(data.height)&&!record.frame.hasAttribute('data-native-pane'))record.frame.style.height=Math.max(650,Math.min(30000,data.height+12))+'px';
       if(data.type==='nexora-deals-page')adapter.openPage?.(data.pageId);
       if(data.type==='nexora-deals-modal'&&active&&!record.frame.hidden){viewport();adapter.onModal?.(Boolean(data.open));}
       if(data.type==='nexora-deals-route'&&active&&!record.frame.hidden){const found=Object.keys(ROUTES).find(key=>ROUTES[key].module===name&&ROUTES[key].view===data.view);if(found&&found!==selected){selected=found;updateNavigation();adapter.onState?.({dealTab:found});}}

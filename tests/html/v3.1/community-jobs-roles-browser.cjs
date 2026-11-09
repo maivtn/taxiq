@@ -18,7 +18,7 @@ fs.mkdirSync(output,{recursive:true});
           localStorage.setItem('nexora-community-tour-mobile-v1','1');
         });
         const page=await context.newPage();page.setDefaultTimeout(15000);
-        const jobs=page.frameLocator('#communityPane');
+        const jobs=page.locator('#communityPane');
         page.on('pageerror',error=>errors.push({width,message:error.message}));
         async function open(file,query){
           await page.goto(base+'/html/v3.1/'+file+'?'+query,{waitUntil:'domcontentloaded'});

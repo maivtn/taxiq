@@ -1,4 +1,5 @@
-/* Verify the actual v3.1 Feed, including its retained iframe and native tools. */
+/* Verify the actual v3.1 Feed and its directly rendered tools. */
+const {nativePane}=require('./native-pane.cjs');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const path=require('node:path');
@@ -21,8 +22,8 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/taxiq-community-feed-ord
         let frame;
         const tools=()=>page.locator('.community-extra-pane');
         async function ready(){
-          await page.frameLocator('#communityPane').locator('#communityPOPeople .people-card').first().waitFor();
-          frame=page.frames().find(item=>item.url().includes('nexora-community-prototype.html'));
+          await page.locator('#communityPane').locator('#communityPOPeople .people-card').first().waitFor();
+          frame=nativePane(page);
           await frame.waitForFunction(()=>document.documentElement.lang==='en');
         }
         async function open(){await page.goto(origin+'/html/v3.1/'+entry,{waitUntil:'domcontentloaded'});await ready();}

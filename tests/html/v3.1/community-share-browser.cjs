@@ -1,4 +1,5 @@
 /* Headless interaction checks for the retained Community Share sheet. */
+const {nativePane}=require('./native-pane.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
@@ -46,8 +47,8 @@ const server = http.createServer(async (request, response) => {
         async function open() {
           await page.goto(base+'/html/v3.1/'+entry+'&tab=feed', {waitUntil:'domcontentloaded'});
           await page.waitForFunction(() => !!window.NEXORA_COMMUNITY_PEOPLE);
-          await page.frameLocator('#communityPane').locator('#feedPosts [data-feed-post-id]').first().waitFor();
-          frame = page.frames().find(item => item.url().includes('nexora-community-prototype.html'));
+          await page.locator('#communityPane').locator('#feedPosts [data-feed-post-id]').first().waitFor();
+          frame = nativePane(page);
           await frame.waitForFunction(() => document.documentElement.lang==='en');
           await loadPost('f5');
         }
@@ -81,7 +82,7 @@ const server = http.createServer(async (request, response) => {
           assert.match(await dialog().locator('[data-share-action="audience"]').innerText(),/Friends/);
           await page.screenshot({path:path.join(output,width+'-'+account+'-share.png')});
           await page.keyboard.press('Shift+Tab');
-          assert.equal(await dialog().locator('[data-share-action="more"]').evaluate(node=>document.activeElement===node),true);
+          assert.equal(await dialog().locator('[data-share-action="more"]').evaluate(node=>node.getRootNode().activeElement===node),true);
           await page.keyboard.press('Escape');await dialog().waitFor({state:'hidden'});
         });
         await check('copy link fallback native share and detail return',async()=>{
@@ -105,8 +106,8 @@ const server = http.createServer(async (request, response) => {
           assert.ok((await page.evaluate(()=>navigator.clipboard.readText())).length>20);
           await dialog().locator('[data-share-action="close"]').click();
           await page.goto(copied,{waitUntil:'domcontentloaded'});
-          await page.frameLocator('#communityPane').locator('[data-social-post-detail="f5"]').waitFor();
-          frame=page.frames().find(item=>item.url().includes('nexora-community-prototype.html'));
+          await page.locator('#communityPane').locator('[data-social-post-detail="f5"]').waitFor();
+          frame=nativePane(page);
           await frame.locator('[data-social-post-detail="f5"]').waitFor();
           await frame.locator('[data-social-post-detail="f5"] [data-social-action="share-post"]').click();
           await dialog().locator('[data-share-action="close"]').click();
@@ -124,8 +125,8 @@ const server = http.createServer(async (request, response) => {
           const card=frame.locator('#feedPosts [data-feed-post-id="'+post.id+'"]');
           await card.locator('.community-share-preview').waitFor();
           await page.reload({waitUntil:'domcontentloaded'});
-          await page.frameLocator('#communityPane').locator('#feedPosts [data-feed-post-id]').first().waitFor();
-          frame=page.frames().find(item=>item.url().includes('nexora-community-prototype.html'));
+          await page.locator('#communityPane').locator('#feedPosts [data-feed-post-id]').first().waitFor();
+          frame=nativePane(page);
           await loadPost(post.id);
           await frame.locator('#feedPosts [data-feed-post-id="'+post.id+'"] .community-share-preview').waitFor();
           await frame.locator('#feedPosts [data-feed-post-id="'+post.id+'"] [data-social-action="open-original"]').click();
@@ -138,8 +139,8 @@ const server = http.createServer(async (request, response) => {
             assert.match(await dialog().innerText(),/No groups to share to/);
             await dialog().locator('[data-share-action="close"]').click();
             await page.goto(base+'/html/v3.1/'+entry+'&tab=groups',{waitUntil:'domcontentloaded'});
-            await page.frameLocator('#communityPane').locator('.community-group-section').first().waitFor();
-            frame=page.frames().find(item=>item.url().includes('nexora-community-prototype.html'));
+            await page.locator('#communityPane').locator('.community-group-section').first().waitFor();
+            frame=nativePane(page);
             await frame.locator('.community-group-section').first().locator('[data-community-group-action="membership"][aria-pressed="false"]:enabled').first().click();
             await open();await share();await dialog().locator('[data-share-action="groups"]').first().click();
           }
@@ -171,8 +172,8 @@ const server = http.createServer(async (request, response) => {
           const sent=await page.evaluate(caption=>Object.entries(localStorage).flatMap(([key,value])=>{try{return Object.values(JSON.parse(value)?.messages||{}).flat().filter(row=>row.text===caption);}catch{return [];}}),caption);
           assert.equal(sent.length,1);assert.equal(sent[0].contextCard.id,'f5');
           await page.goto(base+'/html/v3.1/'+entry+'&tab=connect',{waitUntil:'domcontentloaded'});
-          await page.frameLocator('#connectPane').locator('#messagesPanel').waitFor();
-          const connect=page.frames().find(item=>item.url().includes('nexora-privacy-qr-layout.html'));
+          await page.locator('#connectPane').locator('#messagesPanel').waitFor();
+          const connect=nativePane(page,'#connectPane');
           await connect.locator('#messagesPanel [data-detail]').filter({has:connect.getByText(name,{exact:true})}).first().click();
           await connect.locator('.connect-context-card a').filter({hasText:'View post'}).waitFor();
           assert.equal(new URL(await connect.locator('.connect-context-card a').filter({hasText:'View post'}).getAttribute('href')).searchParams.get('postId'),'f5');

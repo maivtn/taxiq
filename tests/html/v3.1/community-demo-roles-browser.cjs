@@ -19,11 +19,11 @@ const rows=[],errors=[];
         const page=await context.newPage();page.setDefaultTimeout(12000);
         page.on('pageerror',error=>errors.push({width,error:error.message}));
         const host=page.locator('#community-staging,#community-hub');
-        const classic=()=>page.frameLocator('#communityPane');
+        const classic=()=>page.locator('#communityPane');
         async function open(role,route,extra=''){
           await page.goto(base+'/html/v3.1/'+(role==='personal'?'staff-community.html?account=personal':'community.html?account=business')+'&tab='+route+extra,{waitUntil:'domcontentloaded'});
           await page.waitForFunction(()=>document.querySelector('#community-staging,#community-hub')?.communityHub);
-          if(['connect','contacts','calls','privacy'].includes(route)){await page.frameLocator('#connectPane').locator('body').waitFor();return;}
+          if(['connect','contacts','calls','privacy'].includes(route)){await page.locator('#connectPane').locator('.native-body').waitFor();return;}
           await classic().locator('#feedView').waitFor({state:'attached'});
           if(route==='assistant')await host.locator('#ai-dialog:visible').waitFor();
           else if(['food','realestate'].includes(route))await host.locator('.community-document-pane iframe').waitFor();
