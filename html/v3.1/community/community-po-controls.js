@@ -5,6 +5,13 @@
   let adapter;
   const t=(vi,en)=>document.documentElement.lang==='vi'?vi:en;
   const route=(name,context={})=>parent.postMessage({type:'nexora-community-route',route:name,context},location.origin);
+  const mediaArtworkBase=new URL('../icon-oneqr/',document.currentScript.src);
+  function mediaIcon(name){
+    const artwork=name==='reels'
+      ?'<svg class="community-nav-art" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="stroke:none"><rect x="3" y="8" width="18" height="13" rx="3" fill="#8b5cf6"/><path d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5H3z" fill="#c084fc"/><path d="m6 3 3 6h3L9 3zm7 0 3 6h3l-3-6z" fill="#f3e8ff"/><path d="m10 12 6 3-6 3z" fill="#fff"/></svg>'
+      :'<img class="community-nav-art" src="'+new URL('issue-2040-oneqr-'+(name==='post'?'image':'video')+'-3d.png',mediaArtworkBase).href+'" width="28" height="28" alt="" aria-hidden="true" draggable="false">';
+    return '<span class="feed-icon" data-custom-artwork="'+name+'" aria-hidden="true">'+artwork+'</span>';
+  }
   const field=(name,label,value='',type='text')=>'<label class="form-group"><span>'+escape(label)+'</span><input class="field" type="'+type+'" name="'+name+'" value="'+escape(value)+'"></label>';
   function enhanceTemplate(form,item={}){
     if(!form||form.dataset.poEnhanced)return;form.dataset.poEnhanced='1';const kind=form.dataset.kind,target=form.querySelector('.form-grid')||form.querySelector('.dialog-body')||form;
@@ -35,7 +42,7 @@
   function pageExtras(form){return Object.fromEntries(['email','website','address','poCategory'].map(name=>[name,form.elements[name]?.value?.trim()||'']));}
   function enhance(){
     for(const form of document.querySelectorAll('#templateForm,#pageEditForm'))enhanceTemplate(form,form.id==='pageEditForm'?adapter.getPages().find(page=>page.id===form.dataset.id)||{}:{});
-    const actions=document.getElementById('feedMoreActions');if(actions&&!actions.querySelector('[data-po-route]'))actions.insertAdjacentHTML('beforeend',[['post',t('Ảnh/video','Photo/video')],['reels','Reel'],['live',t('Livestream','Live video')]].map(([name,label])=>'<button type="button" class="feed-action" data-po-route="'+name+'">'+label+'</button>').join(''));
+    const actions=document.getElementById('feedMoreActions');if(actions&&!actions.querySelector('[data-po-route]'))actions.insertAdjacentHTML('beforeend',[['post',t('Ảnh/video','Photo/video')],['reels','Reel'],['live',t('Livestream','Live video')]].map(([name,label])=>'<button type="button" class="feed-action" data-po-route="'+name+'">'+mediaIcon(name)+'<span>'+label+'</span></button>').join(''));
     const pagePanel=document.querySelector('[data-page-detail-id]');if(pagePanel&&!pagePanel.querySelector('[data-po-page-tools]')){const id=pagePanel.dataset.pageDetailId,page=adapter.getPages().find(row=>row.id===id);if(page){pagePanel.querySelector('.page-detail-tabs')?.insertAdjacentHTML('beforeend','<button type="button" class="btn small" data-po-page-tools="'+escape(id)+'" data-po-page-tab="services">'+t('Dịch vụ','Services')+'</button>'+(page.owner===adapter.currentMember?'<button type="button" class="btn small" data-po-page-tools="'+escape(id)+'" data-po-page-tab="manage">'+t('Công cụ','Tools')+'</button><button type="button" class="btn small" data-po-page-tools="'+escape(id)+'" data-po-page-tab="inbox">'+t('Hộp thư','Inbox')+'</button>':''));const facts=pagePanel.querySelector('.page-profile-summary');facts?.insertAdjacentHTML('afterend','<div data-po-contact-details>'+[page.email?'<a href="mailto:'+escape(page.email)+'">'+escape(page.email)+'</a>':'',page.website&&/^https?:\/\//i.test(page.website)?'<a target="_blank" rel="noopener" href="'+escape(page.website)+'">Website</a>':'',page.address?'<p>'+escape(page.address)+'</p>':''].join(' ')+'</div>');}}
     const groupPanel=document.querySelector('[data-community-group-dialog]');if(groupPanel&&!groupPanel.querySelector('[data-po-group-members]')){const id=groupPanel.querySelector('[data-community-group-id]')?.dataset.communityGroupId;if(id){const footer=groupPanel.querySelector('.dialog-footer'),store=window.NEXORA_COMMUNITY_WORKFLOWS?.groups?.store;footer?.insertAdjacentHTML('beforeend','<button type="button" class="btn" data-po-group-members="'+escape(id)+'">'+t('Thành viên','Members')+'</button>'+(store?.canManage(id)?'<button type="button" class="btn" data-po-group-tools="'+escape(id)+'">'+t('Quản lý nhóm','Manage group')+'</button>':''));}}
     hydrateVideos();
