@@ -24,10 +24,14 @@
     if(plain&&plain!==core){const next=translate(plain,locale);if(next!==plain)return before+core.replace(plain,next)+after;}
     const decorated=core.match(/^([＋+✦✧◈♧▣▤⌕✎☎•…⋯]\s*)(.+)$/u);
     if(decorated){const next=translate(decorated[2],locale);if(next!==decorated[2])return before+decorated[1]+next+after;}
+    const parts=core.split(/(\s*·\s*)/);
+    if(parts.length>1){const next=parts.map(part=>part.trim()==='·'?part:translate(part,locale)).join('');if(next!==core)return before+next+after;}
+    const counted=core.match(/^([\d,.]+(?:\/[\d,.]+)?)\s+([A-Za-z][A-Za-z ]+)$/);
+    if(counted){const next=translate(counted[2],locale);if(next!==counted[2])return before+counted[1]+' '+next+after;}
     if(locale==='vi')for(const pattern of patterns){const match=en.match(pattern.re);if(match)return before+pattern.vi.replace(/\{\{(\d+)\}\}/g,(_,i)=>match[Number(i)+1]||'')+after;}
     return value;
   }
-  const protectedSelector='[data-nexora-language-ui],[data-user-text],[data-community-authored],[contenteditable="true"],.chat-message-body,.community-post-body,.community-comment-text';
+  const protectedSelector='[data-nexora-language-ui],[data-user-text],[data-community-authored],[contenteditable="true"],.chat-message-body,.community-post-body,.community-comment-text,.staff-profile-name,.profile-name,.profile-email,.community-feed-post-author,.story-name,.page-card h3';
   const attributes=['placeholder','title','aria-label','alt'];
   function text(node){
     if(node.parentElement?.closest(protectedSelector))return;

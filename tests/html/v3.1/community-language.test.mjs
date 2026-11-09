@@ -50,3 +50,11 @@ test('locale changes reach existing native regions and localize decorated PO lab
   assert.equal(w.NEXORA_COMMUNITY_LANGUAGE.translate('Groups & Market →'),w.NEXORA_COMMUNITY_LOCALES.translations.vi['Groups & Market']+' →');
   w.NEXORA_COMMUNITY_LANGUAGE.set('fr');assert.equal(html.lang,'en');assert.equal(messages.at(-1).language,'en');
 });
+test('approved supplemental UI copy covers search, navigation and counted metadata',t=>{
+  const w=boot(t),api=w.NEXORA_COMMUNITY_LANGUAGE,data=w.NEXORA_COMMUNITY_LOCALES;
+  assert.equal(api.translate('Recent','vi'),'Gần đây');
+  for(const locale of ['vi','es-MX','zh-Hans','fr','ar','pt']){
+    assert.notEqual(api.translate('Dashboard',locale),'Dashboard');
+    assert.equal(api.translate('16 followers',locale),'16 '+data.translations[locale].followers);
+  }
+});
