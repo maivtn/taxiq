@@ -13,6 +13,7 @@
     blush: '/html/v3.1/community-staging/0ceedf379b114cef.jpg',
     bridal: '/html/v3.1/community-staging/d9eec1576f9a7c06.jpg',
     blue: '/html/v3.1/community-staging/a063fabd5fc4a64e.jpg',
+    design: '/html/v3.1/community-staging/3bd5b46971b0c903.png',
     floral: '/html/v3.1/community-staging/970211a12ea5b9ec.png',
     workshop: '/html/v3.1/community-staging/6b8147d2de80d807.png',
     reception: '/html/v3.1/nexora-welcome/industry-nail.jpg',

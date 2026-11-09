@@ -3,6 +3,16 @@
   'use strict';
   const assetBase = new URL('../icon-oneqr/', document.currentScript.src);
   const feedAssetBase = new URL('feed-icons/', document.currentScript.src);
+  const businessLogo = new URL('nexora-bitcoin-nailbar.png', document.currentScript.src).href;
+  function decorateOwnAvatar(){
+    const shared=window.NEXORA_COMMUNITY_SHARED;
+    if(shared?.role!=='owner'||shared.member!=='BITCOIN NAIL BAR')return;
+    document.querySelectorAll('.feed-avatar,.compose-avatar').forEach(node=>{
+      if(node.dataset.businessAvatar)return;
+      node.style.background=`#fff url("${businessLogo}") center / contain no-repeat`;
+      node.textContent='';node.dataset.businessAvatar='bitcoin';
+    });
+  }
   const feedArtwork = {
     'feed-photo':'picture-2659360.png',
     'feed-sale':'flash-sale-15106141.png', 'feed-job':'posting-8522069.png',
@@ -243,7 +253,7 @@
   });
   function refresh() {
     queued=false;
-    decorateArtwork();decorateButtons();enhanceImageUploads();updateDialog();
+    decorateArtwork();decorateOwnAvatar();decorateButtons();enhanceImageUploads();updateDialog();
     document.querySelectorAll('.filter-chip,.subtab,.switcher [data-type]').forEach(button=>{
       const name=button.getAttribute('role')==='tab'?'aria-selected':'aria-pressed';
       const value=String(button.classList.contains('active'));

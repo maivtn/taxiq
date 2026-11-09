@@ -1,0 +1,16 @@
+/* Keep post photos complete and compact across the retained Feed and PO tools. */
+.community-social-gallery-item img,
+.feed-post .feed-photo-tile img,
+.home-active .feed-main .feed-photo-tile img{object-fit:contain}
+.community-social-gallery[data-count="1"] .community-social-gallery-item,
+.community-social-gallery[data-count="1"] .community-social-gallery-item img{max-height:240px}
+.feed-post img.feed-media,
+#feedPosts>.content-card>.community-feed-photo,
+#feedPosts>.content-card>.blog-cover{height:auto;max-height:240px;object-fit:contain;background:#f0f2f7}
+@media(max-width:700px){
+ .community-social-gallery[data-count="1"] .community-social-gallery-item,
+ .community-social-gallery[data-count="1"] .community-social-gallery-item img,
+ .feed-post img.feed-media,
+ #feedPosts>.content-card>.community-feed-photo,
+ #feedPosts>.content-card>.blog-cover{max-height:180px}
+}

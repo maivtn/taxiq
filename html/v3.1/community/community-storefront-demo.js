@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const asset='/html/v3.1/';
-  const media={salon:asset+'community-staging/b01d42a22a326284.jpg',blue:asset+'community-staging/a063fabd5fc4a64e.jpg',blush:asset+'community-staging/0ceedf379b114cef.jpg',team:asset+'nexora-welcome/industry-nail.jpg',logo:asset+'community/nexora-bitcoin-nailbar.png'};
+  const media={salon:asset+'community-staging/b01d42a22a326284.jpg',blue:asset+'community-staging/a063fabd5fc4a64e.jpg',design:asset+'community-staging/3bd5b46971b0c903.png',blush:asset+'community-staging/0ceedf379b114cef.jpg',team:asset+'nexora-welcome/industry-nail.jpg',logo:asset+'community/nexora-bitcoin-nailbar.png'};
   const profile={
     category:['Dịch vụ nail & dụng cụ tiệm','Nail services & salon supplies'],
     hours:['Thứ 2–Thứ 7, 9:00–19:00 · Chủ Nhật, 10:00–17:00','Mon–Sat, 9am–7pm · Sun, 10am–5pm'],
@@ -19,7 +19,7 @@
   ];
   const posts=[
     {id:'sample-store-update',kind:'post',title:['Thông tin lịch làm cuối tuần (mẫu)','Weekend appointment update (sample)'],body:['Khách có thể nhắn tin cho tiệm để trao đổi dịch vụ và thời gian phù hợp. Đây là bài giới thiệu mẫu của gian hàng.','Message the salon to discuss a service and a suitable time. This is a sample storefront update.'],image:media.salon},
-    {id:'sample-store-design',kind:'photos',title:['Bộ móng xanh trong tuần (mẫu)','This week’s blue nail design (sample)'],body:['Một mẫu móng xanh được dùng để minh họa bài đăng từ gian hàng lên Bảng tin Community.','A blue nail design illustrating a storefront post shared to the Community Feed.'],image:media.blue}
+    {id:'sample-store-design',kind:'photos',title:['Bộ móng xanh trong tuần (mẫu)','This week’s blue nail design (sample)'],body:['Một mẫu móng xanh được dùng để minh họa bài đăng từ gian hàng lên Bảng tin Community.','A blue nail design illustrating a storefront post shared to the Community Feed.'],image:media.design}
   ];
   const text=(values,language)=>values[language==='vi'?0:1];
   function translateFields(target,source,language){
@@ -32,7 +32,14 @@
     for(const template of posts){const row=state.feedPosts.find(post=>post.id===template.id);if(row)translateFields(row,template,language);}
   }
   function seed(state,shared){
-    if(shared?.role!=='owner'||shared.member!=='BITCOIN NAIL BAR'||state.storefrontDemoSeeded===1)return false;
+    if(shared?.role!=='owner'||shared.member!=='BITCOIN NAIL BAR')return false;
+    if(state.storefrontDemoSeeded===1){
+      const post=state.feedPosts.find(row=>row.id==='sample-store-design'&&row.shopOrigin&&row.author===shared.member);
+      if(!post||post.image!==media.blue||post.images?.some(image=>image!==media.blue))return false;
+      post.image=media.design;
+      if(post.images?.length)post.images=[media.design];
+      return true;
+    }
     const shop=state.shop;
     const customized=Object.entries(shop).some(([key,value])=>{
       if(key==='type')return value&&value!=='personal';

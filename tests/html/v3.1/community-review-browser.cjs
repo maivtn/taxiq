@@ -66,6 +66,14 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await shop.locator('[data-shop-filter=service]').click();assert.ok((await shop.locator('.store-item').allTextContents()).some(text=>text.includes('QA service '+width)));
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
      await shop.screenshot({path:path.join(output,`${width}-${account}-shop.png`)});
+     if(account==='business'){
+      await open('feed');const photo=pane.locator('[data-feed-post-id="sample-store-design"] .community-social-gallery img');await photo.waitFor();
+      assert.ok((await photo.getAttribute('src')).endsWith('/community-staging/3bd5b46971b0c903.png'));
+      assert.equal(await photo.evaluate(node=>getComputedStyle(node).objectFit),'contain');
+      assert.ok((await photo.boundingBox()).height<=(width<=700?180:240)+1);
+      await pane.locator('[data-feed-post-id="sample-store-design"]').screenshot({path:path.join(output,`${width}-business-sample-photo.png`)});
+     }
+
     });
    }finally{await context.close();}
   }

@@ -54,3 +54,21 @@ test('sample copy follows selected language while preserving user edits and busi
   assert.equal(state.shop.items[0].price,'45');assert.equal(state.shop.items[0].kind,'product');
   demo.localize(state,'vi');assert.match(state.shop.items[0].title,/Đèn/);assert.equal(state.shop.items[0].description,'User description');
 });
+
+test('the sample design photo refreshes existing defaults and preserves custom photos and deletions',t=>{
+  const demo=setup(t),state=empty();demo.seed(state,owner);
+  const post=state.feedPosts.find(row=>row.id==='sample-store-design');
+  const current=post.image,previous='/html/v3.1/community-staging/a063fabd5fc4a64e.jpg';
+  assert.equal(current,'/html/v3.1/community-staging/3bd5b46971b0c903.png');
+  post.image=previous;post.images=[previous];post.body='My edited caption';
+  assert.equal(demo.seed(state,owner),true);
+  assert.equal(post.image,current);assert.deepEqual(clone(post.images),[current]);
+  assert.equal(post.body,'My edited caption');assert.equal(demo.seed(state,owner),false);
+  post.image='data:image/png;base64,YWJj';post.images=[post.image];
+  assert.equal(demo.seed(state,owner),false);assert.equal(post.image,'data:image/png;base64,YWJj');
+  post.image=previous;post.images=['data:image/png;base64,YWJj'];
+  assert.equal(demo.seed(state,owner),false);
+  state.feedPosts=state.feedPosts.filter(row=>row.id!=='sample-store-design');
+  assert.equal(demo.seed(state,owner),false);
+  assert.equal(state.feedPosts.some(row=>row.id==='sample-store-design'),false);
+});
