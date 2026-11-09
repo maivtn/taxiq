@@ -209,11 +209,11 @@ test('language changes update social controls and preserve a report reason being
 
 test('ordinary feed cards lead with the real author and keep the gallery after content and before actions',t=>{
   const owner='Nguyễn Thanh Hà — chia sẻ kinh nghiệm làm nghề tại Houston';
-  const post={id:'person',kind:'showcase',owner,title:'Mẫu mới',description:'Nội dung của thành viên',photos:['../one.jpg','../two.jpg'],createdAt:'2026-10-29T10:00:00Z',destinations:{includeMainFeed:true,groupIds:['g9']}};
+  const post={id:'person',kind:'showcase',owner,title:'Mẫu mới',description:'Nội dung của thành viên',location:'Houston, TX',photos:['../one.jpg','../two.jpg'],createdAt:'2026-10-29T10:00:00Z',destinations:{includeMainFeed:true,groupIds:['g9']}};
   const app=boot(t,[post],'',{getGroups:()=>[{id:'g9',title:'Thợ Nail Dallas'}],avatarFor:()=> '../avatar.jpg',isBusiness:()=>false});
   const card=app.d.querySelector('[data-feed-post-id="person"]');
   card.querySelector('h3').insertAdjacentHTML('beforebegin','<span class="kind">Khoe mẫu cũ</span><div class="meta">Tên cũ</div>');
-  card.querySelector('p').insertAdjacentHTML('afterend','<div class="chips"><span class="chip">Houston, TX</span></div>');
+  card.querySelector('p').insertAdjacentHTML('afterend','<div class="chips"><span class="chip">Houston, TX</span><span class="chip">Nail</span></div>');
   app.social.enhance();app.social.enhance();
   const header=card.querySelector('.community-feed-post-header'),gallery=card.querySelector('.community-social-gallery');
   assert.strictEqual(card.firstElementChild,header);
@@ -226,6 +226,8 @@ test('ordinary feed cards lead with the real author and keep the gallery after c
   assert.equal(header.querySelector('.community-feed-post-business'),null);
   assert.equal(header.querySelector('.community-feed-post-type').textContent,'Khoe mẫu');
   assert.equal(header.querySelector('time').textContent,'Oct 29, 2026');
+  assert.equal(header.querySelector('.community-feed-post-byline .community-feed-post-location').textContent,'Houston, TX');
+  assert.equal(card.querySelector(':scope > .chips').textContent,'Nail');
   assert.match(header.querySelector('.community-feed-post-destinations').textContent,/Bảng tin chung/);
   assert.match(header.querySelector('.community-feed-post-destinations').textContent,/Thợ Nail Dallas/);
   assert.equal(card.querySelector(':scope > .kind, :scope > .meta'),null);

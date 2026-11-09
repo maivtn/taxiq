@@ -21,6 +21,8 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await open('groups');const groups=pane.locator('#groupsView');await groups.locator('.community-group-latest').waitFor();
      const location=hub.locator('#communityLocation');if(await location.isVisible()){
       const box=await location.boundingBox();assert.ok(box.height<=26&&box.width<=145,JSON.stringify(box));
+      const title=await hub.locator('.community-heading h1').boundingBox(),create=await hub.locator('#communityCreate').boundingBox();
+      assert.ok(Math.abs(create.y+create.height/2-(title.y+box.y+box.height)/2)<4);
       await location.click();await pane.locator('#viewerLocationTitle').waitFor();await pane.locator('#closeModal').click();
      }
      assert.equal(await groups.locator('.community-group-section>h3').first().innerText(),'Groups for you');
@@ -127,9 +129,15 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      await shop.locator('[data-shop-filter=service]').click();assert.ok((await shop.locator('.store-item').allTextContents()).some(text=>text.includes('QA service '+width)));
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
      await shop.screenshot({path:path.join(output,`${width}-${account}-shop.png`)});
+     await open('feed');await pane.locator('#communityPOPeople .people-card').first().waitFor();
+     const peopleButtons=await pane.locator('#communityPOPeople .people-card .people-actions button').evaluateAll(nodes=>nodes.map(node=>node.getBoundingClientRect().height));
+     assert.ok(peopleButtons.length>0&&peopleButtons.every(height=>height<=28));
      if(account==='business'){
       await open('feed');const sample=pane.locator('[data-feed-post-id="sample-store-design"]');await sample.waitFor();
       assert.equal(await sample.locator('.community-social-gallery:visible').count(),0);
+      assert.equal(await sample.locator('.community-feed-post-byline .community-feed-post-location').innerText(),'Houston, TX');
+      assert.equal(await sample.locator(':scope > .chips').getByText('Houston, TX',{exact:true}).count(),0);
+      const timeBox=await sample.locator('.community-feed-post-byline time').boundingBox(),placeBox=await sample.locator('.community-feed-post-location').boundingBox();assert.ok(Math.abs(timeBox.y-placeBox.y)<3);
       await pane.locator('[data-feed-post-id="sample-store-design"]').screenshot({path:path.join(output,`${width}-business-sample-photo.png`)});
      }
 

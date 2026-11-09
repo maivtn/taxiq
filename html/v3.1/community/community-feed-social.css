@@ -21,7 +21,7 @@
 .community-feed-post-type[data-post-kind="market"]{background:#e6f6ee;color:#368560}
 .community-feed-post-business{background:#eae9ff;color:#6958bb}
 .community-feed-post-resolved{background:#e5f5ec;color:#3e8764}
-.community-feed-post-byline{display:flex;align-items:center;gap:2px;margin-top:5px;color:#8993a6;font-size:11px;line-height:1.4}
+.community-feed-post-byline{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:5px;color:#8993a6;font-size:11px;line-height:1.4}
 .community-feed-post-destinations{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:6px}
 .community-feed-post-destination{display:inline-flex;align-items:center;max-width:100%;padding:3px 7px;border-radius:6px;background:#f3f5f9;color:#7a859a;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
 .community-feed-post-header>.community-social-menu-wrap{position:relative;align-self:start;margin-top:-3px;z-index:3}
@@ -152,3 +152,5 @@ body .dialog.community-social-lightbox .dialog-footer .btn{min-width:0;white-spa
 @media(max-width:650px){.community-social-market-actions>.btn{min-height:40px;padding:8px 10px;font-size:11.5px}}
 
 .community-po-post-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0;color:#737a8d;font-size:11px}.community-social-actions{flex-wrap:wrap}.community-social-actions>button{min-height:44px}
+
+.community-feed-post-location{overflow-wrap:anywhere}

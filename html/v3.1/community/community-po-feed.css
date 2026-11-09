@@ -44,3 +44,6 @@
 .feed-reel-item .feed-reel-caption{z-index:2;font-size:10px}
 #communityPOReels .feed-reels-strip{margin-bottom:0}#communityPOReels .feed-reels-rail>*{flex-basis:112px;height:178px}#communityPOReels .reel-mini-frame{position:relative;height:100%;overflow:hidden}#communityPOReels video{display:block;width:100%;height:100%;object-fit:cover}#communityPOReels .reel-play-button{position:absolute;z-index:2;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:44px;height:44px;padding:0;border:2px solid #fff;border-radius:50%;background:#12121a78;color:#fff;cursor:pointer}#communityPOReels .reel-play-button svg{width:20px;height:20px}#communityPOReels .reel-view-count svg{fill:none;stroke:currentColor;stroke-width:2}#communityPOReels [hidden]{display:none!important}
 #communityPOReels .reel-view-count{position:absolute;z-index:2;display:flex;align-items:center;color:#fff;white-space:nowrap}#communityPOReels .feed-reel-caption{z-index:2}
+
+.community-po-feed .people-card .people-actions button{min-height:28px;height:28px;padding:4px 8px;line-height:18px}
+.community-po-feed .people-card .people-actions .people-view{width:28px;min-width:28px;padding:4px}
