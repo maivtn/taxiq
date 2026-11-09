@@ -12,18 +12,19 @@
   // Every NEXORA ID can list products and services; merchant tools require Business.
   const canAccessFeature=feature=>!businessFeatures.has(feature)||role==='owner';
   const member=query.get('member')||window.NEXORA_SHELL?.profileName||(role==='staff'?document.querySelector('.staff-profile-name')?.textContent.trim():null)||(role==='staff'?'David Le':'BITCOIN NAIL BAR');
+  const profileView=row=>({...copy(row),displayName:row.displayNickname?.trim()||row.name});
   function identity(name=member,alias){
     let legacyId;try{legacyId=JSON.parse(localStorage.getItem('nexora-connect-workflow-v1')||'{}').profiles?.[name]?.id;}catch{}
     const aliases=[...new Set([legacyId,alias].filter(Boolean))];
-    let found=read().identities[name];if(found&&name===member&&!found.kind){change(data=>{data.identities[name].kind=role==='owner'?'business':'personal';});found=read().identities[name];}if(found&&name==='BITCOIN NAIL BAR'&&!found.v2DemoRestored){change(data=>{Object.assign(data.identities[name],{verified:true,v2DemoRestored:true});});found=read().identities[name];}if(found){if(aliases.some(id=>id!==found.id&&!found.legacyIds?.includes(id))){change(data=>{const row=data.identities[name];row.legacyIds=[...new Set([...(row.legacyIds||[]),...aliases])].filter(id=>id!==row.id);});found=read().identities[name];}return copy(found);}
+    let found=read().identities[name];if(found&&name===member&&!found.kind){change(data=>{data.identities[name].kind=role==='owner'?'business':'personal';});found=read().identities[name];}if(found&&name==='BITCOIN NAIL BAR'&&!found.v2DemoRestored){change(data=>{Object.assign(data.identities[name],{verified:true,v2DemoRestored:true});});found=read().identities[name];}if(found){if(aliases.some(id=>id!==found.id&&!found.legacyIds?.includes(id))){change(data=>{const row=data.identities[name];row.legacyIds=[...new Set([...(row.legacyIds||[]),...aliases])].filter(id=>id!==row.id);});found=read().identities[name];}return profileView(found);}
     const saved=change(data=>{
       let hash=2166136261;for(const char of name.normalize('NFC'))hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
       let suffix=hash.toString(36).toUpperCase().padStart(8,'0');
       while(Object.values(data.identities).some(row=>row.id==='NX-'+suffix.slice(0,4)+'-'+suffix.slice(4)))suffix=((parseInt(suffix,36)+1)%2821109907456).toString(36).toUpperCase().padStart(8,'0');
       const row={id:'NX-'+suffix.slice(0,4)+'-'+suffix.slice(4),name,nickname:name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'.').replace(/^\.+|\.+$/g,'').slice(0,20),verified:name==='BITCOIN NAIL BAR',...(name===member?{kind:role==='owner'?'business':'personal'}:{}),v2DemoRestored:name==='BITCOIN NAIL BAR'};
-      row.legacyIds=aliases.filter(id=>id!==row.id);data.identities[name]=row;return copy(row);
+      row.legacyIds=aliases.filter(id=>id!==row.id);data.identities[name]=row;return row;
     });
-    return saved||{id:'',name,nickname:'',verified:false};
+    return profileView(saved||{id:'',name,nickname:'',verified:false});
   }
   const wallet=(name=member)=>copy(read().wallets[identity(name).id]||{balance:0,ledger:[]});
   function points(amount,reason,reference,name=member){
@@ -42,7 +43,7 @@
   function friendNames(name=member){
     const data=read(),names=new Set();
     for(const row of data.friendRequests||[])if(row.status==='accepted'&&(row.from===name||row.to===name))names.add(row.from===name?row.to:row.from);
-    try{const key='nexora-connect-preview-v2'+(name==='BITCOIN NAIL BAR'?'':':'+encodeURIComponent(name)),stored=JSON.parse(localStorage.getItem(key)||'{}');for(const peer of Object.values(data.identities))if((stored.connections||[]).some(id=>id===peer.id||peer.legacyIds?.includes(id)))names.add(peer.name);}catch{}
+    try{const key='nexora-connect-preview-v2'+(name==='BITCOIN NAIL BAR'?'':':'+encodeURIComponent(name)),stored=JSON.parse(localStorage.getItem(key)||'{}');for(const [peerName,peer] of Object.entries(data.identities))if((stored.connections||[]).some(id=>id===peer.id||peer.legacyIds?.includes(id)))names.add(peerName);}catch{}
     return [...names].filter(peer=>peer!==name&&!friendRemoved(name,peer,data));
   }
   function connectedPeople(name=member){const data=read(),names=new Set(friendNames(name));for(const row of data.customerContacts||[])if(row.customer===name&&(row.savedContact===true||row.isCustomer===true))names.add(row.business);return [...names];}

@@ -34,7 +34,7 @@
     anchor.before(root);
     const frames=new Map(), frameHost=root.querySelector('.community-deals-frames');
     const initial=new URLSearchParams(location.search).get('dealTab');
-    let selected=ROUTES[initial]?initial:ALIASES[initial]||'nearby',active=false,lastOffers='';
+    let pageScope='';let selected=ROUTES[initial]?initial:ALIASES[initial]||'nearby',active=false,lastOffers='';
     if(ROUTES[selected].business&&adapter.role!=='owner')selected='nearby';
     const messageOrigin=location.protocol==='file:'?'*':location.origin;
     const send=(record,data)=>{if(record.ready)record.frame.contentWindow.postMessage(data,messageOrigin);};
@@ -74,7 +74,7 @@
       send(record,{type:'nexora-deals-context',member:adapter.member,role,language:'en'});
       send(record,{cmd:'role',role});send(record,{cmd:'consentSync'});
       if(route.view)send(record,{cmd:'view',v:route.view});
-      sync(true);
+      sync(true);send(record,{type:'nexora-deals-page-scope',pageId:pageScope});
       viewport();
     }
     function ensureFrame(name){
@@ -136,7 +136,9 @@
         if(nearby.ready)claim();else nearby.frame.addEventListener('load',claim,{once:true});
       }
     });
-    return {activate,navigate,sync,closeDetail};
+    function scopePage(pageId){pageScope=pageId||'';for(const record of frames.values())send(record,{type:'nexora-deals-page-scope',pageId:pageScope});}
+    function claim(sourceId,pageId){scopePage(pageId);navigate('wallet');const record=ensureFrame('nearby');const run=()=>{sync(true);send(record,{type:'nexora-deals-page-claim',sourceId,pageId});};if(record.ready)run();else record.frame.addEventListener('load',run,{once:true});}
+    return {activate,navigate,sync,closeDetail,claim,scopePage};
   }
   window.NEXORA_COMMUNITY_DEALS={mount};
 })();

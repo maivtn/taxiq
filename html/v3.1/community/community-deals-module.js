@@ -7,6 +7,8 @@
   const notify=data=>window.parent.postMessage(data,origin);
   const scope=new URLSearchParams(location.search).get('member')||'community';
   const key='nexora-community-deals-po-v1:'+module+':'+scope;
+  let walletPage='';
+  if(module==='deals'){const originalWallet=drawWallet;drawWallet=function(){originalWallet();const cards=[...document.querySelectorAll('#walList>.wc')];state().wallet.forEach((coupon,index)=>{if(cards[index])cards[index].hidden=Boolean(walletPage&&state().D.find(row=>row.id===coupon.id)?.pageId!==walletPage);});};}
   let ready=false,renderQueued=false,lastHeight=0,lastModal=false,previousView='',lastSaved='',pendingClaim=null,lastFocus=null;
   const html=text=>String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function state(){return typeof S==='object'?S:null;}
@@ -120,16 +122,17 @@
     let changed=false;
     for(const offer of offers.filter(row=>String(row.id).startsWith('extra-'))){
       const existing=state().D.find(row=>row.sourceId===offer.id);
-      if(existing){const fields={title:offer.title,cond:offer.description||'',photo:offer.photo,code:offer.code||''};if(Object.entries(fields).some(([key,value])=>existing[key]!==value)){Object.assign(existing,fields);changed=true;}continue;}
+      if(existing){const fields={pageId:offer.pageId,channels:offer.channels,...(offer.expiresAt?{expAt:offer.expiresAt}:{}),...(offer.quantity?{qty:offer.quantity}:{}),title:offer.title,cond:offer.description||'',photo:offer.photo,code:offer.code||''};if(Object.entries(fields).some(([key,value])=>existing[key]!==value)){Object.assign(existing,fields);changed=true;}continue;}
       const discount=String(offer.discount||'');
       const category=CATS.find(row=>row.n===offer.industry||row.en===offer.industry)||CATS.find(row=>row.id==='nail');
-      state().D.unshift({id:'v2-'+offer.id,sourceId:offer.id,code:offer.code||'',userCreated:true,biz:offer.owner,cat:category.id,aud:'cust',t:discount.includes('%')?'pct':'amt',v:Number(discount.match(/[\d.]+/)?.[0])||0,title:offer.title,cond:offer.description||'',photo:offer.photo,mi:0,ang:80,exp:7,expAt:offer.expires?+new Date(offer.expires+'T23:59:59'):Date.now()+7*86400000,qty:100,got:0,used:0,per:1,kw:offer.title,th:'royal'});
+      state().D.unshift({id:'v2-'+offer.id,sourceId:offer.id,pageId:offer.pageId,channels:offer.channels,code:offer.code||'',userCreated:true,biz:offer.owner,cat:category.id,aud:'cust',t:discount.includes('%')?'pct':'amt',v:Number(discount.match(/[\d.]+/)?.[0])||0,title:offer.title,cond:offer.description||'',photo:offer.photo,mi:0,ang:80,exp:7,expAt:offer.expiresAt||(offer.expires?+new Date(offer.expires+'T23:59:59'):Date.now()+7*86400000),qty:offer.quantity||100,got:0,used:0,per:1,kw:offer.title,th:'royal'});
       changed=true;
     }
     if(changed)refresh();
   }
   function modernCard(offer,preview){
     const category=CAT(offer.cat),saved=state().saved.includes(offer.id),claimed=state().wallet.some(row=>row.id===offer.id&&live(row)),remaining=left(offer),expired=isExp(offer);
+    if(!preview&&offer.channels?.community===false)return '';
     if(!preview)seen(offer);
     const [amount,kind]=stubTxt(offer),image=offer.photo,icon=window.NEXORA_DEAL_SELECTS.iconFor(category.id,category.n),until=new Date(expAt(offer)).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
     const title=offer.title,condition=offer.cond||'';
@@ -177,6 +180,8 @@
   window.addEventListener('message',event=>{
     if(event.source!==window.parent||location.protocol!=='file:'&&event.origin!==location.origin)return;
     const data=event.data||{};
+    if(data.type==='nexora-deals-page-scope'&&module==='deals'){walletPage=data.pageId||'';if(typeof view==='string'&&view==='wallet')drawWallet();}
+    if(data.type==='nexora-deals-page-claim'&&module==='deals'){walletPage=data.pageId||'';const offer=state().D.find(row=>row.sourceId===data.sourceId);if(offer){claim(offer.id);save();}}
     if(data.type==='nexora-deals-context'){document.documentElement.lang='en';document.body.classList.add('lang-en');schedule();}
     if(data.type==='nexora-deals-viewport'){if(Number.isFinite(data.top))document.documentElement.style.setProperty('--deal-modal-top',Math.max(16,data.top)+'px');if(Number.isFinite(data.height))document.documentElement.style.setProperty('--deal-modal-height',Math.max(240,data.height)+'px');}
     if(data.type==='nexora-deals-close-modal'){document.getElementById('modal')?.classList.add('hidden');lastFocus?.focus({preventScroll:true});schedule();}

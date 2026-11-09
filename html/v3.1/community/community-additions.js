@@ -11,7 +11,7 @@
     window.NEXORA_COMMUNITY_PEOPLE=window.NEXORA_COMMUNITY_DIRECTORY.create(frames[1],baseURL,params);
     const searchStyle=document.createElement('link');searchStyle.rel='stylesheet';searchStyle.href=new URL('community-search.css?v=20261109-search-theme3',baseURL).href;document.head.append(searchStyle);
     const searchReady=new Promise((resolve,reject)=>{
-      const script=document.createElement('script');script.src=new URL('community-search.js?v=20261109-search-theme3',baseURL).href;
+      const script=document.createElement('script');script.src=new URL('community-search.js?v=20261109-po-supplement1',baseURL).href;
       script.onload=()=>resolve(window.NEXORA_COMMUNITY_SEARCH.mount({directory:window.NEXORA_COMMUNITY_PEOPLE,baseURL,navigate:(route,context)=>navigate(route,context),feed:frames[0]}));
       script.onerror=()=>reject(Error('Could not load Community search.'));document.head.append(script);
     });
@@ -447,6 +447,7 @@
       original.closeLocation();
       // Coupon shortcuts reuse the existing Feed form and its publishing controller.
       if(route==='deals'&&context.composeKind==='deal')route='feed';
+      if(route==='deals'&&(context.dealTab||context.claimOffer)){deactivate();original.navigate('deals',context);if(!fromHost){notify({type:'nexora-community-route',route:'deals'});notify({type:'nexora-community-context',context});}return;}
       createMenu?.close();
       if(route==='explore'||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))route='feed';
       if(route==='assistant')return openAssistant();
