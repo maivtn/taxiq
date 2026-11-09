@@ -216,7 +216,7 @@ const height=Number(process.env.COMMUNITY_REVIEW_HEIGHT||900);
      // The PO livestream directory replaces the older chat-only sample room screen.
      if(await extra.locator('.lv-directory-card').count()){
       const rooms=extra.locator('.lv-directory-card');assert.ok(await rooms.count()>=7);assert.ok((await rooms.allTextContents()).every(text=>text.includes('Sample')));
-      for(const index of [0,1]){const title=await rooms.nth(index).locator('strong').innerText();await rooms.nth(index).locator('[data-live-po=open]').click();await extra.locator('.lv-top h1').waitFor();assert.equal(await extra.locator('.lv-top h1').innerText(),title);await extra.locator('[data-live-po=back]').click();await rooms.first().waitFor();}
+      for(const index of [0,1]){const title=await rooms.nth(index).locator('strong').innerText();await rooms.nth(index).locator('[data-live-po=open]').click();await extra.locator('.lv-top h1').waitFor();assert.equal(await extra.locator('.lv-top h1').innerText(),title);const chat=extra.locator('[data-live-po-form=comment]');if(await chat.count()){await chat.locator('[name=message]').fill('QA sample room message');await chat.locator('[type=submit]').click();assert.ok((await extra.locator('.lv-stage').innerText()).includes('QA sample room message'));}await extra.locator('[data-live-po=back]').click();await rooms.first().waitFor();}
       await extra.locator('[data-live-po=start]').click();await extra.locator('[data-live-po-form=setup]').waitFor();await extra.locator('[data-live-po=close]').click();await page.screenshot({path:path.join(output,`${width}-${account}-live.png`)});return;
      }
      const cards=extra.locator('.live-card');

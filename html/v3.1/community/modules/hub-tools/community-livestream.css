@@ -156,3 +156,6 @@ dialog.lv-dialog{width:min(100% - 20px,560px);max-height:min(90dvh,820px);paddin
   .lv-top{gap:6px}
   .lv-surface h1{font-size:17px}
 }
+
+/* Keep room navigation visible inside the embedded Community shell. */
+.lv-surface>.lv-top{display:flex!important}
