@@ -268,6 +268,11 @@
     setupPage();
   };
 
+  const originalLivePage=livePage;
+  function originalLiveHero(){
+    // Reuse the original PO hero markup and its existing action hooks.
+    return originalLivePage().match(/<section class="live-hero">[\s\S]*?<\/section>/)?.[0]||'';
+  }
   function listPage(){
     const visible=rooms().filter(room=>!isPrivate(room)||own(room))
       .filter(room=>!directoryPageId||room.pageId===directoryPageId||room.destinations?.includes('page:'+directoryPageId))
@@ -284,7 +289,7 @@
         '<div><strong>'+esc(roomName(room))+'</strong><small>'+esc(roomHost(room))+' · '+esc(room.status==='scheduled'?dateLabel(room.scheduledAt)+' · '+timeLabel(room.scheduledAt):room.city||'')+(room.sample?' · '+t('Mẫu','Sample'):'')+'</small></div></div></button></article>';
     };
     const group=(name,rows)=>rows.length?'<h2 class="lv-subhead">'+esc(name)+'</h2><div class="lv-directory-grid">'+rows.map(cardMarkup).join('')+'</div>':'';
-    return '<section class="lv-surface"><header class="lv-top live-hero"><div><h1>'+t('Đang live','Live Now')+'</h1><p class="lv-note">'+t('Phòng mẫu và phiên xem thử trên thiết bị.','Sample rooms and local preview sessions.')+'</p></div><div class="lv-actions">'+action('panel',label('notify'),{value:'notify',icon:icon('Bell')})+action('start',t('Tạo buổi live','Go live'),{style:'primary',icon:icon('Video')})+'</div></header>'+
+    return originalLiveHero()+'<section class="lv-surface"><header class="lv-top live-hero"><div><h1>'+t('Đang live','Live Now')+'</h1><p class="lv-note">'+t('Phòng mẫu và phiên xem thử trên thiết bị.','Sample rooms and local preview sessions.')+'</p></div><div class="lv-actions">'+action('panel',label('notify'),{value:'notify',icon:icon('Bell')})+action('start',t('Tạo buổi live','Go live'),{style:'primary',icon:icon('Video')})+'</div></header>'+
       '<div class="lv-filter"><select data-live-category aria-label="'+esc(t('Bộ lọc','Filters'))+'">'+categories.map(([id,vi,en])=>'<option value="'+id+'"'+(category===id?' selected':'')+'>'+esc(t(vi,en))+'</option>').join('')+'</select></div>'+
       (live.length?'<div class="lv-directory-grid">'+live.map(cardMarkup).join('')+'</div>':card(empty()))+
       group(t('Đã lên lịch','Scheduled'),schedule)+group(t('Bản xem lại','Replays'),replays)+'</section>';
