@@ -25,8 +25,15 @@
 #editor.community-photo-composer .social-visibility-button{min-height:32px;padding:6px 10px;border:1px solid #e6e8f0;border-radius:8px;background:#f3f5fa;font-size:11px;font-weight:650}
 #editor.community-photo-composer .social-visibility-button .visibility-icon{background:none;padding:0;font-size:13px}
 #editor.community-photo-composer .social-visibility-button .visibility-name{background:none;padding:0;font-size:11px}
+#editor.community-photo-composer .social-visibility-button :is(.visibility-icon,.visibility-caret){display:grid;place-items:center;flex:none;padding:0;background:none;color:inherit}
+#editor.community-photo-composer .social-visibility-button .visibility-icon svg{width:16px;height:16px}
+#editor.community-photo-composer .social-visibility-button .visibility-caret svg{width:14px;height:14px}
 #editor.community-photo-composer .social-visibility-menu{top:38px;padding:10px;border-color:#e6e8f0;border-radius:12px;box-shadow:0 12px 36px #18234a20}
 #editor.community-photo-composer .social-visibility-menu button{display:grid!important;grid-template-columns:34px minmax(0,1fr) 18px;justify-content:initial!important;gap:8px!important}
+#editor.community-photo-composer .social-visibility-menu button>span{padding:0;background:none;border-radius:0}
+#editor.community-photo-composer .social-visibility-menu .visibility-choice-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#eef0ff;color:#6254d7}
+#editor.community-photo-composer .social-visibility-menu .visibility-check{display:grid;place-items:center;width:18px;height:18px;color:#6254d7}
+#editor.community-photo-composer .social-visibility-menu svg{display:block;flex:none}
 #editor.community-photo-composer .social-post-as{margin:0;color:#697186;font-size:12px}
 #editor.community-photo-composer .social-post-as select{min-height:44px;border:1px solid #dfe3ed;border-radius:9px}
 #editor.community-photo-composer .social-feed-form textarea{
