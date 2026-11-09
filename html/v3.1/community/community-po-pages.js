@@ -15,6 +15,18 @@
     for(const row of [{id:'extra-po-new-guest',title:'New Guest Offer',discount:'20%',code:'BNB-NG',description:'Monday–Thursday · 9:30 AM–3:00 PM',channels:{community:true,page:true}},{id:'extra-po-crypto',title:'Pay with Crypto',discount:'',code:'BNB-CRYPTO',description:'Pay with crypto at the salon',channels:{community:false,page:false}}])if(!apiData().feed.some(item=>item.id===row.id))apiData().feed.push({...row,kind:'deal',owner:fixture.owner,pageId:fixture.id,industry:'Nail salon',location:fixture.city,sourceRecord:'SIPOS',createdAt:'2026-11-09T00:00:00Z'});
     api.save();
   }
+  // Seed only the supplied salon demo, once; deleted or edited samples stay that way.
+  const demo=api.getPage('p1');
+  if(demo&&!demo.poSupplement?.tabSamples){
+    demo.poSupplement||={};demo.poSupplement.tabSamples=true;
+    const now=new Date(),publishAt=new Date(now.getTime()+7*86400000).toISOString();
+    for(const row of [
+      {id:'po-page-draft-new-guest',title:'New Guest Offer',body:'New Guest Offer — 20% off · Monday–Thursday · 9:30 AM–3:00 PM',status:'draft'},
+      {id:'po-page-scheduled-gel',title:'Gel Manicure',body:'Explore our Gel Manicure styles and book your next visit to BITCOIN NAIL BAR.',status:'scheduled',publishAt}
+    ])if(!apiData().pagePosts.some(post=>post.id===row.id))apiData().pagePosts.push({...row,pageId:demo.id,owner:demo.owner,createdAt:now.toISOString(),audience:'public'});
+    demo.poSupplement.activity||=['New Guest Offer · 20% off','Grand Opening · Nov 15, 2026','Intro class: Basic Gel techniques · Nov 23, 2026'];
+    api.save();
+  }
   function persist(change){const before=JSON.stringify(apiData());change();if(api.save()===false){Object.assign(apiData(),JSON.parse(before));current=api.getPage(current?.id);show('Unable to save. Please try again.','');return false;}return true;}
   function open(tab){api.open(api.getPage(current.id),tab);}
   function compose(id=''){route('post',{modal:'1',pageId:current.id,editId:id});}
@@ -29,6 +41,18 @@
   function drafts(page){const rows=apiData().pagePosts.filter(row=>row.pageId===page.id&&row.status==='draft');return card('Drafts',rows.map(row=>`<div class="po-page-row"><strong>${esc(row.title||row.body)}</strong>${button('Open draft','edit-post',row.id)}</div>`).join('')||'<p>No drafts.</p>');}
   function insights(page){const social=JSON.parse(localStorage.getItem('nexora-community-feed-social-v1')||'{"posts":{}}');return card('Insights','<p class="po-page-note">Recorded interactions in this prototype.</p>'+apiData().pagePosts.filter(row=>row.pageId===page.id&&!['draft','scheduled'].includes(row.status)).map(row=>{const record=social.posts?.[row.id]||{};return `<div class="po-page-row"><strong>${esc(row.title||row.body||'Video')}</strong><span>${Number(record.views)||0} views · ${(record.likedBy||[]).length+Number(record.baseLikes||0)} likes · ${(record.comments||[]).length} comments</span></div>`;}).join(''))+card('Platform engagement rewards','<p>Reward tiers, thresholds and budget</p><span class="po-badge pending">Pending decision</span>');}
   function admin(page){return card('Page roles',`<p>One shared administration system for Pages and groups.</p><div class="po-page-row"><strong>${esc(page.owner)}</strong><span class="po-badge">Owner</span></div>${(page.poTools?.team||[]).map(row=>`<div class="po-page-row"><strong>${esc(row.name)}</strong><span>${esc(row.role)}</span></div>`).join('')}${button('Invite by NEXORA ID / phone','team')}`)+card('Comments & moderation',button('Open comments','posts')+button('Keyword filter','keywords'))+card('Followers',button('Manage followers','followers'))+card('Business inbox',button('Open inbox','inbox'));}
+  const tabScroll=new Map();let tabResize;
+  function scrollableTabs(tabs,page,owner){
+    tabResize?.disconnect();
+    const key=page.id+':'+owner,wrap=document.createElement('div');wrap.className='po-page-tabs-nav';
+    tabs.before(wrap);wrap.append(tabs);
+    const controls=[[-1,'Previous'],[1,'Next']].map(([direction,label])=>{const node=document.createElement('button');node.type='button';node.className='po-page-tab-scroll';node.setAttribute('aria-label',label);node.dataset.tabScroll=direction;node.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="'+(direction<0?'m15 6-6 6 6 6':'m9 6 6 6-6 6')+'"/></svg>';node.addEventListener('click',()=>tabs.scrollBy({left:direction*Math.max(120,tabs.clientWidth*.7),behavior:'smooth'}));direction<0?wrap.prepend(node):wrap.append(node);return node;});
+    const sync=()=>{const max=tabs.scrollWidth-tabs.clientWidth,position=Math.abs(tabs.scrollLeft),rtl=getComputedStyle(tabs).direction==='rtl';wrap.classList.toggle('has-overflow',max>1);controls[0].disabled=rtl?position>=max-1:position<=1;controls[1].disabled=rtl?position<=1:position>=max-1;tabScroll.set(key,tabs.scrollLeft);};
+    const position=tabScroll.get(key)||0;
+    tabs.addEventListener('scroll',sync,{passive:true});
+    requestAnimationFrame(()=>{if(!tabs.isConnected)return;sync();tabs.scrollLeft=position;const selected=tabs.querySelector('[aria-selected="true"]');if(selected){const a=tabs.getBoundingClientRect(),b=selected.getBoundingClientRect();if(b.left<a.left)tabs.scrollLeft+=b.left-a.left-4;else if(b.right>a.right)tabs.scrollLeft+=b.right-a.right+4;}sync();});
+    tabResize=new ResizeObserver(sync);tabResize.observe(tabs);
+  }
   function enhance(root,page,tab){
     if(current&&current.id!==page.id)guestView=false;current=page;currentTab=tab;const panel=root.querySelector('[data-page-detail-id]');if(!panel)return;
     panel.classList.add('po-page-supplement');const owner=page.owner===api.member&&!guestView,personal=page.pageType==='personal';panel.classList.toggle('po-page-owner',owner);
@@ -40,6 +64,7 @@
     else {hero.querySelector('[data-page-primary]')?.remove();hero.querySelector('[data-page-dashboard]')?.remove();hero.querySelector('[data-edit-page]')?.remove();hero.querySelector('[data-page-compose]')?.remove();hero.querySelector('[data-share-page]')?.remove();hero.insertAdjacentHTML('beforeend',button(page.poSupplement?.notifications?.[api.member]?'Offer notifications on':'Notify me about offers','notify')+button('Share','share')+button((personal?'Contact ▾ · Message':'Contact the salon ▾ · Book / Call / Message'),'contact','',true)+(guestView?button('Back to management','owner'):''));}
     const social=page.socialLinks||{};hero.insertAdjacentHTML('afterend','<div class="po-social-links" data-community-authored>'+['Website','Facebook','TikTok','Instagram','Google','YouTube'].map(label=>social[label.toLowerCase()]?`<a class="po-social-chip" href="${esc(social[label.toLowerCase()])}" target="_blank" rel="noopener">${label}</a>`:button(label,'external',label)).join('')+'</div>');
     tabs.innerHTML=[['posts','Posts'],['about','About'],['photos','Photos'],['videos','Videos'],['live','Live'],['offers','Offers'],...(!personal?[['services','Services'],['reviews','Reviews']]:[]),['events','Events'],['followers','Followers'],...(owner?[['manage','Manage'],['drafts','Drafts'],['scheduled','Scheduled']]:[])].filter(([key])=>!(page.hiddenTabs||[]).includes(key)).map(([key,label])=>`<button type="button" role="tab" data-page-tab="${key}" data-page-id="${esc(page.id)}" aria-selected="${tab===key}" class="${tab===key?'active':''}">${label}</button>`).join('');
+    scrollableTabs(tabs,page,owner);
     const renderers={about,services,reviews,events,manage,drafts,insights,admin,offers};if(renderers[tab])content.innerHTML=renderers[tab](page,owner);
     if(tab==='posts'){
       content.querySelector('.page-post-form')?.remove();if(owner)content.insertAdjacentHTML('afterbegin',card('Create post',button('Write something…','compose','',true)));
@@ -51,7 +76,7 @@
       if(owner)content.insertAdjacentHTML('beforeend',button('Upload new video','compose','',true));
     }
     if(tab==='followers'&&owner)content.insertAdjacentHTML('beforeend',card('Manage followers',(page.followerProfiles||[]).map(row=>'<div class="po-page-row"><strong>'+esc(row.name)+'</strong>'+button('Remove','remove-follower',row.id)+button('Block','block-follower',row.id)+'</div>').join('')));
-    if(tab==='live')content.innerHTML=card('Live & replay',button('Live now','live','',true)+(owner?button('Go live','go-live'):'') );
+    if(tab==='live')content.innerHTML=card('Live & replay',button('Live now','live','',true)+(owner?button('Go live','go-live'):'') )+(page.id==='p1'?card('Lunar New Year nail ideas + new guest offer','<img class="po-page-live-cover" src="/html/v3.1/community/live-photos/nails.jpg" alt="Nail styles at BITCOIN NAIL BAR"><p>BITCOIN NAIL BAR · Houston, TX · Sample data</p>'+button('Live now','sample-live','po-live-bitcoin',true)):'');
     const activeStories=JSON.parse(localStorage.getItem('nexora-v31:community-stories')||'[]').filter(row=>row.pageId===page.id&&row.expiresAt>Date.now());
     if(activeStories.length)panel.querySelector('.page-avatar-shell')?.classList.add('po-has-story');
     window.NEXORA_COMMUNITY_PO?.hydrateVideos(root);
@@ -69,6 +94,7 @@
     if(action==='external'){show(value,'<p>Needs verification</p>');return;}
     if(action==='checkin'){route('post',{modal:'1',body:'📍 '+current.title+' · '+(current.address||current.city)});return;}
     if(action==='coupon'){api.claimOffer?.(value,current.id);return;}if(action==='wallet'){route('deals',{dealTab:'wallet',pageId:current.id});return;}
+    if(action==='sample-live'){route('live',{liveId:value,pageId:current.id,liveView:'viewer'});return;}
     if(action==='live'||action==='go-live'){route('live',action==='go-live'?{composeLive:'1',pageId:current.id}:{pageId:current.id});return;}
     if(action==='story'||action==='add-story'){route('stories',action==='add-story'?{composeStory:'1',pageId:current.id}:{pageId:current.id});return;}
     if(action==='event'){route('feed',{composeKind:'event',pageId:current.id});return;}
