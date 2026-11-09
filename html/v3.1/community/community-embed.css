@@ -87,7 +87,7 @@ body.embedded .community-heading > div { flex:1; }
   body.embedded .community-heading-actions .tour-launch { display:none; }
   .community-heading > div { flex:initial; }
   body.embedded .community-heading > div:first-of-type { flex:1; min-width:0; }
-  .community-heading .community-back { display:inline-flex; align-items:center; justify-content:center; flex:none; min-width:60px; height:44px; padding:0; border:0; border-radius:8px; background:transparent; color:#5445c6; font-size:11px; font-weight:700; }
+  .community-heading .community-back { display:none; }
   .community-back-face { display:inline-flex; align-items:center; justify-content:center; gap:4px; min-height:30px; padding:6px 8px; border:1px solid #d9d2fa; border-radius:8px; background:#f5f3ff; box-shadow:0 1px 2px #34226c0a; }
   .community-back svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   .community-back:hover .community-back-face { background:#eee9ff; border-color:#bdb1f5; }
