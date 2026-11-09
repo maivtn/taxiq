@@ -62,6 +62,18 @@
     function readDrafts(){try{const rows=JSON.parse(localStorage.getItem(DRAFT_KEY)||'[]');return Array.isArray(rows)?rows.filter(row=>row&&typeof row.id==='string'&&typeof row.owner==='string'&&KINDS.has(row.kind)):[];}catch{return [];}}
     const listDrafts=()=>clone(readDrafts().filter(row=>row.owner===member).sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))));
     function writeDrafts(rows){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(rows));return true;}catch{return false;}}
+    function seedDemoDrafts(){
+      const seeds=(window.NEXORA_COMMUNITY_DEMO?.feedDrafts||[]).filter(row=>row.owner===member);
+      if(!seeds.length)return;
+      const marker='nexora-v31:community-demo-drafts-v1:'+member;
+      try{
+        if(localStorage.getItem(marker)==='1')return;
+        const rows=JSON.parse(localStorage.getItem(DRAFT_KEY)||'[]');if(!Array.isArray(rows))return;
+        for(const seed of seeds)if(!rows.some(row=>row?.id===seed.id))rows.push(clone(seed));
+        if(writeDrafts(rows))localStorage.setItem(marker,'1');
+      }catch{}
+    }
+    seedDemoDrafts();
     function error(state,key){state.error=key;const target=state.form.querySelector('[data-composer-error]');if(target){target.textContent=copy()[key]||copy().unreadable;target.hidden=false;}if(key==='rightsRequired')state.form.querySelector('[data-composer-rights]')?.focus();if(key==='destinationRequired')state.form.querySelector('[data-composer-main]')?.focus();return null;}
     function clearError(state){state.error='';const target=state.form.querySelector('[data-composer-error]');if(target){target.textContent='';target.hidden=true;}}
     function renderPhotos(state){

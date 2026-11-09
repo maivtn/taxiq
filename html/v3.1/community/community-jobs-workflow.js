@@ -97,6 +97,13 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     function seedDemo() {
       const data=readState();if(!data)return;
       const before=JSON.stringify(data),rows=getJobs(),profiles=data.profiles;
+      const coverage=window.NEXORA_COMMUNITY_DEMO?.jobWorkflow;
+      const demoMember=coverage?.members?.includes(member());
+      const seeded=new Set(Array.isArray(data.demoSeededIds)?data.demoSeededIds:[]);
+      const once=(key,operation)=>{if(seeded.has(key))return;operation();seeded.add(key);};
+      if(demoMember)for(const [id,profile]of Object.entries(coverage.profiles||{}))once('profile:'+id,()=>{
+        if(!profiles[id])profiles[id]={...defaultProfile(profile.displayName||id),...clone(profile)};
+      });
       for (const row of rows.filter(seeking)) {
         const id = String(row.ownerId || row.owner || '');
         if (!id || id === member() || profiles[id]) continue;
@@ -104,13 +111,48 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
         profiles[id] = {...defaultProfile(row.owner), exists:true, basicSavedAt:row.createdAt || stamp(), experience:row.experience || 'ThreeToFive', cityName, stateCode:stateCode || row.state || '', bio:row.description || '', skills:Array.isArray(row.skills)?row.skills:String(row.skills || '').split(',').map(value=>value.trim()).filter(Boolean), languages:['Vi','En'], jobTypes:row.workTypes||['FullTime','Weekend'], payTypes:['Negotiable'], portfolioImageUrls:(row.photos || []).map(safeImage).filter(Boolean), completionPercent:80};
       }
       // Stable sample IDs fill new demo posts without replacing edited profiles or applications.
-      for(const hiring of rows.filter(row=>!seeking(row)&&own(row)&&active(row))) {
+      for(const hiring of rows.filter(row=>row.kind==='hiring'&&own(row)&&active(row))) {
         if(!window.NEXORA_COMMUNITY_DEMO?.extra?.jobs?.some(row=>row.id===hiring.id)&&data.applications.length)continue;
         const samples=window.NEXORA_COMMUNITY_DEMO?.jobCandidates?.[hiring.role];
         for (const [index, candidate] of (samples||[{name:'Jessica Nguyen'},{name:'David Le'}]).entries()) {
           const name=candidate.name,id='demo-candidate-'+(samples?(hiring.role==='Lễ tân'?'reception-':'manager-'):'')+(index+1),applicationId='demo-application-'+hiring.id+'-'+index;
           profiles[id] ||= {...defaultProfile(name), exists:true, basicSavedAt:'2026-10-20T14:00:00Z', cityName:'Houston', stateCode:'TX', experience:candidate.experience||(index?'FiveToTen':'ThreeToFive'), languages:['Vi','En'], skills:candidate.skills||(index?['Acrylic','Dipping','Pedicure']:['Gel-X','Nail Art','Manicure']), jobTypes:['FullTime'], payTypes:['Negotiable'], bio:candidate.bio||(index?'Chuyên bột và dipping, có thể làm cuối tuần.':'Chuyên Gel-X, làm nhanh, sạch sẽ.'), licenseType:samples?'':'Studying', phone:index?'7135550199':'8325550138', completionPercent:80};
           if(!data.applications.some(row=>row.id===applicationId))data.applications.push({id:applicationId,postingId:hiring.id,ownerUserId:String(hiring.ownerId || hiring.owner),applicantUserId:id,status:'Submitted',version:1,note:index?'Có thể làm cuối tuần.':'Có thể bắt đầu từ tuần sau.',sharePhone:!index,submittedAt:hiring.createdAt||'2026-10-27T15:00:00Z',cancelledAt:null,postingTitle:hiring.title,businessName:hiring.owner,city:hiring.city,profileSnapshot:clone(profiles[id])});
+        }
+      }
+      if(demoMember){
+        for(const source of coverage.applications||[])once('application:'+source.id,()=>{
+          const posting=rows.find(row=>row.id===source.postingId);
+          if(!posting||data.applications.some(row=>row.id===source.id))return;
+          data.applications.push({...clone(source),isSample:true,ownerUserId:String(posting.ownerId||posting.owner),version:1,postingTitle:posting.title,businessName:posting.owner,city:posting.city,profileSnapshot:clone(profiles[source.applicantUserId]||defaultProfile(source.applicantUserId))});
+        });
+        for(const invite of coverage.invites||[])once('invite:'+invite.id,()=>{
+          if(!data.invites.some(row=>row.id===invite.id))data.invites.push({...clone(invite),isSample:true});
+        });
+        data.availability||={};
+        for(const [id,samples]of Object.entries(coverage.availability||{})){
+          if(data.availability[id]!==undefined&&!Array.isArray(data.availability[id]))continue;
+          data.availability[id]||=[];
+          for(const sample of samples)once('availability:'+id+':'+sample.id,()=>{
+            if(!data.availability[id].some(row=>row.id===sample.id))data.availability[id].push(clone(sample));
+          });
+        }
+        for(const [id,ids]of Object.entries(coverage.savedJobs||{}))once('saved:'+id,()=>{
+          if(!Object.hasOwn(data.savedJobs,id))data.savedJobs[id]=clone(ids);
+        });
+        data.demoSeededIds=[...seeded];
+      }
+      if(language()==='en'){
+        const legacy={
+          'Chuyên bột và dipping, có thể làm cuối tuần.':'Acrylic and dipping technician available on weekends.',
+          'Chuyên Gel-X, làm nhanh, sạch sẽ.':'Gel-X technician focused on tidy, efficient appointments.',
+          'Có thể làm cuối tuần.':'Available on weekends.',
+          'Có thể bắt đầu từ tuần sau.':'Available to start next week.'
+        };
+        for(const [id,profile]of Object.entries(profiles))if(id.startsWith('demo-candidate-')&&legacy[profile.bio])profile.bio=legacy[profile.bio];
+        for(const application of data.applications)if(application.id.startsWith('demo-application-')){
+          if(legacy[application.note])application.note=legacy[application.note];
+          if(application.profileSnapshot&&legacy[application.profileSnapshot.bio])application.profileSnapshot.bio=legacy[application.profileSnapshot.bio];
         }
       }
       if(before!==JSON.stringify(data))try {localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch{storageProblem=true;}
@@ -314,7 +356,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
         if (role()==='staff'&&!seeking(row)) actions+=button('apply',row.id,t(application?.status==='Submitted'?'jobs.applications.applied':application?.status==='Cancelled'?'jobs.applications.reapply':'jobs.applications.applyNow'),true,!active(row));
         if (role()==='owner'&&seeking(row)) actions+=button('candidate',row.id,po('Xem hồ sơ thợ','View tech profile'),true);
       }
-      return `<article class="panel content-card jobs-card" data-job-id="${esc(row.id)}">${images[0]?`<button type="button" class="jobs-cover" data-jobs-action="detail" data-jobs-id="${esc(row.id)}"><img src="${esc(images[0])}" alt="${esc(row.title)}" loading="lazy"></button>`:''}<div class="jobs-card-top"><span class="kind ${seeking(row)?'want':'sale'}">${esc(t(seeking(row)?'jobs.board.card.typeSeeking':'jobs.board.card.typeHiring'))}</span>${row.urgent?`<span class="jobs-urgent">${esc(t('jobs.board.card.urgent'))}</span>`:''}${mine?`<span class="jobs-status ${esc(normalStatus(row))}">${esc(statusLabel(row))}</span>`:''}</div><h3>${preview?esc(row.title):`<button type="button" class="jobs-title-link" data-jobs-action="detail" data-jobs-id="${esc(row.id)}">${esc(row.title)}</button>`}</h3><div class="meta">${esc(seeking(row)?postingName(row):row.businessName||row.owner)} · ${esc(row.city)}${date(row.createdAt)?' · '+date(row.createdAt):''}</div>${row.description?`<p class="jobs-description">${esc(textOnly(row.description))}</p>`:''}<div class="chips"><span class="chip">${esc(row.industry||'')}</span>${row.role?`<span class="chip">${esc(row.role)}</span>`:''}${skillsText(row)?`<span class="chip jobs-skill-summary">${esc(skillsText(row))}</span>`:''}${row.schedule?`<span class="chip">${esc(row.schedule)}</span>`:''}${(row.workTypes||[]).map(value=>`<span class="chip">${esc(workTypeLabel(value))}</span>`).join('')}${row.availability?`<span class="chip">${esc(t('jobs.board.seeking.preview.availableFrom',{date:date(row.availability)}))}</span>`:''}</div><strong class="jobs-pay">${esc(salary(row))}</strong>${mine&&seeking(row)?listingStats(row):''}${match?`<div class="jobs-matchline${match.value<45?' medium':''}"><strong>${match.value}%</strong><span>${esc(match.reasons)}${match.missing.length?`<br>${esc(po('Chưa khai trong hồ sơ:','Not in your profile:'))} ${esc(match.missing.join(', '))}`:''}</span></div>`:''}${preview?'':`<div class="listing-actions jobs-actions">${actions}</div>`}</article>`;
+      return `<article class="panel content-card jobs-card" data-job-id="${esc(row.id)}">${images[0]?`<button type="button" class="jobs-cover" data-jobs-action="detail" data-jobs-id="${esc(row.id)}"><img src="${esc(images[0])}" alt="${esc(row.title)}" loading="lazy"></button>`:''}<div class="jobs-card-top"><span class="kind ${seeking(row)?'want':'sale'}">${esc(t(seeking(row)?'jobs.board.card.typeSeeking':'jobs.board.card.typeHiring'))}</span>${row.isSample?`<span class="chip">${esc(po('Dữ liệu mẫu','Sample'))}</span>`:''}${row.urgent?`<span class="jobs-urgent">${esc(t('jobs.board.card.urgent'))}</span>`:''}${mine?`<span class="jobs-status ${esc(normalStatus(row))}">${esc(statusLabel(row))}</span>`:''}</div><h3>${preview?esc(row.title):`<button type="button" class="jobs-title-link" data-jobs-action="detail" data-jobs-id="${esc(row.id)}">${esc(row.title)}</button>`}</h3><div class="meta">${esc(seeking(row)?postingName(row):row.businessName||row.owner)} · ${esc(row.city)}${date(row.createdAt)?' · '+date(row.createdAt):''}</div>${row.description?`<p class="jobs-description">${esc(textOnly(row.description))}</p>`:''}<div class="chips"><span class="chip">${esc(row.industry||'')}</span>${row.role?`<span class="chip">${esc(row.role)}</span>`:''}${skillsText(row)?`<span class="chip jobs-skill-summary">${esc(skillsText(row))}</span>`:''}${row.schedule?`<span class="chip">${esc(row.schedule)}</span>`:''}${(row.workTypes||[]).map(value=>`<span class="chip">${esc(workTypeLabel(value))}</span>`).join('')}${row.availability?`<span class="chip">${esc(t('jobs.board.seeking.preview.availableFrom',{date:date(row.availability)}))}</span>`:''}</div><strong class="jobs-pay">${esc(salary(row))}</strong>${mine&&seeking(row)?listingStats(row):''}${match?`<div class="jobs-matchline${match.value<45?' medium':''}"><strong>${match.value}%</strong><span>${esc(match.reasons)}${match.missing.length?`<br>${esc(po('Chưa khai trong hồ sơ:','Not in your profile:'))} ${esc(match.missing.join(', '))}`:''}</span></div>`:''}${preview?'':`<div class="listing-actions jobs-actions">${actions}</div>`}</article>`;
     }
     function appliedCard(application) {
       const row=getJob(application.postingId), available=active(row);
