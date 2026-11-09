@@ -132,6 +132,7 @@
 @media(max-width:767px){.jobs-workflow-head .jobs-tab{padding:7px 6px}}
 #jobsView #jobTemplates .template-card{display:inline-flex;flex:none;flex-wrap:nowrap;align-items:center;justify-content:center;min-height:36px;height:auto;padding:7px 10px;gap:6px;border-radius:9px}
 #jobsView #jobTemplates .template-card:not(:disabled) .template-icon{color:#fff}
+#jobsView #jobTemplates .template-card:not(:disabled) strong{color:inherit}
 #jobsView #jobTemplates .template-card:disabled{display:inline-flex;flex-wrap:nowrap;gap:6px}
 #jobsView #jobTemplates .jobs-template-role{display:inline-flex;align-items:center;width:auto;flex:none;align-self:center}
 @media(max-width:767px){#jobsView #jobTemplates .template-card{min-height:40px;padding:8px 10px}#jobsView #jobTemplates .template-card strong{font-size:11.5px}}
