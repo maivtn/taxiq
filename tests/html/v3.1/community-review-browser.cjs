@@ -32,14 +32,16 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      assert.ok((await groups.locator(':scope>.feature-intro').boundingBox()).height<=115);
      await groups.screenshot({path:path.join(output,`${width}-${account}-groups.png`)});
     });
-    await check('market sell save persistence and single column',async()=>{
+    await check('market sell save persistence and two columns',async()=>{
      await open('market');const market=pane.locator('#marketView');await market.locator('.feature-intro #createSale').waitFor();
      const hero=market.locator(':scope>.feature-intro'),sale=hero.locator('#createSale');
      const hb=await hero.boundingBox(),sb=await sale.boundingBox();assert.ok(sb.x+sb.width>=hb.x+hb.width-20);assert.ok(hb.height<=115);
      await sale.click();await pane.locator('#listingForm').waitFor();await pane.locator('#closeModal').click();
      const cards=market.locator('#listings>.listing');assert.ok(await cards.count()>1);
      const first=cards.first(),id=await first.getAttribute('data-listing-id');await first.locator('.community-market-save').click();assert.equal(await first.locator('.community-market-save').getAttribute('aria-pressed'),'true');
-     const a=await cards.nth(0).boundingBox(),b=await cards.nth(1).boundingBox();assert.ok(b.y>=a.y+a.height-1);assert.ok(Math.abs(a.x-b.x)<2);
+     const a=await cards.nth(0).boundingBox(),b=await cards.nth(1).boundingBox();assert.ok(Math.abs(a.y-b.y)<2);assert.ok(b.x>=a.x+a.width);assert.ok(Math.abs(a.width-b.width)<2);
+     const c=await cards.nth(2).boundingBox();assert.ok(c.y>=a.y+a.height);assert.ok(Math.abs(c.x-a.x)<2);
+     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
      await page.reload();const saved=market.locator(`[data-listing-id="${id}"] .community-market-save`);await saved.waitFor();assert.equal(await saved.getAttribute('aria-pressed'),'true');await saved.click();assert.equal(await saved.getAttribute('aria-pressed'),'false');
      await market.screenshot({path:path.join(output,`${width}-${account}-market.png`)});
     });
