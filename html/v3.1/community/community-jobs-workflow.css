@@ -62,6 +62,9 @@
  #jobsView #jobTemplates .template-card strong,#jobsView #jobTemplates .template-card small{margin:0;line-height:1.4}
 }
 .jobs-workflow-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,320px);gap:12px;align-items:stretch}
+/* The compose action moves into the intro; an empty slot must not reserve a desktop column. */
+.jobs-workflow-head:has(>.jobs-compose-slot:empty){grid-template-columns:minmax(0,1fr)}
+.jobs-compose-slot:empty{display:none}
 .jobs-workflow-head .jobs-nav{align-items:center}
 .jobs-compose-slot{min-width:0}
 #jobsView .jobs-compose-slot #jobTemplates{margin:0;height:100%}

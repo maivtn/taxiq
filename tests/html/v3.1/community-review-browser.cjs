@@ -90,6 +90,16 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      assert.ok(sizes.length>=6&&sizes.every(tab=>tab.height<=30&&Math.abs(tab.y-sizes[0].y)<2&&tab.label&&tab.icon),JSON.stringify(sizes));
      assert.ok(new Set(sizes.map(tab=>Math.round(tab.width))).size>1);
      await nav.locator('[data-jobs-tab=myPosts]').click();await jobs.locator('[data-jobs-post-status]').first().waitFor();
+     const destinations=await nav.locator('[data-jobs-tab]').evaluateAll(nodes=>nodes.map(node=>node.dataset.jobsTab));
+     for(const destination of destinations){
+      await nav.locator(`[data-jobs-tab="${destination}"]`).click();
+      assert.equal(await nav.locator(`[data-jobs-tab="${destination}"]`).getAttribute('aria-selected'),'true');
+      const navigationBox=await nav.boundingBox(),workflowBox=await jobs.locator('#jobsWorkflow').boundingBox();
+      assert.ok(Math.abs(navigationBox.width-workflowBox.width)<2,JSON.stringify({destination,navigationBox,workflowBox}));
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+     }
+     await nav.locator(`[data-jobs-tab="${account==='personal'?'matched':'workers'}"]`).click();
+     await jobs.locator('.jobs-workflow-head').screenshot({path:path.join(output,`${width}-${account}-jobs-full-width.png`)});
      await nav.locator('[data-jobs-tab=browse]').click();await jobs.locator('#jobPosts').waitFor();
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
      await nav.screenshot({path:path.join(output,`${width}-${account}-jobs-tabs.png`)});
