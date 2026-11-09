@@ -119,7 +119,7 @@
       .community-nav-more:focus-visible,.ecosystem-menu button:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
     `;
     for(const nav of [root.querySelector('.top .tabs'),root.querySelector('.mobile-nav')]){
-      const more=document.createElement('button');more.type='button';more.className='tab community-nav-more'+(nav.classList.contains('mobile-nav')?' mobile-tab':'');more.setAttribute('aria-haspopup','dialog');more.setAttribute('aria-controls',menu.id);more.setAttribute('aria-expanded','false');
+      const more=document.createElement('button');more.type='button';more.className='tab community-nav-more'+(nav.classList.contains('mobile-nav')?' mobile-tab community-version-more':'');more.setAttribute('aria-haspopup','dialog');more.setAttribute('aria-controls',menu.id);more.setAttribute('aria-expanded','false');
       more.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span>';
       more.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();ecosystemButton.click();});
       more.addEventListener('keydown',event=>{if(compactMenu()||!['ArrowDown','ArrowUp'].includes(event.key))return;event.preventDefault();if(menu.hidden)more.click();queueMicrotask(()=>{const items=menuControls();(event.key==='ArrowUp'?items.at(-1):items[0])?.focus({preventScroll:true});});});nav.append(more);navMore.push(more);
