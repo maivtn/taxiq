@@ -46,29 +46,23 @@ const results=[],errors=[];
      if(account==='personal')assert.deepEqual(await form.locator('[name=type] option').evaluateAll(nodes=>nodes.map(node=>node.value)),['personal']);
      else await form.locator('[name=type]').selectOption('salon');
      await form.locator('[name=about]').fill('Store introduction');await form.locator('[name=phone]').fill('7135550142');await form.locator('[name=hours]').fill('Mon–Sat, 9am–6pm');
-     assert.equal(await form.locator('[name=fulfillment][value=onsite]').count(),account==='personal'?0:1);
+     assert.equal(await form.locator('[name=fulfillment][value=onsite]').count(),1);
      await form.locator('[type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      await pane.locator('.store-tool-grid [data-action="shop-add-product"]').first().click();form=pane.locator('#item-form');
-     assert.equal(await form.locator('[name=kind] option[value=service]').count(),account==='personal'?0:1);
-     if(account==='personal'){
-      await form.locator('[name=kind]').evaluate(select=>{select.add(new Option('Service','service'));select.value='service';});
-      await form.locator('[name=title]').fill('Blocked salon service');await form.locator('[name=description]').fill('Service must not be saved');await form.locator('[type=submit]').click();
-      assert.equal(await pane.locator('#editor').isVisible(),true,'Service submission is rejected');assert.equal(await pane.locator('.store-item').count(),0);
-      await form.locator('[name=kind]').selectOption('product');
-     }
+     assert.equal(await form.locator('[name=kind] option[value=service]').count(),1);
      await form.locator('[name=title]').fill('PO product');await form.locator('[name=price]').fill('15');await form.locator('[name=description]').fill('Product description');
      await form.locator('[name=shareFeed]').uncheck();await form.locator('[type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      await pane.locator('[data-edit-item]').first().click();await pane.locator('#item-form [name=title]').fill('PO product edited');await pane.locator('#item-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
-     if(account==='business'){
-      await pane.locator('.store-tool-grid [data-action="shop-add-service"]').first().click();await pane.locator('#item-form [name=title]').fill('PO service');await pane.locator('#item-form [name=description]').fill('Business service description');await pane.locator('#item-form [name=shareFeed]').uncheck();await pane.locator('#item-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
+     {
+      await pane.locator('.store-tool-grid [data-action="shop-add-service"]').first().click();await pane.locator('#item-form [name=title]').fill('PO service');await pane.locator('#item-form [name=description]').fill('Storefront service description');await pane.locator('#item-form [name=shareFeed]').uncheck();await pane.locator('#item-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      }
      await pane.locator('.store-tool-grid [data-action="shop-post"]').first().click();await pane.locator('#feed-form [name=body]').fill('PO store update '+member);await pane.locator('#feed-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      await page.reload();await pane.locator('.store-head').waitFor();assert.equal(await pane.locator('.store-preview-title h2').innerText(),member+' Store');
-     assert.equal(await pane.locator('.store-item').count(),account==='personal'?1:2);assert.ok((await pane.locator('.store-post-list').innerText()).includes('PO store update '+member));
+     assert.equal(await pane.locator('.store-item').count(),2);assert.ok((await pane.locator('.store-post-list').innerText()).includes('PO store update '+member));
      await open('shop',member+' other');await pane.locator('.store-head').waitFor();assert.equal(await pane.locator('.store-item').count(),0);assert.equal(await pane.locator('.store-post').count(),0,'Other identities cannot manage storefront posts');assert.equal(await pane.locator('.store-progress').getAttribute('aria-valuenow'),'0');
      await open('shop');await pane.locator('.store-head').waitFor();assert.equal(await pane.locator('.store-item h3').filter({hasText:'PO product edited'}).count(),1);
      await pane.locator('.store-item').filter({hasText:'PO product edited'}).locator('[data-delete-item]').click();assert.equal(await pane.locator('.store-item h3').filter({hasText:'PO product edited'}).count(),0);
-     await page.reload();await pane.locator('.store-head').waitFor();assert.equal(await pane.locator('.store-item').count(),account==='personal'?0:1);
+     await page.reload();await pane.locator('.store-head').waitFor();assert.equal(await pane.locator('.store-item').count(),1);
     });
     await check('group filters and PO Jobs actions',async()=>{
      await open('groups');const groups=hub.locator('#groupsView');await groups.locator('[data-po-my-groups]').click();assert.equal(await groups.locator('[data-po-my-groups]').getAttribute('aria-pressed'),'true');
