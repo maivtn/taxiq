@@ -57,6 +57,13 @@ const server=http.createServer(async(req,res)=>{
           await trigger.tap();await menu.locator('[data-create-kind="blog"]').tap();await frame.locator('#blogForm').waitFor();await frame.locator('#closeModal').click();
           if(account==='personal'){await trigger.tap();await menu.locator('[data-create-kind="seeking"]').tap();await frame.locator('#templateForm[data-kind="seeking"]').waitFor();await frame.locator('#closeModal').click();}
           await trigger.tap();await menu.locator('[data-create-kind="photos"]').tap();await page.locator('.community-extra-pane #editor[open]').waitFor();assert.equal(await menu.isVisible(),false);
+          const editor=page.locator('.community-extra-pane #editor[open]');
+          const buttons=editor.locator('.social-add-actions .social-labeled-action');
+          const boxes=await buttons.evaluateAll(nodes=>nodes.map(el=>{const icon=el.firstElementChild.getBoundingClientRect(),label=el.lastElementChild.getBoundingClientRect(),box=el.getBoundingClientRect();return {height:box.height,oneRow:Math.abs(icon.y+icon.height/2-label.y-label.height/2)<2,overflow:el.scrollWidth>el.clientWidth};}));
+          assert.equal(boxes.length,3);assert.ok(boxes.every(box=>box.height<=44&&box.oneRow&&!box.overflow),JSON.stringify(boxes));
+          await page.screenshot({path:path.join(output,`${width}-${account}-photo-actions.png`)});
+          for(const selector of ['.social-media-pick','.social-video-pick']){const chooser=page.waitForEvent('filechooser');await editor.locator(selector).click();await chooser;}
+          await editor.locator('.social-add-more').click();await editor.locator('#social-more-sheet').waitFor();await editor.locator('[data-action="social-more-close"]').click();
           await page.locator('.community-extra-pane #editor[open] [data-action="close-dialog"]').click();
           if(account==='business'){
             await trigger.tap();await menu.locator('[data-create-kind="deal"]').tap();await frame.locator('#templateForm[data-kind="deal"]').waitFor();await frame.locator('#closeModal').click();

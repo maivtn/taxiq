@@ -49,15 +49,15 @@
 #editor.community-photo-composer .social-add-row strong{margin:0 0 12px;color:var(--ink,#20243a);font-size:12px;font-weight:750}
 #editor.community-photo-composer .social-add-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 #editor.social-dialog.community-photo-composer .social-add-row .social-labeled-action{
-  display:flex;flex-direction:column;gap:7px!important;height:74px;min-width:0;padding:10px 6px;
-  border-radius:10px;font-size:12px;font-weight:700;white-space:normal;text-align:center;
+  display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px!important;height:44px;min-width:0;padding:6px;
+  border-radius:10px;font-size:12px;font-weight:700;white-space:nowrap;text-align:center;
   transition:background .16s,border-color .16s,box-shadow .16s;
 }
 #editor.community-photo-composer .social-labeled-action:hover{box-shadow:0 3px 10px #25315b0e;filter:brightness(.98)}
 #editor.community-photo-composer .social-labeled-action:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
-#editor.community-photo-composer .social-action-symbol{display:grid;place-items:center;width:28px;height:28px;padding:0}
-#editor.community-photo-composer .social-action-symbol img{display:block;width:28px;height:28px;object-fit:contain}
-#editor.community-photo-composer .social-action-symbol svg{display:block;width:24px;height:24px}
+#editor.community-photo-composer .social-action-symbol{display:grid;place-items:center;flex:none;width:20px;height:20px;padding:0}
+#editor.community-photo-composer .social-action-symbol img{display:block;width:20px;height:20px;object-fit:contain}
+#editor.community-photo-composer .social-action-symbol svg{display:block;width:20px;height:20px}
 #editor.community-photo-composer .social-add-row small{margin-top:12px;color:#737a8d;font-size:11px;line-height:1.55}
 #editor.community-photo-composer .social-compose-footer>p{margin:12px 0 0;color:#8a91a2;font-size:11px;line-height:1.5;text-align:center}
 #editor.community-photo-composer .social-post-bottom{
@@ -91,8 +91,8 @@
   #editor.community-photo-composer .social-feed-form textarea{flex:1;min-height:140px;max-height:none;padding:14px;font-size:16px}
   #editor.community-photo-composer .social-compose-footer{padding:0 16px calc(16px + env(safe-area-inset-bottom))}
   #editor.community-photo-composer .social-add-row{padding:12px}
-  #editor.community-photo-composer .social-add-actions{gap:8px}
-  #editor.social-dialog.community-photo-composer .social-add-row .social-labeled-action{height:68px;padding:8px 4px;font-size:11px}
+  #editor.community-photo-composer .social-add-actions{grid-template-columns:repeat(2,minmax(0,1fr)) auto;gap:6px}
+  #editor.social-dialog.community-photo-composer .social-add-row .social-labeled-action{height:44px;padding:6px 4px;gap:4px!important;font-size:10px}
   #editor.community-photo-composer .social-add-row small{font-size:10px}
   #editor.community-photo-composer .social-more-head{min-height:64px;padding:12px 16px}
   #editor.community-photo-composer .social-more-grid{gap:8px;padding:16px}
