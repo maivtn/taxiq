@@ -43,9 +43,9 @@ body #feedView .feed-action { max-width: 100%; }
 body :is(.kind, .chip, .sponsor-label, .demo-tag) { align-self: flex-start; width: fit-content; max-width: 100%; }
 
 /* One icon select keeps post filtering compact. */
-body #feedView .feed-filter-bar { display: grid; grid-template-columns: minmax(0, 1fr) 150px; align-items: center; gap: 18px; padding: 0; border: 0; border-radius: 0; background: transparent; }
+body #feedView .feed-filter-bar { display: grid; grid-template-columns: auto minmax(0, 360px); justify-content: space-between; align-items: center; gap: 18px; padding: 0; border: 0; border-radius: 0; background: transparent; }
+body #feedView .feed-recent-title { margin: 0; color: #334155; font-size: 12px; font-weight: 700; white-space: nowrap; }
 body #feedView .feed-filter-main { display: flex; align-items: center; min-width: 0; gap: 12px; }
-body #feedView .feed-group-shortcut { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; margin-top: 0; padding: 10px; border: 1px solid #ded8fa; border-radius: 10px; background: #f4f1ff; white-space: normal; }
 .feed-filter-control { flex: 1; min-width: 0; width: 100%; max-width: 360px; }
 .feed-filter-control > select { width: 100%; min-height: 44px; padding: 9px 44px 9px 12px; border: 1px solid #d8dfeb; border-radius: 10px; background-color: #fff; color: #334155; font: inherit; font-size: 14px; }
 .feed-filter-control .ts-wrapper { --ts-pr-min: 44px; width: 100%; }
@@ -250,10 +250,9 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded .page-searchbar { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   body.embedded .chip-row { gap: 8px; }
   body.embedded .filter-chip { padding: 8px 12px; font-size: 12px; }
-  body.embedded #feedView .feed-filter-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: 8px; padding: 0; }
+  body.embedded #feedView .feed-filter-bar { display: grid; grid-template-columns: auto minmax(0, 260px); justify-content: space-between; align-items: center; gap: 8px; padding: 0; }
   body.embedded #feedView .feed-filter-main { display: block; min-width: 0; }
   body.embedded #feedView .feed-filter-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  body.embedded #feedView .feed-group-shortcut { display: inline-flex; grid-column: 2; grid-row: 1; min-height: 46px; font-size: 12px; padding: 8px; white-space: nowrap; }
   body.embedded #feedView .feed-filter-control { max-width: none; }
   body.embedded #feedView .feed-filter-prefix { display:inline; font-weight:500; }
   body.embedded #feedView .feed-filter-control .ts-control > .item { min-width: 0; max-width: 100%; }
