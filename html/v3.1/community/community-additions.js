@@ -501,7 +501,7 @@
           if(request!==generation)return;
           api.window.NEXORA_COMMUNITY_MODULE?.setLanguage('en');
           await api.window.NEXORA_COMMUNITY_MODULE?.navigate?.(route,routeContext);
-          if(key==='tools'){await personalReady;window.NEXORA_COMMUNITY_PERSONAL.enhanceTools(api,navigate,window.NEXORA_COMMUNITY_LANGUAGE?.base()||'en');}
+          if(key==='tools'){await personalReady;await window.NEXORA_COMMUNITY_PERSONAL.enhanceTools(api,navigate,window.NEXORA_COMMUNITY_LANGUAGE?.base()||'en');}
           if(request!==generation)return;
           // The tools module is reused for Reels and Live video.
           // Reset its own scroll area as well as the outer pane on each route.

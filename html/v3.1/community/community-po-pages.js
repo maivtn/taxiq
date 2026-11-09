@@ -7,7 +7,7 @@
   const pageText=new WeakMap();
   function pageTranslate(text){if(window.NEXORA_COMMUNITY_LANGUAGE?.base()!=='vi')return text;const trimmed=text.trim();if(copyVI[trimmed])return text.replace(trimmed,copyVI[trimmed]);let output=text;for(const [en,vi] of Object.entries(copyVI).sort((a,b)=>b[0].length-a[0].length))if(output.includes(en))output=output.split(en).join(vi);return output.replace(/(\d+) reviews/g,'$1 đánh giá').replace(/(\d+) views/g,'$1 lượt xem').replace(/(\d+) shares/g,'$1 chia sẻ').replace(/(\d+) likes/g,'$1 lượt thích').replace(/(\d+) comments/g,'$1 bình luận').replace(/(\d+) hours left/g,'còn $1 giờ');}
   function localizePages(){for(const root of document.querySelectorAll('.po-page-supplement,.po-page-dialog,#poPageTaxonomy')){const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while((node=walker.nextNode())){if(node.parentElement.closest('[data-user-text],textarea,script,style'))continue;const previous=pageText.get(node),source=previous&&node.nodeValue===previous.output?previous.source:node.nodeValue,output=pageTranslate(source);if(output!==node.nodeValue)node.nodeValue=output;pageText.set(node,{source,output});}}}
-  let localeQueued=false;const localeObserver=new MutationObserver(()=>{if(localeQueued)return;localeQueued=true;queueMicrotask(()=>{localeQueued=false;localeObserver.disconnect();localizePages();localeObserver.observe(document.body,{subtree:true,childList:true,characterData:true});});});localeObserver.observe(document.body,{subtree:true,childList:true,characterData:true});window.addEventListener('nexora-community-locale',localizePages);
+  let localeQueued=false;const localeObserver=new MutationObserver(()=>{if(localeQueued)return;localeQueued=true;queueMicrotask(()=>{localeQueued=false;localeObserver.disconnect();localizePages();localeObserver.observe(document.body,{subtree:true,childList:true,characterData:true});});});localeObserver.observe(document.body,{subtree:true,childList:true,characterData:true});window.addEventListener('nexora-community-locale',localizePages);window.addEventListener('message',event=>{if(event.source===window.parent&&event.origin===location.origin&&event.data?.type==='nexora-language')localizePages();});
   const route=(name,context={})=>parent.postMessage({type:'nexora-community-route',route:name,context},location.origin);
   const button=(label,action,value='',primary=false)=>`<button type="button" class="btn ${primary?'primary':'soft'}" data-po-page-action="${action}" data-value="${esc(value)}">${label}</button>`;
   const card=(title,body)=>`<section class="po-page-card" data-community-authored><h3>${title}</h3>${body}</section>`;
@@ -23,7 +23,7 @@
     api.save();
   }
   // Seed only the supplied salon demo, once; deleted or edited samples stay that way.
-  const demo=api.getPage('p1');
+  let demo=api.getPage('p1');
   if(demo&&!demo.poSupplement?.tabSamples){
     demo.poSupplement||={};demo.poSupplement.tabSamples=true;
     const now=new Date(),publishAt=new Date(now.getTime()+7*86400000).toISOString();
@@ -36,6 +36,7 @@
   }
   const avatar=(name,color='')=>`<span class="po-person-avatar ${color}" aria-hidden="true">${esc((name||'P').slice(0,1))}</span>`;
   const mediaThumb=(title,index=0)=>`<span class="po-media-thumb po-media-${index%5}" aria-hidden="true">${index%3===0?'▶':''}</span>`;
+  demo=api.getPage('p1');
   if(demo&&!demo.poSupplement.pngComplete){
     Object.assign(demo.poSupplement,{pngComplete:true,pageViews:3412,reach:8930,newFollowers:64,pending:[{id:'po-pending-1',name:'Lan P.',body:'My new nails at BITCOIN NAIL BAR'},{id:'po-pending-2',name:'Kevin T.',body:'Lunar New Year nail collection'}],media:[{id:'po-media-1',title:'Lunar New Year 2026',type:'photo'},{id:'po-media-2',title:'Gel Manicure',type:'photo'},{id:'po-media-3',title:'Deluxe Pedicure',type:'photo'},{id:'po-media-4',title:'Acrylic Full Set',type:'photo'},{id:'po-media-5',title:'Lunar New Year collection',type:'photo'}],videoSamples:[{id:'po-intro',title:'Explore BITCOIN NAIL BAR in 60 seconds',kind:'intro'},{id:'po-replay',title:'Lunar New Year Gel demonstration',kind:'replay'},{id:'po-guest',title:'My new nails at BITCOIN NAIL BAR',kind:'guest',name:'Lan P.'}],campaigns:[{id:'po-jan',title:'January — New Guest Offer',date:'Jan 1, 2027 – Jan 31, 2027',approved:true},{id:'po-feb',title:'February — Valentine',date:'Feb 7, 2027',approved:true},{id:'po-apr',title:'April — Graduation season',date:'Apr 1, 2027',approved:false}]});
     demo.poTools||={};demo.poTools.team||=[{name:'Kayla B.',role:'Editor'},{name:'Minh T.',role:'Moderator'}];
