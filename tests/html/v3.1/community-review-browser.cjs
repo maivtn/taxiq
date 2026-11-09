@@ -38,6 +38,7 @@ const output=process.env.COMMUNITY_REVIEW_OUTPUT||'/tmp/community-review-ui';
      const hb=await hero.boundingBox(),sb=await sale.boundingBox();assert.ok(sb.x+sb.width>=hb.x+hb.width-20);assert.ok(hb.height<=115);
      await sale.click();await pane.locator('#listingForm').waitFor();await pane.locator('#closeModal').click();
      const cards=market.locator('#listings>.listing');assert.ok(await cards.count()>1);
+     assert.equal(await cards.locator('.chips:visible').count(),0);
      const first=cards.first(),id=await first.getAttribute('data-listing-id');await first.locator('.community-market-save').click();assert.equal(await first.locator('.community-market-save').getAttribute('aria-pressed'),'true');
      const a=await cards.nth(0).boundingBox(),b=await cards.nth(1).boundingBox();assert.ok(Math.abs(a.y-b.y)<2);assert.ok(b.x>=a.x+a.width);assert.ok(Math.abs(a.width-b.width)<2);
      const c=await cards.nth(2).boundingBox();assert.ok(c.y>=a.y+a.height);assert.ok(Math.abs(c.x-a.x)<2);
