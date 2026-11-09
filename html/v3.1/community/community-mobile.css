@@ -428,8 +428,10 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded #localDiscovery.has-context-action #changeViewerLocation { flex: none; padding-inline: 2px; font-size: 11px; }
   body.embedded #localDiscovery .community-context-action { display: inline-flex; flex: none; min-height: 44px; padding: 8px 9px; gap: 5px; font-size: 11.5px; white-space: nowrap; }
   body.embedded #localDiscovery .community-context-action .community-action-icon { width: 16px; height: 16px; }
-  body.embedded #jobsView.jobs-enhanced > .feature-intro,
+  body.embedded #jobsView.jobs-enhanced > .feature-intro:not(.jobs-staff-actions),
   body.embedded #feedView.deal-mode #dealLanding { display: none; }
+
+  body.embedded:has(#jobsView.jobs-staff-layout:not(.hide)) #localDiscovery.has-context-action { display:none; }
 
   body.embedded #jobsView #jobsWorkflow { margin: 0 0 6px; }
   body.embedded #jobsView .jobs-workflow-head { grid-template-columns: minmax(0, 1fr); gap: 8px; }
