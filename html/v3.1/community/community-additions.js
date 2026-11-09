@@ -103,7 +103,10 @@
       .community-menu-backdrop{position:absolute;inset:0;z-index:80;background:#17213b66}
       .community-menu-backdrop[hidden]{display:none}
       .app>.header-menu.ecosystem-menu{inset:0 auto 0 0;z-index:81;width:min(360px,calc(100% - 24px));height:100%;max-height:none;margin:0;border-radius:0 16px 16px 0;align-content:start;overflow-y:auto;overscroll-behavior:contain;box-shadow:12px 0 35px #19274924}
+      .community-menu-backdrop.is-dropdown{background:transparent}
+      .app>.header-menu.ecosystem-menu.community-menu-dropdown{inset:var(--community-menu-top) auto auto var(--community-menu-left);width:min(300px,calc(100% - 24px));height:auto;max-height:var(--community-menu-height);padding:8px;border:1px solid #dfe5f0;border-radius:13px;box-shadow:0 14px 36px #19274926}
       .community-menu-heading{position:sticky;top:-14px;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 10px;background:#fff;border-bottom:1px solid #e5e9f2}
+      .community-menu-heading[hidden]{display:none}
       .community-menu-heading h2{margin:0}
       .ecosystem-menu .community-menu-close{display:grid;place-items:center;flex:none;width:40px;min-height:40px;padding:0;font-size:24px;line-height:1}
       .ecosystem-menu .ecosystem-item{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;text-align:left}
@@ -115,28 +118,50 @@
     for(const nav of [root.querySelector('.top .tabs'),root.querySelector('.mobile-nav')]){
       const more=document.createElement('button');more.type='button';more.className='tab community-nav-more'+(nav.classList.contains('mobile-nav')?' mobile-tab':'');more.setAttribute('aria-haspopup','dialog');more.setAttribute('aria-controls',menu.id);more.setAttribute('aria-expanded','false');
       more.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>More</span>';
-      more.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();ecosystemButton.click();});nav.append(more);navMore.push(more);
+      more.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();ecosystemButton.click();});
+      more.addEventListener('keydown',event=>{if(compactMenu()||!['ArrowDown','ArrowUp'].includes(event.key))return;event.preventDefault();if(menu.hidden)more.click();queueMicrotask(()=>{const items=menuControls();(event.key==='ArrowUp'?items.at(-1):items[0])?.focus({preventScroll:true});});});nav.append(more);navMore.push(more);
     }
     function syncNavCount(){root.querySelector('.mobile-nav').style.setProperty('--community-nav-count',String(root.querySelectorAll('.mobile-nav .mobile-tab:not([hidden])').length));}
     syncNavCount();
     let drawerOpen=false,drawerTrigger=null,drawerAnimation=null;
+    const compactMenu=()=> (root.host?.clientWidth||window.innerWidth)<=800;
+    const menuControls=()=>[...menu.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),[tabindex="0"]')].filter(element=>!element.closest('[hidden]'));
+    function updateMenuLayout(){
+      const compact=compactMenu();
+      menu.classList.toggle('community-menu-dropdown',!compact);backdrop.classList.toggle('is-dropdown',!compact);drawerHeading.hidden=!compact;
+      menu.setAttribute('role',compact?'dialog':'menu');
+      if(compact)menu.setAttribute('aria-modal','true');else menu.removeAttribute('aria-modal');
+      for(const button of [...navMore,ecosystemButton])button.setAttribute('aria-haspopup',compact?'dialog':'menu');
+      for(const button of menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')){if(compact)button.removeAttribute('role');else button.setAttribute('role','menuitem');}
+      if(compact||menu.hidden)return;
+      const trigger=navMore.find(button=>!button.classList.contains('mobile-tab'))||ecosystemButton;
+      const bounds=app.getBoundingClientRect(),anchor=trigger.getBoundingClientRect(),width=Math.min(300,bounds.width-24);
+      menu.style.setProperty('--community-menu-left',Math.max(12,Math.min(anchor.right-bounds.left-width,bounds.width-width-12))+'px');
+      menu.style.setProperty('--community-menu-top',anchor.bottom-bounds.top+8+'px');
+      menu.style.setProperty('--community-menu-height',Math.max(120,Math.min(560,bounds.bottom-anchor.bottom-20))+'px');
+    }
     new MutationObserver(()=>{
-      const open=!menu.hidden;if(open===drawerOpen)return;drawerOpen=open;backdrop.hidden=!open;ecosystemButton.setAttribute('aria-expanded',String(open));navMore.forEach(button=>button.setAttribute('aria-expanded',String(open)));drawerAnimation?.cancel();
+      const open=!menu.hidden;if(open===drawerOpen)return;drawerOpen=open;updateMenuLayout();backdrop.hidden=!open;ecosystemButton.setAttribute('aria-expanded',String(open));navMore.forEach(button=>button.setAttribute('aria-expanded',String(open)));drawerAnimation?.cancel();
       if(open){
         drawerTrigger=root.activeElement||ecosystemButton;
-        if(!matchMedia('(prefers-reduced-motion:reduce)').matches)drawerAnimation=menu.animate([{transform:'translateX(-100%)',opacity:.4},{transform:'translateX(0)',opacity:1}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
-        closeDrawer.focus({preventScroll:true});
+        if(compactMenu()&&!matchMedia('(prefers-reduced-motion:reduce)').matches)drawerAnimation=menu.animate([{transform:'translateX(-100%)',opacity:.4},{transform:'translateX(0)',opacity:1}],{duration:260,easing:'cubic-bezier(.2,.8,.2,1)'});
+        (compactMenu()?closeDrawer:menuControls()[0])?.focus({preventScroll:true});
       }else if(!root.activeElement||menu.contains(root.activeElement))drawerTrigger?.focus({preventScroll:true});
     }).observe(menu,{attributes:true,attributeFilter:['hidden']});
     closeDrawer.addEventListener('click',()=>{menu.hidden=true;});backdrop.addEventListener('click',()=>{menu.hidden=true;});
     root.addEventListener('keydown',event=>{
       if(menu.hidden)return;
       if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();menu.hidden=true;return;}
+      const controls=menuControls(),first=controls[0],last=controls.at(-1);
+      if(!compactMenu()){
+        if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();const index=controls.indexOf(root.activeElement),next=event.key==='Home'?0:event.key==='End'?controls.length-1:(index+(event.key==='ArrowUp'?-1:1)+controls.length)%controls.length;controls[next]?.focus({preventScroll:true});}
+        return;
+      }
       if(event.key!=='Tab')return;
-      const controls=[...menu.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),[tabindex="0"]')].filter(element=>!element.hidden),first=controls[0],last=controls.at(-1);
       if(event.shiftKey&&root.activeElement===first){event.preventDefault();last?.focus();}else if(!event.shiftKey&&root.activeElement===last){event.preventDefault();first?.focus();}
     },true);
     document.addEventListener('click',event=>{const path=event.composedPath();if(!menu.hidden&&!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
+    document.addEventListener('focusin',event=>{if(menu.hidden||compactMenu())return;const path=event.composedPath();if(!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
     for(const [route,label] of Object.entries(LABELS)){if(['page-tools','group-tools','food-market'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
       const button=document.createElement('button');button.type='button';button.dataset.communityExtra=route;
       const definition=window.lucide?.icons[ICONS[route]];
@@ -152,6 +177,8 @@
       const svg=button.querySelector('svg')||(definition&&window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true',focusable:'false'}));
       if(svg)icon.append(svg);button.classList.add('ecosystem-item');button.replaceChildren(icon,label);
     }
+    updateMenuLayout();window.addEventListener('resize',updateMenuLayout);
+    if(window.ResizeObserver)new ResizeObserver(updateMenuLayout).observe(root.host||app);
     function deactivate(){
       closeAssistant();
       closeComposer();
