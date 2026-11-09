@@ -8,7 +8,6 @@
   const scope=new URLSearchParams(location.search).get('member')||'community';
   const key='nexora-community-deals-po-v1:'+module+':'+scope;
   let walletPage='';
-  if(module==='deals'){const originalWallet=drawWallet;drawWallet=function(){originalWallet();const cards=[...document.querySelectorAll('#walList>.wc')];state().wallet.forEach((coupon,index)=>{if(cards[index])cards[index].hidden=Boolean(walletPage&&state().D.find(row=>row.id===coupon.id)?.pageId!==walletPage);});};}
   let ready=false,renderQueued=false,lastHeight=0,lastModal=false,previousView='',lastSaved='',pendingClaim=null,lastFocus=null;
   const html=text=>String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function state(){return typeof S==='object'?S:null;}
@@ -210,6 +209,7 @@
   const demoState=state()?JSON.parse(JSON.stringify(state())):null;
   restore();ready=true;
   window.NEXORA_DEAL_ITEMS.setup(module,state(),demoState);
+  if(module==='deals'){const originalWallet=drawWallet;drawWallet=function(){originalWallet();document.querySelectorAll('#walList>[data-coupon-id]').forEach(card=>{card.hidden=Boolean(walletPage&&state().D.find(row=>row.id===card.dataset.couponId)?.pageId!==walletPage);});};}
   if(module==='deals')card=modernCard;
   document.documentElement.lang='en';document.body.classList.add('lang-en');
   // Keep all module subviews reachable while the shared Community header stays in place.

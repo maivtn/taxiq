@@ -34,7 +34,7 @@
     anchor.before(root);
     const frames=new Map(), frameHost=root.querySelector('.community-deals-frames');
     const initial=new URLSearchParams(location.search).get('dealTab');
-    let pageScope='';let selected=ROUTES[initial]?initial:ALIASES[initial]||'nearby',active=false,lastOffers='';
+    let pageScope=new URLSearchParams(location.search).get('couponPageId')||'';let selected=ROUTES[initial]?initial:ALIASES[initial]||'nearby',active=false,lastOffers='';
     if(ROUTES[selected].business&&adapter.role!=='owner')selected='nearby';
     const messageOrigin=location.protocol==='file:'?'*':location.origin;
     const send=(record,data)=>{if(record.ready)record.frame.contentWindow.postMessage(data,messageOrigin);};
@@ -95,11 +95,11 @@
     }
     function navigate(route,notify=true){
       const next=ALIASES[route]||route;if(!ROUTES[next]||ROUTES[next].business&&adapter.role!=='owner')return;
-      selected=next;
+      selected=next;if(next!=='wallet')pageScope='';
       const business=root.querySelector('.community-deals-business');if(business)business.open=false;
       if(!active)adapter.navigate();
       render();
-      if(notify)adapter.onState?.({dealTab:next});
+      if(notify)adapter.onState?.({dealTab:next,couponPageId:pageScope});
     }
     function activate(view){
       active=view==='deals';root.hidden=!active;
@@ -126,7 +126,7 @@
       if(data.type==='nexora-deals-height'&&Number.isFinite(data.height)&&record.frame.tagName==='IFRAME')record.frame.style.height=Math.max(650,Math.min(30000,data.height+12))+'px';
       if(data.type==='nexora-deals-page')adapter.openPage?.(data.pageId);
       if(data.type==='nexora-deals-modal'&&active&&!record.frame.hidden){viewport();adapter.onModal?.(Boolean(data.open));}
-      if(data.type==='nexora-deals-route'&&active&&!record.frame.hidden){const found=Object.keys(ROUTES).find(key=>ROUTES[key].module===name&&ROUTES[key].view===data.view);if(found&&found!==selected){selected=found;updateNavigation();adapter.onState?.({dealTab:found});}}
+      if(data.type==='nexora-deals-route'&&active&&!record.frame.hidden){const found=Object.keys(ROUTES).find(key=>ROUTES[key].module===name&&ROUTES[key].view===data.view);if(found&&found!==selected){selected=found;updateNavigation();adapter.onState?.({dealTab:found,couponPageId:pageScope});}}
       if(data.cmd==='needTerms')send(record,{cmd:'consentSync'});
       if(data.cmd==='go')navigate(data.r);
       if(data.type==='nexora-deals-claim-match'){
