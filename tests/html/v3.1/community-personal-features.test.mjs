@@ -18,7 +18,8 @@ for(const [query,expected] of [
   window.eval(shared);window.eval(feed);
   const owner=query==='account=business';
   assert.equal(window.NEXORA_COMMUNITY_SHARED.canAccessFeature('shop'),true);
-  for(const feature of ['storeServices','foodMerchant','transfer','workers','services','hiring','posRecruitment'])assert.equal(window.NEXORA_COMMUNITY_SHARED.canAccessFeature(feature),owner);
+  assert.equal(window.NEXORA_COMMUNITY_SHARED.canAccessFeature('storeServices'),true);
+  for(const feature of ['foodMerchant','transfer','workers','services','hiring','posRecruitment'])assert.equal(window.NEXORA_COMMUNITY_SHARED.canAccessFeature(feature),owner);
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
   await new Promise(resolve=>setTimeout(resolve,110));
   assert.deepEqual([...window.document.querySelectorAll('[data-community-shortcut]')].map(node=>node.dataset.communityShortcut),expected);

@@ -3,6 +3,14 @@
 (() => {
   const isConnect = location.pathname.includes('privacy-qr-layout');
   const communityPairs = `
+Nhóm dành cho bạn	Groups for you
+Bài mới trong nhóm	New group posts
+Nhóm đã tham gia	Joined groups
+Chưa tham gia nhóm nào	No groups joined yet
+Khám phá các nhóm mẫu và bấm Tham gia để lưu vào mục này.	Explore sample groups and tap Join to save them here.
+Khám phá nhóm	Discover groups
+Lưu tin	Save listing
+Bài viết mới từ các Trang	New posts from Pages
 Lối tắt cộng đồng	Community shortcuts
 Gian hàng	Store
 Lọc Fanpage	Filter Pages

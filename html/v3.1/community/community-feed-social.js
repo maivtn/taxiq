@@ -400,7 +400,7 @@
         (!needle||normal([post.owner,post.title,postBody(post)].join(' ')).includes(needle)))
         .slice(0,30).map(post=>({id:post.id,owner:post.owner,title:post.title||'',body:postBody(post)}));
     }
-    mounted={enhance,openPost,isVisible,findPosts,onDialogClosed,refreshOpenPost,reset,destroy};return mounted;
+    mounted={isSaved:postId=>!!state.posts[String(postId)]?.savedBy?.includes(member),enhance,openPost,isVisible,findPosts,onDialogClosed,refreshOpenPost,reset,destroy};return mounted;
   }
   window.NEXORA_COMMUNITY_FEED_SOCIAL={mount,enhance:root=>mounted?.enhance(root),openPost:(id,options)=>mounted?.openPost(id,options),isVisible:item=>mounted?.isVisible(item)??true,findPosts:(query,likedOnly)=>mounted?.findPosts(query,likedOnly)||[],onDialogClosed:()=>mounted?.onDialogClosed(),refreshOpenPost:()=>mounted?.refreshOpenPost(),reset:()=>mounted?.reset()};
 })();

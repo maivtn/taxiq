@@ -176,7 +176,7 @@
   <link rel="stylesheet" href="community-share-post.css?v=20261109-facebook-share1">
   <link rel="stylesheet" href="community-feed-composer.css?v=20261106-community-v22-restoration-v59">
   <link rel="stylesheet" href="community-layout.css?v=20261109-compact-content-gap1">
-<link rel="stylesheet" href="community-group-workflow.css?v=20261109-group-latest1">
+<link rel="stylesheet" href="community-group-workflow.css?v=20261109-community-review1">
 <link rel="stylesheet" href="community-jobs-workflow.css?v=20261109-hiring-inline1">
 <link rel="stylesheet" href="community-shifts-workflow.css?v=20261106-community-v22-restoration-v59">
 <style>
@@ -201,7 +201,7 @@
   <script src="../industry-icons.js?v=20261105-deals-controls-v5" data-industry-icons></script>
 <link rel="stylesheet" href="community-expansion.css?v=20261107-feature-shortcuts1">
 <link rel="stylesheet" href="community-sample-avatars.css">
-<link rel="stylesheet" href="community-po-alignment.css?v=20261109-po1">
+<link rel="stylesheet" href="community-po-alignment.css?v=20261109-community-review1">
 <link rel="stylesheet" href="community-pages-header.css?v=20261109-page-header1">
 <link rel="stylesheet" href="community-jobs-personal.css?v=20261109-personal-jobs2">
 </head>
@@ -293,7 +293,7 @@
           <button type="button" class="filter-chip" data-page-scope="following" aria-pressed="false">Đang theo dõi</button>
           <button type="button" class="filter-chip" data-page-category="Dịch vụ khác" aria-pressed="false">Dịch vụ khác</button>
         </div>
-        <div class="section-heading"><h2 id="pageSectionTitle">Khám phá Fanpage</h2></div><div id="pageCards" class="mini-list"></div>
+        <div class="section-heading"><h2 id="pageSectionTitle">Khám phá Fanpage</h2></div><div id="pageCards" class="mini-list"></div><section class="community-page-latest" aria-labelledby="pageLatestTitle"><h3 id="pageLatestTitle">Bài viết mới từ các Trang</h3><div id="pageLatestPosts" class="mini-list"></div></section>
       </section>
       <section id="jobsView" class="hide">
         <div class="feature-intro"><div><h2 id="jobsTitle">Việc làm</h2><p>Tuyển dụng và tìm việc thường xuyên theo ngành nghề, vị trí và khu vực.</p></div><button type="button" class="btn soft" data-view="daywork">Xem Ca làm thêm →</button></div><div class="chip-row" id="jobIndustryFilters" role="group" aria-label="Lọc ngành nghề việc làm"><button class="filter-chip active" data-job-industry="all">Tất cả</button><button class="filter-chip" data-job-industry="Nail & làm đẹp">Làm đẹp</button><button class="filter-chip" data-job-industry="Nhà hàng & ăn uống">Nhà hàng</button><button class="filter-chip" data-job-industry="Khác">Ngành khác</button></div>
@@ -334,14 +334,14 @@
 <script src="nexora-us-geo-2025.js"></script>
 <script src="nexora-us-place-centers-2025.js"></script>
 <script src="community-record-store.js?v=20261029-community-tour-actions-v21"></script>
-<script src="community-group-workflow.js?v=20261109-group-latest1"></script>
+<script src="community-group-workflow.js?v=20261109-community-review1"></script>
 <script src="community-po-job-catalog.js?v=20261107-feature-shortcuts1"></script>
 <script src="community-jobs-expansion.js?v=20261109-personal-jobs2"></script>
 <script src="community-jobs-personal.js?v=20261109-personal-jobs2"></script>
 <script src="community-jobs-workflow.js?v=20261109-personal-jobs2"></script>
 <script src="community-shifts-workflow.js?v=20261109-personal-jobs2"></script>
 <script src="community-share-post.js?v=20261109-facebook-share1"></script>
-<script src="community-feed-social.js?v=20261109-facebook-share1"></script>
+<script src="community-feed-social.js?v=20261109-community-review1"></script>
 <script src="community-feed-composer.js?v=20261109-coverage1"></script>
 <script src="community-deals-selects.js?v=20261105-deals-controls-v5"></script>
 <script src="community-deals-workflow.js?v=20261109-hide-industry-shortcut1"></script>
@@ -712,6 +712,10 @@
     if(feedScope==='drafts'&&feedComposer){feedComposer.renderDrafts($('#feedPosts'));$('#feedMore').classList.add('hide');}else feedComposer?.releaseDrafts($('#feedPosts'));
     const promotedPages=extra.pages.filter(visiblePagePromotion);$('#sponsoredFeed').innerHTML=promotedPages.length&&['all','main'].includes(feedScope)&&['all','pages'].includes(feedKindFilter)?'<div class="section-heading"><h2>Fanpage được tài trợ</h2></div>'+promotedPages.map(pageCard).join(''):'';
     const pageQuery=norm($('#pageSearch').value),pageIndustry=$('#pageIndustryFilter').value;const visiblePages=extra.pages.filter(x=>(pageScope==='discover'||(pageScope==='mine'?x.owner===ME:Boolean(extra.followingPages[x.id])))&&(!pageQuery||norm([x.title,x.handle,x.city,x.industry].join(' ')).includes(pageQuery))&&(!pageIndustry||x.industry===pageIndustry||pageIndustry==='Cộng đồng'&&x.poCategory==='community'));$('#pageSectionTitle').textContent=({discover:'Khám phá Fanpage',mine:'Fanpage của tôi',following:'Đang theo dõi'})[pageScope];document.querySelectorAll('.community-pages-filters [data-page-scope],.community-pages-filters [data-page-category]').forEach(button=>{const active=button.dataset.pageCategory?button.dataset.pageCategory===pageIndustry:!pageIndustry&&button.dataset.pageScope===pageScope;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});$('#pageCards').innerHTML=[...visiblePages].sort((a,b)=>Number(Boolean(visiblePagePromotion(b)))-Number(Boolean(visiblePagePromotion(a)))).map(pageCard).join('')||`<div class="panel empty"><h3>${pageScope==='mine'?'Bạn chưa có Fanpage':pageScope==='following'?'Bạn chưa theo dõi Fanpage nào':'Không tìm thấy Fanpage phù hợp'}</h3><p>${pageScope==='mine'?'Tạo Fanpage để giới thiệu doanh nghiệp hoặc thương hiệu.':pageScope==='following'?'Mở Khám phá để tìm Fanpage bạn quan tâm.':'Thử tên, ngành hoặc khu vực khác.'}</p><button type="button" class="btn small soft" ${pageScope==='mine'?'data-template="page"':'data-page-scope="discover"'}>${pageScope==='mine'?'＋ Tạo Fanpage':'Khám phá Fanpage'}</button></div>`;
+    const visiblePageIds=new Set(visiblePages.map(page=>page.id));
+    const latestPagePosts=sources.pages.filter(post=>visiblePageIds.has(post.pageId)&&!post.isDraft&&!['draft','removed'].includes(post.status)&&!post.paused&&(!post.publishAt||new Date(post.publishAt)<=new Date())).sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)).slice(0,6);
+    $('#pageLatestPosts').innerHTML=latestPagePosts.map(feedCardHTML).join('');
+    hydratePageMedia($('#pageLatestPosts'));
     $('#groupCards').innerHTML=extra.groups.map(x=>`<article class="panel content-card"><span class="kind sale">NHÓM NGÀNH</span><h3>${esc(x.title)}</h3><div class="meta">${esc(x.industry)} · ${esc(x.region)}</div><p>${esc(x.description)}</p>${x.members?`<div class="chips"><span class="chip">${Number(x.members).toLocaleString('en-US')} thành viên</span></div>`:''}<div class="listing-actions"><button class="btn small soft" data-group-detail="${esc(x.id)}">Xem nhóm</button><button type="button" class="btn small" data-group-membership="${esc(x.id)}" aria-pressed="${Boolean(membershipFlags()[x.id])}">${membershipFlags()[x.id]?'Rời nhóm':'Tham gia'}</button></div></article>`).join('');
     $('#jobPosts').innerHTML=visibleJobs.map(jobCard).join('')||'<div class="panel empty"><h3>Chưa có tin phù hợp</h3><p>Chọn mẫu tuyển người hoặc tìm việc để đăng tin.</p></div>';
     $('#shiftPosts').innerHTML=visibleShifts.map(shiftCard).join('')||'<div class="panel empty"><h3>Chưa có ca phù hợp</h3><p>Đăng ca cần người hoặc ngày bạn rảnh nhận ca.</p></div>';
@@ -818,7 +822,7 @@
     if(t.section==='shifts')shiftsWorkflow?.afterSave(item);closeModal();if(t.section==='pages')pageScope='mine';renderExtra();setView(f.dataset.kind==='deal'?'deals':['daywork','dayhire'].includes(f.dataset.kind)?'daywork':t.section);if(f.dataset.kind==='deal')dealsWorkflow?.navigate('nearby');if(t.section==='pages')pageDetail(item,'posts');toast(t.section==='messages'?'Đã lưu nháp.':t.section==='pages'?'Đã tạo Fanpage.':'Đã tạo bài.');}finally{delete f.dataset.submitting;if(f.isConnected)submit.disabled=false;}}
   function groupDetail(x){if(groupWorkflow)return groupWorkflow.openGroup(x.id);$('#modalRoot').innerHTML=`<div class="overlay" id="overlay"><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="dialog-head"><div><h2 id="modalTitle">${esc(x.title)}</h2><p>${esc(x.industry)} · ${esc(x.region)}</p></div><button class="icon-btn" id="closeModal" aria-label="Đóng">×</button></div><div class="dialog-body"><p class="tip">${esc(x.description)}</p><div class="quiet"><strong>Nội quy:</strong> ${esc(x.rules)}</div></div><div class="dialog-footer"><button class="btn primary" id="cancelModal">Đóng</button></div></section></div>`;}
   function card(x,asMatch=false){const photo=demoData.mediaURL(x.photo);const isMine=x.owner===ME;const rel=related(x);const note=asMatch?`<div class="match-note">✦ ${x.type==='sale'?'Phù hợp với bài cần mua của bạn':'Có người đang tìm món bạn bán'} · ${esc(x.city)} · ${esc(priceLabel(x))}</div>`:'';
-    return `<article class="panel listing${photo?' has-photo':''}" data-listing-id="${esc(x.id)}">${photo?`<img class="listing-photo" src="${esc(photo)}" alt="${esc(x.title)}" loading="lazy">`:''}<div><div class="listing-top"><span class="kind ${x.type}">${x.type==='sale'?'CẦN BÁN':'CẦN MUA'}</span><span class="price">${x.type==='want'?'Tối đa ':''}${esc(priceLabel(x))}</span></div><h3>${esc(x.title)}</h3><div class="meta">${esc(x.owner)} · ${esc(x.city)}, ${esc(x.state)} · ${x.status==='open'?'Đang mở':x.status==='sold'?'Đã bán':'Đã mua'}</div><div class="chips"><span class="chip">${esc(x.industry||'Nail & làm đẹp')}</span><span class="chip">${esc(x.category)}</span><span class="chip">${x.type==='sale'?'Có '+esc(x.qty)+' cái':'Cần '+esc(x.qty)+' cái'}</span>${x.condition?`<span class="chip">${esc(x.condition)}</span>`:''}${x.type==='sale'?`<span class="chip">${x.split?'Có bán lẻ':'Chỉ bán cả lô'}</span>`:''}</div>${note}<div class="listing-actions">${isMine?`<button class="btn small soft" data-action="edit" data-id="${esc(x.id)}">Sửa bài</button>${x.status==='open'?`<button class="btn small" data-action="close" data-id="${esc(x.id)}">${x.type==='sale'?'Đánh dấu đã bán':'Đã mua'}</button>`:''}`:`<button class="btn small soft" data-action="contact" data-id="${esc(x.id)}">Nhắn tin</button>`}${isMine&&rel.length&&!asMatch?`<button class="btn small" data-action="show-match" data-id="${esc(x.id)}">${rel.length} bài phù hợp</button>`:''}</div></div></article>`;}
+    return `<article class="panel listing${photo?' has-photo':''}" data-listing-id="${esc(x.id)}">${photo?`<img class="listing-photo" src="${esc(photo)}" alt="${esc(x.title)}" loading="lazy">`:''}<div><div class="listing-top"><span class="kind ${x.type}">${x.type==='sale'?'CẦN BÁN':'CẦN MUA'}</span><span class="price">${x.type==='want'?'Tối đa ':''}${esc(priceLabel(x))}</span></div><h3>${esc(x.title)}</h3><div class="meta">${esc(x.owner)} · ${esc(x.city)}, ${esc(x.state)} · ${x.status==='open'?'Đang mở':x.status==='sold'?'Đã bán':'Đã mua'}</div><div class="chips"><span class="chip">${esc(x.industry||'Nail & làm đẹp')}</span><span class="chip">${esc(x.category)}</span><span class="chip">${x.type==='sale'?'Có '+esc(x.qty)+' cái':'Cần '+esc(x.qty)+' cái'}</span>${x.condition?`<span class="chip">${esc(x.condition)}</span>`:''}${x.type==='sale'?`<span class="chip">${x.split?'Có bán lẻ':'Chỉ bán cả lô'}</span>`:''}</div>${note}<div class="listing-actions">${isMine?`<button class="btn small soft" data-action="edit" data-id="${esc(x.id)}">Sửa bài</button>${x.status==='open'?`<button class="btn small" data-action="close" data-id="${esc(x.id)}">${x.type==='sale'?'Đánh dấu đã bán':'Đã mua'}</button>`:''}`:`<button class="btn small soft" data-action="contact" data-id="${esc(x.id)}">Nhắn tin</button>`}${isMine&&rel.length&&!asMatch?`<button class="btn small" data-action="show-match" data-id="${esc(x.id)}">${rel.length} bài phù hợp</button>`:''}<button type="button" class="btn small soft community-market-save" data-social-action="save-post" data-social-post="${esc(x.id)}" aria-pressed="${!!feedSocial?.isSaved(x.id)}">${feedSocial?.isSaved(x.id)?'Đã lưu':'Lưu tin'}</button></div></div></article>`;}
   document.addEventListener('error',event=>{const image=event.target;if(!(image instanceof HTMLImageElement)||!image.classList.contains('listing-photo'))return;image.closest('.listing')?.classList.remove('has-photo');image.remove();},true);
   const tabItems=[['all','Tất cả'],['sale','Cần bán'],['want','Cần mua'],['matches','Phù hợp với tôi'],['mine','Bài của tôi']];
   const GEO=window.NEXORA_US_GEO||{states:{},cities:{}};
@@ -1061,7 +1065,7 @@
   setInterval(()=>{if(extra.pagePosts.some(post=>post.status==='scheduled'&&post.publishAt&&new Date(post.publishAt).getTime()<=Date.now())){renderExtra();const open=document.querySelector('#communityPageScreen [data-page-detail-id],#modalRoot [data-page-detail-id]');if(open){const page=extra.pages.find(x=>x.id===open.dataset.pageDetailId),tab=open.querySelector('[data-page-tab].active')?.dataset.pageTab;if(page&&tab==='scheduled')pageDetail(page,'scheduled');}}},30000);
 })();
 </script>
-<script src="nexora-community-i18n.js?v=20261109-feed-media1"></script>
+<script src="nexora-community-i18n.js?v=20261109-community-review1"></script>
   <script src="../vendor/lucide.min.js" defer></script>
   <script src="../vendor/sweetalert2.all.min.js?v=11.26.25" defer></script>
   <script src="community-ui.js?v=20261109-menu-shortcuts1" defer></script>

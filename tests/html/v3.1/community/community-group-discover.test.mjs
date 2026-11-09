@@ -39,3 +39,15 @@ test('Discover sorts and deduplicates published posts without exposing private o
   input.value='No matching group';input.dispatchEvent(new document.defaultView.Event('input',{bubbles:true}));
   assert.equal(document.querySelectorAll('.community-group-posts article').length,0);
 });
+
+
+test('My groups shows the PO empty state with discover and create actions',t=>{
+  const {document}=fixture(t,'vi');
+  document.querySelector('[data-po-my-groups]').click();
+  assert.equal(document.querySelector('.community-group-section>h3').textContent,'Nhóm đã tham gia');
+  assert.equal(document.querySelector('.community-group-empty h4').textContent,'Chưa tham gia nhóm nào');
+  assert.equal(document.querySelector('.community-group-empty p').textContent,'Khám phá các nhóm mẫu và bấm Tham gia để lưu vào mục này.');
+  assert.ok(document.querySelector('.community-group-empty [data-template="group"]'));
+  document.querySelector('.community-group-empty [data-po-group-discover]').click();
+  assert.ok(document.querySelector('.community-group-latest'));
+});

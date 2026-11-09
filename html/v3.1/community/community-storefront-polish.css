@@ -111,3 +111,12 @@ body:has(.store-head) #page-view :is(button,a):focus-visible{outline:3px solid #
 
 .store-item-photo{overflow:hidden}
 .store-item-photo img{display:block;width:100%;height:100%;min-height:0;max-height:100%;object-fit:contain}
+
+.store-section-title{flex-direction:row;flex-wrap:nowrap;align-items:center}
+.store-section-title>div:first-child{flex:1;min-width:0}
+.store-section-title>.store-head-actions{flex:0 0 auto;margin-left:auto}
+.store-section-title>.btn{flex:none;margin-left:auto;white-space:nowrap}
+.native-body #page-view .store-connect{min-height:50px;padding:8px 10px;gap:8px;border-radius:10px}
+.native-body #page-view .store-connect strong{font-size:12px;line-height:1.3}
+.native-body #page-view .store-connect small{margin-top:2px;font-size:11px;line-height:1.3}
+.native-body #page-view .store-connect .store-action-art{width:24px;height:24px;flex-basis:24px}

@@ -207,9 +207,9 @@ async function verifyFlow(browser,viewport,packaged){
       for(const account of ['personal','business']){
         await page.goto(origin+'/html/v3.1/staff-community.html?tab=shop&account='+account+'&role=tech',{waitUntil:'domcontentloaded'});await visible(page,'.store-head');
         assert.equal(await page.evaluate(()=>window.NEXORA_COMMUNITY_SHARED.canAccessFeature('shop')),true,account+' Tech has a personal storefront');
-        assert.equal(await page.locator('[data-action=shop-add-service]').count(),0,account+' Tech has no salon services');
+        assert.ok(await page.locator('[data-action=shop-add-service]').count()>0,account+' Tech can add storefront services');
       }
-      checkpoint('business identity isolation; Personal/Tech storefront without salon services');
+      checkpoint('business identity isolation; Personal/Tech storefront with service tools');
     }
     assert.equal(entry.errors.length,0,'JavaScript errors '+entry.errors.join('; '));
     assert.equal(entry.failedRequests.length,0,'Failed essential requests '+JSON.stringify(entry.failedRequests));

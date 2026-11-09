@@ -52,3 +52,9 @@ body #groupsView .community-group-search .community-group-filter-toggle{display:
 .community-group-latest{grid-template-columns:minmax(0,1fr)}
 .community-group-posts{display:grid;gap:14px;min-width:0}
 .community-group-posts>.content-card{min-width:0;margin:0}
+
+.community-group-empty{text-align:center;padding:24px 18px}
+.community-group-empty>img{object-fit:contain}
+.community-group-empty h4{margin:8px 0 14px;font-size:16px}
+.community-group-empty p{margin:0 0 16px;color:#66738c;font-size:13px;line-height:1.5}
+.community-group-empty-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
