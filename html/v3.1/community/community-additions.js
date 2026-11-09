@@ -18,14 +18,17 @@
     window.addEventListener('nexora-community-search',event=>searchReady.then(search=>search.open(event.detail?.query||'')).catch(console.error));
     let current='',routeContext={},internal=false,generation=0,composerSession=null,composerRequest=0,assistantSession=null,assistantRequest=0,assistantLauncher=null;
     const notify=data=>options.notify?.(data);
-    const blogView=root.querySelector('#blogView');
     const blogTabs=document.createElement('div');
     blogTabs.className='community-news-tabs';blogTabs.setAttribute('role','tablist');blogTabs.setAttribute('aria-label','News and Blog');
     blogTabs.innerHTML='<button type="button" role="tab" aria-selected="false" data-community-news-tab="news">🗞️ News &amp; Updates</button><button type="button" role="tab" aria-selected="true" class="active" data-community-news-tab="blog">📰 Blog</button>';
-    blogView?.prepend(blogTabs);
     const blogTabStyle=document.createElement('style');
     blogTabStyle.textContent='.community-news-tabs{display:flex;gap:7px;margin:7px 0 17px;padding:6px;width:max-content;max-width:100%;border:1px solid #e0dcf7;border-radius:13px;background:#f5f3ff}.community-news-tabs button{border:0;border-radius:9px;padding:10px 17px;background:transparent;color:#615c7c;font-size:13px;font-weight:850;cursor:pointer}.community-news-tabs button.active{background:#6552dc;color:#fff;box-shadow:0 4px 12px #5f4dc42b}';
-    root.append(blogTabStyle);
+    function attachBlogTabs(){
+      const doc=frames[0].contentDocument,view=doc?.getElementById('blogView');
+      if(!view)return;
+      view.prepend(blogTabs);doc.head.append(blogTabStyle);
+    }
+    frames[0].addEventListener('load',attachBlogTabs);attachBlogTabs();
     root.addEventListener('click',event=>{
       const tab=event.target.closest('[data-community-news-tab],[data-news-mode="blog"]');
       if(!tab)return;
