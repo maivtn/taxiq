@@ -914,7 +914,7 @@ body[data-nexora-workspace="pos"] .sidebar-section-label + .sidebar-nav { margin
 .header.shell-header .shell-workspace-actions a[href="dashboard.html"] { color:#7c3aed; }
 .header.shell-header .shell-header-search svg { color:#64748b; }
 .header.shell-header :is(.shell-workspace-actions a,.icon-button):focus-visible { outline:2px solid #64748b; outline-offset:2px; }
-@media (max-width:767px) {
+@media (max-width:767px), (max-width:1023px) and (max-height:500px) and (pointer:coarse) {
   body[data-nexora-workspace] .header.shell-header { min-height:64px; padding:10px 12px; gap:8px; flex-wrap:nowrap; }
   .header.shell-header .shell-header-search { display:none; order:3; flex:1 0 100%; width:100%; max-width:none; }
   body.shell-search-open .header.shell-header .shell-header-search { display:block; }
@@ -963,11 +963,6 @@ body.community-hub-active > .shell,
 body.community-hub-active .app-area { height:var(--community-viewport-height,100dvh); min-height:0; }
 @media (max-width: 768px) {
   body.community-hub-active .sidebar:not(.is-open) { box-shadow:none; }
-}
-
-@media (max-width: 800px), (max-height: 500px) and (pointer: coarse) {
-  body.community-detail-open .app-area > .header { display:none; }
-  body.community-detail-open .content.community-v2-content { height:var(--community-viewport-height,100dvh); }
 }
 
 }</style>
