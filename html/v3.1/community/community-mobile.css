@@ -524,7 +524,7 @@ body .community-toolbar-filter-toggle,body .community-group-filter-toggle,body .
   body.embedded #dayworkView.shifts-owner-view #shiftTemplates { display:none; }
   body.embedded #dayworkView #communityShiftsWorkflow { margin-top:0; }
   body.embedded #dayworkView .shifts-tabs { margin-bottom:10px; padding:3px; }
-  body.embedded #dayworkView .shifts-tabs button { min-height:44px; padding:7px; }
+  body.embedded #dayworkView .shifts-tabs button { min-height:30px; padding:5px 9px; font-size:11px; line-height:18px; font-weight:650; }
 
   body.embedded > .shell > .page-head { display:none; }
   body.embedded .page-tabs { grid-template-columns:repeat(4,minmax(0,1fr)) 44px; gap:2px; margin:0 0 10px; padding:3px; }
@@ -652,3 +652,8 @@ body #feedView .feed-action[data-blog-create] .feed-icon .community-action-icon 
 #communityPageScreen .po-page-owner .page-hero-actions .btn:hover{background:#eae5ff;border-color:#b8aaf1}
 #communityPageScreen .po-page-owner .page-hero-actions [data-po-page-action="manage"]:hover{background:#5947d7;border-color:#5947d7}
 #communityPageScreen .po-page-owner .page-hero-actions .btn:focus-visible{outline:2px solid #8b7bea;outline-offset:2px}
+
+/* Page filters use text only, with an initial capital in every label. */
+body.embedded #pagesView>.community-pages-filters>.filter-chip{display:block!important}
+#pagesView .community-pages-filters .filter-chip::first-letter{text-transform:uppercase}
+#pagesView .community-pages-filters :is(svg,img,.community-action-icon,.feed-icon){display:none!important}
