@@ -11,7 +11,7 @@
     let stored;
     try{stored=JSON.parse(localStorage.getItem(key)||'null');}catch{}
     const state={recent:Array.isArray(stored?.recent)?stored.recent.filter(value=>typeof value==='string').slice(0,20):['blog','setting'],hidden:Array.isArray(stored?.hidden)?stored.hidden:[],hideLiked:stored?.hideLiked===true};
-    let ready=false,failed=false,allRecent=false,likedOnly=false,opener=null,suppressFocus=false,scrollPositions=[],scrollMode='auto';
+    let ready=false,failed=false,likedOnly=false,opener=null,suppressFocus=false,scrollPositions=[],scrollMode='auto';
     const dialog=document.createElement('dialog');dialog.id='community-search-dialog';dialog.className='community-search-dialog';dialog.setAttribute('aria-label','Search Community');
     dialog.innerHTML='<form class="community-search-head" role="search"><button type="button" data-search-back aria-label="Back">'+svg('back')+'</button><input name="query" type="search" placeholder="Search..." aria-label="Search Community" autocomplete="off" maxlength="120"><button type="submit" aria-label="Search">'+svg('search')+'</button></form><div class="community-search-body"></div><p class="community-search-status" role="status" aria-live="polite"></p>';
     document.body.append(dialog);
@@ -28,8 +28,7 @@
     }
     function personCard(person,index){return '<article class="community-search-person"><button type="button" class="community-search-profile" data-search-person="'+esc(person.id)+'" aria-label="'+esc(person.name)+'">'+photo(person,index)+'<strong>'+esc(person.name)+(person.verified?'<span class="community-search-verified" aria-label="Verified">'+svg('check')+'</span>':'')+'</strong><small>'+esc(person.city||person.area||person.handle||'')+'</small></button><div class="community-search-person-actions"><button type="button" data-search-add="'+esc(person.id)+'">Add friend</button><button type="button" data-search-hide="'+esc(person.id)+'">Remove</button></div></article>';}
     function renderHome(){
-      const recent=allRecent?state.recent:state.recent.slice(0,2);
-      body.innerHTML='<section class="community-search-section"><div class="community-search-section-head"><h2>Recent</h2>'+(!allRecent&&state.recent.length?'<button type="button" data-search-see-all>See all</button>':'')+'</div>'+recent.map(query=>'<div class="community-search-recent"><button type="button" data-search-recent="'+esc(query)+'"><span class="community-search-clock">'+svg('clock')+'</span><span>'+esc(query)+'</span></button><button type="button" class="community-search-more" data-search-options="'+esc(query)+'" aria-label="More actions: '+esc(query)+'" aria-expanded="false">'+svg('more')+'</button><button type="button" class="community-search-remove" data-search-remove="'+esc(query)+'" hidden>Remove</button></div>').join('')+(!state.hideLiked?'<div class="community-search-recent"><button type="button" data-search-liked><span class="community-search-liked">'+svg('like')+'</span><span>Your liked posts<small>See posts you\'ve liked</small></span></button><button type="button" class="community-search-more" data-search-options-liked aria-label="More actions: Your liked posts" aria-expanded="false">'+svg('more')+'</button><button type="button" class="community-search-remove" data-search-remove-liked hidden>Remove</button></div>':'')+'</section><section class="community-search-section"><h2>People you may know</h2><div class="community-search-people">'+(ready?suggestions().slice(0,12).map(personCard).join(''):'')+'</div></section>';
+      body.innerHTML='<section class="community-search-section"><div class="community-search-section-head"><h2>Recent</h2></div>'+state.recent.map(query=>'<div class="community-search-recent"><button type="button" data-search-recent="'+esc(query)+'"><span class="community-search-clock">'+svg('clock')+'</span><span>'+esc(query)+'</span></button><button type="button" class="community-search-more" data-search-options="'+esc(query)+'" aria-label="More actions: '+esc(query)+'" aria-expanded="false">'+svg('more')+'</button><button type="button" class="community-search-remove" data-search-remove="'+esc(query)+'" hidden>Remove</button></div>').join('')+(!state.hideLiked?'<div class="community-search-recent"><button type="button" data-search-liked><span class="community-search-liked">'+svg('like')+'</span><span>Your liked posts<small>See posts you\'ve liked</small></span></button><button type="button" class="community-search-more" data-search-options-liked aria-label="More actions: Your liked posts" aria-expanded="false">'+svg('more')+'</button><button type="button" class="community-search-remove" data-search-remove-liked hidden>Remove</button></div>':'')+'</section><section class="community-search-section"><h2>People you may know</h2><div class="community-search-people">'+(ready?suggestions().slice(0,12).map(personCard).join(''):'')+'</div></section>';
       status.textContent=failed?'Something went wrong. Please try again.':ready?'':'Loading…';
       if(failed)body.insertAdjacentHTML('beforeend','<button type="button" data-search-retry>Try again</button>');
     }
@@ -53,7 +52,7 @@
     function leave(){const value={...history.state};delete value.communitySearch;history.replaceState(value,'',location.href);release();}
     function open(query=''){
       if(suppressFocus||dialog.open)return;
-      opener=document.activeElement;input.value=String(query).slice(0,120);allRecent=false;likedOnly=false;
+      opener=document.activeElement;input.value=String(query).slice(0,120);likedOnly=false;
       scrollPositions=[document.scrollingElement,...document.querySelectorAll('.community-v2-content .native-body,.community-v2-content .workspace,.community-v2-content .community-extra-pane')].filter(Boolean).map(element=>[element,element.scrollLeft,element.scrollTop]);
       scrollMode=history.scrollRestoration;history.scrollRestoration='manual';
       history.pushState({...history.state,communitySearch:true},'',location.href);render();dialog.showModal();input.focus();
@@ -63,13 +62,12 @@
     dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
     window.addEventListener('popstate',event=>{if(dialog.open&&!history.state?.communitySearch){event.stopImmediatePropagation();release();}},true);
     dialog.querySelector('form').addEventListener('submit',event=>{event.preventDefault();likedOnly=false;remember(input.value.trim());render();});
-    input.addEventListener('input',()=>{likedOnly=false;allRecent=false;render();});
+    input.addEventListener('input',()=>{likedOnly=false;render();});
     dialog.addEventListener('click',event=>{
       const button=event.target.closest('button');if(!button)return;
       const data=button.dataset;
       if('searchBack' in data){close();return;}
       if('searchRetry' in data){load();return;}
-      if('searchSeeAll' in data){allRecent=true;renderHome();return;}
       if('searchRecent' in data){input.value=data.searchRecent;remember(input.value);render();input.focus();return;}
       if('searchLiked' in data){likedOnly=true;input.value='';render();return;}
       if('searchOptions' in data||'searchOptionsLiked' in data){const remove=button.parentElement.querySelector('.community-search-remove');remove.hidden=!remove.hidden;button.setAttribute('aria-expanded',String(!remove.hidden));return;}

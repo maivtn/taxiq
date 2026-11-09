@@ -9,9 +9,9 @@
     const workspace=root.querySelector('.workspace'),frames=[root.getElementById('communityPane'),root.getElementById('connectPane')];
     const baseURL=options.baseURL,params=options.params||new URLSearchParams(location.search),modules=new Map();
     window.NEXORA_COMMUNITY_PEOPLE=window.NEXORA_COMMUNITY_DIRECTORY.create(frames[1],baseURL,params);
-    const searchStyle=document.createElement('link');searchStyle.rel='stylesheet';searchStyle.href=new URL('community-search.css?v=20261109-search2',baseURL).href;document.head.append(searchStyle);
+    const searchStyle=document.createElement('link');searchStyle.rel='stylesheet';searchStyle.href=new URL('community-search.css?v=20261109-search-theme3',baseURL).href;document.head.append(searchStyle);
     const searchReady=new Promise((resolve,reject)=>{
-      const script=document.createElement('script');script.src=new URL('community-search.js?v=20261109-search2',baseURL).href;
+      const script=document.createElement('script');script.src=new URL('community-search.js?v=20261109-search-theme3',baseURL).href;
       script.onload=()=>resolve(window.NEXORA_COMMUNITY_SEARCH.mount({directory:window.NEXORA_COMMUNITY_PEOPLE,baseURL,navigate:(route,context)=>navigate(route,context),feed:frames[0]}));
       script.onerror=()=>reject(Error('Could not load Community search.'));document.head.append(script);
     });

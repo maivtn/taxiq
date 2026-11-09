@@ -42,7 +42,7 @@ const server=http.createServer(async(req,res)=>{try{const file=path.resolve(repo
           await open();await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});assert.equal(page.url(),before);
         });
         await check('recent actions, text search, request persistence and Remove',async()=>{
-          await open();await dialog.locator('[data-search-see-all]').click();await dialog.locator('[data-search-options="setting"]').click();await dialog.locator('[data-search-remove="setting"]').click();assert.equal(await dialog.locator('[data-search-recent="setting"]').count(),0);
+          await open();assert.equal(await dialog.locator('[data-search-see-all]').count(),0);await dialog.locator('[data-search-options="setting"]').click();await dialog.locator('[data-search-remove="setting"]').click();assert.equal(await dialog.locator('[data-search-recent="setting"]').count(),0);
           const first=dialog.locator('[data-search-add]').first(),id=await first.getAttribute('data-search-add');await first.click();
           assert.equal(await page.evaluate(id=>window.NEXORA_COMMUNITY_PEOPLE.state().sent.includes(id),id),true);
           assert.equal(await dialog.locator(`[data-search-add="${id}"]`).count(),0);
