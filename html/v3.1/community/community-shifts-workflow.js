@@ -484,11 +484,13 @@
       }):empty(t('owner.empty'))}</section>`;
     }
     function myMarkup(state) {
-      const status=view.assignmentStatus||'All',quick=['All','AwaitingDepositProof','Confirmed','InProgress','Completed'];
-      const rows=state.assignments.filter(row=>row.worker===member()&&(status!=='All'?row.status===status:view.filter==='History'?!OPEN.includes(row.status):OPEN.includes(row.status)));
+      const history=view.filter==='History';
+      const statuses=history?['Completed','NoShow','Rejected','Expired','WorkerCancelled','BusinessCancelled']:OPEN;
+      if(!statuses.includes(view.assignmentStatus))view.assignmentStatus='All';
+      const status=view.assignmentStatus;
+      const rows=state.assignments.filter(row=>row.worker===member()&&(history?!OPEN.includes(row.status):OPEN.includes(row.status))&&(status==='All'||row.status===status));
       const posts=getShifts().filter(row=>row.kind==='daywork'&&owned(row)&&!closed(row));
-      const statuses=['AwaitingDepositConfirmation','PendingApproval','NoShow','Rejected','Expired','WorkerCancelled','BusinessCancelled'];
-      return `<section class="shifts-section"><h3>${esc(t('my.title'))}</h3>${filterButtons([['Active',t('my.tabs.Active')],['History',t('my.tabs.History')]],'filter')}<div class="shifts-filters" role="group" aria-label="${esc(t('navigation.selectStatus'))}">${quick.map(value=>button('assignmentStatus',value,t('my.filters.'+value),`aria-pressed="${status===value}"`,status===value?'primary':'soft')).join('')}</div><label class="shifts-payment-filter">${esc(t('navigation.moreFilters'))}<select data-shifts-assignment-status><option value="All">${esc(t('navigation.selectStatus'))}</option>${statuses.map(value=>`<option value="${value}" ${status===value?'selected':''}>${esc(t('status.'+value))}</option>`).join('')}</select></label>${rows.length?paged(rows,row=>assignmentMarkup(row,state)):empty(t('my.empty'))}</section>${posts.length?`<section class="shifts-section"><h3>${esc(t('availablePost'))}</h3>${posts.map(row=>card(row,state,button('edit',row.id,t('availability.edit'),'','soft'))).join('')}</section>`:''}`;
+      return `<section class="shifts-section"><h3>${esc(t('my.title'))}</h3><div class="shifts-my-filters">${filterButtons([['Active',t('my.tabs.Active')],['History',t('my.tabs.History')]],'filter')}<label class="shifts-payment-filter"><span>${esc(t('navigation.selectStatus'))}</span><select data-shifts-assignment-status><option value="All">${esc(t('my.filters.All'))}</option>${statuses.map(value=>`<option value="${value}" ${status===value?'selected':''}>${esc(t('status.'+value))}</option>`).join('')}</select></label></div>${rows.length?paged(rows,row=>assignmentMarkup(row,state)):empty(t('my.empty'))}</section>${posts.length?`<section class="shifts-section"><h3>${esc(t('availablePost'))}</h3>${posts.map(row=>card(row,state,button('edit',row.id,t('availability.edit'),'','soft'))).join('')}</section>`:''}`;
     }
     function paymentMarkup(state) {
       const rows=state.settlements.filter(visibleSettlement).filter(row=>view.paymentRole==='All'||(view.paymentRole==='Payer'?isPayer(row):isPayee(row))).filter(row=>view.paymentFilter==='All'||view.paymentFilter==='NeedsAction'&&(row.status==='AwaitingProof'&&isPayer(row)||row.status==='AwaitingReceipt'&&isPayee(row))||view.paymentFilter==='Overdue'&&row.status==='AwaitingProof'&&row.type!=='Deposit'&&+new Date(row.proofDueAt)<now()||row.status===view.paymentFilter);

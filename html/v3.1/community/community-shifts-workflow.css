@@ -46,6 +46,13 @@
 .shifts-error{color:#b83f45;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 .shifts-error:empty{display:none}
 .shifts-payment-filter{margin:13px 0;max-width:280px}
+.shifts-my-filters{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;gap:12px;max-width:600px;margin-top:12px}
+.shifts-my-filters .shifts-filters{flex-wrap:nowrap;gap:4px;margin:0;padding:4px;border-radius:11px;background:#e9edf6}
+.shifts-my-filters .shifts-filters .btn{flex:1;min-height:36px;padding:7px 12px;border:0;border-radius:8px;white-space:nowrap}
+.shifts-my-filters .shifts-filters .btn.soft{background:transparent}
+.shifts-my-filters .shifts-payment-filter{margin:0;max-width:none;gap:5px;font-size:11px}
+.shifts-my-filters select{min-height:44px}
+@media(max-width:600px){.shifts-my-filters{grid-template-columns:minmax(0,1fr);gap:10px}}
 .shifts-payment-row{width:100%;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;text-align:left;border:1px solid #e2dfeb;border-radius:14px;background:#fff;padding:14px;margin:10px 0;font:inherit;color:inherit;cursor:pointer;min-width:0}
 .shifts-payment-row>span{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}
 .shifts-payment-row .shifts-status{margin:0}
