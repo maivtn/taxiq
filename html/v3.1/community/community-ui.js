@@ -59,6 +59,9 @@
     });
   }
   const buttonIcons=[
+    ['.page-hero-actions [data-po-page-action="manage"]','Settings'],
+    ['.page-hero-actions [data-po-page-action="compose"]','FilePenLine'],
+    ['.page-hero-actions [data-po-page-action="share"]','Share2'],
     ['#marketFilterToggle,#dealFilterToggle,.community-toolbar-filter-toggle,.community-group-filter-toggle','SlidersHorizontal'],
     ['.community-context-action[data-view="daywork"]','CalendarClock'],
     ['.community-context-action[data-view="jobs"]','Briefcase'],
