@@ -45,7 +45,7 @@ const server=http.createServer(async(req,res)=>{
           if(personal)assert.equal(appearance.sidebar,'rgb(8, 31, 73)');
           else assert.notEqual(appearance.sidebarImage,'none');
           await page.locator('#feedPosts article').first().waitFor();
-          const sidebar=page.locator('aside.sidebar');
+          const sidebar=page.locator('#nexora-sidebar');
           if(width<=768){
             await page.locator('[data-shell-drawer-open]').click();
             await page.waitForFunction(()=>document.querySelector('aside.sidebar').getBoundingClientRect().x>=0);
