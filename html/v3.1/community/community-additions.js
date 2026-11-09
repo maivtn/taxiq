@@ -1,13 +1,16 @@
 /* Extend the cloned v2 shell through its existing app menu. */
 (() => {
   'use strict';
-  const LABELS={deals:'Deals & Coupons',food:'Food Community',realestate:'Real Estate',shop:'My storefront',transfer:'Salon transfers',reels:'Reels',live:'Livestream',news:'News & Blog',wallet:'NEXORA Points',wheel:'Lucky Wheel',meet:'NEXORA Meet',account:'Profile',assistant:'AI assistant',notifications:'Notifications',stories:'Story',friends:'Friends',people:'Find people',post:'Create post','page-tools':'Pages','group-tools':'Groups & Market','food-market':'Food Community',explore:'Explore Community'};
-  const ICONS={deals:'Ticket',food:'Utensils',realestate:'House',shop:'Store',transfer:'Store',reels:'Clapperboard',live:'Video',news:'Newspaper',wallet:'WalletCards',wheel:'CircleDot',meet:'Video',account:'UserRound',assistant:'Sparkles',notifications:'Bell',stories:'Images',friends:'UsersRound',people:'UsersRound',post:'SquarePen','page-tools':'Store','group-tools':'UsersRound','food-market':'Utensils',explore:'LayoutGrid'};
-  const supports=route=>Object.hasOwn(LABELS,route);
+  const LABELS={'personal-moderation':'Moderation & interactions','personal-profile':'Personal profile','personal-settings':'Settings','personal-analytics':'My analytics','personal-contacts':'Find & connect','personal-invite':'Invite friends','personal-modules':'My modules',deals:'Deals & Coupons',food:'Food Community',realestate:'Real Estate',shop:'My storefront',transfer:'Salon transfers',reels:'Reels',live:'Livestream',news:'News & Blog',wallet:'NEXORA Points',wheel:'Lucky Wheel',meet:'NEXORA Meet',account:'Profile',assistant:'AI assistant',notifications:'Notifications',stories:'Story',friends:'Friends',people:'Find people',post:'Create post','page-tools':'Pages','group-tools':'Groups & Market','food-market':'Food Community',explore:'Explore Community'};
+  const ICONS={'personal-moderation':'Shield','personal-profile':'UserRound','personal-settings':'Settings','personal-analytics':'ChartNoAxesCombined','personal-contacts':'UsersRound','personal-invite':'Send','personal-modules':'LayoutGrid',deals:'Ticket',food:'Utensils',realestate:'House',shop:'Store',transfer:'Store',reels:'Clapperboard',live:'Video',news:'Newspaper',wallet:'WalletCards',wheel:'CircleDot',meet:'Video',account:'UserRound',assistant:'Sparkles',notifications:'Bell',stories:'Images',friends:'UsersRound',people:'UsersRound',post:'SquarePen','page-tools':'Store','group-tools':'UsersRound','food-market':'Utensils',explore:'LayoutGrid'};
+  const PERSONAL_VI={'personal-profile':'Hồ sơ cá nhân','personal-settings':'Cài đặt','personal-analytics':'Analytics của tôi','personal-contacts':'Tìm & kết nối','personal-invite':'Mời bạn bè','personal-modules':'Module của tôi','personal-moderation':'Kiểm duyệt & tương tác'};
+  const routeLabel=route=>window.NEXORA_COMMUNITY_LANGUAGE?.base()==='vi'&&PERSONAL_VI[route]?PERSONAL_VI[route]:window.NEXORA_COMMUNITY_LANGUAGE?.translate(LABELS[route])||LABELS[route];
+  const supports=route=>route==='personal-media'||Object.hasOwn(LABELS,route);
   const TOOLS=new Set(['deals','shop','reels','live','news','stories','people','post','page-tools','group-tools','food-market','explore']);
   function mount(root,options,original){
     const workspace=root.querySelector('.workspace'),frames=[root.getElementById('communityPane'),root.getElementById('connectPane')];
     const baseURL=options.baseURL,params=options.params||new URLSearchParams(location.search),modules=new Map();
+    const personalReady=window.NEXORA_COMMUNITY_PERSONAL?Promise.resolve():new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=new URL('community-po-personal.js',baseURL).href;script.onload=resolve;script.onerror=reject;document.head.append(script);});
     window.NEXORA_COMMUNITY_PEOPLE=window.NEXORA_COMMUNITY_DIRECTORY.create(frames[1],baseURL,params);
     const searchStyle=document.createElement('link');searchStyle.rel='stylesheet';searchStyle.href=new URL('community-search.css?v=20261109-search-theme3',baseURL).href;document.head.append(searchStyle);
     const searchReady=new Promise((resolve,reject)=>{
@@ -17,6 +20,7 @@
     });
     window.addEventListener('nexora-community-search',event=>searchReady.then(search=>search.open(event.detail?.query||'')).catch(console.error));
     let current='',routeContext={},internal=false,generation=0,composerSession=null,composerRequest=0,assistantSession=null,assistantRequest=0,assistantLauncher=null;
+    window.addEventListener('nexora-community-locale',()=>{for(const button of root.querySelectorAll('[data-community-extra]')){const route=button.dataset.communityExtra;if(PERSONAL_VI[route]){const label=button.querySelector('.ecosystem-item-label');if(label)label.textContent=routeLabel(route);}}if(current.startsWith('personal-'))navigate(current,routeContext,true);});
     const notify=data=>options.notify?.(data);
     const blogTabs=document.createElement('div');
     blogTabs.className='community-news-tabs';blogTabs.setAttribute('role','tablist');blogTabs.setAttribute('aria-label','News and Blog');
@@ -97,7 +101,7 @@
     styles.textContent+=' .app.community-extra-open .top{position:relative;flex:0 0 auto;z-index:10}.app.community-extra-open .workspace{flex:1 1 0%;min-height:0;overflow:hidden}.app.community-extra-open .community-back{display:none!important}.community-extra-pane.community-document-pane{overflow:hidden}.community-document-pane>section{height:100%;min-height:0;overflow:hidden}.community-document-pane iframe{display:block;width:100%;height:100%;border:0}';
     // Keep Feed visible while the PO dialog renders in the browser's top layer.
     styles.textContent+=' .community-extra-pane.community-composer-overlay{position:absolute;inset:0 0 auto;height:0;min-height:0;overflow:hidden}.community-composer-overlay>section{height:0;min-height:0}';
-    new MutationObserver(()=>{const label=window.NEXORA_COMMUNITY_LANGUAGE?.translate(LABELS[current])||LABELS[current];if(current&&heading.textContent!==label)heading.textContent=label;}).observe(heading,{childList:true,characterData:true,subtree:true});
+    new MutationObserver(()=>{const label=routeLabel(current);if(current&&heading.textContent!==label)heading.textContent=label;}).observe(heading,{childList:true,characterData:true,subtree:true});
     const app=root.querySelector('.app'),ecosystemButton=root.getElementById('ecosystemButton'),navMore=[];
     const backdrop=document.createElement('div');backdrop.className='community-menu-backdrop';backdrop.hidden=true;backdrop.setAttribute('aria-hidden','true');
     const drawerHeading=document.createElement('div');drawerHeading.className='community-menu-heading';drawerHeading.append(menu.querySelector('h2'));
@@ -204,11 +208,11 @@
     },true);
     document.addEventListener('click',event=>{const path=event.composedPath();if(!menu.hidden&&!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
     document.addEventListener('focusin',event=>{if(menu.hidden||compactMenu())return;const path=event.composedPath();if(!path.includes(menu)&&!navMore.some(button=>path.includes(button))&&!path.includes(ecosystemButton))menu.hidden=true;});
-    for(const [route,label] of Object.entries(LABELS)){if(['deals','page-tools','group-tools','food-market','people','explore'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
+    for(const [route,label] of Object.entries(LABELS)){if(['deals','page-tools','group-tools','food-market','people','explore','personal-profile'].includes(route)||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))continue;
       const button=document.createElement('button');button.type='button';button.dataset.communityExtra=route;
       const definition=window.lucide?.icons[ICONS[route]];
       if(definition)button.append(window.lucide.createElement(definition,{width:20,height:20,'aria-hidden':'true'}));
-      button.append(document.createTextNode(label));menu.insertBefore(button,root.getElementById('menuStartTour'));
+      button.append(document.createTextNode(routeLabel(route)||label));menu.insertBefore(button,root.getElementById('menuStartTour'));
     }
     const menuIcons={feed:'LayoutList',market:'UsersRound',pages:'Building2',blog:'Newspaper',jobs:'BriefcaseBusiness',daywork:'CalendarDays',deals:'Ticket',connect:'MessageCircle',...ICONS};
     for(const button of menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')){
@@ -235,7 +239,7 @@
     createToggle.innerHTML='<span>＋ Create a post</span><span class="community-menu-post-count"></span>';
     createItems.id='communityMenuPostTypes';createItems.hidden=true;createSection.insertBefore(createToggle,createItems);
     createToggle.addEventListener('click',()=>{const open=createItems.hidden;createItems.hidden=!open;createToggle.setAttribute('aria-expanded',String(open));updateMenuLayout();});
-    const toolRoutes=new Set(['wallet','wheel','meet','account','assistant','notifications']);
+    const toolRoutes=new Set(['personal-settings','personal-analytics','personal-modules','personal-invite','wallet','wheel','meet','account','assistant','notifications']);
     const businessRoutes=new Set(['shop','transfer','realestate','jobs','daywork']);
     const exploreRoutes=new Set(['food','deals','live','reels','news','blog','stories','explore']);
     for(const button of existingMenuItems){
@@ -244,6 +248,7 @@
     }
     // Keep the NEXORA directory tiles visible while their destinations are paused.
     for(const button of toolItems.children){
+      if(button.dataset.communityExtra?.startsWith('personal-')||['wallet','wheel','account','assistant','notifications'].includes(button.dataset.communityExtra))continue;
       button.disabled=true;
       button.setAttribute('aria-disabled','true');
       button.dataset.communityMenuInactive='true';
@@ -444,14 +449,16 @@
       if(data&&typeof data==='object')notify(data);
     }
     async function navigate(route,context={},fromHost=false){
+      if(route==='personal-media')route='reels';
       original.closeLocation();
       // Coupon shortcuts reuse the existing Feed form and its publishing controller.
       if(route==='deals'&&context.composeKind==='deal')route='feed';
       if(route==='deals'&&(context.dealTab||context.claimOffer)){deactivate();original.navigate('deals',context);if(!fromHost){notify({type:'nexora-community-route',route:'deals'});notify({type:'nexora-community-context',context});}return;}
       createMenu?.close();
       if(route==='explore'||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))route='feed';
+      if(route==='people'&&context.personId){route='personal-profile';context={...context,memberId:context.personId};}
       if(route==='assistant')return openAssistant();
-      if(route==='friends')context={friendsView:['all','received','sent','suggestions'].includes(context.friendsView)?context.friendsView:'all'};
+      if(route==='friends')context={friendsView:['all','received','sent','suggestions','following','followers'].includes(context.friendsView)?context.friendsView:'all'};
       closeAssistant();
       if(route==='post'&&context.modal==='1'&&!current)return openFeedComposer(context);
       closeComposer();
@@ -470,7 +477,7 @@
       root.querySelector('.app').classList.add('community-extra-open');pane.classList.toggle('community-document-pane',['food','realestate'].includes(route));
       frames.forEach(frame=>{frame.hidden=true;});pane.hidden=false;
       root.getElementById('ecosystemMenu').hidden=true;root.getElementById('ecosystemButton').setAttribute('aria-expanded','false');
-      root.querySelector('.community-heading h1').textContent=LABELS[route];
+      root.querySelector('.community-heading h1').textContent=routeLabel(route);
       root.querySelectorAll('.tab').forEach(tab=>{tab.classList.remove('active');tab.setAttribute('aria-current','false');});
       root.querySelectorAll('.mobile-tab').forEach(tab=>{tab.hidden=false;});
       syncNavCount();
@@ -481,7 +488,11 @@
       pane.removeAttribute('aria-busy');
       if(route==='realestate'){loading.hidden=false;pane.setAttribute('aria-busy','true');}
       try{
-        if(['wallet','account','assistant','notifications'].includes(route)){
+        if(route.startsWith('personal-')){
+          await personalReady;
+          const panel=document.createElement('section');panel.className='community-extra-platform';pane.append(panel);
+          await window.NEXORA_COMMUNITY_PERSONAL.mount(panel,{route,language:window.NEXORA_COMMUNITY_LANGUAGE?.base()||'en',context:routeContext,navigate,feed:()=>frames[0].contentWindow});
+        }else if(['wallet','account','assistant','notifications'].includes(route)){
           const panel=document.createElement('section');panel.className='community-extra-platform';pane.append(panel);
           window.NEXORA_COMMUNITY_PLATFORM.mount(panel,{route,language:window.NEXORA_COMMUNITY_LANGUAGE?.base()||'en',context:routeContext,navigate});
         }else{
@@ -490,6 +501,7 @@
           if(request!==generation)return;
           api.window.NEXORA_COMMUNITY_MODULE?.setLanguage('en');
           await api.window.NEXORA_COMMUNITY_MODULE?.navigate?.(route,routeContext);
+          if(key==='tools'){await personalReady;window.NEXORA_COMMUNITY_PERSONAL.enhanceTools(api,navigate,window.NEXORA_COMMUNITY_LANGUAGE?.base()||'en');}
           if(request!==generation)return;
           // The tools module is reused for Reels and Live video.
           // Reset its own scroll area as well as the outer pane on each route.

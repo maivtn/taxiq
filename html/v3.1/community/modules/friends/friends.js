@@ -4,8 +4,8 @@
   const directory=window.NEXORA_COMMUNITY_PEOPLE;
   const $=id=>document.getElementById(id),grid=$('friendsGrid'),empty=$('friendsEmpty'),search=$('friendsSearch'),dialog=$('unfriendDialog');
   const sampleAvatars=new Map([['Kim Tuyen',['0%','0%']],['Sally Thanh Hoang',['50%','0%']],['Linh Nguyễn',['100%','0%']],['Thảo Lê',['0%','100%']],['Hà Nguyễn',['50%','100%']],['Jessica Nguyen',['100%','100%']]]);
-  const tabs={all:'All friends',received:'Friend requests',suggestions:'People you may know',sent:'Sent requests'};
-  const emptyText={all:'No friends yet.',received:'No new friend requests.',suggestions:'No suggestions right now.',sent:'No sent requests.'};
+  const tabs={all:'All friends',received:'Friend requests',suggestions:'People you may know',sent:'Sent requests',following:'Following',followers:'Followers'};
+  const emptyText={all:'No friends yet.',received:'No new friend requests.',suggestions:'No suggestions right now.',sent:'No sent requests.',following:'No following yet.',followers:'No followers yet.'};
   let tab='all',query='',active=false,unsubscribe,toastTimer,unfriendId='',returnFocusId='',generation=0;
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const icon=name=>window.lucide?.icons[name]?window.lucide.createElement(window.lucide.icons[name],{width:18,height:18,'aria-hidden':'true',focusable:'false'}).outerHTML:'';
@@ -13,7 +13,8 @@
   function notice(message){clearTimeout(toastTimer);$('friendsStatus').textContent=message;$('friendsStatus').hidden=false;toastTimer=setTimeout(()=>{$('friendsStatus').hidden=true;},3500);}
   function lists(){
     const state=directory.state(),people=directory.list(),pick=ids=>people.filter(person=>ids.includes(person.id));
-    return {all:pick(state.friends),received:pick(state.received),sent:pick(state.sent),suggestions:people.filter(person=>![...state.friends,...state.received,...state.sent].includes(person.id))};
+    const shared=window.NEXORA_COMMUNITY_SHARED,follows=shared.read().personalFollows||{};
+    return {following:people.filter(p=>(follows[shared.member]||[]).includes(p.name)),followers:people.filter(p=>(follows[p.name]||[]).includes(shared.member)),all:pick(state.friends),received:pick(state.received),sent:pick(state.sent),suggestions:people.filter(person=>![...state.friends,...state.received,...state.sent].includes(person.id))};
   }
   function button(action,id,label,primary=true,glyph=''){
     return '<button type="button" class="friends-button'+(primary?'':' secondary')+'" data-friend-action="'+action+'" data-person-id="'+esc(id)+'">'+icon(glyph)+'<span>'+label+'</span></button>';
@@ -28,7 +29,8 @@
       return '<article class="friends-card friend-request-card" data-friend-card="'+id+'"><div class="friends-avatar" aria-hidden="true">'+avatar+'</div><div class="friend-request-info"><h3 data-user-text><a href="#" data-friend-action="profile" data-person-id="'+id+'">'+name+'</a></h3><p class="friends-handle" data-user-text>'+esc(person.handle||'')+'</p><p class="friends-detail" data-user-text>'+esc(detail)+'</p><div class="friends-actions friend-request-actions">'+button('accept',id,'Confirm')+button('decline',id,'Delete',false)+'</div></div>'+(sampleRequest?'<span class="friend-sample">SAMPLE</span>':'')+'</article>';
     }
     let actions='',menu='';
-    if(tab==='all'){
+    if(tab==='following'||tab==='followers'){actions=button('message',id,'Message',true,'MessageCircle')+button('follow',id,(window.NEXORA_COMMUNITY_SHARED.read().personalFollows?.[window.NEXORA_COMMUNITY_SHARED.member]||[]).includes(person.name)?'Following':'Follow back',false);}
+    else if(tab==='all'){
       actions=button('message',id,'Message',true,'MessageCircle');
       menu='<div class="friends-menu-wrap"><button type="button" class="friends-icon-button" data-friend-action="menu" data-person-id="'+id+'" aria-label="Options for '+name+'" aria-expanded="false" aria-controls="friend-menu-'+id+'">'+icon('Ellipsis')+'</button><div id="friend-menu-'+id+'" class="friends-card-menu" hidden><button type="button" data-friend-action="unfriend" data-person-id="'+id+'">'+icon('UserRoundMinus')+'<span>Unfriend</span></button></div></div>';
     }else if(tab==='received')actions=button('accept',id,'Confirm',true,'Check')+button('decline',id,'Delete',false,'X');
@@ -41,7 +43,7 @@
     document.querySelector('.friends-content').dataset.friendsView=tab;
     $('findFriends').hidden=tab!=='received';
     const groups=lists(),rows=groups[tab].filter(person=>[person.name,person.handle,person.id].some(value=>String(value||'').toLocaleLowerCase().includes(query.toLocaleLowerCase()))).sort((a,b)=>a.name.localeCompare(b.name));
-    $('friendsTitle').textContent=tabs[tab];$('friendsSummary').textContent=query?rows.length+' results':tab==='all'?groups.all.length+(groups.all.length===1?' friend':' friends'):groups[tab].length+(tab==='suggestions'?' suggestions':' requests');
+    $('friendsTitle').textContent=tabs[tab];$('friendsSummary').textContent=query?rows.length+' results':tab==='all'?groups.all.length+(groups.all.length===1?' friend':' friends'):groups[tab].length+(tab==='suggestions'?' suggestions':tab==='following'?' following':tab==='followers'?' followers':' requests');
     search.placeholder=tab==='all'?'Search friends':tab==='suggestions'?'Search suggestions':'Search requests';document.querySelector('label[for=friendsSearch]').textContent=search.placeholder;
     $('clearFriendsSearch').hidden=!query;
     for(const button of document.querySelectorAll('[data-friends-tab]')){
@@ -58,10 +60,10 @@
   function run(action,id){
     const target=directory.list().find(person=>person.id===id);if(!target)return;
     const index=[...grid.children].findIndex(card=>card.dataset.friendCard===id);
-    const operations={accept:()=>directory.respond(id,true),decline:()=>directory.respond(id,false),cancel:()=>directory.cancelRequest(id),add:()=>directory.addFriend(id),unfriend:()=>directory.unfriend(id)};
+    const operations={follow:()=>{const s=window.NEXORA_COMMUNITY_SHARED;return s.change(data=>{data.personalFollows||={};const names=data.personalFollows[s.member]||[];data.personalFollows[s.member]=names.includes(target.name)?names.filter(name=>name!==target.name):[...names,target.name];});},accept:()=>directory.respond(id,true),decline:()=>directory.respond(id,false),cancel:()=>directory.cancelRequest(id),add:()=>directory.addFriend(id),unfriend:()=>directory.unfriend(id)};
     const result=operations[action]?.();
     render();focusAfterChange(index);
-    notice(result?{accept:'Friend request accepted.',decline:'Friend request deleted.',cancel:'Friend request cancelled.',add:'Friend request sent.',unfriend:'Friend removed.'}[action]:'Could not update this request. Please try again.');
+    notice(result?{follow:'Updated.',accept:'Friend request accepted.',decline:'Friend request deleted.',cancel:'Friend request cancelled.',add:'Friend request sent.',unfriend:'Friend removed.'}[action]:'Could not update this request. Please try again.');
   }
   document.addEventListener('click',event=>{
     const section=event.target.closest('[data-friends-tab]');if(section){event.preventDefault();route('friends',{friendsView:section.dataset.friendsTab});return;}
@@ -70,7 +72,7 @@
     const {friendAction:action,personId:id}=button.dataset,target=directory.list().find(person=>person.id===id);if(!target)return;
     if(action==='menu'){const menu=button.nextElementSibling,open=menu.hidden;closeMenus();menu.hidden=!open;button.setAttribute('aria-expanded',String(open));if(open)menu.querySelector('button')?.focus();return;}
     closeMenus();
-    if(action==='profile'){route('people',{personId:id});return;}
+    if(action==='profile'){route('personal-profile',{memberId:id});return;}
     if(action==='message'){route('connect');directory.open(target.name);return;}
     if(action==='unfriend'){
       unfriendId=id;returnFocusId=id;$('unfriendTitle').textContent='Unfriend '+target.name+'?';$('unfriendDescription').textContent='Remove '+target.name+' from your friends list?';dialog.returnValue='';dialog.showModal();dialog.querySelector('.friends-button[value=cancel]')?.focus();return;

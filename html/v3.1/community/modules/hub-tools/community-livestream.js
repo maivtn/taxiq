@@ -33,6 +33,7 @@
   const personBadge=name=>'<span class="lv-avatar" aria-hidden="true">'+esc(Array.from(name||'N')[0])+'</span>';
   const empty=()=>'<p class="lv-note">'+t('Chưa có dữ liệu.','No entries yet.')+'</p>';
   const purposes={
+    sales:['Bán hàng / Giới thiệu dịch vụ','Selling / Service introduction','ShoppingBag',['services','flash','deals','oneqr','leads','wheel']],
     none:['Không có','None','Circle',[]],
     explore:['Khám phá / Du lịch / Ẩm thực','Discovery / Travel / Food','Compass',['place','map','chapter']],
     tutorial:['Hướng dẫn / Dạy nghề','Tutorial / Training','GraduationCap',['pip','draw','qa','chapter']],
@@ -52,10 +53,11 @@
   };
   const label=key=>t(...toolLabels[key].slice(0,2));
   const purposeLabel=key=>t(...(purposes[key]||purposes.none).slice(0,2));
-  const tile=key=>action('panel',label(key),{value:key,icon:icon(toolLabels[key][2]),style:'tool'});
+  const toolArt={guest:'users-round',poll:'layout-dashboard',qa:'layout-list',hands:'hand-coins',services:'paintbrush',flash:'zap',deals:'ticket',wheel:'gift',oneqr:'scan-line',leads:'layout-list',overlay:'tag',title:'paintbrush',place:'map-pin',map:'map',chapter:'layout-list',pip:'video',draw:'paintbrush',music:'music',library:'music',songs:'music',moderation:'users-round',report:'layout-dashboard',recap:'sparkles',replay:'video',share:'share-2',contacts:'users-round',notify:'bell',schedule:'calendar-days'};
+  const tile=key=>action('panel',label(key),{value:key,icon:art(toolArt[key]||'layout-list',28),style:'tool'});
   const categories=[['all','Tất cả','All',''],['salon','Nail & làm đẹp','Nail & beauty','paintbrush'],['food','Ẩm thực','Food','store'],['travel','Du lịch','Travel','map'],['houston','Houston','Houston','map']];
   const demoRooms=[
-    {id:'po-live-bitcoin',title:['Tư vấn mẫu nail Tết + ưu đãi khách mới','Lunar New Year nail ideas + new guest offer'],host:'BITCOIN NAIL BAR',category:'salon',pageId:'p1',city:'Houston, TX',viewers:248,art:'paintbrush',cover:'/html/v3.1/community/live-photos/nails.jpg',dealId:'extra-po-new-guest',serviceId:'gel-manicure',oneqr:true,purpose:'none'},
+    {id:'po-live-bitcoin',title:['Tư vấn mẫu nail Tết + ưu đãi khách mới','Lunar New Year nail ideas + new guest offer'],host:'BITCOIN NAIL BAR',category:'salon',pageId:'p1',city:'Houston, TX',viewers:248,art:'paintbrush',cover:'/html/v3.1/community/live-photos/nails.jpg',dealId:'extra-po-new-guest',serviceId:'gel-manicure',oneqr:true,purpose:'sales'},
     {id:'po-live-pho',title:['Vào bếp: phở gia truyền cuối tuần','In the kitchen: weekend family pho'],host:'Phở Gà Houston',category:'food',city:'Houston, TX',viewers:96,art:'store',cover:'/html/v3.1/community/modules/hub-tools/media/dbaf5871be9452a3.jpg',purpose:'explore'},
     {id:'po-live-brian',title:['Hát theo yêu cầu — tối thứ Bảy','Song requests on Saturday night'],host:'BrianNguyenAI',category:'music',city:'Houston, TX',viewers:57,art:'music',cover:'/html/v3.1/community/live-photos/music.jpg',purpose:'music'},
   ].map(room=>({...room,sample:true,poLive:true,status:'live',description:''}));
@@ -75,6 +77,31 @@
   state.livePONotifications||=[];
   state.livePOChannels||={};
 
+  function seedLiveDemo(){
+    if(state.livePNGDemoVersion)return;
+    const pageId=shared.role==='owner'?'p1':'',stamp=Date.now(),prefix='po-studio-'+shared.me().id;
+    const common={poLive:true,demo:true,owner:shared.member,ownerId:shared.me().id,host:pageId?'BITCOIN NAIL BAR':person(),pageId,city:'Houston, TX',destinations:['feed',...(pageId?['page:'+pageId]:[])],oneqr:!!pageId,startedAt:stamp-1456000,cover:'/html/v3.1/community/live-photos/nails.jpg',description:['Giới thiệu mẫu Gel mới và ưu đãi khách mới','New gel styles and new guest offer'],stats:{views:1240,clicks:186,coupons:74,bookings:23},viewers:248};
+    const poll={question:samplePoll.question,choices:samplePoll.choices,counts:[104,58,24],votes:{}};
+    const leads=[{name:'Lan Phạm',text:'GEL20',kind:'order',status:'booked',note:['Đã đặt lịch · 10:00 AM','Appointment · 10:00 AM']},{name:'Kevin Trần',text:'BOOK GEL',kind:'booking',status:'lead'},{name:'Mai Anh',text:['Nhận Flash Deal −20%','Claimed Flash Deal −20%'],kind:'coupon',status:'lead'}];
+    const chapters=[{title:['Mở đầu + giới thiệu tiệm','Opening + salon introduction'],time:0},{title:['Trình diễn mẫu Gel','Gel demonstration'],time:2},{title:['Flash Deal + hỏi đáp','Flash Deal + Q&A'],time:5}];
+    const rows=[
+      {...common,id:prefix+'-sales',title:['Tư vấn mẫu nail Tết + ưu đãi khách mới','Lunar New Year nail ideas + new guest offer'],status:'live',purpose:'sales',category:'salon',poll,questions:[...sampleQA,{id:'qa-walkin',author:'Lan P.',text:['Tiệm có nhận walk-in cuối tuần không?','Do you accept weekend walk-ins?']}],guests:[{name:'Lan Phạm',accepted:true,muted:false}],leads,dealId:pageId?'extra-po-new-guest':'',serviceId:pageId?'gel-manicure':''},
+      {...common,id:prefix+'-tutorial',title:['Dạy nghề · Lớp Gel cơ bản','Tutorial · Basic Gel class'],status:'live',purpose:'tutorial',category:'salon',viewers:84,pip:true,questions:[{id:'qa-base',author:'Kevin T.',text:['Lớp base coat để bao lâu thì sơn màu?','How long should the base coat set before color?']},{id:'qa-form',author:'Lan P.',text:['Tay khách run thì giữ form thế nào?','How do you hold the form when a client’s hand shakes?']}],chapters},
+      {...common,id:prefix+'-music',title:['Khám phá Houston · Yêu cầu bài hát','Explore Houston · Song requests'],status:'live',purpose:'music',category:'music',cover:'/html/v3.1/community/live-photos/music.jpg',viewers:132,music:true,place:{name:'BITCOIN NAIL BAR',address:'9793 Westheimer Rd, Houston, TX 77042'},songs:[{id:'song1',name:'Thảo N.',text:'Mưa trên phố Huế'},{id:'song2',name:'Hùng T.',text:'Nối vòng tay lớn'}],hands:[{id:'hand1',name:'Phương L.',text:['Đang giơ tay','Hand raised']}],chapters},
+      {...common,id:prefix+'-replay',title:['Trình diễn mẫu Gel Tết + ưu đãi khách mới −20%','Lunar New Year Gel demonstration + new guest offer −20%'],status:'ended',purpose:'tutorial',category:'salon',videoSrc:'/html/v3.1/community/page-videos/nail-weekend.mp4',chapters,leads,places:[{name:'BITCOIN NAIL BAR',address:'9793 Westheimer Rd, Houston, TX 77042'}],timedComments:[{time:0,text:['Chào mừng tới BITCOIN NAIL BAR','Welcome to BITCOIN NAIL BAR']},{time:2,text:['Mẫu Gel mới của tiệm','The salon’s new gel styles']}],highlights:[{from:0,to:3,title:['Trình diễn mẫu','Style demonstration']},{from:3,to:6,title:['Flash Deal','Flash Deal']}],summary:{title:'BITCOIN NAIL BAR',body:'',published:false}},
+      {...common,id:prefix+'-schedule',title:['Live thứ Bảy — mẫu mới & ưu đãi tuần','Saturday live — new styles & weekly offers'],status:'scheduled',scheduledAt:stamp+3*86400000,purpose:'sales',category:'salon',weekly:true,remind:true,seriesId:prefix+'-weekly'}
+    ];
+    state.liveRooms.push(...rows.filter(row=>!state.liveRooms.some(saved=>saved.id===row.id)));
+    const next={...rows[4],id:prefix+'-schedule-next',scheduledAt:rows[4].scheduledAt+7*86400000};state.liveRooms.push(next);
+    state.livePONotifications.push(...[
+      {key:prefix+'-notice-live',id:rows[0].id,type:'live',title:['BITCOIN NAIL BAR đang live','BITCOIN NAIL BAR is live'],text:rows[0].title,target:''},
+      {key:prefix+'-notice-sales',id:rows[0].id,type:'sales',title:['Đơn chốt mới trong buổi live của bạn','New order in your livestream'],text:['Lan P. đã đặt lịch qua live','Lan P. requested an appointment through live'],target:'leads'},
+      {key:prefix+'-notice-replay',id:rows[3].id,type:'replay',title:['Bản xem lại đã sẵn sàng','Replay is ready'],text:['Bản tóm tắt NEXI chờ duyệt','NEXI summary awaiting review'],target:'recap'}
+    ].map(row=>({...row,time:stamp})));
+    state.livePNGDemoVersion=1;save();
+  }
+  seedLiveDemo();
+  const wheelPrizes=[{key:'gift25',vi:'Gift card $25',en:'$25 gift card',probability:5},{key:'gift10',vi:'Gift card $10',en:'$10 gift card',probability:15},{key:'discount',vi:'Giảm 20%',en:'20% off',probability:30},{key:'service',vi:'Tặng dịch vụ',en:'Service gift',probability:10},{key:'none',vi:'Chúc may mắn',en:'Better luck next time',probability:40}];
   function records(){try{return JSON.parse(localStorage.getItem(recordKey)||'{}');}catch{return {};}}
   const previousLookup=liveRoomById;
   liveRoomById=function(id){return previousLookup(id)||(foreignRoom?.id===id?foreignRoom:undefined);};
@@ -174,7 +201,7 @@
     dialog.removeAttribute('aria-labelledby');dialogPanel='';dialogRoom='';
   });
   function baseSetup(room){
-    return room?{...room,editing:room.id}:{title:'',description:'',purpose:'none',destinations:destinations().map(row=>row.id),rehearsal:false,beauty:true,dealId:'',scheduledAt:'',weekly:false,remind:true};
+    return room?{...room,title:newsText(room.title),description:newsText(room.description),editing:room.id}:{title:'',description:'',purpose:'sales',destinations:destinations().map(row=>row.id),rehearsal:false,beauty:true,dealId:'',scheduledAt:'',weekly:false,remind:true};
   }
   function destinationPage(destinations,preferredId){
     if(preferredId&&destinations.includes('page:'+preferredId))return preferredId;
@@ -204,8 +231,8 @@
   function purposePage(){
     readSetup();stopAllMedia();
     showDialog(t('Buổi live này để làm gì?','What is this livestream for?'),'<p class="lv-note">'+t('Chọn mục đích để nạp bộ công cụ phù hợp. Chat, kiểm duyệt, bản ghi và thống kê dùng chung.','Choose a purpose to load its tools. Chat, moderation, recording and stats are available in every room.')+'</p>'+
-      Object.entries(purposes).sort(([a],[b])=>(a==='none')-(b==='none')).map(([id,info])=>card(row(purposeLabel(id),'',action('pick-purpose',setup.purpose===id?t('Đang chọn','Selected'):t('Chọn','Select'),{value:id,pressed:setup.purpose===id,style:'soft'}),icon(info[2]))+
-      (info[3].length?'<div class="lv-chips">'+info[3].map(key=>chip(label(key),'violet')).join('')+'</div>':''))).join('')+
+      Object.entries(purposes).sort(([a],[b])=>(a==='none')-(b==='none')).map(([id,info])=>'<div class="lv-purpose '+(setup.purpose===id?'selected':'')+'">'+card(row(purposeLabel(id),'',action('pick-purpose',setup.purpose===id?t('Đang chọn','Selected'):t('Chọn','Select'),{value:id,pressed:setup.purpose===id,style:'soft'}),art({sales:'gift',explore:'map',tutorial:'video',music:'music',community:'users-round',none:'layout-list'}[id],40))+
+      (info[3].length?'<div class="lv-chips">'+info[3].map(key=>chip(label(key),'violet')).join('')+'</div>':''))+'</div>').join('')+
       '<div class="lv-actions">'+action('return-setup',t('Tiếp tục thiết lập','Continue setup'),{style:'primary',icon:icon('ArrowRight')})+'</div>','purpose');
   }
   function schedulePage(room){
@@ -286,7 +313,7 @@
         (room.cover?'<img class="lv-cover-image" src="'+esc(room.cover)+'" alt="">':roomMark(room))+
         chip(running?'LIVE':room.status==='scheduled'?t('Lên lịch','Scheduled'):t('Xem lại','Replay'),running?'red':'violet')+
         (running&&room.viewers?'<span class="lv-watch">'+icon('Eye')+room.viewers+'</span>':'')+'</div><div class="lv-room-card-copy">'+personBadge(roomHost(room))+
-        '<div><strong>'+esc(roomName(room))+'</strong><small>'+esc(roomHost(room))+' · '+esc(room.status==='scheduled'?dateLabel(room.scheduledAt)+' · '+timeLabel(room.scheduledAt):room.city||'')+(room.sample?' · '+t('Mẫu','Sample'):'')+'</small></div></div></button></article>';
+        '<div><strong>'+esc(roomName(room))+'</strong><small>'+esc(roomHost(room))+' · '+esc(room.status==='scheduled'?dateLabel(room.scheduledAt)+' · '+timeLabel(room.scheduledAt):room.city||'')+(room.sample||room.demo?' · '+t('Mẫu','Sample'):'')+'</small></div></div></button></article>';
     };
     const group=(name,rows)=>rows.length?'<h2 class="lv-subhead">'+esc(name)+'</h2><div class="lv-directory-grid">'+rows.map(cardMarkup).join('')+'</div>':'';
     return originalLiveHero()+'<section class="lv-surface"><div class="lv-directory-toolbar"><header class="lv-top live-hero"><div class="lv-actions">'+action('panel',label('notify'),{value:'notify',icon:icon('Bell')})+'</div></header>'+
@@ -345,7 +372,7 @@
       return '<section class="lv-surface"><header class="lv-top">'+action('back',t('Đang live','Live Now'),{icon:icon('ArrowLeft')})+'</header>'+
         card(head(t('Bản xem lại chờ duyệt','Replay pending review'))+(own(room)?action('host',t('Góc chủ buổi','Host view'),{style:'soft'}):''))+'</section>';
     }
-    const recording=room.videoId?'<video class="lv-replay" data-video-id="'+esc(room.videoId)+'" controls playsinline></video>':'<div class="lv-cover">'+roomMark(room)+chip(t('Bản xem lại','Replay'),'violet')+'</div>';
+    const recording=hasRecording(room)?'<video class="lv-replay" '+(room.videoId?'data-video-id="'+esc(room.videoId)+'"':'src="'+esc(room.videoSrc)+'"')+' controls playsinline></video>':'<div class="lv-cover">'+roomMark(room)+chip(t('Bản xem lại','Replay'),'violet')+'</div>';
     return '<section class="lv-surface"><header class="lv-top"><div><h1>'+esc(roomName(room))+'</h1><p class="lv-note">'+esc(roomHost(room))+'</p></div>'+action('back',t('Đang live','Live Now'),{icon:icon('ArrowLeft')})+'</header>'+
       card(recording+(room.summary?.published?'<p class="lv-recap"><b>NEXI (AI)</b> '+esc(room.summary.body)+'</p>':'')+
       '<div class="lv-actions">'+tile('replay')+(own(room)?tile('recap')+tile('report'):'')+'</div>')+'</section>';
@@ -363,7 +390,7 @@
       :'<div class="lv-viewer-id">'+personBadge(who)+'<div class="lv-grow"><strong>'+esc(who)+'</strong><small>'+esc(room.viewers?room.viewers+' '+t('đang xem','watching'):name)+'</small></div>'+action('follow',follows?t('Đang theo dõi','Following'):t('+ Theo dõi','+ Follow'),{style:'primary',pressed:follows})+chip('LIVE','red')+(mods.age?chip('18+'):'')+'</div>';
     const controls=host?'<div class="lv-stage-controls">'+stageButton('mute',room.muted?t('Bật tiếng','Unmute'):t('Tắt tiếng','Mute'),room.muted?'MicOff':'Mic',!!room.muted)+
       stageButton('switch-camera',t('Đổi camera','Flip camera'),'SwitchCamera')+stageButton('beauty',t('Làm đẹp','Beauty'),'Sparkles',!!room.beauty)+
-      action('panel',t('Công cụ','Tools'),{style:'stage-button',value:'tools',icon:icon('BriefcaseBusiness')})+stageButton('end',t('Kết thúc','End'),'Square')+'</div>':'';
+      action('panel',t('Công cụ','Tools'),{style:'stage-button',value:'tools',icon:icon('BriefcaseBusiness')})+stageButton('end',t('Kết thúc','End'),'Square')+'</div>'+(['tutorial','explore','music','community'].includes(room.purpose)?'<div class="lv-purpose-controls">'+tools.map(key=>action('panel',label(key),{value:key,style:'stage-button',icon:art(toolArt[key]||'layout-list',24)})).join('')+'</div>':''):'';
     const captions=caption==='off'?'':'<span class="lv-caption">CC · '+caption.toUpperCase()+': '+esc(room.id==='po-live-bitcoin'?(caption==='vi'?'“…mẫu này giữ được 3 tuần…”':'“…this set lasts three weeks…”'):t('Phụ đề','Captions'))+'</span>';
     const options=host?'':action('caption','VI | EN',{style:'stage-pill'})+
       '<label class="lv-quality"><span class="lv-sr">'+t('Chất lượng phát','Playback quality')+'</span><select data-live-quality><option '+(quality==='720p'?'selected':'')+'>720p</option><option '+(quality==='480p'?'selected':'')+'>480p</option><option '+(quality==='360p'?'selected':'')+'>360p</option></select></label>';
@@ -373,8 +400,8 @@
     const qrUrl=oneQrUrl(room);
     const showQr=room.oneqr&&qrUrl?'<a class="lv-oneqr" href="'+esc(qrUrl)+'" target="_blank" rel="noopener noreferrer" aria-label="OneQR">'+icon('QrCode')+'<small>OneQR</small></a>':'';
     const side=host?card(head(t('Trò chuyện trong phòng','Room chat'))+'<div class="lv-room-chat">'+chatRows(room,true)+'</div>'+commentForm(room))+
-      (tools.length?card(head(t('Theo mục đích buổi live','Purpose tools'))+'<div class="lv-tool-grid">'+tools.map(tile).join('')+'</div>'):'')
-      :'<div class="lv-actions">'+tile('share')+tile('contacts')+tile('qa')+tile('hands')+(room.purpose==='music'?tile('songs'):'')+'</div><p class="lv-note">'+t('Quà tặng / Tip: chờ quyết định.','Gifts / Tips: awaiting decision.')+'</p>';
+      (room.purpose==='tutorial'?qaPanel(room):room.purpose==='music'?listPanel(room,'songs')+listPanel(room,'hands'):['explore','community'].includes(room.purpose)?listPanel(room,'hands'):'')+(tools.length?card(head(t('Theo mục đích buổi live','Purpose tools'))+'<div class="lv-tool-grid">'+tools.map(tile).join('')+'</div>'):'')
+      :'<div class="lv-actions">'+tile('share')+tile('contacts')+tile('qa')+tile('hands')+(room.purpose==='music'?tile('songs'):'')+(room.wheelOpen?tile('wheel'):'')+'</div><p class="lv-note">'+t('Quà tặng / Tip: chờ quyết định.','Gifts / Tips: awaiting decision.')+'</p>';
     return '<section class="lv-surface"><header class="lv-top"><div><h1>'+esc(name)+'</h1><p class="lv-note">'+t('Bản mẫu · camera chỉ xem trên thiết bị này.','Demo · camera preview stays on this device.')+'</p></div><div class="lv-actions">'+action('back',t('Đang live','Live Now'),{icon:icon('ArrowLeft')})+
       (own(room)?action(host?'viewer':'host',host?t('Góc người xem','Viewer view'):t('Góc chủ buổi','Host view'),{style:'soft'}):'')+'</div></header>'+
       '<div class="lv-room-layout"><section class="lv-stage" aria-label="'+esc(name)+'"><div class="lv-stage-picture">'+
@@ -382,9 +409,9 @@
       '<div class="lv-stage-placeholder" id="camera-placeholder">'+roomMark(room)+(host?action('camera',t('Xem trước camera','Preview camera'),{style:'stage-pill',icon:icon('Camera')}):'')+'</div>'+
       '<div class="lv-stage-top">'+titleText+(host&&info.name?'<div class="lv-overlay"><strong>'+esc(info.name)+'</strong>'+(info.phone?' · '+esc(info.phone):'')+(info.address?'<br>'+esc(info.address):'')+'</div>':'')+'</div>'+
       showQr+(participants.filter(row=>row.accepted).length?'<div class="lv-guests">'+participants.filter(row=>row.accepted).map(row=>'<span>'+personBadge(row.name)+esc(row.name)+(row.muted?icon('MicOff'):'')+'</span>').join('')+'</div>':'')+
-      (room.pip&&host?'<div class="lv-pip"><video id="lv-pip-camera" autoplay muted playsinline></video><span>'+t('Camera phụ','Second camera')+'</span></div>':'')+
-      (room.drawing?'<canvas id="lv-annotation" aria-label="'+t('Vẽ chú thích','Draw annotation')+'"></canvas>':'')+
-      '<div class="lv-stage-bottom">'+linkedPlace+pinned(room)+flashMarkup(room)+(pinnedComment?'<div class="lv-caption">'+icon('Pin')+esc(pinnedComment.author+': '+pinnedComment.text)+'</div>':'')+
+      (room.pip&&host?'<div class="lv-pip">'+art('hand-coins',30)+'<video id="lv-pip-camera" autoplay muted playsinline></video><span>'+t('Camera phụ','Second camera')+'</span></div>':'')+
+      (room.drawing?'<div class="lv-draw-note">'+t('Đang vẽ chú thích','Drawing annotation')+' '+action('toggle-draw',t('Xóa vẽ','Clear drawing'),{style:'stage-pill'})+'</div><canvas id="lv-annotation" aria-label="'+t('Vẽ chú thích','Draw annotation')+'"></canvas>':'')+
+      '<div class="lv-stage-bottom">'+linkedPlace+pinned(room)+flashMarkup(room)+(pinnedComment?'<div class="lv-caption">'+icon('Pin')+esc(pinnedComment.author+': '+newsText(pinnedComment.text))+'</div>':'')+
       '<div class="lv-caption-row">'+captions+options+'</div>'+viewerChat+'</div></div>'+controls+'</section>'+
       '<aside class="lv-room-side">'+(room.poll||room.id==='po-live-bitcoin'?card(pollMarkup(room,host)):'')+side+'</aside></div></section>';
   };
@@ -417,7 +444,7 @@
     const entries=[...new Set([...demoGuests,...members.map(member=>member.name)])].filter(name=>name!==shared.member);
     const nameLabel=mode==='moderator'?t('Thêm người kiểm duyệt','Add moderator'):mode==='contacts'?t('Mời bạn','Invite friend'):t('Mời lên sóng','Invite on stage');
     const stage=mode==='guest'?card(head(t('Sân khấu','Stage'),t('Khách được mời hiện cạnh chủ buổi.','Accepted guests appear next to the host.'))+
-      row(roomHost(room),t('Chủ buổi','Host'),'',personBadge(roomHost(room)))+guests.map(guest=>row(guest.name,guest.accepted?t('Khách','Guest'):t('Đã mời','Invited'),'<div class="lv-actions">'+
+      '<div class="lv-stage-preview"><div>'+art('video',40)+'<strong>'+esc(roomHost(room))+'</strong><small>'+t('Chủ buổi · Bạn','Host · You')+'</small></div>'+guests.filter(guest=>guest.accepted).map(guest=>'<div>'+personBadge(guest.name)+'<strong>'+esc(guest.name)+'</strong><small>'+t('Khách','Guest')+'</small></div>').join('')+'</div>'+guests.map(guest=>row(guest.name,guest.accepted?t('Khách','Guest'):t('Đã mời','Invited'),'<div class="lv-actions">'+
       (guest.accepted?action('guest-mute',guest.muted?t('Bật mic','Unmute'):t('Tắt mic','Mute'),{value:guest.name}):action('guest-accept',t('Chấp nhận (mẫu)','Accept (demo)'),{value:guest.name,style:'soft'}))+
       action('guest-remove',t('Mời xuống','Remove'),{value:guest.name})+'</div>',personBadge(guest.name))).join('')):'';
     return stage+card(head(mode==='guest'?t('Người xem đang online','Online viewers'):t('Danh bạ','Contacts'))+
@@ -460,77 +487,93 @@
 
   function listPanel(room,key){
     const rows=room[key]||[],host=hostMode(room),hands=key==='hands';
-    return card(head(label(key))+(rows.length?rows.map(item=>row(item.name,item.text,
-      host?action('queue-remove',t('Tiếp theo','Next'),{value:item.id,style:'soft'}):'',personBadge(item.name))).join(''):empty()))+
+    return card(head(label(key))+(rows.length?rows.map(item=>row(item.name,newsText(item.text),
+      host?action(hands?'queue-invite':'queue-remove',hands?t('Mời phát biểu','Invite to speak'):t('Tiếp theo','Next'),{value:item.id,style:'soft'}):'',personBadge(item.name))).join(''):empty()))+
       (!host?card(hands?action('raise',t('Giơ tay phát biểu','Raise hand to speak'),{style:'primary',icon:icon('Hand')}):form('song',field(t('Tên bài hát','Song title'),'text','','required maxlength="100"'),t('Gửi yêu cầu','Send request'))):'');
   }
   function leadsPanel(room){
-    return card(head(t('Bình luận đúng cú pháp','Recognized comments'),t('GEL20 hoặc BOOK GEL · yêu cầu được lưu trong bản mẫu.','GEL20 or BOOK GEL · requests stay in this demo.'))+
-      (room.leads?.length?room.leads.map(item=>row(item.name,item.text,chip(t('Khách tiềm năng','Lead'),'green'),personBadge(item.name))).join(''):empty()));
+    const rows=room.leads||[];
+    return card(head(t('Bình luận đúng cú pháp → tự thành đơn','Recognized comments → order requests'))+(rows.length?rows.filter(item=>item.kind!=='coupon').map(item=>row(item.name+': '+newsText(item.text),'NEXI (AI): '+t('Đã ghi nhận yêu cầu — tiệm sẽ liên hệ xác nhận lịch.','Request received — the salon will contact you to confirm.'),chip(t('Đã bắt đơn','Captured'),'green'),personBadge(item.name))).join(''):empty()))+
+      card(head(t('Danh sách khách (leads) của buổi live','Livestream leads'),t('Khách nhận deal và yêu cầu đặt lịch để tiệm chăm sóc tiếp.','Customers who claimed offers or requested appointments.'))+(rows.length?rows.map(item=>row(item.name,newsText(item.note||item.text),chip(item.status==='booked'?t('Đã book','Booked'):t('Khách tiềm năng','Lead'),item.status==='booked'?'green':'violet'),personBadge(item.name))).join(''):empty()))+
+      (hostMode(room)?'<div class="lv-actions lv-actions-wide">'+action('export-leads',t('Xuất danh sách','Export list'),{icon:icon('Download'),disabled:!rows.length,style:'primary'})+action('followup-leads',t('Nhắn tin chăm sóc','Follow up'),{icon:icon('MessageCircle'),disabled:!rows.length})+'</div>':'');
+  }
+  const rowMarkup=item=>row(item.name,newsText(item.text),action('lead-message',t('Nhắn tin','Message'),{value:item.name,style:'soft'}),personBadge(item.name));
+  function wheelPanel(room){
+    const results=(shared.read().wheelCampaignResults||[]).filter(row=>row.campaign===room.id),mine=results.find(row=>row.account===shared.me().id);
+    const prizes=wheelPrizes.map(prize=>({...prize,pageTitle:roomHost(room),pageId:room.pageId}));
+    return card('<div class="lv-wheel-preview"><div class="lv-wheel-disc" aria-hidden="true">'+art('gift',60)+'</div></div>'+head(t('Vòng quay chung của nền tảng','Shared Lucky Wheel'),t('Kết quả do máy quyết định. Quà khóa theo số điện thoại người trúng.','The engine selects the result. Rewards are locked to the winner’s phone number.'))+
+      '<div class="lv-chips lv-wheel-odds">'+prizes.map(p=>chip(t(p.vi,p.en)+' · '+p.probability+'%',p.key==='none'?'amber':'violet')).join('')+'</div><p class="lv-note">'+t('Tỷ lệ hiển thị trước khi quay · tổng = 100%.','Odds are shown before spinning · total = 100%.')+'</p>'+
+      (hostMode(room)?action('wheel-open',room.wheelOpen?t('Đang mở cho người xem','Open to viewers'):t('Mở quay cho người xem','Open wheel to viewers'),{style:'primary',pressed:!!room.wheelOpen}):room.wheelOpen?mine?'':form('wheel',field(t('Số điện thoại','Phone number'),'phone',shared.me().phone||'','type="tel" required inputmode="tel" autocomplete="tel"')+action('follow',prefs(room.id).follow?t('Đang theo dõi','Following'):t('Theo dõi Page','Follow Page'),{pressed:!!prefs(room.id).follow}),t('Quay','Spin')):chip(t('Chưa mở quay','Not open yet'),'amber')))+
+      card(head(t('Kết quả vừa quay','Latest results'))+(results.length?results.slice(-5).reverse().map(result=>row(result.name,t(result.prize.vi,result.prize.en)+' · ••••'+result.phone.slice(-4),chip(result.prize.key==='none'?t('Chúc may mắn','Better luck next time'):t('Đã lưu ví','Saved to wallet'),'green'),personBadge(result.name))).join(''):empty())+action('wheel-wallet',t('Ví quà của tôi','My rewards'),{style:'soft'}));
   }
   function reportPanel(room){
     const stats=room.stats||{},statsRows=[
       [t('Người xem đỉnh','Peak viewers'),room.viewers||stats.views||0],
       [t('Bấm thẻ / deal','Card / deal clicks'),stats.clicks||0],
-      [t('Nhận coupon mẫu','Demo coupons claimed'),room.flash?.claimed?.length||0],
-      [t('Yêu cầu đặt lịch','Booking requests'),(room.leads||[]).filter(lead=>lead.kind==='booking').length],
+      [t('Nhận coupon mẫu','Demo coupons claimed'),room.stats?.coupons||room.flash?.claimed?.length||0],
+      [t('Yêu cầu đặt lịch','Booking requests'),room.stats?.bookings||(room.leads||[]).filter(lead=>lead.kind==='booking').length],
     ];
     return '<p class="lv-demo">'+t('Dữ liệu mẫu trong trình duyệt.','Demo data from this browser.')+'</p><div class="lv-grid2">'+statsRows.map(([name,value])=>card('<small>'+esc(name)+'</small><h3>'+value+'</h3>')).join('')+'</div>'+
-      card(head(t('Phễu từ live đến POS','Livestream-to-POS funnel'))+
-        row(t('Xem live','Live views'),'',chip(String(stats.views||room.viewers||0)))+
-        row(t('Bấm deal / thẻ dịch vụ','Deal / service clicks'),'',chip(String(stats.clicks||0)))+
-        row(t('Đặt lịch thành công','Confirmed bookings'),'',chip(t('Theo SIPOS','From SIPOS'),'violet'))+
-        row(t('Doanh thu ghi nhận tại POS','POS revenue'),'',chip(t('Theo SIPOS','From SIPOS'),'violet'))+
-        tile('leads'));
+      card(head(t('Phễu khép vòng live → POS','Livestream-to-POS funnel'))+
+        [[t('Xem live','Live views'),stats.views||room.viewers||0],[t('Bấm deal / thẻ dịch vụ','Deal / service clicks'),stats.clicks||0],[t('Đặt lịch qua live','Bookings from live'),stats.bookings||(room.leads||[]).filter(row=>row.kind==='booking').length]].map(([name,count])=>'<div class="lv-funnel-step">'+row(name,'',chip(String(count)))+'<div class="lv-meter"><i style="width:'+Math.min(100,(count/Math.max(1,stats.views||room.viewers||0))*100)+'%"></i></div></div>').join('')+
+        row(t('Doanh thu ghi nhận tại POS','POS revenue'),'',chip(t('Theo SIPOS','From SIPOS'),'violet'))+action('panel',t('Xem danh sách khách của buổi này','View this session’s leads'),{value:'leads',style:'primary'}));
   }
+
   function notificationPanel(){
     const types=[['live',t('Buổi live bắt đầu / nhắc lịch','Live starts / reminders')],['sales',t('Tin nhắn & đơn bán hàng','Messages & sales')],['replay',t('Đặt lịch & bản xem lại','Bookings & replays')],['activity',t('Tương tác trong live của tôi','Activity in my live')]];
     const entries=state.livePONotifications.filter(entry=>liveRoomById(entry.id)).slice(0,18);
-    return card(head(label('notify'))+(entries.length?entries.map(entry=>row(entry.title,entry.text,action('notice-open',t('Mở','Open'),{value:entry.key,style:'soft'}),icon('Bell'))).join(''):empty()))+
-      card(head(t('Cài đặt theo loại & kênh','Settings by type and channel'),t('Kênh trong app khả dụng trong bản mẫu.','In-app notifications are available in this demo.'))+
-      form('channels',types.map(([key,text])=>'<div class="lv-channel"><strong>'+esc(text)+'</strong><div class="lv-chips">'+
-      [['app',t('Trong app','In app')],['push',t('Đẩy (push)','Push')],['email','Email'],['sms','SMS']].map(([channel,caption])=>'<label><input type="checkbox" name="'+key+':'+channel+'" '+(state.livePOChannels[key+':'+channel]??(channel==='app')?'checked':'')+'>'+esc(caption)+'</label>').join('')+'</div></div>').join(''),t('Lưu thay đổi','Save changes')));
+    return card(head(label('notify'))+(entries.length?entries.map(entry=>'<button class="lv-notice-row" type="button" data-live-po="notice-open" data-live-value="'+esc(entry.key)+'">'+art({live:'video',sales:'layout-list',replay:'video',activity:'bell'}[entry.type]||'bell',32)+'<span><strong>'+esc(newsText(entry.title))+'</strong><small>'+esc(newsText(entry.text))+'</small></span>'+chip(t('Mở','Open'),'violet')+'</button>').join(''):empty()))+
+      card(head(t('Cài đặt theo loại & kênh','Settings by type and channel'))+
+      form('channels',types.map(([key,text])=>'<div class="lv-channel">'+toggle(key+':enabled',text,state.livePOChannels[key+':enabled']!==false)+
+      '<div class="lv-chips">'+[['app',t('Trong app','In app')],['push',t('Đẩy (push)','Push')],['email','Email'],['sms','SMS']].map(([channel,caption])=>'<label><input type="checkbox" name="'+key+':'+channel+'" '+(state.livePOChannels[key+':'+channel]??(channel==='app')?'checked':'')+'>'+esc(caption)+'</label>').join('')+'</div></div>').join(''),t('Lưu thay đổi','Save changes')));
   }
+
   function pushRoomNotice(room,type,heading,body,target=''){
-    if(state.livePOChannels[type+':app']===false||state.livePONotifications.some(entry=>entry.id===room.id&&entry.title===heading))return;
+    if(state.livePOChannels[type+':enabled']===false||state.livePOChannels[type+':app']===false||state.livePONotifications.some(entry=>entry.id===room.id&&entry.title===heading))return;
     const before=state.livePONotifications;
     state.livePONotifications=[{key:crypto.randomUUID(),id:room.id,type,title:heading,text:body,target},...before].slice(0,60);
     if(!save())state.livePONotifications=before;
   }
   function summaryDraft(room){
     const count=chat(room).length,leads=(room.leads||[]).length;
+    if(room.demo)return t('• Giới thiệu mẫu Gel mới\n• Giải đáp: Gel bền hơn bột ở điểm nào\n• Ưu đãi khách mới −20%\n• Hỏi đáp: lịch walk-in cuối tuần','• Introduced new Gel styles\n• Q&A: Gel and acrylic durability\n• New guest offer −20%\n• Q&A: weekend walk-in appointments');
     return [newsText(room.description),count+' '+t('bình luận','comments'),leads+' '+t('khách tiềm năng','leads')].filter(Boolean).join('\n');
   }
   function recapPanel(room){
     return card(head('NEXI (AI)',t('Bản nháp · chủ buổi duyệt trước khi đăng bản xem lại.','Draft · the host reviews before publishing the replay.'))+
       form('summary',field(t('Tiêu đề bản xem lại','Replay title'),'title',room.summary?.title||roomName(room),'required maxlength="100"')+
       textarea(t('Tóm tắt nội dung chính','Summary'),'body',room.summary?.body||summaryDraft(room),'required maxlength="1600"')+
-      '<div class="lv-actions"><button class="lv-btn" type="submit" name="result" value="draft">'+t('Lưu nháp','Save draft')+'</button><button class="lv-btn primary" type="submit" name="result" value="publish" '+(room.status!=='ended'?'disabled':'')+'>'+t('Duyệt & đăng bản xem lại','Approve & publish replay')+'</button></div>',''))+
+      highlightMarkup(room)+'<div class="lv-actions"><button class="lv-btn" type="submit" name="result" value="draft">'+t('Lưu nháp','Save draft')+'</button><button class="lv-btn primary" type="submit" name="result" value="publish" '+(room.status!=='ended'?'disabled':'')+'>'+t('Duyệt & đăng bản xem lại','Approve & publish replay')+'</button></div>',''))+
       leadsPanel(room);
   }
+  function highlightMarkup(room){
+    return room.highlights?.length?'<div class="lv-highlights">'+head(t('Điểm nổi bật nên cắt clip','Suggested clip highlights'))+'<div class="lv-chips">'+room.highlights.map((h,index)=>action('highlight',clock(h.from)+'–'+clock(h.to)+' '+newsText(h.title),{value:String(index),icon:icon('Scissors'),style:'soft'})).join('')+'</div></div>':'';
+  }
+  const hasRecording=room=>!!(room.videoId||room.videoSrc);
+  async function recordingBlob(room){if(room.videoId)return loadVideo(room.videoId);if(room.videoSrc){const response=await fetch(room.videoSrc);if(!response.ok)throw Error(t('Không tải được bản ghi.','Could not load the recording.'));return response.blob();}return null;}
   function replayPanel(room){
-    const host=hostMode(room),media=room.videoId?'<video class="lv-replay" data-live-replay="'+esc(room.videoId)+'" controls playsinline></video>':'';
+    const host=hostMode(room),media=hasRecording(room)?'<video class="lv-replay" data-live-replay="'+esc(room.videoId||room.id)+'" '+(room.videoSrc&&!room.videoId?'src="'+esc(room.videoSrc)+'"':'')+' controls playsinline></video>':'';
     const currentRecord=recording?.roomId===room.id;
     return card(media+head(label('replay'))+
       (host&&room.status==='live'?action('record',currentRecord?t('Dừng ghi','Stop recording'):t('Ghi bản xem thử','Record camera preview'),{style:'soft',icon:icon('CircleDot')}):'')+
-      (room.videoId?'<div class="lv-actions">'+action('download',t('Tải bản ghi','Download recording'),{icon:icon('Download')})+
+      (hasRecording(room)?'<div class="lv-actions">'+action('download',t('Tải bản ghi','Download recording'),{icon:icon('Download')})+
       (host?action('panel',t('Cắt clip ngắn','Trim short clip'),{value:'trim',icon:icon('Scissors')}):'')+'</div>':'')+
       (host?form('recording', '<label class="lv-field">'+t('Tệp bản ghi','Recording file')+'<input type="file" name="video" accept="video/*"></label><label class="lv-field">'+t('Đổi ảnh bìa','Change cover')+'<input type="file" name="cover" accept="image/*"></label>',t('Lưu bản ghi','Save recording')):'')+
-      (!room.videoId&&!currentRecord?'<p class="lv-note">'+t('Chưa có bản ghi.','No recording yet.')+'</p>':''))+
-      card(head(t('Mục lục chương','Chapters'))+(room.chapters?.length?room.chapters.map(item=>row(clock(item.time)+' · '+item.title,'',action('seek',t('Phát','Play'),{value:String(item.time),disabled:!room.videoId,icon:icon('Play')}))).join(''):empty())+
+      (!hasRecording(room)&&!currentRecord?'<p class="lv-note">'+t('Chưa có bản ghi.','No recording yet.')+'</p>':''))+
+      card(head(t('Mục lục chương','Chapters'))+(room.chapters?.length?room.chapters.map(item=>row(clock(item.time)+' · '+newsText(item.title),'',action('seek',t('Phát','Play'),{value:String(item.time),disabled:!hasRecording(room),icon:icon('Play')}))).join(''):empty())+
       (room.purpose==='tutorial'?'<p class="lv-note">'+t('Replay chia chương có thể đưa vào thư viện OneAcademy.','Chaptered replay can be added to the OneAcademy library.')+'</p>':''))+
-      (room.place?card(head(t('Địa điểm đã ghé','Places visited'))+row(room.place.name,room.place.address,'<a class="lv-btn soft" href="'+mapLink(room.place.address)+'" target="_blank" rel="noopener noreferrer">'+t('Bản đồ','Map')+'</a>',icon('MapPin'))):'');
+      ((room.places?.length||room.place)?card(head(t('Địa điểm đã ghé','Places visited'))+(room.places||[room.place]).map(place=>row(place.name,place.address,'<a class="lv-btn soft" href="'+mapLink(place.address)+'" target="_blank" rel="noopener noreferrer">'+t('Bản đồ','Map')+'</a>',art('map-pin',30))).join('')):'');
   }
   function openPanel(key,room=getRoom()){
     if(key==='notify'){showDialog(label(key),notificationPanel(),key);return;}
     if(!room)return;
     if(['replay','trim'].includes(key)&&room.status==='ended'&&!canOpenReplay(room))return;
-    const heading=toolLabels[key]?label(key):({tools:t('Công cụ buổi live','Live tools'),moderator:t('Thêm người kiểm duyệt','Add moderator'),trim:t('Cắt clip ngắn','Trim short clip')})[key];
+    const heading=key==='poll'?t('Poll & Hỏi đáp','Poll & Q&A'):toolLabels[key]?label(key):({tools:t('Công cụ buổi live','Live tools'),moderator:t('Thêm người kiểm duyệt','Add moderator'),trim:t('Cắt clip ngắn','Trim short clip')})[key];
     let body='';
     switch(key){
       case 'tools':body=toolsPanel(room);break;
       case 'guest':case 'moderator':case 'contacts':body=guestPanel(room,key);break;
-      case 'poll':body=card(pollMarkup(room,true))+card(form('poll',field(t('Câu hỏi','Question'),'question','','required maxlength="120"')+
+      case 'poll':body=card(pollMarkup(room,hostMode(room)))+qaPanel(room)+card(form('poll',field(t('Câu hỏi','Question'),'question','','required maxlength="120"')+
         field(t('Lựa chọn 1','Option 1'),'choice','','required maxlength="80"')+field(t('Lựa chọn 2','Option 2'),'choice','','required maxlength="80"')+
         field(t('Lựa chọn 3','Option 3'),'choice','','maxlength="80"'),t('Tạo poll mới','Create poll')));break;
       case 'qa':body=qaPanel(room);break;
@@ -539,8 +582,8 @@
         form('flash',field(t('Nội dung ưu đãi','Offer'),'name',room.flash?.name||'','required maxlength="100"')+
         field(t('Thời gian chạy (phút)','Duration (minutes)'),'minutes','10','type="number" min="1" max="180" required')+
         field(t('Số lượng tối đa','Coupon limit'),'limit','30','type="number" min="1" max="1000" required'),t('Kích hoạt Flash Deal','Activate flash deal')))+
-        (flashMarkup(room)?card(flashMarkup(room)+'<p>'+room.flash.limit+' '+t('coupon tối đa','coupon limit')+'</p>'):'');break;
-      case 'wheel':body=card(head(t('Vòng quay chung của nền tảng','Shared Lucky Wheel'),t('Dùng chung engine Lucky Wheel của nền tảng.','Uses the platform’s shared Lucky Wheel.'))+action('wheel',t('Mở Lucky Wheel','Open Lucky Wheel'),{style:'primary',icon:icon('Gift')}));break;
+        (flashMarkup(room)?card(head(t('Đang chạy','Running'))+flashMarkup(room)+'<p>'+((room.flash.claimed||[]).length)+' / '+room.flash.limit+' '+t('coupon đã nhận','coupons claimed')+'</p><div class="lv-meter"><i style="width:'+Math.min(100,((room.flash.claimed||[]).length/room.flash.limit)*100)+'%"></i></div>','lv-flash-status'):'');break;
+      case 'wheel':body=wheelPanel(room);break;
       case 'oneqr':{const url=oneQrUrl(room);body=card(row('OneQR',url?t('Hiện ở góc màn hình live.','Shown in the corner of the live screen.'):t('Page chưa có OneQR.','No OneQR is configured for this Page.'),action('toggle-qr',room.oneqr?t('Ẩn OneQR','Hide OneQR'):t('Hiện OneQR','Show OneQR'),{style:'soft',pressed:!!room.oneqr,disabled:!url}),icon('QrCode'))+
         (url?'<a class="lv-btn" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">OneQR</a>':''));break;}
       case 'overlay':{const info=overlay(room);body=card(form('overlay',field(t('Tên tiệm','Business name'),'name',info.name,'maxlength="100"')+
@@ -578,9 +621,14 @@
         }
       }
     }).catch(()=>{});
-    if(key==='replay'&&room.videoId)mountReplay(room.videoId);
+    if(key==='replay'){if(room.videoId)mountReplay(room.videoId);bindReplayComments(room);}
   }
 
+  function bindReplayComments(room){
+    const video=$('editor').querySelector('[data-live-replay]');if(!video||!room.timedComments?.length)return;
+    const caption=document.createElement('p');caption.className='lv-replay-comment';video.after(caption);
+    const sync=()=>{const row=[...room.timedComments].reverse().find(row=>row.time<=video.currentTime);caption.textContent=row?clock(row.time)+' · '+newsText(row.text):'';};video.addEventListener('timeupdate',sync);sync();
+  }
   async function mountReplay(id){
     const video=$('editor').querySelector('[data-live-replay]');
     if(!video)return;
@@ -660,7 +708,7 @@
     let url='',tracks=[],recorder;
     cancelTrim=cancel;
     try{
-      const blob=await duringTrim(loadVideo(room.videoId));
+      const blob=await duringTrim(recordingBlob(room));
       if(!blob)throw Error(t('Không tìm thấy bản ghi.','Recording unavailable.'));
       url=URL.createObjectURL(blob);
       video.muted=true;
@@ -863,6 +911,12 @@
       if(key==='comment'){handleComment(form,getRoom(read('roomId')));return;}
       if(key==='question'){if(read('text'))patch(room,{questions:[...(room.questions||[]),{id:crypto.randomUUID(),author:person(),text:read('text')}]},'qa');return;}
       if(key==='song'){if(read('text'))trackQueue(room,'songs',read('text'));return;}
+      if(key==='wheel'){
+        if(!room.wheelOpen||hostMode(room)||!prefs(room.id).follow)throw Error(t('Theo dõi Page trước khi quay.','Follow the Page before spinning.'));
+        const result=shared.drawCampaign(room.id,wheelPrizes.map(prize=>({...prize,pageId:room.pageId,pageTitle:roomHost(room)})),read('phone'));
+        if(!result)throw Error(t('Nhập số điện thoại hợp lệ.','Enter a valid phone number.'));
+        openPanel('wheel',room);return;
+      }
       if(!hostMode(room))return;
       if(key==='poll'){
         const choices=data.getAll('choice').map(choice=>choice.trim()).filter(Boolean);
@@ -942,9 +996,12 @@
       if(key==='service-link'){openService(room);return;}
       if(key==='claim-flash'){claimFlash(room);return;}
       if(key==='raise'){trackQueue(room,'hands',t('Muốn phát biểu','Wants to speak'));return;}
-      if(key==='wheel'){stopAllMedia();closeDialog();route('wheel');return;}
+      if(key==='wheel'||key==='wheel-wallet'){stopAllMedia();closeDialog();route('wheel',{wheelTab:'wallet'});return;}
+      if(key==='highlight'){
+        const highlight=room.highlights?.[Number(value)];if(highlight&&host){openPanel('trim',room);const form=$('editor').querySelector('[data-live-po-form=trim]');form.elements.from.value=highlight.from;form.elements.to.value=highlight.to;}return;
+      }
       if(key==='download'){
-        if(room.status!=='ended'||canOpenReplay(room))await download(await loadVideo(room.videoId),'livestream-recording');
+        if(room.status!=='ended'||canOpenReplay(room))await download(await recordingBlob(room),'livestream-recording.mp4');
         return;
       }
       if(key==='seek'){const video=$('editor').querySelector('[data-live-replay]');if(video){video.currentTime=Number(value);await video.play();}return;}
@@ -953,6 +1010,18 @@
         return;
       }
       if(!host)return;
+      if(key==='wheel-open'){patch(room,{wheelOpen:!room.wheelOpen},'wheel');return;}
+      if(key==='export-leads'){
+        const cell=value=>'"'+String(value??'').replace(/^[=+@-]/,"'").replace(/"/g,'""')+'"';
+        const csv=[['Name','Request','Status'],...(room.leads||[]).map(row=>[row.name,newsText(row.text),row.status||'lead'])].map(row=>row.map(cell).join(',')).join('\r\n');await download(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),'livestream-leads.csv');return;
+      }
+      if(key==='followup-leads'){
+        showDialog(t('Nhắn tin chăm sóc','Follow up'),card(head(t('Danh sách khách của buổi live','Livestream leads'))+(room.leads||[]).map(row=>rowMarkup(row)).join('')),'followup',room.id);return;
+      }
+      if(key==='lead-message'){closeDialog();route('connect',{peer:value,recipient:value});return;}
+      if(key==='queue-invite'){
+        const item=room.hands?.find(row=>row.id===value);if(item)patch(room,{hands:room.hands.filter(row=>row.id!==value),guests:[...(room.guests||[]).filter(row=>row.name!==item.name),{name:item.name,accepted:false,muted:false}]},'guest');return;
+      }
       if(key==='mute'){patch(room,{muted:!room.muted});return;}
       if(key==='switch-camera'){cameraFacing=cameraFacing==='user'?'environment':'user';await preview();return;}
       if(key==='beauty'){patch(room,{beauty:!room.beauty});return;}

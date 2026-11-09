@@ -107,7 +107,7 @@
       if(!current||typeof adapter.saveGroups!=='function')return false;
       const group={...clone(values),id:values.id||'group-'+Date.now()+'-'+(++sequence),owner:current,createdAt:values.createdAt||new Date().toISOString()};
       if(!title(group).trim()||sourceGroups().some(row=>String(row.id)===String(group.id)))return false;
-      return transaction(state=>{state.groups[String(group.id)]={members:group.poSamples?[current,'Linh Nguyễn']:[current],removed:[],requests:group.poSamples?[{id:'person-2',name:'Minh Trần',sample:true}]:[]};state.deletedGroupIds=state.deletedGroupIds.filter(id=>id!==String(group.id));return group;},()=>adapter.saveGroups([...clone(sourceGroups()),group]));
+      return transaction(state=>{state.groups[String(group.id)]={members:group.poSamples?[current,'Linh Nguyễn']:[current],removed:[],requests:group.poSamples?[{id:'person-2',name:'Minh Trần',sample:true}]:[]};state.deletedGroupIds=state.deletedGroupIds.filter(id=>id!==String(group.id));for(const name of unique(values.invitedNames||[])){if(name===current)continue;state.invitations.push({id:'group-invite-'+Date.now()+'-'+(++sequence),groupId:String(group.id),member:name,invitedBy:current,status:'pending',createdAt:new Date().toISOString()});}return group;},()=>adapter.saveGroups([...clone(sourceGroups()),group]));
     }
     function update(groupId,values) {
       const group=find(groupId);if(!group||!canManage(groupId)||typeof adapter.saveGroups!=='function')return false;

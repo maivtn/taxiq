@@ -644,7 +644,7 @@
   function pageDetail(x,tab='posts'){
     if(window.NEXORA_COMMUNITY_PAGE_SCREEN&&!window.NEXORA_COMMUNITY_PAGE_SCREEN.isActive(x.id)){window.NEXORA_COMMUNITY_PAGE_SCREEN.navigate(x.id,'view',false,tab);return;}
     releaseDuePagePosts();clearPostPreview();
-    const isOwner=x.owner===ME,allowed=['posts','about','photos','videos','followers','offers','services','reviews','events','live',...(isOwner?['scheduled','manage','drafts','insights','admin']:[])];tab=allowed.includes(tab)?tab:'posts';
+    const isOwner=x.owner===ME,allowed=['posts','about','photos','videos','followers','offers','services','reviews','events','live',...(isOwner?['scheduled','manage','drafts','insights','admin','campaign']:[])];tab=allowed.includes(tab)?tab:'posts';
     const allPosts=extra.pagePosts.filter(post=>post.pageId===x.id&&(!feedSocial||feedSocial.isVisible(post))).map(post=>({...post,...(post.languageVersions?.[document.documentElement.lang]||{})})).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
     const posts=allPosts.filter(post=>!['scheduled','draft'].includes(post.status)),scheduled=allPosts.filter(post=>post.status==='scheduled');
     const deals=extra.feed.filter(post=>post.kind==='deal'&&post.pageId===x.id&&(!post.expires||post.expires>=localDateISO()));

@@ -174,3 +174,61 @@ dialog.lv-dialog{width:min(100% - 20px,560px);max-height:min(90dvh,820px);paddin
 
 /* Keep room navigation visible inside the embedded Community shell. */
 .lv-surface>.lv-top{display:flex!important}
+
+/* LV-01–20: phone-first controls and the PO card hierarchy. */
+.lv-purpose{border:2px solid transparent;border-radius:20px}
+.lv-purpose.selected{border-color:var(--lv-purple)}
+.lv-purpose .lv-card{box-shadow:none}
+.lv-purpose .lv-row{border:0;align-items:flex-start}
+.lv-purpose .lv-chips{margin-top:8px}
+.lv-stage-preview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.lv-stage-preview>div{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;min-height:104px;padding:10px;border-radius:14px;background:linear-gradient(135deg,#bca7ff,#9bc7ff);text-align:center}
+.lv-stage-preview>div:nth-child(even){background:linear-gradient(135deg,#a7f3d0,#82dbce)}
+.lv-stage-preview small{font-size:11px}
+.lv-wheel-preview{display:grid;place-items:center;padding:12px}
+.lv-wheel-disc{display:grid;place-items:center;width:145px;height:145px;border:7px solid #fff;outline:3px solid #c4b5fd;border-radius:50%;background:conic-gradient(#c4b5fd 0 5%,#93c5fd 5% 20%,#a7f3d0 20% 50%,#fde68a 50% 60%,#fbcfe8 60% 100%);box-shadow:0 6px 20px #6d28d922}
+.lv-wheel-disc .lv-art{padding:8px;width:65px;height:65px;background:#fff;border-radius:50%}
+.lv-wheel-odds{justify-content:center;margin:12px 0}
+.lv-actions-wide>.lv-btn{flex:1;min-width:120px}
+.lv-funnel-step{padding:5px 0 12px}
+.lv-funnel-step .lv-row{border:0}
+.lv-funnel-step:nth-child(3) .lv-meter i{background:#a78bfa}
+.lv-funnel-step:nth-child(4) .lv-meter i{background:#34d399}
+.lv-notice-row{display:flex;align-items:center;gap:10px;width:100%;padding:14px 0;border:0;border-bottom:1px solid var(--lv-line);background:none;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.lv-notice-row>span:not(.lv-chip){flex:1;min-width:0}
+.lv-notice-row small{display:block;color:var(--lv-muted);font-size:12px;line-height:1.4;margin-top:4px}
+.lv-notice-row:last-child{border:0}
+.lv-highlights{margin:15px 0}
+.lv-replay-comment{padding:9px 11px;border-radius:10px;background:#211c35;color:#fff;font-size:12px}
+.lv-flash-status{border:1px solid #f4d895;background:#fffaf0}
+.lv-flash-status .lv-chip{white-space:normal}
+.lv-purpose-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:7px;border-top:1px solid #ffffff20}
+.lv-purpose-controls .stage-button{font-size:10px;min-height:56px}
+.lv-draw-note{position:absolute;top:145px;left:12px;z-index:4;max-width:calc(100% - 24px);padding:5px 9px;border-radius:12px;background:#fff;color:#3c4356;font-size:11px}
+.lv-pip{display:grid;place-items:center;top:195px;left:auto;right:12px;z-index:3}
+.lv-dialog :is(.lv-btn,input[type=search],input[type=tel]){min-height:44px}
+.lv-dialog .lv-btn.tool{min-height:62px}
+.lv-dialog .lv-row:has(>.lv-actions){flex-wrap:wrap}
+.lv-dialog .lv-row>.lv-actions{flex-shrink:1}
+.lv-channel .lv-toggle{border:0}
+.lv-channel .lv-chips{padding-left:0}
+.lv-channel .lv-chips label{min-height:38px;gap:5px}
+.lv-dialog-body{scroll-padding-bottom:24px}
+@media(max-width:620px){
+ dialog.lv-dialog{width:calc(100% - 16px);max-height:calc(100dvh - 20px);border-radius:20px}
+ .lv-dialog-head{padding:12px}
+ .lv-dialog-body{padding:10px;gap:9px}
+ .lv-dialog-body .lv-card{padding:11px 12px}
+ .lv-field :is(input,select,textarea),.lv-comment-form input{font-size:16px}
+ .lv-dialog .lv-actions{gap:8px}
+ .lv-dialog form>.lv-actions>.lv-btn{flex:1;min-height:44px}
+ .lv-dialog-body>.lv-actions>.lv-btn{flex:1}
+ .lv-stage-picture{min-height:480px}
+ .lv-room-side>.lv-card{padding:14px 12px}
+ .lv-pins .lv-row{flex-wrap:wrap}
+ .lv-pins .lv-grow{min-width:100px}
+ .lv-pins .lv-btn{min-height:38px}
+ .lv-tool-grid{gap:7px}
+ .lv-tool-grid .lv-btn{font-size:11px;line-height:1.3}
+ .lv-btn.tool .lv-art{width:28px;height:28px}
+}

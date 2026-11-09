@@ -126,7 +126,7 @@
       const entry=ensurePost(post),liked=entry.likedBy.includes(member),count=entry.baseLikes+entry.likedBy.length;
       const likeIcon='<svg class="community-social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v11H3V10zm0 1 5-8c2 0 3 2 2 5l-1 2h6a2 2 0 0 1 2 2l-2 7a3 3 0 0 1-3 2H7"/></svg>';
       const vi=document.documentElement.lang==='vi';
-      return `<div class="community-social-actions" data-social-ui="actions">${button('like',likeIcon+`<span class="community-social-action-label">${esc(t('like'))}</span><span class="community-social-count">${count}</span>`,post.id,` aria-pressed="${liked}" title="${esc(t(liked?'unlike':'like'))}"`)}${button('comments',icon('message-circle')+`<span class="community-social-action-label">${vi?'Bình luận':'Comment'}</span><span class="community-social-count">${commentCount(post)}</span>`,post.id,` aria-expanded="${opened.has(String(post.id))}"`)}${button('share-post',icon('share')+'<span class="community-social-action-label">'+(vi?'Chia sẻ':'Share')+'</span>',post.id,' aria-haspopup="dialog"'+(post.sharedPostId&&(!findPost(post.sharedPostId)||!audiencePermits(findPost(post.sharedPostId)))?' disabled':''))}</div>`;
+      return `<div class="community-social-actions" data-social-ui="actions">${button('like',likeIcon+`<span class="community-social-action-label">${esc(t('like'))}</span><span class="community-social-count">${count}</span>`,post.id,` aria-pressed="${liked}" title="${esc(t(liked?'unlike':'like'))}"`)}${button('reactions',String(count),post.id,' aria-label="'+(vi?'Ai đã thích bài này':'Who liked this post')+'"')}${button('comments',icon('message-circle')+`<span class="community-social-action-label">${vi?'Bình luận':'Comment'}</span><span class="community-social-count">${commentCount(post)}</span>`,post.id,` aria-expanded="${opened.has(String(post.id))}"`)}${button('share-post',icon('share')+'<span class="community-social-action-label">'+(vi?'Chia sẻ':'Share')+'</span>',post.id,' aria-haspopup="dialog"'+(post.sharedPostId&&(!findPost(post.sharedPostId)||!audiencePermits(findPost(post.sharedPostId)))?' disabled':''))}</div>`;
     }
     function menuMarkup(post) {
       const owner=own(post);
@@ -296,6 +296,7 @@
       if(action==='close'||action==='cancel'){closeDialog();return;}
       if(!post)return;
       const entry=ensurePost(post),comment=entry.comments.find(row=>row.id===commentId);
+      if(action==='reactions'){showDialog(document.documentElement.lang==='vi'?'Ai đã thích bài này':'Who liked this post',`<p>${entry.baseLikes+entry.likedBy.length} ${document.documentElement.lang==='vi'?'lượt thích':'likes'}</p>${entry.likedBy.map(name=>'<p><strong>'+esc(name)+'</strong> ♥</p>').join('')}${entry.baseLikes?'<p>'+entry.baseLikes+' '+(document.documentElement.lang==='vi'?'lượt thích mẫu':'sample likes')+'</p>':''}`);return;}
       if(action==='menu') {const menu=target.nextElementSibling,wasOpen=!menu.hidden;closeMenus();menu.hidden=wasOpen;target.setAttribute('aria-expanded',String(!wasOpen));if(!wasOpen)menu.querySelector('button')?.focus({preventScroll:true});return;}
       closeMenus();
       if(action==='pin-post'&&own(post)){post.pinned=!post.pinned;adapter.save?.();change(next=>{next.posts[postId].pinned=post.pinned;});adapter.render?.();return;}
@@ -349,7 +350,7 @@
       event.preventDefault();
       const postId=form.dataset.socialCommentForm||form.dataset.socialEditForm||form.dataset.socialReportForm,post=findPost(postId);if(!post)return;
       if(form.hasAttribute('data-social-comment-form')) {
-        const body=form.elements.comment.value.trim();const page=adapter.getPage?.(post.pageId);if(page?.poTools?.keywords?.some(word=>body.toLowerCase().includes(word.toLowerCase()))){tell('Comment contains a filtered keyword.');return;}if(page?.blockedFollowers?.includes(member))return;if(!member||!body||body.length>1000)return;
+        const body=form.elements.comment.value.trim();const personal=window.NEXORA_COMMUNITY_SHARED?.read().personalSettings?.[post.owner]||{};if(personal.blocked?.includes(member))return;if(personal.keywords?.some(word=>body.toLowerCase().includes(word.toLowerCase()))){tell(document.documentElement.lang==='vi'?'Bình luận chứa từ bị chặn.':'Comment contains a filtered keyword.');return;}const page=adapter.getPage?.(post.pageId);if(page?.poTools?.keywords?.some(word=>body.toLowerCase().includes(word.toLowerCase()))){tell('Comment contains a filtered keyword.');return;}if(page?.blockedFollowers?.includes(member))return;if(!member||!body||body.length>1000)return;
         const target=ensurePost(post).comments.find(row=>row.id===replyTargets.get(postId)),rootId=target?.parentId||target?.id||null;
         if(change(next=>{next.posts[postId].comments.push({id:id('comment'),owner:member,body,parentId:rootId,replyTo:target?.owner||'',createdAt:new Date().toISOString()});})){
           if(rootId)threads.add(threadKey(postId,rootId));else limits.set(postId,ensurePost(post).comments.filter(row=>!row.parentId).length);
@@ -407,7 +408,18 @@
         (!needle||normal([post.owner,post.title,postBody(post)].join(' ')).includes(needle)))
         .slice(0,30).map(post=>({id:post.id,owner:post.owner,title:post.title||'',body:postBody(post)}));
     }
-    mounted={isSaved:postId=>!!state.posts[String(postId)]?.savedBy?.includes(member),enhance,openPost,isVisible,findPosts,onDialogClosed,refreshOpenPost,reset,destroy};return mounted;
+    function insights(postId){
+      const rows=getFeed().filter(post=>post.kind!=='deal'&&audiencePermits(post)&&isVisible(post)&&(!postId||String(post.id)===String(postId)));
+      return rows.map(post=>{const entry=ensurePost(post);return {id:String(post.id),owner:post.owner,title:post.title||postBody(post),canManage:own(post)||(window.NEXORA_COMMUNITY_SHARED?.read().personalSettings?.[post.owner]?.moderators||[]).includes(member),likeCount:entry.baseLikes+entry.likedBy.length,baseLikes:entry.baseLikes,likedBy:[...entry.likedBy],comments:entry.comments.filter(row=>own(post)||!row.hidden).map(row=>({...row}))};});
+    }
+    function moderate(postId,commentId,action){
+      const post=findPost(postId);if(!post)return false;
+      const allowed=own(post)||(window.NEXORA_COMMUNITY_SHARED?.read().personalSettings?.[post.owner]?.moderators||[]).includes(member);if(!allowed)return false;
+      const comment=ensurePost(post).comments.find(row=>row.id===commentId);if(!comment||!['pin','hide','delete','block'].includes(action))return false;
+      if(action==='block'){if(!own(post))return false;window.NEXORA_COMMUNITY_SHARED.change(data=>{data.personalSettings||={};const settings=data.personalSettings[post.owner]||={};settings.blocked=[...new Set([...(settings.blocked||[]),comment.owner])];});}
+      const result=change(next=>{const entry=next.posts[String(postId)],row=entry.comments.find(item=>item.id===commentId);if(action==='delete')entry.comments=entry.comments.filter(item=>item.id!==commentId&&item.parentId!==commentId);else if(action==='pin')row.pinned=!row.pinned;else row.hidden=action==='block'?true:!row.hidden;});if(result)refresh();return result;
+    }
+    mounted={insights,moderate,isSaved:postId=>!!state.posts[String(postId)]?.savedBy?.includes(member),enhance,openPost,isVisible,findPosts,onDialogClosed,refreshOpenPost,reset,destroy};return mounted;
   }
-  window.NEXORA_COMMUNITY_FEED_SOCIAL={mount,enhance:root=>mounted?.enhance(root),openPost:(id,options)=>mounted?.openPost(id,options),isVisible:item=>mounted?.isVisible(item)??true,findPosts:(query,likedOnly)=>mounted?.findPosts(query,likedOnly)||[],onDialogClosed:()=>mounted?.onDialogClosed(),refreshOpenPost:()=>mounted?.refreshOpenPost(),reset:()=>mounted?.reset()};
+  window.NEXORA_COMMUNITY_FEED_SOCIAL={mount,insights:id=>mounted?.insights(id)||[],moderate:(...args)=>mounted?.moderate(...args)||false,enhance:root=>mounted?.enhance(root),openPost:(id,options)=>mounted?.openPost(id,options),isVisible:item=>mounted?.isVisible(item)??true,findPosts:(query,likedOnly)=>mounted?.findPosts(query,likedOnly)||[],onDialogClosed:()=>mounted?.onDialogClosed(),refreshOpenPost:()=>mounted?.refreshOpenPost(),reset:()=>mounted?.reset()};
 })();

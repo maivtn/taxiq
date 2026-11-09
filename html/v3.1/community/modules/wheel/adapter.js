@@ -26,6 +26,12 @@
     if(persist(walletChange,outcome))return true;
     restore(before);$('winModal').classList.add('hidden');renderAll();syncTourBtn();storageError();return false;
   }
+  const baseWallet=renderWallet;
+  renderWallet=function(){
+    baseWallet();document.getElementById('liveWheelRewards')?.remove();
+    const rows=(shared.read().wheelCampaignResults||[]).filter(row=>row.account===id&&row.prize.key!=='none');
+    if(rows.length){const area=document.createElement('section');area.id='liveWheelRewards';area.className='card';area.innerHTML='<h3>'+ (LANG==='vi'?'Quà từ buổi live':'Livestream rewards')+'</h3>'+rows.map(row=>'<div class="prizeitem"><div class="inf"><strong>'+escape(LANG==='vi'?row.prize.vi:row.prize.en)+'</strong><p>'+escape(row.prize.pageTitle||'')+'</p><small>'+ (LANG==='vi'?'Khóa theo số điện thoại':'Phone-locked')+' · ••••'+escape(row.phone.slice(-4))+'</small></div><span class="badge pending">'+(LANG==='vi'?'Chưa dùng':'Unused')+'</span></div>').join('');$('giftList').after(area);}
+  };
   let spinPending=false;
   const originalSpinInfo=renderSpinInfo;
   renderSpinInfo=function(){originalSpinInfo();for(const key of ['spinBtn','hubBtn','buySpinBtn']){$(key).disabled=S.spinning||spinPending;$(key).setAttribute('aria-busy',String(S.spinning||spinPending));}};
@@ -33,7 +39,7 @@
   renderBalances=function(){const wallet=shared.wallet();S.points=wallet.balance;S.communityPts=wallet.ledger.filter(row=>row.reason.startsWith('activity:')&&row.time.startsWith(new Date().toISOString().slice(0,10))).reduce((sum,row)=>sum+row.amount,0);originalBalances();};
   const quotas={g1000:[1,30],g500:[1,1],g250:[2,1],g100:[3,1],g50:[6,1],g25:[15,1]};
   function pool(){const now=Date.now(),history=shared.read().wheelResults||[];return SEGMENTS.filter(segment=>!quotas[segment.key]||history.filter(row=>row.key===segment.key&&(quotas[segment.key][1]===1?new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago'}).format(row.time)===new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago'}).format(now):now-row.time<quotas[segment.key][1]*86400000)).length<quotas[segment.key][0]);}
-  pickWeighted=function(){const available=pool(),total=available.reduce((sum,row)=>sum+row.p,0),random=crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;let cursor=random*total;for(const row of available){cursor-=row.p;if(cursor<0)return SEGMENTS.indexOf(row);}return SEGMENTS.length-1;};
+  pickWeighted=function(){const available=pool();return SEGMENTS.indexOf(available[shared.weightedIndex(available.map(row=>row.p))]);};
   renderOdds=function(){const available=pool(),total=available.reduce((sum,row)=>sum+row.p,0);$('odds-table').innerHTML='<tr><th>'+t('oddsPrize')+'</th><th>'+t('oddsPct')+'</th><th>'+t('oddsRatio')+'</th></tr>'+SEGMENTS.map(segment=>{const probability=available.includes(segment)?segment.p/total*100:0;return '<tr><td>'+(LANG==='vi'?segment.vi:segment.en)+'</td><td class="pct">'+probability.toFixed(2)+'%</td><td>'+(probability?'≈ 1 / '+Math.round(100/probability).toLocaleString('en-US'):'—')+'</td></tr>';}).join('');};
   spin=async function(){
     if(S.spinning||spinPending)return;

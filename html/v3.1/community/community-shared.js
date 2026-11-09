@@ -48,9 +48,30 @@
   }
   function connectedPeople(name=member){const data=read(),names=new Set(friendNames(name));for(const row of data.customerContacts||[])if(row.customer===name&&(row.savedContact===true||row.isCustomer===true))names.add(row.business);return [...names];}
   function customerContact(customer,business,field){if(!customer||!business||customer===business)return false;identity(customer);identity(business);return change(data=>{data.customerContacts||=[];let row=data.customerContacts.find(row=>row.customer===customer&&row.business===business);if(!row){row={customer,business};data.customerContacts.push(row);}row[field]=true;data.identities[business].kind='business';});}
+  // All wheel surfaces use this weighted draw primitive and the shared account ledger.
+  function weightedIndex(weights){
+    const total=weights.reduce((sum,n)=>sum+Number(n),0);
+    if(!weights.length||weights.some(n=>!Number.isFinite(Number(n))||Number(n)<0)||total<=0)throw Error('Invalid wheel probabilities');
+    let cursor=crypto.getRandomValues(new Uint32Array(1))[0]/4294967296*total;
+    for(let i=0;i<weights.length;i++){cursor-=Number(weights[i]);if(cursor<0)return i;}
+    return weights.length-1;
+  }
+  function drawCampaign(campaign,prizes,phone){
+    const normalized=String(phone||'').replace(/\D/g,'');
+    if(normalized.length<10||normalized.length>15||Math.abs(prizes.reduce((sum,p)=>sum+p.probability,0)-100)>0.00001)return false;
+    const account=identity(member);
+    return change(data=>{
+      data.wheelCampaignResults||=[];
+      const previous=data.wheelCampaignResults.find(row=>row.campaign===campaign&&(row.account===account.id||row.phone===normalized));
+      if(previous)return previous;
+      const prize=prizes[weightedIndex(prizes.map(row=>row.probability))];
+      const result={id:crypto.randomUUID(),campaign,account:account.id,name:account.displayName,phone:normalized,prize:copy(prize),time:Date.now(),status:prize.key==='none'?'none':'unused'};
+      data.wheelCampaignResults.push(result);return result;
+    });
+  }
   const me=()=>identity(member);
 
-  window.NEXORA_COMMUNITY_SHARED={KEY,DAY,read,change,copy,member,role,canAccessFeature,identity,me,friendNames,friendRemoved,connectedPeople,saveBusinessContact:(customer,business)=>customerContact(customer,business,'savedContact'),registerCustomer:(customer,business)=>customerContact(customer,business,'isCustomer'),wallet,points,activity,revoke,notify};
+  window.NEXORA_COMMUNITY_SHARED={KEY,DAY,read,change,copy,member,role,canAccessFeature,identity,me,friendNames,friendRemoved,connectedPeople,saveBusinessContact:(customer,business)=>customerContact(customer,business,'savedContact'),registerCustomer:(customer,business)=>customerContact(customer,business,'isCustomer'),wallet,points,activity,revoke,notify,weightedIndex,drawCampaign};
   window.addEventListener('storage',event=>{if(event.key===KEY)window.dispatchEvent(new CustomEvent('nexora-community-shared-changed'));});
   identity();
 })();
