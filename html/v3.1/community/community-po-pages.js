@@ -46,8 +46,9 @@
     tabResize?.disconnect();
     const key=page.id+':'+owner,wrap=document.createElement('div');wrap.className='po-page-tabs-nav';
     tabs.before(wrap);wrap.append(tabs);
-    const controls=[[-1,'Previous'],[1,'Next']].map(([direction,label])=>{const node=document.createElement('button');node.type='button';node.className='po-page-tab-scroll';node.setAttribute('aria-label',label);node.dataset.tabScroll=direction;node.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="'+(direction<0?'m15 6-6 6 6 6':'m9 6 6 6-6 6')+'"/></svg>';node.addEventListener('click',()=>tabs.scrollBy({left:direction*Math.max(120,tabs.clientWidth*.7),behavior:'smooth'}));direction<0?wrap.prepend(node):wrap.append(node);return node;});
-    const sync=()=>{const max=tabs.scrollWidth-tabs.clientWidth,position=Math.abs(tabs.scrollLeft),rtl=getComputedStyle(tabs).direction==='rtl';wrap.classList.toggle('has-overflow',max>1);controls[0].disabled=rtl?position>=max-1:position<=1;controls[1].disabled=rtl?position<=1:position>=max-1;tabScroll.set(key,tabs.scrollLeft);};
+    const rail=document.createElement('input');rail.type='range';rail.className='po-page-tab-scrollbar';rail.min='0';rail.step='1';rail.setAttribute('aria-label','Page tabs');wrap.append(rail);
+    rail.addEventListener('input',()=>{tabs.scrollLeft=Number(rail.value)*(getComputedStyle(tabs).direction==='rtl'?-1:1);});
+    const sync=()=>{const max=Math.max(0,tabs.scrollWidth-tabs.clientWidth),position=Math.abs(tabs.scrollLeft);rail.hidden=max<=1;rail.max=String(max);rail.value=String(position);rail.style.setProperty('--thumb-width',Math.max(28,rail.clientWidth*tabs.clientWidth/tabs.scrollWidth)+'px');rail.style.direction=getComputedStyle(tabs).direction;tabScroll.set(key,tabs.scrollLeft);};
     const position=tabScroll.get(key)||0;
     tabs.addEventListener('scroll',sync,{passive:true});
     requestAnimationFrame(()=>{if(!tabs.isConnected)return;sync();tabs.scrollLeft=position;const selected=tabs.querySelector('[aria-selected="true"]');if(selected){const a=tabs.getBoundingClientRect(),b=selected.getBoundingClientRect();if(b.left<a.left)tabs.scrollLeft+=b.left-a.left-4;else if(b.right>a.right)tabs.scrollLeft+=b.right-a.right+4;}sync();});
