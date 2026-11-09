@@ -46,7 +46,7 @@ test('Reloading demo coverage is idempotent and merging preserves edited and aut
 
 test('personal extra-shift samples cover upcoming bookings, deposit, review and completed history',()=>{
   const {data}=load(),shifts=new Map(data.extra.shifts.map(row=>[row.id,row]));
-  const assignments=data.shiftWorkflow.assignments.filter(row=>row.worker==='David Le');
+  const assignments=data.shiftWorkflow.assignments.filter(row=>row.worker==='nexora 2');
   for(const status of ['Confirmed','PendingApproval','AwaitingDepositProof','Completed'])assert.ok(assignments.some(row=>row.status===status),status);
   assert.equal(new Set(data.shiftWorkflow.assignments.map(row=>row.id)).size,data.shiftWorkflow.assignments.length);
   assert.equal(new Set(data.shiftWorkflow.settlements.map(row=>row.id)).size,data.shiftWorkflow.settlements.length);

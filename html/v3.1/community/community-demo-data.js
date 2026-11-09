@@ -430,15 +430,19 @@
     ['review','shift-bitcoin-reception-next','PendingApproval'],
     ['deposit','shift-bitcoin-pedicure-next','AwaitingDepositProof']
   ]){
-    const shift=shifts.find(row=>row.id===shiftId),worker='David Le',amount=Number(shift.pay),deposit=Math.round(amount*20)/100;
+    const shift=shifts.find(row=>row.id===shiftId),worker='nexora 2',amount=Number(shift.pay),deposit=Math.round(amount*20)/100;
     const dueAt=new Date(Date.now()+30*60000).toISOString();
-    const assignment={id:'shift-demo-personal-'+key,shiftId,owner:shift.owner,worker,status,payAmount:amount,depositAmount:deposit,isSample:true,createdAt:at(0,9),...(status==='Confirmed'?{confirmedAt:at(0,9,15)}:{}),...(status==='AwaitingDepositProof'?{depositProofDueAt:dueAt}:{}),workerZelle:{accountName:worker,accountInfo:'david@example.com'}};
+    const assignment={id:'shift-demo-personal-nexora2-'+key,shiftId,owner:shift.owner,worker,status,payAmount:amount,depositAmount:deposit,isSample:true,createdAt:at(0,9),...(status==='Confirmed'?{confirmedAt:at(0,9,15)}:{}),...(status==='AwaitingDepositProof'?{depositProofDueAt:dueAt}:{}),workerZelle:{accountName:worker,accountInfo:'nexora2@example.com'}};
     shiftWorkflow.assignments.push(assignment);
-    shiftWorkflow.settlements.push({id:'shift-demo-personal-deposit-'+key,assignmentId:assignment.id,shiftId,type:'Deposit',amount:deposit,breakdown:{deposit},status:status==='AwaitingDepositProof'?'AwaitingProof':'Received',payer:worker,payerRole:'staff',payee:shift.owner,payeeRole:'owner',payeeZelle:{accountName:shift.owner,accountInfo:'demo@example.com'},proofDueAt:dueAt,proofImageUrls:[],...(status==='AwaitingDepositProof'?{}:{receivedAt:at(0,9,10)}),createdAt:assignment.createdAt,isSample:true});
+    shiftWorkflow.settlements.push({id:'shift-demo-personal-nexora2-deposit-'+key,assignmentId:assignment.id,shiftId,type:'Deposit',amount:deposit,breakdown:{deposit},status:status==='AwaitingDepositProof'?'AwaitingProof':'Received',payer:worker,payerRole:'staff',payee:shift.owner,payeeRole:'owner',payeeZelle:{accountName:shift.owner,accountInfo:'demo@example.com'},proofDueAt:dueAt,proofImageUrls:[],...(status==='AwaitingDepositProof'?{}:{receivedAt:at(0,9,10)}),createdAt:assignment.createdAt,isSample:true});
   }
-  for(const [index,shiftId] of ['shift-bitcoin-past-gel','shift-bitcoin-past-pedicure'].entries()){
-    const shift=shifts.find(row=>row.id===shiftId),worker=index?'David Le':'Thảo Lê',amount=Number(shift.pay),deposit=Math.round(amount*20)/100;
-    const assignment={id:'shift-demo-completed-'+index,shiftId,owner:shift.owner,worker,status:'Completed',payAmount:amount,depositAmount:deposit,isSample:true,createdAt:at(6,10),confirmedAt:at(5,10),checkInAt:new Date(shift.date+'T09:00:00').toISOString(),checkInMethod:'BusinessConfirmed',closedAt:new Date(shift.date+'T17:00:00').toISOString(),workerZelle:{accountName:worker,accountInfo:index?'david@example.com':'thao@example.com'}};
+  for(const [index,[shiftId,worker,email]] of [
+    ['shift-bitcoin-past-gel','Thảo Lê','thao@example.com'],
+    ['shift-bitcoin-past-pedicure','David Le','david@example.com'],
+    ['shift-bitcoin-past-pedicure','nexora 2','nexora2@example.com']
+  ].entries()){
+    const shift=shifts.find(row=>row.id===shiftId),amount=Number(shift.pay),deposit=Math.round(amount*20)/100;
+    const assignment={id:'shift-demo-completed-'+index,shiftId,owner:shift.owner,worker,status:'Completed',payAmount:amount,depositAmount:deposit,isSample:true,createdAt:at(6,10),confirmedAt:at(5,10),checkInAt:new Date(shift.date+'T09:00:00').toISOString(),checkInMethod:'BusinessConfirmed',closedAt:new Date(shift.date+'T17:00:00').toISOString(),workerZelle:{accountName:worker,accountInfo:email}};
     shiftWorkflow.assignments.push(assignment);
     shiftWorkflow.settlements.push(
       {id:'shift-demo-deposit-'+index,assignmentId:assignment.id,shiftId,type:'Deposit',amount:deposit,breakdown:{deposit},status:'Received',payer:worker,payerRole:'staff',payee:shift.owner,payeeRole:'owner',payeeZelle:{accountName:shift.owner,accountInfo:'demo@example.com'},proofDueAt:at(5,12),proofImageUrls:[],receivedAt:at(5,10),createdAt:at(6,10),isSample:true},
