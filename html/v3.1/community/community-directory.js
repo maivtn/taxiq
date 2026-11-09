@@ -26,7 +26,7 @@
         const timeout=setTimeout(()=>{frame.removeEventListener('load',loaded);ready=null;reject(Error('Could not load friends.'));},15000);
         const loaded=()=>{const value=frame.contentWindow?.NEXORA_COMMUNITY_CONNECT;if(value){clearTimeout(timeout);frame.removeEventListener('load',loaded);resolve(value);}};
         frame.addEventListener('load',loaded);
-        if(!frame.hasAttribute('src')){const url=new URL(frame.dataset.src,baseURL);for(const key of ['member','role','account'])if(params.get(key))url.searchParams.set(key,params.get(key));frame.src=url.href;}
+        if(!frame.src){const url=new URL(frame.dataset.communityCode||'nexora-privacy-qr-layout.html',baseURL);url.searchParams.set('embedded','1');for(const key of ['member','role','account'])if(params.get(key))url.searchParams.set(key,params.get(key));frame.src=url.href;}
         loaded();
       });
       const value=await ready;seedDemo();return value;

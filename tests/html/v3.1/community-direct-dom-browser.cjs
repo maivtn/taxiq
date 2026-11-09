@@ -14,6 +14,7 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-direct-dom';
         await context.addInitScript(()=>{for(const key of ['nexora-community-tour-desktop-v1','nexora-community-tour-mobile-v1'])localStorage.setItem(key,'1');});
         const page=await context.newPage();page.setDefaultTimeout(15000);
         page.on('pageerror',e=>errors.push({width,account,error:e.message}));
+        page.on('request',request=>{if(request.resourceType()==='fetch'&&/\.html(?:\?|$)/.test(request.url()))errors.push({width,account,error:'Unexpected HTML embedding: '+request.url()});});
         page.on('console',message=>{if(message.type()==='error'&&/Community (pane|addition)|native shell/.test(message.text()))errors.push({width,account,error:message.text()});});
         const entry=base+'/html/v3.1/'+(account==='personal'?'staff-community.html':'community.html')+'?account='+account;
         const hub=page.locator('#community-staging,#community-hub'),feed=hub.locator('#communityPane');
@@ -22,6 +23,8 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-direct-dom';
         await check('Feed footer, three page links and reload',async()=>{
           await open('feed');await feed.locator('#communityPOPeople .people-card').first().waitFor();
           assert.equal(await feed.evaluate(el=>el.tagName),'SECTION');assert.equal(page.frames().length,1);
+          assert.equal(await feed.evaluate(el=>el.shadowRoot===null&&!el.hasAttribute('src')&&!el.hasAttribute('data-src')),true);
+          assert.equal(await page.evaluate(()=>!!document.querySelector('#communityPane #feedTitle')),true);
           const footer=feed.locator('#communityFeedFooter');await footer.scrollIntoViewIfNeeded();
           assert.equal(await footer.locator('.page-discovery-card').count(),3);await footer.screenshot({path:path.join(output,`${width}-${account}-footer.png`)});
           for(const id of ['sample-food','sample-cafe','sample-nail']){
@@ -37,6 +40,7 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-direct-dom';
           else if(['groups','market','pages','jobs','shift','blog','transfer'].includes(route))await feed.locator('#'+({shift:'daywork',transfer:'jobs'}[route]||route)+'View').waitFor();
           else await hub.locator('.community-extra-pane > section:visible').waitFor();
           assert.equal(page.frames().length,1);assert.equal(await hub.locator('iframe').count(),0);
+          assert.equal(await hub.locator('[data-community-region]').evaluateAll(nodes=>nodes.some(node=>node.shadowRoot)),false);
           assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
         });
         await check('Deals tabs and business modules',async()=>{

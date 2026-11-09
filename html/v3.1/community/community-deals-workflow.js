@@ -123,7 +123,7 @@
       if(!entry||location.protocol!=='file:'&&event.origin!==location.origin)return;
       const [name,record]=entry,data=event.data||{};
       if(data.type==='nexora-deals-ready'){record.ready=true;if(active&&ROUTES[selected].module===name)configure(record);}
-      if(data.type==='nexora-deals-height'&&Number.isFinite(data.height)&&!record.frame.hasAttribute('data-native-pane'))record.frame.style.height=Math.max(650,Math.min(30000,data.height+12))+'px';
+      if(data.type==='nexora-deals-height'&&Number.isFinite(data.height)&&record.frame.tagName==='IFRAME')record.frame.style.height=Math.max(650,Math.min(30000,data.height+12))+'px';
       if(data.type==='nexora-deals-page')adapter.openPage?.(data.pageId);
       if(data.type==='nexora-deals-modal'&&active&&!record.frame.hidden){viewport();adapter.onModal?.(Boolean(data.open));}
       if(data.type==='nexora-deals-route'&&active&&!record.frame.hidden){const found=Object.keys(ROUTES).find(key=>ROUTES[key].module===name&&ROUTES[key].view===data.view);if(found&&found!==selected){selected=found;updateNavigation();adapter.onState?.({dealTab:found});}}

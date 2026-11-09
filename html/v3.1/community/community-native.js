@@ -1,4 +1,4 @@
-/* Mount the existing PO documents as isolated DOM regions, without iframe navigation. */
+/* Initialize the copied Community markup in the current document. */
 (() => {
   'use strict';
   const browser = window;
@@ -22,36 +22,48 @@
       .replace(/@media\s*\(\s*(max|min)-width\s*:\s*(\d+)px\s*\)/g, '@container module ($1-width: $2px)')
       .replace(/__NEXORA_NATIVE_URL_(\d+)__/g, (all,index)=>urls[Number(index)]);
   }
+  function regionRoot(host) {
+    if(!host.dataset.communityRegion)host.dataset.communityRegion='region-'+crypto.randomUUID();
+    const selector='[data-community-region="'+host.dataset.communityRegion+'"]';
+    const owns=node=>node===host||node.closest('[data-community-region]')===host||node.parentElement?.closest('[data-community-region]')===host;
+    const scopeStyle=node=>{if(node.tagName==='STYLE'&&!node.dataset.communityScoped){node.textContent='@scope ('+selector+') to (:scope [data-community-region] > *) {\n'+node.textContent.replace(/:host\b/g,':scope')+'\n}';node.dataset.communityScoped='';}};
+    return {host,owns,scopeStyle,
+      get activeElement(){return host.contains(browser.document.activeElement)?browser.document.activeElement:null;},
+      querySelectorAll:selector=>[...host.querySelectorAll(selector)].filter(owns),
+      querySelector(selector){return this.querySelectorAll(selector)[0]||null;},
+      getElementById(id){return this.querySelector('#'+CSS.escape(id));},
+      append(...nodes){nodes.forEach(scopeStyle);host.append(...nodes);},
+      replaceChildren(...nodes){nodes.forEach(scopeStyle);host.replaceChildren(...nodes);},
+      addEventListener:(...args)=>host.addEventListener(...args)
+    };
+  }
   async function mount(host, source, options = {}) {
     if (host.communityModule) return host.communityModule;
     const url = new URL(source, browser.location.href);
-    const parsed = new DOMParser().parseFromString(await read(url.href), 'text/html');
-    // The outer page already owns Live Server reloads; injected dev scripts are not PO module code.
-    const scripts = [...parsed.querySelectorAll('script')].filter(node => (!node.type || /javascript|module/.test(node.type)) && !node.textContent.includes('Live reload enabled.'));
-    const styles = await Promise.all([...parsed.querySelectorAll('style,link[rel="stylesheet"]')].filter(node=>!node.href||!/^https:\/\/fonts\./.test(node.href)).map(async node => {
-      const base = node.tagName === 'STYLE' ? url : new URL(node.getAttribute('href'), url);
-      return css(node.tagName === 'STYLE' ? node.textContent : await read(base.href), base);
-    }));
+    const definition=browser.NEXORA_COMMUNITY_CODE?.[url.pathname];
+    if(!definition)throw new Error('Missing copied Community code: '+url.pathname);
+    const styles=definition.styles.map(item=>css(item.text,new URL(item.url,url)));
     // Apply the retained Community visual language after the PO's component styles.
     if (options.stylesheet) {
       const themeURL = new URL(options.stylesheet, url);
       styles.push(css(await read(themeURL.href), themeURL));
     }
-    const sources = await Promise.all(scripts.map(async node => {
-      const scriptURL = node.src ? new URL(node.getAttribute('src'), url) : url;
-      return {url: scriptURL.href, code: node.src ? await read(scriptURL.href) : node.textContent};
-    }));
-    parsed.querySelectorAll('script,style,link[rel="stylesheet"]').forEach(node => node.remove());
-    const root = host.shadowRoot || host.attachShadow({mode:'open'});
-    root.replaceChildren();
-    const html = document.createElement('div'), head = document.createElement('div'), body = document.createElement('div');
-    html.className = 'native-html'; html.lang = parsed.documentElement.lang || 'en';
-    head.className = 'native-head'; body.className = 'native-body ' + parsed.body.className;
-    for (const attribute of parsed.body.attributes) if (attribute.name !== 'class') body.setAttribute(attribute.name, attribute.value);
-    body.append(...parsed.body.childNodes); html.append(head, body);
+    const sources=definition.scripts.map(item=>({url:new URL(item.url,url).href,code:item.code}));
+    const root=regionRoot(host);
+    let html=host.querySelector(':scope > .native-html');
+    if(!html){
+      html=browser.document.createElement('div');html.className='native-html';
+      const head=browser.document.createElement('div'),body=browser.document.createElement('div');head.className='native-head';body.className='native-body';
+      const template=browser.document.querySelector('template[data-community-template="'+url.pathname+'"]');
+      if(!template)throw new Error('Missing copied Community markup: '+url.pathname);
+      body.append(template.content.cloneNode(true));html.append(head,body);host.append(html);
+    }
+    const head=html.querySelector(':scope > .native-head'),body=html.querySelector(':scope > .native-body');
+    html.lang=definition.lang;body.className='native-body '+(definition.attributes.class||'');
+    for(const [name,value]of Object.entries(definition.attributes))if(name!=='class')body.setAttribute(name,value);
     const style = document.createElement('style');
     style.textContent = styles.join('\n') + '\n:host{display:block;min-width:0;height:100%;overflow:hidden;overscroll-behavior:contain;container:module / inline-size;contain:layout style;isolation:isolate}[hidden]{display:none!important}.native-head{display:none}.native-html,.native-body{min-height:100%;margin:0;box-sizing:border-box}.native-html{height:100%}.native-body{height:100%;overflow-x:clip;overflow-y:auto}*,*::before,*::after{box-sizing:border-box}img,video{max-width:100%}dialog{max-width:calc(100% - 24px)}@container module (max-width:600px){input,select,textarea{font-size:16px!important}}';
-    root.append(style, html);
+    root.append(style);
     const events = new EventTarget(), variables = Object.create(null), regionID=crypto.randomUUID();
     const listeners = [], timers = new Set();
     let currentScript = null, facade;
@@ -80,20 +92,21 @@
       }
     }
     const rewrite = element => {
-      for (const node of [element, ...element.querySelectorAll?.('[src],[href],[poster]') || []]) {
+      for (const node of [element, ...element.querySelectorAll?.('[src],[href],[poster]') || []].filter(root.owns)) {
         for (const attribute of ['src','href','poster']) {
           const value = node.getAttribute?.(attribute);
           if (value && !/^(?:#|data:|blob:|javascript:|mailto:|tel:|sms:)/i.test(value)) node.setAttribute(attribute, new URL(value, url).href);
         }
       }
-      for(const node of [element,...element.querySelectorAll?.('[style]')||[]]){const value=node.getAttribute?.('style');if(value&&value.includes('url('))node.setAttribute('style',value.replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,quote,path)=>/^(?:data:|blob:|https?:|#)/.test(path)?all:'url("'+new URL(path,url).href+'")'));}
-      for(const node of [element,...element.querySelectorAll?.('[onclick],[onchange],[oninput],[onsubmit]')||[]])for(const attribute of ['onclick','onchange','oninput','onsubmit']){
+      for(const node of [element,...element.querySelectorAll?.('[style]')||[]].filter(root.owns)){const value=node.getAttribute?.('style');if(value&&value.includes('url('))node.setAttribute('style',value.replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,quote,path)=>/^(?:data:|blob:|https?:|#)/.test(path)?all:'url("'+new URL(path,url).href+'")'));}
+      for(const node of [element,...element.querySelectorAll?.('[onclick],[onchange],[oninput],[onsubmit]')||[]].filter(root.owns))for(const attribute of ['onclick','onchange','oninput','onsubmit']){
         const code=node.getAttribute?.(attribute);if(!code)continue;node.dataset.nativeAction=code;node.removeAttribute(attribute);node.addEventListener(attribute.slice(2),event=>{const result=scope.invoke?.(code,event,node);if(result===false){event.preventDefault();event.stopPropagation();}});
       }
     };
     rewrite(body);if(options.controls!==false)controls(body);
-    const observer = new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) if (node.nodeType === 1){rewrite(node);if(options.controls!==false)controls(node);} });
+    const observer = new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) if (node.nodeType === 1&&root.owns(node)){root.scopeStyle(node);rewrite(node);if(options.controls!==false)controls(node);} });
     observer.observe(body, {childList:true,subtree:true});
+    observer.observe(head, {childList:true,subtree:true});
     const doc = new Proxy(browser.document, {
       get(target, key) {
         if (key === 'body') return body;
@@ -112,9 +125,9 @@
         if (key === 'getElementsByTagName') return name => ['head','body','html'].includes(name.toLowerCase())?[{head,body,html}[name.toLowerCase()]]:root.querySelectorAll(name);
         if (key === 'addEventListener') return (type, callback, opts) => {
           if (type === 'DOMContentLoaded') { queueMicrotask(() => callback(new Event(type))); return; }
-          body.addEventListener(type, callback, opts);
+          const handler=event=>{if(root.owns(event.target))callback(event);};body.addEventListener(type,handler,opts);listeners.push([body,type,handler,opts,callback]);
         };
-        if (key === 'removeEventListener') return body.removeEventListener.bind(body);
+        if (key === 'removeEventListener') return (type,callback,opts)=>{for(const [target,name,handler,options,original]of listeners)if(target===body&&name===type&&original===callback)body.removeEventListener(name,handler,options);};
         if (key === 'dispatchEvent') return body.dispatchEvent.bind(body);
         if (key === 'createTreeWalker') return (node, ...args) => target.createTreeWalker(node === doc ? body : node, ...args);
         const value = Reflect.get(target, key, target);
@@ -160,7 +173,7 @@
   // Messages are local events; these sections never create a browsing context.
   function bind(host, options = {}) {
     const owner=options.owner||browser;
-    let task;
+    let task,source;
     const parent=new Proxy(owner, {get(target,key){
       if(key==='postMessage')return data=>queueMicrotask(()=>{
         const event=new Event('message');
@@ -172,22 +185,21 @@
     Object.defineProperties(host,{
       contentWindow:{get:()=>host.communityModule?.window},
       contentDocument:{get:()=>host.communityModule?.document},
-      src:{get:()=>host.getAttribute('src'),set(source){
+      src:{get:()=>source,set(value){
         if(task)return;
-        host.setAttribute('src',source);host.setAttribute('aria-busy','true');
+        source=value;host.setAttribute('aria-busy','true');
         task=mount(host,source,{parent,controls:false,navigate:options.navigate||((url)=>owner.location.assign(url))}).then(api=>{
           host.removeAttribute('aria-busy');host.dispatchEvent(new Event('load'));return api;
         }).catch(error=>{
-          task=null;host.removeAttribute('src');host.removeAttribute('aria-busy');
-          const target=host.shadowRoot||host;
+          task=null;host.removeAttribute('aria-busy');
+          const target=host;
           const message=browser.document.createElement('p');message.setAttribute('role','alert');message.textContent='Something went wrong. Please try again.';
           const retry=browser.document.createElement('button');retry.type='button';retry.textContent='Try again';retry.onclick=()=>{host.src=source;};
           target.replaceChildren(message,retry);host.dispatchEvent(new Event('error'));console.error('Community pane',source,error);
         });
       }}
     });
-    host.dataset.nativePane='';
     return host;
   }
-  browser.NEXORA_NATIVE = {mount,read,css,bind};
+  browser.NEXORA_NATIVE = {mount,read,css,bind,regionRoot};
 })();

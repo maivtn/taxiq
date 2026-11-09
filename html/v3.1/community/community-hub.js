@@ -1,8 +1,7 @@
-/* Native Community navigation; PO content documents remain isolated peers. */
+/* Navigation for the Community markup copied into the entry page. */
 (() => {
   'use strict';
   const BASE_URL=new URL('./',document.currentScript.src);
-  async function read(url){const response=await fetch(url);if(!response.ok)throw new Error('Unable to load Community: '+response.status+' '+url);return response.text();}
   function scopedCSS(css,url){
     return css.replace(/(?<![\w.-])body\.embedded/g,':host').replace(/:root\b|(?<![\w.-])(?:body|html)(?![\w-])/g,':host')
       .replace(/@media\s*\(\s*(max|min)-width\s*:\s*(\d+)px\s*\)/g,'@container community ($1-width: $2px)')
@@ -10,15 +9,10 @@
   }
   async function mount(host,options={}){
     if(host.communityHub)return host.communityHub;
-    const url=new URL('nexora-community-complete.html?v=20261109-direct-panes1',BASE_URL);
-    const parsed=new DOMParser().parseFromString(await read(url),'text/html');
-    const styles=await Promise.all([...parsed.head.querySelectorAll('style,link[rel="stylesheet"]')].map(async node=>{const source=node.tagName==='STYLE'?url:new URL(node.getAttribute('href'),url);return scopedCSS(node.tagName==='STYLE'?node.textContent:await read(source),source);}));
-    parsed.body.querySelectorAll('script').forEach(node=>node.remove());
-    parsed.body.querySelectorAll('[src],[href],[data-src]').forEach(node=>{for(const attribute of ['src','href','data-src']){const value=node.getAttribute(attribute);if(value&&!value.startsWith('#'))node.setAttribute(attribute,new URL(value,url).href);}});
-    const root=host.attachShadow({mode:'open'});
+    const root=window.NEXORA_NATIVE.regionRoot(host);
     const style=document.createElement('style');
-    style.textContent=styles.join('\n')+`\n:host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host .tour-card,:host .tour-card.menu-step{top:auto;}}`;
-    root.append(style,...parsed.body.childNodes);
+    style.textContent=scopedCSS(window.NEXORA_COMMUNITY_SHELL_CSS,BASE_URL)+`\n:host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host .tour-card,:host .tour-card.menu-step{top:auto;}}`;
+    root.append(style);
     let additions;
     const initialRoute=options.params?.get('tab')||'feed';
     const notify=data=>{
@@ -156,7 +150,7 @@
       window.addEventListener('resize',()=>{updateMobileHeading();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}});
 
       function syncPaneGutter(){const frame=view==='connect'?connect:community;const element=frame.contentDocument?.documentElement;if(element){const value=Math.max(0,frame.clientWidth-element.clientWidth)+'px';if(nativeApp.style.getPropertyValue('--community-scrollbar-width')!==value)nativeApp.style.setProperty('--community-scrollbar-width',value);}}
-      function ensurePane(frame){if(!frame.hasAttribute('src'))frame.src=(frame===community?communitySource:connectSource).href;requestAnimationFrame(syncPaneGutter);}
+      function ensurePane(frame){if(!frame.src)frame.src=(frame===community?communitySource:connectSource).href;requestAnimationFrame(syncPaneGutter);}
       function receiveHost(data){
         if(data?.type==='nexora-community-language'){
           language='en';localStorage.setItem('nexora-community-language',language);applyLanguage();updateDetailState();
@@ -173,14 +167,14 @@
       }
       for(const frame of [community,connect])frame.addEventListener('load',()=>{const element=frame.contentDocument?.documentElement;if(element&&window.ResizeObserver)new ResizeObserver(()=>requestAnimationFrame(syncPaneGutter)).observe(element);syncPaneGutter();});
       if(context.native&&window.ResizeObserver)new ResizeObserver(()=>requestAnimationFrame(()=>{updateMobileHeading();syncPaneGutter();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}})).observe(root.host);
-      const communitySource=new URL(community.dataset.src,BASE_URL);
+      const communitySource=new URL(community.dataset.communityCode||'nexora-community-prototype.html',BASE_URL);communitySource.searchParams.set('embedded','1');
       for(const key of ['dealTab','member','role','account','post','postId','comment','commentId','thread','threadId','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId','pageId','pageMode','pageTab','pageScope'])if(params.get(key))communitySource.searchParams.set(key,params.get(key));
-      const connectSource=new URL(connect.dataset.src,BASE_URL);
+      const connectSource=new URL(connect.dataset.communityCode||'nexora-privacy-qr-layout.html',BASE_URL);connectSource.searchParams.set('embedded','1');
       connectSource.searchParams.set('section',connectSection);for(const key of ['member','role','account'])if(params.get(key))connectSource.searchParams.set(key,params.get(key));
       ensurePane(view==='connect'?connect:community);
       applyLanguage();notifyRequest();setView(view,false);notifyHost({type:'nexora-community-ready'});if(!context.suppressAutoTour&&!localStorage.getItem(tourSeenKey()))setTimeout(()=>{if(!context.extraActive?.()&&!tourState.active&&!communityModalOpen)startTour();},800);
       return {restoreFeed:()=>setView('feed',false),navigate:(route,routeContext)=>receiveHost({type:'nexora-community-navigate',route,context:routeContext}),setLanguage:language=>receiveHost({type:'nexora-community-language',language}),closeDetail:()=>receiveHost({type:'nexora-community-close-detail'})};
   }
   window.NEXORA_COMMUNITY_HUB={mount,start};
-  if(document.getElementById('communityPane')&&document.getElementById('connectPane'))start(document);
+  if(!document.querySelector('#community-staging,#community-hub')&&document.getElementById('communityPane')&&document.getElementById('connectPane'))start(document);
 })();
