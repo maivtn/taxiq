@@ -1,6 +1,7 @@
 /* Render the PO Story and People components inside the retained Community Feed. */
 (() => {
   'use strict';
+  const shortcutAssets=new URL('../../assets/icon-oneqr/',document.currentScript.src);
   const route=(name,context={})=>parent.postMessage({type:'nexora-community-route',route:name,context},location.origin);
   let timer,revision=0,disposed=false;
   function slots(){
@@ -9,8 +10,8 @@
     let shortcuts=document.getElementById('communityPOShortcuts');
     if(!shortcuts){
       shortcuts=document.createElement('nav');shortcuts.id='communityPOShortcuts';shortcuts.className='community-po-shortcuts';shortcuts.setAttribute('aria-label','Community features');
-      const items=[['shop','🏬','My storefront','Manage your storefront'],['transfer','🔑','Salon transfers','Buy or sell a salon'],['realestate','🏘️','Real Estate','Property listings'],['food','🍜','Food & Restaurants','Food · deals · fanpages']];
-      for(const [name,icon,title,description] of items){const button=document.createElement('button');button.type='button';button.dataset.communityShortcut=name;button.className='community-po-shortcut'+(name==='food'?' community-po-shortcut-food':'');button.innerHTML='<span class="community-po-shortcut-icon" aria-hidden="true">'+(name==='food'?'':icon)+'</span><span class="community-po-shortcut-copy"><strong>'+title+'</strong><small>'+description+'</small></span><span class="community-po-shortcut-arrow" aria-hidden="true">→</span>'+(name==='food'?'<span class="community-po-shortcut-badge">FEATURED</span>':'');shortcuts.append(button);}
+      const items=[['shop','store','My storefront','Manage your storefront'],['transfer','hand-coins','Salon transfers','Buy or sell a salon'],['realestate','home','Real Estate','Property listings'],['food','utensils','Food & Restaurants','Food · deals · fanpages']];
+      for(const [name,icon,title,description] of items){const button=document.createElement('button');button.type='button';button.dataset.communityShortcut=name;button.className='community-po-shortcut'+(name==='food'?' community-po-shortcut-food':'');button.innerHTML='<span class="community-po-shortcut-icon" aria-hidden="true"><img src="'+new URL('issue-2040-oneqr-'+icon+'-3d.png',shortcutAssets).href+'" width="30" height="30" alt="" draggable="false"></span><span class="community-po-shortcut-copy"><strong>'+title+'</strong><small>'+description+'</small></span><span class="community-po-shortcut-arrow" aria-hidden="true">→</span>'+(name==='food'?'<span class="community-po-shortcut-badge">FEATURED</span>':'');shortcuts.append(button);}
       composer.before(shortcuts);
     }
     let stories=document.getElementById('communityPOStories'),people=document.getElementById('communityPOPeople');
