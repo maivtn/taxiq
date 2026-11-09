@@ -1,0 +1,106 @@
+/* FP-01 / FP-02: retain the PO's Page hierarchy and existing actions on phones.
+   Loaded by both entry pages outside the generated Community bundle. */
+@media (max-width:800px) {
+  #communityPane .native-body.community-page-screen .content {
+    padding:12px 0 20px;
+  }
+  #communityPane #communityPageScreen .po-page-supplement {
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+  }
+  #communityPane #communityPageScreen .page-profile-head {
+    padding-inline:14px;
+  }
+  #communityPane #communityPageScreen .page-avatar-shell {
+    display:inline-flex;
+    width:64px;
+    height:64px;
+    vertical-align:top;
+  }
+  #communityPane #communityPageScreen .page-avatar-edit {
+    right:-16px;
+    bottom:-4px;
+    width:44px;
+    height:44px;
+  }
+  #communityPane #communityPageScreen .page-profile-title {
+    margin-top:10px;
+    overflow-wrap:anywhere;
+  }
+  #communityPane #communityPageScreen .page-profile-title .meta {
+    font-size:12px;
+    line-height:1.5;
+  }
+  #communityPane #communityPageScreen .po-page-rating {
+    line-height:1.5;
+  }
+  #communityPane #communityPageScreen .community-photo-actions.is-cover {
+    top:8px;
+    right:8px;
+    bottom:auto;
+    gap:6px;
+  }
+  #communityPane #communityPageScreen .community-photo-actions.is-cover .btn {
+    min-height:44px;
+    padding:8px;
+  }
+  #communityPane #communityPageScreen .page-hero-actions {
+    gap:8px;
+    padding-inline:14px;
+    margin-top:12px;
+  }
+  #communityPane #communityPageScreen .po-page-owner .page-hero-actions {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  #communityPane #communityPageScreen .page-hero-actions .btn {
+    min-height:44px;
+    padding:10px 8px;
+    font-size:13px;
+    line-height:1.4;
+    overflow-wrap:anywhere;
+  }
+  #communityPane #communityPageScreen .po-social-links {
+    padding-inline:14px;
+    scroll-padding-inline:14px;
+  }
+  #communityPane #communityPageScreen .po-social-links :is(.btn,.po-social-chip) {
+    display:inline-flex;
+    align-items:center;
+    min-height:44px;
+    font-size:12px;
+  }
+  #communityPane #communityPageScreen .page-detail-tabs {
+    margin:12px 14px 0;
+    padding:4px;
+    gap:3px;
+    border-radius:13px;
+    scroll-padding-inline:4px;
+  }
+  #communityPane #communityPageScreen .page-detail-tabs button {
+    min-height:44px;
+    padding:10px;
+    line-height:1.4;
+  }
+  #communityPane #communityPageScreen .page-tab-content {
+    min-width:0;
+    padding:12px 14px 20px;
+    gap:12px;
+  }
+  #communityPane #communityPageScreen .page-photo-grid {
+    min-width:0;
+    gap:6px;
+    margin-top:0;
+  }
+  #communityPane #communityPageScreen .page-post-grid {
+    min-width:0;
+    margin-top:0;
+  }
+  #communityPane #communityPageScreen .page-post-grid > .page-detail-post {
+    padding:14px;
+  }
+  #communityPane #communityPageScreen .po-page-card {
+    padding:14px 15px;
+  }
+}

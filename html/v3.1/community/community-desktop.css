@@ -1,3 +1,5 @@
+@import url("community-pages-mobile.css?v=20261109-page-mobile1");
+
 /* Keep the existing location dialog in its owning pane while another screen is active. */
 :is(#community-staging,#community-hub) #communityPane.community-location-overlay {
   display:block!important;
