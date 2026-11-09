@@ -43,15 +43,14 @@ const output=process.env.COMMUNITY_TEST_EVIDENCE||'/tmp/community-direct-dom';
           assert.equal(await hub.locator('[data-community-region]').evaluateAll(nodes=>nodes.some(node=>node.shadowRoot)),false);
           assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
         });
-        await check('Deals tabs and business modules',async()=>{
-          await open('deals');
-          await feed.locator('[data-deal-route="nearby"]').waitFor();
-          for(const route of ['nearby','match','opening','wallet',...(account==='business'?['campaign','redeem']:[])]){
-            const button=feed.locator('[data-deal-route="'+route+'"]');
-            if(!(await button.isVisible()))await feed.locator('.community-deals-business summary').click();
-            await button.click();await feed.locator('.community-deals-frame:visible .native-body').waitFor();
-            assert.equal(page.frames().length,1);assert.equal(await feed.locator('iframe').count(),0);
-          }
+        await check('Deals filters save and reload',async()=>{
+          await open('deals');const deals=hub.locator('.community-extra-pane');
+          await deals.locator('.deal-hero').waitFor();assert.equal(await deals.locator('.deal-card').count(),3);
+          await deals.locator('[data-deal-save="deal-nail"]').click();await deals.locator('[data-deal-filter="saved"]').click();assert.equal(await deals.locator('.deal-card').count(),1);
+          await page.reload();await deals.locator('.deal-hero').waitFor();await deals.locator('[data-deal-filter="saved"]').click();assert.equal(await deals.locator('.deal-card').count(),1);
+          await deals.locator('[data-deal-save="deal-nail"]').click();assert.equal(await deals.locator('.deal-card').count(),0);
+          await deals.locator('[data-deal-filter="food"]').click();assert.equal(await deals.locator('.deal-card').count(),1);
+          assert.equal(page.frames().length,1);
         });
         await check('Footer Live News and Food, Back to Feed',async()=>{
           for(const route of ['live','news','food']){
