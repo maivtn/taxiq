@@ -9,7 +9,7 @@
     const workspace=root.querySelector('.workspace'),frames=[root.getElementById('communityPane'),root.getElementById('connectPane')];
     const baseURL=options.baseURL,params=options.params||new URLSearchParams(location.search),modules=new Map();
     window.NEXORA_COMMUNITY_PEOPLE=window.NEXORA_COMMUNITY_DIRECTORY.create(frames[1],baseURL,params);
-    let current='',routeContext={},internal=false,generation=0;
+    let current='',routeContext={},internal=false,generation=0,composerSession=null,composerRequest=0;
     const notify=data=>options.notify?.(data);
     const styles=document.createElement('style');
     styles.textContent='.community-extra-pane{--hub-bg:#f7f9fc;--hub-surface:#fff;--hub-text:#0b1220;--hub-muted:#64748b;--hub-border:#dde5ef;--hub-brand:#4648d8;position:relative;min-width:0;width:100%;height:100%;overflow:auto;color:var(--hub-text)}.community-extra-pane.community-tools-aligned{max-width:1200px;margin-inline:auto}.community-extra-platform{max-width:1140px;margin:auto;padding:24px}.community-extra-pane>section{min-height:100%}.community-extra-pane>[hidden]{display:none!important}.community-route-loading{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:12px;background:#f7f9fc;color:#43516b;font-size:15px;font-weight:700}.community-route-loading::before{content:"";width:24px;height:24px;border:3px solid #ddd9fa;border-top-color:#6552e7;border-radius:50%;animation:community-loading-spin .8s linear infinite}@keyframes community-loading-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.community-route-loading::before{animation:none}}.ecosystem-menu{max-height:min(640px,70vh);overflow-y:auto}.ecosystem-menu [data-community-extra]{display:flex;min-height:44px;align-items:center;gap:10px}.ecosystem-menu [data-community-extra] svg{flex:none;width:20px;height:20px}.community-extra-error{padding:24px;text-align:center}@container community (max-width:800px){.community-extra-platform{padding:16px}}';
@@ -35,6 +35,8 @@
     root.querySelector('.community-heading').prepend(back);
     styles.textContent+=' .community-back-to-feed{display:inline-flex;align-items:center;justify-content:center;flex:none;min-height:44px;padding:9px 13px;border:1px solid #dedcf1;border-radius:9px;background:#fff;color:#5548c8;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.community-back-to-feed[hidden]{display:none!important}.community-back-to-feed:hover{background:#efedff}.community-back-to-feed:focus-visible{outline:3px solid #a99fff;outline-offset:2px}@container community (max-width:650px){.community-back-to-feed{font-size:12px;padding:8px 10px}}';
     styles.textContent+=' .app.community-extra-open .top{position:relative;flex:0 0 auto;z-index:10}.app.community-extra-open .workspace{flex:1 1 0%;min-height:0;overflow:hidden}.app.community-extra-open .community-back{display:none!important}.community-extra-pane.community-document-pane{overflow:hidden}.community-document-pane>section{height:100%;min-height:0;overflow:hidden}.community-document-pane iframe{display:block;width:100%;height:100%;border:0}';
+    // Keep Feed visible while the PO dialog renders in the browser's top layer.
+    styles.textContent+=' .community-extra-pane.community-composer-overlay{position:absolute;inset:0 0 auto;height:0;min-height:0;overflow:hidden}.community-composer-overlay>section{height:0;min-height:0}';
     new MutationObserver(()=>{if(current&&heading.textContent!==LABELS[current])heading.textContent=LABELS[current];}).observe(heading,{childList:true});
     const more=document.createElement('button');more.type='button';more.className='community-version-more';more.textContent='More';more.setAttribute('aria-expanded','false');
     more.addEventListener('click',()=>{root.getElementById('ecosystemButton').click();more.setAttribute('aria-expanded',String(!menu.hidden));if(!menu.hidden)menu.querySelector('button')?.focus();});
@@ -49,6 +51,7 @@
       button.append(document.createTextNode(label));menu.insertBefore(button,root.getElementById('menuStartTour'));
     }
     function deactivate(){
+      closeComposer();
       generation++;
       if(!current&&pane.hidden)return;
       for(const task of modules.values())task.then(api=>api.window.NEXORA_COMMUNITY_MODULE?.deactivate?.());
@@ -93,6 +96,37 @@
       api.window.NEXORA_COMMUNITY_MODULE.setLanguage('en');return api.window.NEXORA_COMMUNITY_MODULE.feedPreview();
     },request:id=>window.NEXORA_COMMUNITY_PEOPLE.request(id)};
     function refreshFeed(){frames[0].contentWindow?.dispatchEvent(new Event('nexora-po-feed-refresh'));}
+    function closeComposer(){
+      composerRequest++;
+      const session=composerSession;
+      if(!session)return;
+      composerSession=null;
+      session.dialog.removeEventListener('close',session.cleanup);
+      if(session.dialog.open)session.dialog.close();
+      session.api.root.host.hidden=true;
+      pane.classList.remove('community-composer-overlay');pane.hidden=true;
+      refreshFeed();notify({type:'nexora-community-detail',open:false});
+    }
+    async function openFeedComposer(context){
+      if(composerSession)return;
+      const request=++composerRequest;
+      try{
+        const api=await ensure('tools','modules/hub-tools/index.html');
+        if(request!==composerRequest||current)return;
+        const dialog=api.root.querySelector('#editor');
+        const session={api,dialog,cleanup:()=>{if(composerSession===session)closeComposer();}};
+        composerSession=session;dialog.addEventListener('close',session.cleanup,{once:true});
+        for(const element of pane.children)element.hidden=true;
+        pane.classList.add('community-composer-overlay');pane.hidden=false;api.root.host.hidden=false;
+        api.window.NEXORA_COMMUNITY_MODULE.setLanguage('en');
+        await api.window.NEXORA_COMMUNITY_MODULE.navigate('post',context);
+        if(request===composerRequest)notify({type:'nexora-community-detail',open:true});
+      }catch(error){
+        if(request!==composerRequest)return;
+        closeComposer();console.error('Community photo composer',error);
+        navigate('post',{...context,modal:'0'});
+      }
+    }
     window.addEventListener('nexora-community-shared-changed',refreshFeed);
     function contact(data){
       navigate(data.type==='nexora-open-community-group'?'chatgroups':'connect');
@@ -109,6 +143,8 @@
       if(data&&typeof data==='object')notify(data);
     }
     async function navigate(route,context={},fromHost=false){
+      if(route==='post'&&context.modal==='1'&&!current)return openFeedComposer(context);
+      closeComposer();
       const request=++generation;
       if(!supports(route)){
         deactivate();if(route==='feed')original.restoreFeed();else original.navigate(route,context);
@@ -173,8 +209,8 @@
       if(event.data?.type==='nexora-community-route'&&supports(event.data.route))navigate(event.data.route,event.data.context);
     });
     const initial=params.get('tab')||'feed';
-    const api={navigate:(route,context)=>navigate(route,context,true),setLanguage:()=>original.setLanguage('en'),receiveBase,isActive:()=>Boolean(current),
-      closeDetail(){if(!current){original.closeDetail();return;}for(const task of modules.values())task.then(api=>api.root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close()));notify({type:'nexora-community-detail',open:false});}};
+    const api={navigate:(route,context)=>navigate(route,context,true),setLanguage:()=>original.setLanguage('en'),receiveBase,isActive:()=>Boolean(current||composerSession),
+      closeDetail(){if(composerSession){closeComposer();return;}if(!current){original.closeDetail();return;}for(const task of modules.values())task.then(api=>api.root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close()));notify({type:'nexora-community-detail',open:false});}};
     api.ready=supports(initial)?navigate(initial,Object.fromEntries(params),true):Promise.resolve();
     return api;
   }

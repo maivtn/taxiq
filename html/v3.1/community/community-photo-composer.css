@@ -1,0 +1,93 @@
+/* PO composer, using the retained Community typography, controls and artwork. */
+#editor.social-dialog.community-photo-composer{
+  width:min(600px,calc(100vw - 32px));max-width:calc(100vw - 32px);height:auto;
+  max-height:calc(100dvh - 48px);margin:auto;padding:0;overflow:hidden;
+  border:1px solid var(--line,#e6e8f0);border-radius:18px;background:#fff;color:var(--ink,#20243a);
+  box-shadow:0 24px 80px #18234a40;
+}
+#editor.community-photo-composer::backdrop{background:#17213b80;backdrop-filter:blur(3px)}
+#editor.community-photo-composer #dialog-content{display:flex;flex-direction:column;max-height:calc(100dvh - 48px)}
+#editor.community-photo-composer .social-dialog-head{
+  display:grid;grid-template-columns:40px minmax(0,1fr) 40px;gap:12px;flex:none;
+  min-height:72px;padding:16px 24px;border-bottom:1px solid var(--line,#e6e8f0);background:#fff;
+}
+#editor.community-photo-composer .social-dialog-head h2{margin:0;color:var(--ink,#20243a);font-size:20px;font-weight:750;letter-spacing:-.02em;text-align:center}
+#editor.community-photo-composer .social-header-spacer{width:40px;height:40px}
+#editor.community-photo-composer .social-close{width:40px;height:40px;border:1px solid var(--line,#e6e8f0);border-radius:50%;background:#f7f8fc;color:#697186;transition:background .16s,color .16s}
+#editor.community-photo-composer .social-close:hover{background:#efedff;color:#5548c8}
+#editor.community-photo-composer .social-feed-form{min-height:0;max-height:calc(100dvh - 120px);height:auto;overflow:hidden}
+#editor.community-photo-composer .social-compose-main{display:flex;flex-direction:column;gap:18px;min-height:0;padding:24px;overflow-y:auto;overscroll-behavior:contain}
+#editor.community-photo-composer .social-identity{gap:12px;align-items:center}
+#editor.community-photo-composer .compose-avatar{width:46px;height:46px;flex:none;font-size:16px;box-shadow:0 0 0 4px #f2f0ff}
+#editor.community-photo-composer .social-identity strong{font-size:14px;font-weight:750;color:var(--ink,#20243a)}
+#editor.community-photo-composer .social-audience{margin-top:2px;font-size:12px;color:#737a8d}
+#editor.community-photo-composer .social-identity-pills{margin-top:8px}
+#editor.community-photo-composer .social-visibility-button{min-height:32px;padding:6px 10px;border:1px solid #e6e8f0;border-radius:8px;background:#f3f5fa;font-size:11px;font-weight:650}
+#editor.community-photo-composer .social-visibility-button .visibility-icon{background:none;padding:0;font-size:13px}
+#editor.community-photo-composer .social-visibility-button .visibility-name{background:none;padding:0;font-size:11px}
+#editor.community-photo-composer .social-visibility-menu{top:38px;padding:10px;border-color:#e6e8f0;border-radius:12px;box-shadow:0 12px 36px #18234a20}
+#editor.community-photo-composer .social-visibility-menu button{display:grid!important;grid-template-columns:34px minmax(0,1fr) 18px;justify-content:initial!important;gap:8px!important}
+#editor.community-photo-composer .social-post-as{margin:0;color:#697186;font-size:12px}
+#editor.community-photo-composer .social-post-as select{min-height:44px;border:1px solid #dfe3ed;border-radius:9px}
+#editor.community-photo-composer .social-feed-form textarea{
+  display:block;width:100%;height:180px;min-height:160px;max-height:38dvh;margin:0;padding:16px;
+  border:1px solid #e6e8f0;border-radius:12px;background:#fafbfe;color:var(--ink,#20243a);
+  font:inherit;font-size:16px;line-height:1.6;resize:vertical;transition:border-color .16s,box-shadow .16s;
+}
+#editor.community-photo-composer .social-feed-form textarea::placeholder{color:#9097a8}
+#editor.community-photo-composer .social-feed-form textarea:focus{border-color:#b4a9f1;outline:none;box-shadow:0 0 0 3px #efedff;background:#fff}
+#editor.community-photo-composer .social-compose-footer{position:static;flex:none;padding:0 24px 24px;border:0;background:#fff}
+#editor.community-photo-composer [data-photo-composer-feedback]{margin:0 0 12px;padding:10px 12px;border:1px solid #e2ddff;border-radius:9px;background:#f4f2ff;color:#5548c8;font-size:12px;line-height:1.5;text-align:left}
+#editor.community-photo-composer .social-add-row{padding:15px;border:1px solid #e6e8f0;border-radius:12px;background:#fff}
+#editor.community-photo-composer .social-add-row strong{margin:0 0 12px;color:var(--ink,#20243a);font-size:12px;font-weight:750}
+#editor.community-photo-composer .social-add-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#editor.social-dialog.community-photo-composer .social-add-row .social-labeled-action{
+  display:flex;flex-direction:column;gap:7px!important;height:74px;min-width:0;padding:10px 6px;
+  border-radius:10px;font-size:12px;font-weight:700;white-space:normal;text-align:center;
+  transition:background .16s,border-color .16s,box-shadow .16s;
+}
+#editor.community-photo-composer .social-labeled-action:hover{box-shadow:0 3px 10px #25315b0e;filter:brightness(.98)}
+#editor.community-photo-composer .social-labeled-action:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
+#editor.community-photo-composer .social-action-symbol{display:grid;place-items:center;width:28px;height:28px;padding:0}
+#editor.community-photo-composer .social-action-symbol img{display:block;width:28px;height:28px;object-fit:contain}
+#editor.community-photo-composer .social-action-symbol svg{display:block;width:24px;height:24px}
+#editor.community-photo-composer .social-add-row small{margin-top:12px;color:#737a8d;font-size:11px;line-height:1.55}
+#editor.community-photo-composer .social-compose-footer>p{margin:12px 0 0;color:#8a91a2;font-size:11px;line-height:1.5;text-align:center}
+#editor.community-photo-composer .social-post-bottom{
+  display:flex;width:100%;min-height:46px;margin:16px 0 0;padding:12px 16px;
+  border:0;border-radius:10px;background:linear-gradient(110deg,#4d5df1,#8252e9);
+  color:#fff;font-size:14px;font-weight:750;line-height:1.4;box-shadow:0 4px 12px #6254d71a;
+}
+#editor.community-photo-composer .social-post-bottom:hover{background:linear-gradient(110deg,#4655dd,#7546d8)}
+#editor.community-photo-composer .social-preview{margin:0;padding:12px;border:1px solid #e6e8f0;border-radius:12px;background:#fafbfe}
+#editor.community-photo-composer .social-preview-count{padding:0 0 10px;color:#697186;font-size:11px}
+#editor.community-photo-composer .social-preview-grid{gap:8px}
+#editor.community-photo-composer .social-preview-item{border-radius:9px;overflow:hidden}
+#editor.community-photo-composer .social-more-sheet{position:absolute;inset:0;background:#fff}
+#editor.community-photo-composer .social-more-panel{max-width:none;margin:0}
+#editor.community-photo-composer .social-more-head{min-height:72px;padding:16px 24px;border-color:#e6e8f0}
+#editor.community-photo-composer .social-more-head h3{font-size:18px;font-weight:750;color:var(--ink,#20243a)}
+#editor.community-photo-composer .social-more-grid{gap:10px;padding:20px 24px}
+#editor.community-photo-composer .social-more-grid button{justify-content:flex-start!important;min-height:60px;gap:12px!important;padding:12px;border:1px solid #e6e8f0;border-radius:10px;background:#fafbfe;color:#44516a;font-size:12px;font-weight:650}
+#editor.community-photo-composer .social-more-grid button:hover{background:#efedff;border-color:#dcd6ff;color:#5548c8}
+#editor.community-photo-composer .social-more-grid button>span{display:grid;place-items:center;flex:none;width:28px;height:28px;color:#6254d7}
+#editor.community-photo-composer .social-more-grid button svg{width:22px;height:22px}
+#editor.community-photo-composer .social-more-divider{margin:6px 0 0;padding:16px 0 4px;border-color:#e6e8f0;font-size:11px;font-weight:700}
+@media(max-width:650px){
+  #editor.social-dialog.community-photo-composer{inset:0;width:100%;max-width:100%;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0}
+  #editor.community-photo-composer #dialog-content{height:100%;max-height:100dvh}
+  #editor.community-photo-composer .social-dialog-head{min-height:64px;grid-template-columns:36px minmax(0,1fr) 36px;padding:12px 16px}
+  #editor.community-photo-composer .social-dialog-head h2{font-size:18px}
+  #editor.community-photo-composer .social-header-spacer,#editor.community-photo-composer .social-close{width:36px;height:36px}
+  #editor.community-photo-composer .social-feed-form{flex:1;max-height:none;min-height:0}
+  #editor.community-photo-composer .social-compose-main{gap:16px;padding:20px 16px 16px}
+  #editor.community-photo-composer .social-feed-form textarea{flex:1;min-height:140px;max-height:none;padding:14px;font-size:16px}
+  #editor.community-photo-composer .social-compose-footer{padding:0 16px calc(16px + env(safe-area-inset-bottom))}
+  #editor.community-photo-composer .social-add-row{padding:12px}
+  #editor.community-photo-composer .social-add-actions{gap:8px}
+  #editor.social-dialog.community-photo-composer .social-add-row .social-labeled-action{height:68px;padding:8px 4px;font-size:11px}
+  #editor.community-photo-composer .social-add-row small{font-size:10px}
+  #editor.community-photo-composer .social-more-head{min-height:64px;padding:12px 16px}
+  #editor.community-photo-composer .social-more-grid{gap:8px;padding:16px}
+}
+@media(prefers-reduced-motion:reduce){#editor.community-photo-composer *{transition:none}}
