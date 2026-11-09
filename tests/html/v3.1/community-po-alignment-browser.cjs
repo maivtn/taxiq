@@ -31,6 +31,7 @@ const results=[],errors=[];
      }else if(route==='connect')await hub.locator('#connectPane .native-body').waitFor();
      else await hub.locator('#communityPane #'+(route==='deals'?'communityDealsView':route+'View')).waitFor();
      if(['groups','pages'].includes(route))assert.equal(await hub.locator('#'+route+'View>.feature-intro').isVisible(),true,'PO introduction visible');
+     if(route==='pages')assert.equal(await hub.locator('#pageCards').evaluate(node=>getComputedStyle(node).flexDirection),'row','Fanpages scroll horizontally');
      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'No page overflow');
      assert.equal(await hub.locator('[data-community-region]').evaluateAll(nodes=>nodes.some(node=>node.shadowRoot)),false);
      if(!['food','realestate'].includes(route))assert.equal(page.frames().length,1);
@@ -47,6 +48,12 @@ const results=[],errors=[];
      await form.locator('[type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      await pane.locator('.store-tool-grid [data-action="shop-add-product"]').first().click();form=pane.locator('#item-form');
      assert.equal(await form.locator('[name=kind] option[value=service]').count(),account==='personal'?0:1);
+     if(account==='personal'){
+      await form.locator('[name=kind]').evaluate(select=>{select.add(new Option('Service','service'));select.value='service';});
+      await form.locator('[name=title]').fill('Blocked salon service');await form.locator('[type=submit]').click();
+      assert.equal(await pane.locator('#editor').isVisible(),true,'Service submission is rejected');assert.equal(await pane.locator('.store-item').count(),0);
+      await form.locator('[name=kind]').selectOption('product');
+     }
      await form.locator('[name=title]').fill('PO product');await form.locator('[name=price]').fill('15');await form.locator('[name=description]').fill('Product description');
      await form.locator('[name=shareFeed]').uncheck();await form.locator('[type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
      await pane.locator('[data-edit-item]').first().click();await pane.locator('#item-form [name=title]').fill('PO product edited');await pane.locator('#item-form [type=submit]').click();await pane.locator('#editor').waitFor({state:'hidden'});
@@ -60,6 +67,18 @@ const results=[],errors=[];
      await open('shop');await pane.locator('.store-head').waitFor();assert.equal(await pane.locator('.store-item h3').filter({hasText:'PO product edited'}).count(),1);
      await pane.locator('.store-item').filter({hasText:'PO product edited'}).locator('[data-delete-item]').click();assert.equal(await pane.locator('.store-item h3').filter({hasText:'PO product edited'}).count(),0);
      await page.reload();await pane.locator('.store-head').waitFor();assert.equal(await pane.locator('.store-item').count(),account==='personal'?0:1);
+    });
+    await check('group filters and PO Jobs actions',async()=>{
+     await open('groups');const groups=hub.locator('#groupsView');await groups.locator('[data-po-my-groups]').click();assert.equal(await groups.locator('[data-po-my-groups]').getAttribute('aria-pressed'),'true');
+     await groups.locator('[data-po-group-discover]').click();assert.equal(await groups.locator('[data-po-my-groups]').getAttribute('aria-pressed'),'false');
+     await groups.locator('[data-po-group-search]').fill('No matching group 987654');assert.equal(await groups.locator('[data-community-group-card]').count(),0);await groups.locator('[data-po-group-search]').fill('');
+     await groups.locator('[data-community-group-action=filters]').click();await groups.locator('#communityGroupFilters').waitFor();
+     await groups.locator('[data-community-group-action=detail]').first().click();await hub.locator('[data-community-group-dialog]').waitFor();
+     await open('jobs');const hero=hub.locator('.community-po-jobs-hero');await hero.waitFor();
+     if(account==='personal'){
+      await hero.locator('[data-template=seeking]').click();await hub.locator('#templateForm[data-kind=seeking]').waitFor();
+      await open('jobs');await hero.locator('[data-jobs-tab=matched]').click();await page.waitForURL(url=>url.searchParams.get('jobsTab')==='matched');
+     }else{await hero.locator('[data-view=daywork]').click();await page.waitForURL(url=>url.searchParams.get('tab')==='shift');}
     });
    }finally{await context.close();}
   }

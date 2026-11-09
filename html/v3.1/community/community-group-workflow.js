@@ -170,8 +170,12 @@
       // Filters belong to the list column, beside the existing PO sidebar.
       cards.parentElement.querySelector(':scope > [data-community-group-filters]')?.remove();
       const toggle=document.querySelector('.community-group-filter-toggle');
-      cards.innerHTML='<div class="community-group-search"><input type="search" class="field" data-po-group-search placeholder="Search groups or items..." value="'+esc(groupSearch)+'"><button type="button" class="btn small" data-po-my-groups aria-pressed="'+onlyJoined+'">'+(onlyJoined?'Discover':'My groups')+'</button></div>'+filtersMarkup()+directoryMarkup();cards.classList.add('community-group-directory');
-      if(toggle)cards.querySelector('.community-group-search').append(toggle);
+      const view=document.getElementById('groupsView'),navigation=view?.querySelector('.subrow'),tabs=navigation?.querySelector('.subtabs');
+      view?.querySelector('.community-group-search')?.remove();
+      cards.innerHTML='<div class="community-group-search"><input type="search" class="field" data-po-group-search placeholder="'+esc(document.documentElement.lang==='en'?'Search groups or items...':'Tìm nhóm hoặc món hàng...')+'" value="'+esc(groupSearch)+'"></div>'+filtersMarkup()+directoryMarkup();cards.classList.add('community-group-directory');
+      if(tabs){let mine=tabs.querySelector('[data-po-my-groups]');if(!mine){mine=document.createElement('button');mine.type='button';mine.className='subtab';mine.dataset.poMyGroups='';tabs.querySelector('[data-view="market"]')?.before(mine);}mine.textContent=document.documentElement.lang==='en'?'My groups':'Nhóm của tôi';mine.classList.toggle('active',onlyJoined);mine.setAttribute('aria-pressed',String(onlyJoined));const discover=tabs.querySelector('[data-view="groups"]');discover.dataset.poGroupDiscover='';discover.textContent=document.documentElement.lang==='en'?'Discover':'Khám phá';discover.classList.toggle('active',!onlyJoined);}
+      const search=cards.querySelector('.community-group-search');if(navigation)navigation.before(search);
+      if(toggle)search.append(toggle);
       const count=toggle?.querySelector('[data-group-filter-count]'),active=Object.values(selections).filter(Boolean).length;document.getElementById('groupsView')?.classList.toggle('group-filters-open',filtersOpen);toggle?.setAttribute('aria-expanded',String(filtersOpen));toggle?.classList.toggle('has-filters',active>0);if(count){count.hidden=!active;count.textContent=String(active);}
     }
     function showDialog(group,body,footer,heading=title(group)) {
@@ -193,7 +197,7 @@
     }
     function refresh(){adapter.render?.();enhance();if(dialogGroup&&dialogKind==='detail')openGroup(dialogGroup);}
     function onClick(event) {
-      if(event.target.closest?.('[data-po-my-groups]')){onlyJoined=!onlyJoined;enhance();return;}
+      if(event.target.closest?.('[data-po-my-groups],[data-po-group-discover]')){onlyJoined=!!event.target.closest('[data-po-my-groups]');enhance();return;}
       const target=event.target.closest?.('[data-community-group-action]');
       if(!target){if(event.target.matches?.('[data-community-group-overlay]'))closeDialog();return;}
       event.preventDefault();event.stopPropagation();

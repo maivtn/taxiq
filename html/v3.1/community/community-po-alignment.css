@@ -2,7 +2,7 @@
    Retain the shared shell and working controllers; align their content surfaces. */
 body.embedded .content{padding:18px 16px 40px}
 body.embedded :is(#groupsView,#pagesView)>.feature-intro{
- display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 12px;
+ display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:16px;margin:0 0 12px;
  padding:18px;border:1px solid #ded7ff;border-radius:16px;background:linear-gradient(115deg,#f0edff,#fff);
 }
 body.embedded :is(#groupsView,#pagesView)>.feature-intro>div{display:block;min-width:0}
@@ -30,7 +30,7 @@ body.embedded .community-group-card>p{display:-webkit-box;-webkit-line-clamp:2;-
 body.embedded .community-group-card .community-group-inline-rules{display:none}
 body.embedded .community-group-card .listing-actions{display:flex;flex-wrap:nowrap;gap:6px}
 body.embedded .community-group-card .listing-actions>.btn{flex:1;min-width:0;min-height:40px;font-size:11px;padding:8px 6px}
-body.embedded #pageCards{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:12px;overscroll-behavior-x:contain;scrollbar-width:thin}
+body.embedded #pageCards{display:flex;flex-direction:row;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:12px;overscroll-behavior-x:contain;scrollbar-width:thin}
 body.embedded #pageCards>.page-card{flex:0 0 300px;min-width:0;scroll-snap-align:start;border-radius:14px;overflow:hidden}
 body.embedded #pageCards .page-cover{height:112px}
 body.embedded #pageCards .page-content{padding:12px}
@@ -43,7 +43,7 @@ body.embedded #pageCards .page-content>p{display:-webkit-box;-webkit-line-clamp:
 body.embedded #pageCards .page-actions{flex-wrap:nowrap;gap:6px;padding-top:8px}
 body.embedded #pageCards .page-actions .btn{min-height:40px;font-size:11px;padding:8px}
 body.embedded #pagesView>.section-heading{display:flex;margin:18px 0 10px}
-body.embedded #pagesView>.section-heading h2{font-size:15px}
+body.embedded #pagesView>.section-heading h2{position:static;width:auto;height:auto;clip-path:none;white-space:normal;overflow:visible;font-size:15px}
 .native-body:has(#page-view){--ink:#25304b;--muted:#77839e;--violet:#6653df;--bg:#f7f7fc}
 .native-body #page-view :is(.btn.primary,.group-create-button){background:#6653df;border-color:#6653df}
 .native-body #page-view :is(.store-head h1,.news-hero h1,.live-hero h1){color:#25304b;letter-spacing:-.025em}
