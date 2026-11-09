@@ -33,15 +33,21 @@ fs.mkdirSync(output,{recursive:true});
           assert.equal(await jobs.locator('[data-jobs-action="open-pos"]').count(),0);
           assert.equal(await jobs.locator('button[data-jobs-tab="workers"]').count(),0);
         }
+        async function blockedComposer(account,kind){
+          const direct=await context.newPage();
+          try{
+            await direct.goto(base+'/html/v3.1/community/nexora-community-prototype.html?view=jobs&account='+account+'&composeKind='+kind,{waitUntil:'domcontentloaded'});
+            await direct.locator('#jobsWorkflow').waitFor();
+            assert.equal(await direct.locator('#templateForm').count(),0);
+          }finally{await direct.close();}
+        }
         await check('Personal route and posting controls',async()=>{
           await open('community.html','account=personal&tab=jobs');
           await page.waitForURL('**/staff-community.html**');await personalControls();
           assert.ok((await page.locator('#communityDemoRoleButton').innerText()).includes('Personal'));
         });
         await check('Personal cannot open hiring through a composer deep link',async()=>{
-          await open('staff-community.html','account=personal&tab=jobs&composeKind=hiring');
-          await page.waitForLoadState('networkidle');
-          assert.equal(await jobs.locator('#templateForm').count(),0);
+          await blockedComposer('personal','hiring');
           await personalControls();
         });
         const title='Role QA seeking '+width;
@@ -110,9 +116,7 @@ fs.mkdirSync(output,{recursive:true});
           await open('community.html','tab=jobs');
         });
         await check('Salon cannot open seeking through a composer deep link',async()=>{
-          await open('community.html','tab=jobs&composeKind=seeking');
-          await page.waitForLoadState('networkidle');
-          assert.equal(await jobs.locator('#templateForm').count(),0);
+          await blockedComposer('business','seeking');
         });
         await check('Salon hiring composer URL opens salon recruitment',async()=>{
           await page.goto(base+'/html/v3.1/community.html?tab=jobs&composeKind=hiring',{waitUntil:'domcontentloaded'});
