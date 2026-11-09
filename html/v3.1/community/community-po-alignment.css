@@ -96,3 +96,7 @@ body.embedded #marketView>.market-toolbar{margin:0 0 14px;padding:0;border:0;bac
 body.embedded #marketView>.subrow{width:100%}
 
 @media(max-width:650px){body.embedded #marketView>.market-toolbar{margin-bottom:10px}}
+
+#marketView:not(.hide){display:flex;flex-direction:column}
+body.embedded #marketView>.subrow{flex-wrap:wrap}
+body.embedded #marketView>.subrow>.subtabs{flex-basis:100%}
