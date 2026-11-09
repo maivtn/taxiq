@@ -38,6 +38,12 @@ fs.mkdirSync(output,{recursive:true});
           await page.waitForURL('**/staff-community.html**');await personalControls();
           assert.ok((await page.locator('#communityDemoRoleButton').innerText()).includes('Personal'));
         });
+        await check('Personal cannot open hiring through a composer deep link',async()=>{
+          await open('staff-community.html','account=personal&tab=jobs&composeKind=hiring');
+          await page.waitForLoadState('networkidle');
+          assert.equal(await jobs.locator('#templateForm').count(),0);
+          await personalControls();
+        });
         const title='Role QA seeking '+width;
         await check('Personal publishes seeking and reloads',async()=>{
           await jobs.locator('#jobTemplates [data-template="seeking"]').click();
@@ -91,6 +97,22 @@ fs.mkdirSync(output,{recursive:true});
           await jobs.locator('button[data-jobs-tab="transfer"]').click();
           await jobs.locator('#jobPosts').getByText(transferTitle,{exact:true}).waitFor();
           await page.screenshot({path:path.join(output,'salon-transfer-'+width+'.png')});
+        });
+        await check('Personal views a salon transfer and contacts its owner',async()=>{
+          await open('staff-community.html','account=personal&tab=jobs&jobsTab=transfer');
+          const card=jobs.locator('#jobPosts article').filter({hasText:transferTitle});
+          await card.waitFor();
+          for(const action of ['edit','close','delete'])assert.equal(await card.locator('[data-jobs-extra="'+action+'"]').count(),0);
+          await card.locator('[data-jobs-extra="detail"]').click();
+          await jobs.locator('[data-jobs-dialog]').waitFor();
+          await jobs.locator('.jobs-dialog-footer [data-jobs-extra="message"]').click();
+          await page.waitForURL(url=>url.searchParams.get('tab')==='connect');
+          await open('community.html','tab=jobs');
+        });
+        await check('Salon cannot open seeking through a composer deep link',async()=>{
+          await open('community.html','tab=jobs&composeKind=seeking');
+          await page.waitForLoadState('networkidle');
+          assert.equal(await jobs.locator('#templateForm').count(),0);
         });
         await check('Salon hiring creation opens salon recruitment',async()=>{
           await jobs.locator('#jobTemplates [data-template="hiring"]').click();
