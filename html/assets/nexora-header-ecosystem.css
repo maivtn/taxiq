@@ -1,4 +1,10 @@
 /* Header Ecosystem dropdown, matching the staging header. */
+.header.shell-header {
+  --nexora-muted:#4d5870;
+  --nexora-border:#dde5ef;
+  --nexora-surface:#fff;
+  --nexora-text:#0b1220;
+}
 .header.shell-header .shell-header-messages { color:#0f766e; }
 .header.shell-header.shell-ecosystem-open { z-index:45; }
 .header.shell-header .shell-ecosystem { position:relative; flex:none; }
