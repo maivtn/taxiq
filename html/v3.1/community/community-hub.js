@@ -33,9 +33,6 @@
     `;
     root.append(style);
     const mobileNav=root.querySelector('.mobile-nav');
-    const blogTab=root.querySelector('.top .tab[data-view="blog"]').cloneNode(true);
-    blogTab.classList.add('mobile-tab');
-    mobileNav.querySelector('[data-view="connect"]').before(blogTab);
     const workspace=root.querySelector('.workspace');
     workspace.addEventListener('scroll',event=>{
       const scroller=event.target;
