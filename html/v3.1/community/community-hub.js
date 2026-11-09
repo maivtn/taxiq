@@ -22,6 +22,16 @@
           box-shadow:none;
         }
         :host .main > .mobile-nav .mobile-tab { min-width:0; }
+        :host .main > .mobile-nav:not(.is-docked) { gap:6px; }
+        :host .main > .mobile-nav:not(.is-docked) .mobile-tab {
+          border:1px solid #e0dcf7;
+          border-radius:10px;
+          background:#fff;
+        }
+        :host .main > .mobile-nav:not(.is-docked) .mobile-tab.active {
+          border-color:#b9a7ed;
+          background:#f5f3ff;
+        }
         :host .main > .mobile-nav .mobile-tab > span { overflow-wrap:anywhere; }
         :host .main > .mobile-nav.is-docked:not([hidden]) {
           order:2;

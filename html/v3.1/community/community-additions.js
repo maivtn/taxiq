@@ -18,6 +18,20 @@
     window.addEventListener('nexora-community-search',event=>searchReady.then(search=>search.open(event.detail?.query||'')).catch(console.error));
     let current='',routeContext={},internal=false,generation=0,composerSession=null,composerRequest=0,assistantSession=null,assistantRequest=0,assistantLauncher=null;
     const notify=data=>options.notify?.(data);
+    const blogView=root.querySelector('#blogView');
+    const blogTabs=document.createElement('div');
+    blogTabs.className='community-news-tabs';blogTabs.setAttribute('role','tablist');blogTabs.setAttribute('aria-label','News and Blog');
+    blogTabs.innerHTML='<button type="button" role="tab" aria-selected="false" data-community-news-tab="news">🗞️ News &amp; Updates</button><button type="button" role="tab" aria-selected="true" class="active" data-community-news-tab="blog">📰 Blog</button>';
+    blogView?.prepend(blogTabs);
+    const blogTabStyle=document.createElement('style');
+    blogTabStyle.textContent='.community-news-tabs{display:flex;gap:7px;margin:7px 0 17px;padding:6px;width:max-content;max-width:100%;border:1px solid #e0dcf7;border-radius:13px;background:#f5f3ff}.community-news-tabs button{border:0;border-radius:9px;padding:10px 17px;background:transparent;color:#615c7c;font-size:13px;font-weight:850;cursor:pointer}.community-news-tabs button.active{background:#6552dc;color:#fff;box-shadow:0 4px 12px #5f4dc42b}';
+    root.append(blogTabStyle);
+    root.addEventListener('click',event=>{
+      const tab=event.target.closest('[data-community-news-tab],[data-news-mode="blog"]');
+      if(!tab)return;
+      event.preventDefault();event.stopImmediatePropagation();
+      navigate(tab.dataset.communityNewsTab||'blog');
+    },true);
     const styles=document.createElement('style');
     styles.textContent='.community-extra-pane{--hub-bg:#f7f9fc;--hub-surface:#fff;--hub-text:#0b1220;--hub-muted:#64748b;--hub-border:#dde5ef;--hub-brand:#4648d8;position:relative;min-width:0;width:100%;height:100%;overflow:auto;color:var(--hub-text)}.community-extra-pane.community-tools-aligned{max-width:1200px;margin-inline:auto}.community-extra-platform{max-width:1140px;margin:auto;padding:24px}.community-extra-pane>section{min-height:100%}.community-extra-pane>[hidden]{display:none!important}.community-route-loading{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:12px;background:#f7f9fc;color:#43516b;font-size:15px;font-weight:700}.community-route-loading::before{content:"";width:24px;height:24px;border:3px solid #ddd9fa;border-top-color:#6552e7;border-radius:50%;animation:community-loading-spin .8s linear infinite}@keyframes community-loading-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.community-route-loading::before{animation:none}}.ecosystem-menu{max-height:min(640px,70vh);overflow-y:auto}.ecosystem-menu [data-community-extra]{display:flex;min-height:44px;align-items:center;gap:10px}.ecosystem-menu [data-community-extra] svg{flex:none;width:20px;height:20px}.community-extra-error{padding:24px;text-align:center}@container community (max-width:800px){.community-extra-platform{padding:16px}}';
     root.append(styles);
