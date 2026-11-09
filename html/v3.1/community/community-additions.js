@@ -26,6 +26,54 @@
     const loading=document.createElement('div');loading.className='community-route-loading';loading.setAttribute('role','status');loading.setAttribute('aria-live','polite');loading.textContent='Loading Real Estate…';loading.hidden=true;pane.append(loading);
     const menu=root.getElementById('ecosystemMenu');
     const heading=root.querySelector('.community-heading h1');
+    const tour=root.getElementById('startTour'),headingTools=document.createElement('span');
+    headingTools.className='community-heading-tools';tour.before(headingTools);
+    const headerLocation=document.createElement('span');headerLocation.className='community-header-location';headerLocation.hidden=true;
+    headerLocation.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span data-header-location-label></span><button type="button" data-header-location-change></button>';
+    headingTools.append(headerLocation,tour);
+    styles.textContent+=`
+      .community-heading-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:0 1 auto;min-width:0}
+      .community-header-location{display:inline-flex;align-items:center;gap:8px;min-width:0;padding:0 10px;border:1px solid #dfdbff;border-radius:10px;background:#f0efff;color:#3d4961;font-size:12px;font-weight:750}
+      .community-header-location[hidden]{display:none!important}
+      .community-header-location svg{flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+      [data-header-location-label]{min-width:0;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      [data-header-location-change]{flex:none;min-height:34px;padding:0;border:0;background:transparent;color:#6250c9;font:inherit;font-weight:750;white-space:nowrap;text-decoration:underline;text-decoration-color:#b7ace9;text-underline-offset:3px;cursor:pointer}
+      [data-header-location-change]:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
+      @container community (max-width:800px){
+        .community-heading:has(.community-header-location:not([hidden])){flex-wrap:wrap}
+        .community-heading-tools:has(.community-header-location:not([hidden])){flex-basis:100%;margin-top:2px;gap:8px}
+        .community-header-location{flex:1}
+        [data-header-location-change]{min-height:44px;margin-left:auto}
+        .community-heading-tools:has(.community-header-location:not([hidden])) .tour-launch{min-height:44px}
+      }
+    `;
+    // Keep the existing area picker and its state in the Feed document.
+    const locationFrame=frames[0];let locationObserver;
+    function syncHeaderLocation(){
+      const source=locationFrame.contentDocument,bar=source?.getElementById('localDiscovery');
+      const label=source?.getElementById('viewerLocationLabel'),button=source?.getElementById('changeViewerLocation');
+      headerLocation.hidden=locationFrame.hidden||!bar||bar.classList.contains('hide')||!label||!button;
+      if(label)headerLocation.querySelector('[data-header-location-label]').textContent=label.textContent.trim();
+      if(button)headerLocation.querySelector('[data-header-location-change]').textContent=button.textContent.trim();
+    }
+    function bindHeaderLocation(){
+      locationObserver?.disconnect();
+      const source=locationFrame.contentDocument,bar=source?.getElementById('localDiscovery');
+      if(!bar){syncHeaderLocation();return;}
+      bar.classList.add('community-location-in-header');
+      if(!source.getElementById('communityHeaderLocationStyle')){
+        const locationStyle=source.createElement('style');locationStyle.id='communityHeaderLocationStyle';
+        locationStyle.textContent='body #localDiscovery.community-location-in-header{display:none!important}@media(max-width:800px){body.embedded #localDiscovery.community-location-in-header.has-context-action:not(.hide){display:flex!important;justify-content:flex-end;min-height:44px;margin:0 0 10px;padding:0;border:0;background:transparent}body #localDiscovery.community-location-in-header :is(.community-context-location,#viewerLocationLabel,#changeViewerLocation){display:none!important}}';
+        source.head.append(locationStyle);
+      }
+      locationObserver=new MutationObserver(syncHeaderLocation);
+      locationObserver.observe(bar,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class']});
+      syncHeaderLocation();
+    }
+    headerLocation.querySelector('[data-header-location-change]').addEventListener('click',()=>locationFrame.contentDocument?.getElementById('changeViewerLocation')?.click());
+    locationFrame.addEventListener('load',bindHeaderLocation);
+    new MutationObserver(syncHeaderLocation).observe(locationFrame,{attributes:true,attributeFilter:['hidden']});
+    bindHeaderLocation();
     const back=document.createElement('button');back.type='button';back.className='community-back-to-feed';back.hidden=true;
     back.textContent='← Back to Feed';back.addEventListener('click',event=>{
       event.preventDefault();
