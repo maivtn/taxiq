@@ -43,3 +43,18 @@ test('Reloading demo coverage is idempotent and merging preserves edited and aut
   assert.equal(merged.find(row=>row.id==='user-authored-listing').title,'My own listing');
   assert.equal(new Set(merged.map(row=>row.id)).size,merged.length);
 });
+
+test('personal extra-shift samples cover upcoming bookings, deposit, review and completed history',()=>{
+  const {data}=load(),shifts=new Map(data.extra.shifts.map(row=>[row.id,row]));
+  const assignments=data.shiftWorkflow.assignments.filter(row=>row.worker==='David Le');
+  for(const status of ['Confirmed','PendingApproval','AwaitingDepositProof','Completed'])assert.ok(assignments.some(row=>row.status===status),status);
+  assert.equal(new Set(data.shiftWorkflow.assignments.map(row=>row.id)).size,data.shiftWorkflow.assignments.length);
+  assert.equal(new Set(data.shiftWorkflow.settlements.map(row=>row.id)).size,data.shiftWorkflow.settlements.length);
+  for(const row of assignments){
+    const shift=shifts.get(row.shiftId);assert.ok(shift,row.id);assert.equal(shift.owner,row.owner);assert.equal(row.isSample,true);
+    const deposit=data.shiftWorkflow.settlements.find(item=>item.assignmentId===row.id&&item.type==='Deposit');
+    assert.ok(deposit,row.id);assert.equal(deposit.payer,row.worker);assert.equal(deposit.payee,row.owner);assert.equal(deposit.amount,Math.round(row.payAmount*20)/100);
+    if(row.status!=='Completed')assert.ok(Date.parse(shift.date+'T'+shift.hours.slice(0,5))>Date.now());
+    if(row.status==='AwaitingDepositProof'){assert.equal(deposit.status,'AwaitingProof');assert.ok(Date.parse(row.depositProofDueAt)>Date.now());}
+  }
+});

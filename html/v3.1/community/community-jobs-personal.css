@@ -23,6 +23,7 @@
 .jobs-personal-paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
 .jobs-personal-path{display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:auto auto auto;align-items:start;column-gap:9px;padding:12px 13px;border:1px solid #dfe3ef;border-radius:12px;background:#fff;min-width:0}
 .jobs-personal-symbol{grid-column:1;grid-row:1/3;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#f1ebff;color:#6b4ce6;font-size:16px}
+.jobs-personal-symbol>img{display:block;width:22px;height:22px;object-fit:contain}
 [data-jobs-path="shift"]>.jobs-personal-symbol{background:#eaf4ff;color:#528bec}
 [data-jobs-path="service"]>.jobs-personal-symbol{background:#e7f6ee;color:#32906d}
 .jobs-personal-path h3{grid-column:2;grid-row:1;margin:1px 0 3px;color:#25304b;font-size:13px;line-height:1.25}

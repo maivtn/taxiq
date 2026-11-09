@@ -34,10 +34,10 @@
         : `<button type="button" class="btn primary" data-jobs-copy-action="edit">✎ ${esc(po('Chỉnh sửa', 'Edit'))}</button>`;
       root.hidden = tab !== 'browse';
       root.innerHTML = `<section class="jobs-personal-panel"><div class="jobs-personal-demo">✦ ${esc(po('Bản mẫu · Tin đăng và hồ sơ lưu trên máy này.', 'Demo · Posts and profiles stay in this browser.'))}</div><div class="jobs-personal-editbar" role="toolbar" aria-label="${esc(po('Thanh chỉnh sửa nội dung', 'Content editing toolbar'))}"><strong>✎ ${esc(po('Chỉnh sửa nội dung trực tiếp', 'Edit page content directly'))}</strong><div>${actions}</div></div><div class="jobs-personal-start">${field('h2', 'startTitle')}${field('p', 'startDesc')}</div><section class="jobs-personal-paths">${[
-        ['career', '◉', 'data-template="seeking"', 'Đăng hồ sơ tìm việc', 'Post job search'],
-        ['shift', '◷', 'data-jobs-extra="availability-new"', 'Đăng lịch rảnh', 'Post availability'],
-        ['service', '✦', 'data-jobs-extra="new-service-offer"', 'Đăng dịch vụ của tôi', 'Post my services']
-      ].map(([id, symbol, action, vi, en]) => `<article class="jobs-personal-path" data-jobs-path="${id}"><span class="jobs-personal-symbol" aria-hidden="true">${symbol}</span>${field('h3', id + 'Title')}${field('p', id + 'Desc')}<button type="button" class="btn soft" ${action}>${esc(po(vi, en))} →</button></article>`).join('')}</section></section>`;
+        ['career', 'briefcase', 'data-template="seeking"', 'Đăng hồ sơ tìm việc', 'Post job search'],
+        ['shift', 'calendar-clock', 'data-jobs-extra="availability-new"', 'Đăng lịch rảnh', 'Post availability'],
+        ['service', 'wrench', 'data-jobs-extra="new-service-offer"', 'Đăng dịch vụ của tôi', 'Post my services']
+      ].map(([id, icon, action, vi, en]) => `<article class="jobs-personal-path" data-jobs-path="${id}"><span class="jobs-personal-symbol" aria-hidden="true"><img src="/html/assets/icon-oneqr/issue-2040-oneqr-${icon}-3d.png" alt=""></span>${field('h3', id + 'Title')}${field('p', id + 'Desc')}<button type="button" class="btn soft" ${action}>${esc(po(vi, en))} →</button></article>`).join('')}</section></section>`;
       hero.innerHTML = `<div>${field('h2', 'heroTitle')}${field('p', 'heroDesc')}</div><div class="community-po-hero-actions"><button type="button" class="btn primary" data-template="seeking">＋ ${esc(po('Đăng nhu cầu làm việc', 'Post your availability'))}</button><button type="button" class="btn" data-jobs-tab="matched">✧ ${esc(po('Xem việc phù hợp', 'See my matches'))}</button></div>`;
       root.querySelector('.jobs-personal-start').before(hero);
     }
