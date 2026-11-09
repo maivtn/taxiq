@@ -49,6 +49,7 @@
         [data-header-location-change]{position:absolute;inset:0;z-index:1;width:100%;min-height:0;margin:0;opacity:0}
         .community-header-location:has([data-header-location-change]:focus-visible){outline:3px solid #a99fff;outline-offset:2px}
         .community-heading-tools:has(.community-header-location:not([hidden])) .tour-launch{min-height:44px}
+        .community-heading-tools{display:none!important}
       }
     `;
     // Keep the existing area picker and its state in the Feed document.
