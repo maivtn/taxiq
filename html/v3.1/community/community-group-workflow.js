@@ -183,7 +183,7 @@
         const toolbar=market.querySelector('.market-toolbar');
         if(toolbar){marketNavigation.before(toolbar);const input=toolbar.querySelector('input[type="search"]');if(input)input.placeholder=cards.querySelector('[data-po-group-search]').placeholder;}
         const info=marketNavigation.querySelector('[data-market-info-toggle]');
-        if(info)market.querySelector('#tabButtons')?.after(info);
+        if(info)market.querySelector('#tabButtons')?.append(info);
       }
       const search=cards.querySelector('.community-group-search');if(navigation)navigation.before(search);
       if(toggle)search.append(toggle);
