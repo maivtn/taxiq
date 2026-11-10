@@ -674,6 +674,49 @@
     window.addEventListener('nexora-header-menu', function(event) { if (event.detail.menu !== 'ecosystem') setOpen(false); });
   }
 
+  var headerNotificationRows = [
+    ['message-circle', '#1b9ae8', 'Nexora b1 commented on your post', 'Nov 06 01:57 pm', 'cmt'],
+    ['heart', '#e8368f', 'Nexora b1 liked your post', 'Nov 06 01:57 pm', 'After months of work, our salon in Houston opens this Saturday. Come say hi, try our new gel colors ...'],
+    ['bell', '#4338ca', 'Subscription payment past due', 'Oct 26 08:45 am', 'The NEXORA TOUCH subscription payment for Philip Salon 999 is past due. Renew your plan to avoid losing access.'],
+    ['bell', '#4338ca', 'Service removed by technician', 'Oct 22 09:53 am', 'nexora_02 removed Classic Pedicure from ticket 2.'],
+    ['bell', '#4338ca', 'Service removed by technician', 'Oct 22 09:53 am', 'nexora_02 removed Classic Pedicure from ticket 2.']
+  ];
+  function headerNotifications() {
+    return '<div class="shell-notifications">' +
+      '<button class="shell-header-notification" type="button" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false" aria-controls="shell-notifications-panel"><i data-lucide="bell" aria-hidden="true"></i><span class="shell-header-badge" aria-hidden="true">30</span></button>' +
+      '<div class="shell-notifications-panel" id="shell-notifications-panel" role="dialog" aria-labelledby="shell-notifications-title" hidden>' +
+      '<div class="shell-notifications-head"><h2 id="shell-notifications-title">NOTIFICATIONS (30)</h2><button class="shell-notifications-markall" type="button">Mark all read</button></div>' +
+      '<ul class="shell-notifications-list">' + headerNotificationRows.map(function(row) {
+        return '<li class="shell-notification-item"><span class="shell-notification-icon" style="background:' + row[1] + '"><i data-lucide="' + row[0] + '" aria-hidden="true"></i></span>' +
+          '<div class="shell-notification-body"><div class="shell-notification-top"><strong>' + row[2] + '</strong><time>' + row[3] + '</time></div><p>' + row[4] + '</p></div></li>';
+      }).join('') + '</ul></div></div>';
+  }
+  function initHeaderNotifications(header) {
+    var root = header && header.querySelector('.shell-notifications');
+    if (!root) return;
+    if (!document.querySelector('link[data-shell-notifications-style]')) {
+      var style = document.createElement('link');style.rel = 'stylesheet';
+      style.href = new URL('nexora-header-notifications.css?v=20261110-notifications1', shellAssetBase).href;
+      style.setAttribute('data-shell-notifications-style', '');document.head.appendChild(style);
+    }
+    var toggle = root.querySelector('.shell-header-notification'), panel = root.querySelector('.shell-notifications-panel');
+    function setOpen(open, restoreFocus) {
+      if (open) window.dispatchEvent(new CustomEvent('nexora-header-menu', {detail:{menu:'notifications'}}));
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (restoreFocus) toggle.focus();
+    }
+    toggle.addEventListener('click', function() { setOpen(panel.hidden); });
+    root.querySelector('.shell-notifications-markall').addEventListener('click', function() {
+      var badge = root.querySelector('.shell-header-badge');
+      if (badge) badge.hidden = true;
+      root.classList.add('is-all-read');
+    });
+    document.addEventListener('click', function(event) { if (!panel.hidden && !root.contains(event.target)) setOpen(false); });
+    document.addEventListener('keydown', function(event) { if (!panel.hidden && event.key === 'Escape') setOpen(false, true); });
+    window.addEventListener('nexora-header-menu', function(event) { if (event.detail.menu !== 'notifications') setOpen(false); });
+  }
+
   var headerLanguages = [['vi','VI','Tiếng Việt'],['en','EN','English'],['es-MX','ES','Español (México)'],['zh-Hans','中','简体中文'],['fr','FR','Français'],['ar','AR','العربية'],['pt','PT','Português']];
   function headerLanguage() {
     return '<div class="shell-language" data-nexora-language-ui><button class="shell-header-language" type="button" aria-label="Switch language" aria-haspopup="listbox" aria-expanded="false" aria-controls="shell-language-menu"><i data-lucide="globe" aria-hidden="true"></i><span data-shell-language-code>EN</span></button>' +
@@ -730,7 +773,7 @@
     var messages = personalOnly ? 'staff-community.html?account=personal&amp;role=tech&amp;tab=connect' : 'community.html?tab=connect';
     return '<div class="mobile-brand"><button class="icon-button" type="button" data-shell-drawer-open aria-label="Open navigation menu" aria-controls="nexora-sidebar" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' + '</button><a href="' + home + '"><img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Touch"></a></div>' +
       '<form class="shell-workspace-search" action="dashboard.html"><label class="search"><i data-lucide="search" aria-hidden="true"></i><input name="q" type="search" aria-label="' + (pos ? 'Search SI POS tools' : 'Search products') + '" placeholder="' + (pos ? 'Search SI POS tools...' : 'Search products or features…') + '" autocomplete="off"' + (pos ? ' data-shell-function-search' : '') + '></label><div class="shell-function-results" hidden></div></form>' +
-      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '<a class="shell-header-notification" href="news-library.html?tab=news" aria-label="Nexora news"><i data-lucide="bell" aria-hidden="true"></i><span class="shell-header-badge" aria-hidden="true">30</span></a><a class="shell-header-messages" href="' + messages + '" aria-label="Community messages"><i data-lucide="messages-square" aria-hidden="true"></i></a>' + headerLanguage() + headerEcosystem() + '</div>';
+      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '' + headerNotifications() + '<a class="shell-header-messages" href="' + messages + '" aria-label="Community messages"><i data-lucide="messages-square" aria-hidden="true"></i></a>' + headerLanguage() + headerEcosystem() + '</div>';
   }
 
   function navigate(tab) {
@@ -1152,6 +1195,7 @@
     initHeaderSearch(header);
     initHeaderEcosystem(header);
     initHeaderLanguage(header);
+    initHeaderNotifications(header);
     saveExpandedGroups();
 
     // drawer backdrop (once)
