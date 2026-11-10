@@ -76,9 +76,12 @@
   const inviteLink=id=>{const url=new URL(hostLocation().href);url.search='';url.hash='';url.searchParams.set('tab','market');url.searchParams.set('joinGroup',id);url.searchParams.set('invite',inviteToken(id));return url.href;};
   const inviteKind=value=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)?t('Email','Email'):/^\+?[\d\s().-]{7,}$/.test(value)?t('Số điện thoại','Phone'):/^NX-?[A-Z0-9]{3,}$/i.test(value)?'NX-ID':t('Nickname','Nickname');
   const groupRecord=id=>(window.NEXORA_COMMUNITY_WORKFLOWS?.groups?.store?.groups()||[]).find(group=>String(group.id)===String(id))||null;
-  function suggestions(row){
+  function suggestions(row,groupId){
     const done=new Set(row.invitees.map(item=>item.value.toLowerCase()));
-    const people=Object.values(window.NEXORA_COMMUNITY_SHARED?.read().identities||{}).filter(person=>person.name&&person.name!==adapter.currentMember).slice(0,6);
+    let people=Object.values(window.NEXORA_COMMUNITY_SHARED?.read().identities||{}).filter(person=>person.name&&person.name!==adapter.currentMember).slice(0,6);
+    if(!people.length){const store=window.NEXORA_COMMUNITY_WORKFLOWS?.groups?.store,inGroup=new Set((groupId&&store?.memberRecords?store.memberRecords(groupId):[]).map(item=>item.name)),seen=new Set(),pool=[];
+      for(const post of window.NEXORA_COMMUNITY_DEMO?.extra?.feed||[]){const name=post.owner;if(!name||name===adapter.currentMember||inGroup.has(name)||seen.has(name)||/\b(nail|studio|salon|cafe|kitchen|bistro|supply|group|owners|learn)\b/i.test(name))continue;seen.add(name);pool.push({name});}
+      people=pool.slice(0,6);}
     return people.map(person=>{const label=person.displayNickname||person.name,added=done.has(label.toLowerCase());return '<li><span>'+escape(label)+'</span><button type="button" class="btn" data-po-invite-add="'+escape(label)+'"'+(added?' disabled':'')+'>'+(added?t('Đã thêm','Added'):t('Thêm','Add'))+'</button></li>';}).join('')||'<li><small>'+t('Chưa có gợi ý.','No suggestions yet.')+'</small></li>';
   }
   function addInvitee(id,value,kind){
@@ -94,7 +97,7 @@
     adapter.openDialog('<div class="overlay" data-po-invite-overlay><section class="dialog po-invite-dialog" role="dialog" aria-modal="true" aria-labelledby="poInviteTitle" data-group="'+escape(groupId)+'"><div class="dialog-head"><h2 id="poInviteTitle">'+t('Mời thành viên','Invite members')+' · <span data-community-authored>'+escape(name)+'</span></h2><button class="icon-btn" id="closeModal" aria-label="'+t('Đóng','Close')+'">×</button></div><div class="dialog-body">'
       +'<div class="po-invite-share"><div class="po-invite-qr" data-po-invite-qr data-link="'+escape(link)+'" aria-label="'+t('Mã QR mời vào nhóm','Group invite QR code')+'"></div><div class="po-invite-link"><label for="poInviteLink">'+t('Liên kết mời riêng của nhóm','This group\'s invite link')+'</label><input id="poInviteLink" class="field" readonly value="'+escape(link)+'"><button type="button" class="btn primary" data-po-invite-copy>'+t('Sao chép liên kết','Copy link')+'</button><small>'+t('Mã mời','Invite code')+': <b data-po-invite-code>'+inviteToken(groupId)+'</b></small></div></div>'
       +'<form class="po-invite-form" data-po-invite-form data-group="'+escape(groupId)+'"><label for="poInviteTarget">'+t('Mời bằng nickname, mã NX-ID, số điện thoại hoặc email','Invite by nickname, NX-ID, phone number or email')+'</label><div class="po-invite-input"><input id="poInviteTarget" class="field" name="target" autocomplete="off" placeholder="@nickname · NX-ID · +1 555 0100 · name@email.com"><button type="submit" class="btn primary">'+t('Gửi lời mời','Send invite')+'</button></div><p class="po-invite-status" role="status" data-po-invite-status></p><ul class="po-invite-list" data-po-invite-list>'+invited+'</ul>'
-      +'<div class="po-invite-suggest"><strong>'+t('Gợi ý cho bạn','Suggested people')+'</strong><ul>'+suggestions(row)+'</ul></div>'
+      +'<div class="po-invite-suggest"><strong>'+t('Gợi ý cho bạn','Suggested people')+'</strong><ul>'+suggestions(row,groupId)+'</ul></div>'
       +'<p class="po-invite-limit">'+t('Mỗi nhóm có tối đa 100 thành viên.','Each group can have up to 100 members.')+'</p></form>'
       +'<fieldset class="po-invite-settings"><legend>'+t('Cài đặt lời mời','Invite settings')+'</legend>'+setting('open','Mọi thành viên được mời tự do','Members can invite freely')+setting('share','Cho phép chia sẻ liên kết ra ngoài','Allow sharing the link outside the group')+setting('approval','Duyệt người vào nhóm','Approve people before they join')+(owner?'':'<small>'+t('Chỉ chủ nhóm mới đổi được các cài đặt này.','Only the group owner can change these settings.')+'</small>')+'</fieldset></div></section></div>');
     const holder=document.querySelector('[data-po-invite-qr]');
