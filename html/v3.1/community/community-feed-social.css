@@ -12,7 +12,7 @@
 .community-feed-post-meta>.community-feed-post-byline,.community-feed-post-meta>.community-feed-post-destinations{margin-top:0}
 .community-feed-post-byline time{white-space:nowrap}
 .community-feed-post-tags{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:5px}
-.community-feed-post-type,.community-feed-post-business,.community-feed-post-resolved{display:inline-flex;align-items:center;padding:3px 7px;border-radius:6px;font-size:10px;font-weight:750;line-height:1.35;max-width:100%;overflow-wrap:anywhere;background:#eef0f8;color:#586381}
+.community-feed-post-type,.community-feed-post-business,.community-feed-post-resolved{display:inline-flex;align-items:center;padding:3px 7px;border-radius:6px;font-size:11px;font-weight:750;line-height:1.35;max-width:100%;overflow-wrap:anywhere;background:#eef0f8;color:#586381}
 .community-feed-post-type[data-post-kind="showcase"]{background:#fcebf4;color:#ac4381}
 .community-feed-post-type[data-post-kind="tip"]{background:#f0eafb;color:#7c50ac}
 .community-feed-post-type[data-post-kind="question"]{background:#e5f3fb;color:#347fa4}
@@ -23,7 +23,7 @@
 .community-feed-post-resolved{background:#e5f5ec;color:#3e8764}
 .community-feed-post-byline{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:5px;color:#8993a6;font-size:11px;line-height:1.4}
 .community-feed-post-destinations{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:6px}
-.community-feed-post-destination{display:inline-flex;align-items:center;max-width:100%;padding:3px 7px;border-radius:6px;background:#f3f5f9;color:#7a859a;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+.community-feed-post-destination{display:inline-flex;align-items:center;max-width:100%;padding:3px 7px;border-radius:6px;background:#f3f5f9;color:#7a859a;font-size:11px;line-height:1.4;overflow-wrap:anywhere}
 .community-feed-post-header>.community-social-menu-wrap{position:relative;align-self:start;margin-top:-3px;z-index:3}
 .community-feed-post-header .community-social-menu-toggle{display:grid;min-height:28px;place-items:center;width:28px;height:28px;padding:0;border:1px solid #e8eaf2;border-radius:8px;background:#fff;color:#66718a;font-size:18px;font-weight:800;line-height:1;cursor:pointer}
 .community-social-menu{position:absolute;right:0;top:calc(100% + 4px);min-width:160px;padding:5px;border:1px solid #e2e7f0;border-radius:12px;background:#fff;box-shadow:0 10px 25px #1f2c4d1c}
@@ -54,16 +54,16 @@
 .community-social-comment-list{display:grid;gap:14px;margin-top:16px}
 .community-social-comment{display:flex;align-items:flex-start;gap:9px;min-width:0;border-radius:12px;scroll-margin:24px}
 .community-social-comment.is-focused{outline:2px solid #b4a6ed;outline-offset:5px}
-.community-social-comment-avatar{display:grid;place-items:center;flex:none;width:29px;height:29px;border-radius:50%;background:#ebe7fa;color:#6854ac;font-size:10px;font-weight:800}
+.community-social-comment-avatar{display:grid;place-items:center;flex:none;width:29px;height:29px;border-radius:50%;background:#ebe7fa;color:#6854ac;font-size:11px;font-weight:800}
 .community-social-comment-content{min-width:0;flex:1}
 .community-social-comment-bubble{padding:9px 12px;border-radius:13px;background:#f3f5fa;overflow-wrap:anywhere}
 .community-social-comment-bubble strong{display:block;font-size:12px;color:#32415e}
 .community-social-comment-bubble p{margin:5px 0 0!important;font-size:13px;line-height:1.5;white-space:pre-wrap;color:#45516b}
 .community-social-comment-tools{display:flex;align-items:center;gap:3px;flex-wrap:wrap;margin-top:2px}
-.community-social-comment-tools time{color:#8a93a5;font-size:10px;margin-right:3px}
+.community-social-comment-tools time{color:#8a93a5;font-size:11px;margin-right:3px}
 .community-social-comment-tools .community-social-link{padding:3px 5px;font-size:11px;min-height:32px}
 .community-social-replies{display:grid;gap:12px;margin-top:10px}
-.community-social-replies .community-social-comment-avatar{width:25px;height:25px;font-size:9px}
+.community-social-replies .community-social-comment-avatar{width:25px;height:25px;font-size:11px}
 .community-social-reply-target{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0 8px;color:#6b6282;font-size:11px}
 .community-social-empty{margin:10px 0;color:#778298;font-size:12px}
 .community-social-dialog .dialog-body{display:grid;gap:14px;overflow-wrap:anywhere}
@@ -139,7 +139,7 @@ body .dialog.community-social-lightbox .dialog-footer .btn{min-width:0;white-spa
 .community-feed-post-destination{border:0;font-family:inherit;cursor:pointer;text-align:left}
 .community-feed-post-destination:hover{background:#eae5fb;color:#5d4baf}
 .community-feed-post-destination:focus-visible{outline:3px solid #8977e8;outline-offset:2px}
-.community-feed-post-market-status{display:inline-flex;padding:3px 7px;border-radius:6px;background:#eef0f5;color:#738095;font-size:10px;font-weight:750;line-height:1.35}
+.community-feed-post-market-status{display:inline-flex;padding:3px 7px;border-radius:6px;background:#eef0f5;color:#738095;font-size:11px;font-weight:750;line-height:1.35}
 .community-social-market{margin-top:12px}
 .community-social-market-actions{display:flex;flex-wrap:wrap;gap:8px}
 .community-social-trade-notice{margin:9px 0 0!important;color:#8490a3;font-size:11px;line-height:1.5}
