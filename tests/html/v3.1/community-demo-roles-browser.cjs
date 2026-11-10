@@ -70,10 +70,10 @@ const rows=[],errors=[];
             }else{
               await classic().locator('#feedActionsToggle').click();assert.equal(await classic().locator('#feedActions [data-template="deal"]').count(),role==='personal'?0:1);await classic().locator('#feedActionsToggle').click();
             }
-            for(const feature of ['shop','transfer'])assert.equal(await classic().locator('[data-community-shortcut="'+feature+'"]').count(),role==='personal'&&feature==='transfer'?0:1);
+            for(const feature of ['shop','transfer'])assert.equal(await classic().locator('[data-community-shortcut="'+feature+'"]').count(),role==='personal'?0:1);
             await host.locator('.community-nav-more:visible').first().click();
             await host.locator('#ecosystemMenu').waitFor();
-            for(const feature of ['shop','transfer'])assert.equal(await host.locator('[data-community-extra="'+feature+'"]:visible').count(),role==='personal'&&feature==='transfer'?0:1);
+            for(const feature of ['shop','transfer'])assert.equal(await host.locator('[data-community-extra="'+feature+'"]:visible').count(),role==='personal'?0:1);
             await host.locator('[data-community-extra="people"]').click();
             await page.waitForURL(url=>url.searchParams.get('tab')==='people');
           });

@@ -196,11 +196,10 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
     }
     function eligibility(postingId) {
       const row = getJob(postingId);
-      if (role() !== 'staff' || own(row) || seeking(row)) return 'NotAllowed';
+      if (!['staff','owner'].includes(role()) || own(row) || seeking(row)) return 'NotAllowed';
       if (!active(row)) return 'Unavailable';
       if (myApplication(postingId)?.status === 'Submitted') return 'AlreadyApplied';
       if (row.externalContact || row.isExternal || row.ownerUserId === null || row.applyEligibility === 'ExternalContact') return 'ExternalContact';
-      if (!getProfile().basicSavedAt) return 'ProfileRequired';
       return 'Eligible';
     }
     function apply(postingId, input = {}) {
@@ -354,8 +353,14 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
         }
       } else {
         actions+=`<button type="button" class="btn small jobs-save" data-jobs-action="save" data-jobs-id="${esc(row.id)}" aria-pressed="${saved}">${esc(po(saved?'★ Đã lưu':'☆ Lưu tin',saved?'★ Saved':'☆ Save job'))}</button>`;
-        if (role()==='staff'&&!seeking(row)) actions+=button('apply',row.id,t(application?.status==='Submitted'?'jobs.applications.applied':application?.status==='Cancelled'?'jobs.applications.reapply':'jobs.applications.applyNow'),true,!active(row));
+        if (!seeking(row)) actions+=button('apply',row.id,t(application?.status==='Submitted'?'jobs.applications.applied':application?.status==='Cancelled'?'jobs.applications.reapply':'jobs.applications.applyNow'),true,!active(row));
         if (role()==='owner'&&seeking(row)) actions+=button('candidate',row.id,po('Xem hồ sơ thợ','View tech profile'),true);
+        if (!seeking(row)) {
+          const phone=String(row.phone||row.contactInfo?.phone||'');
+          if (phone) actions+=`<a class="btn small jobs-phone" href="tel:${esc(phone.replace(/[^\d+]/g,''))}">${icon('phone')}${esc(phone)}</a>`;
+          actions+=`<a class="btn small" href="${esc(safeLink(row.nailhubUrl||row.sourceUrl||'')||'https://nailhub.ai/')}" target="_blank" rel="noopener noreferrer">${esc(t('jobs.board.detail.viewOnNailHub'))}</a>`;
+          actions+=button('tech-profile',row.id,po('Xem hồ sơ thợ','View tech profile'));
+        }
       }
       return `<article class="panel content-card jobs-card" data-job-id="${esc(row.id)}">${images[0]?`<button type="button" class="jobs-cover" data-jobs-action="detail" data-jobs-id="${esc(row.id)}"><img src="${esc(images[0])}" alt="${esc(row.title)}" loading="lazy"></button>`:''}<div class="jobs-card-top"><span class="kind ${seeking(row)?'want':'sale'}">${esc(t(seeking(row)?'jobs.board.card.typeSeeking':'jobs.board.card.typeHiring'))}</span>${row.isSample?`<span class="chip">${esc(po('Dữ liệu mẫu','Sample'))}</span>`:''}${row.urgent?`<span class="jobs-urgent">${esc(t('jobs.board.card.urgent'))}</span>`:''}${mine?`<span class="jobs-status ${esc(normalStatus(row))}">${esc(statusLabel(row))}</span>`:''}</div><h3>${preview?esc(row.title):`<button type="button" class="jobs-title-link" data-jobs-action="detail" data-jobs-id="${esc(row.id)}">${esc(row.title)}</button>`}</h3><div class="meta">${esc(seeking(row)?postingName(row):row.businessName||row.owner)} · ${esc(row.city)}${date(row.createdAt)?' · '+date(row.createdAt):''}</div>${row.description?`<p class="jobs-description">${esc(textOnly(row.description))}</p>`:''}<div class="chips"><span class="chip">${esc(row.industry||'')}</span>${row.role?`<span class="chip">${esc(row.role)}</span>`:''}${skillsText(row)?`<span class="chip jobs-skill-summary">${esc(skillsText(row))}</span>`:''}${row.schedule?`<span class="chip">${esc(row.schedule)}</span>`:''}${(row.workTypes||[]).map(value=>`<span class="chip">${esc(workTypeLabel(value))}</span>`).join('')}${row.availability?`<span class="chip">${esc(t('jobs.board.seeking.preview.availableFrom',{date:date(row.availability)}))}</span>`:''}</div><strong class="jobs-pay">${esc(salary(row))}</strong>${mine&&seeking(row)?listingStats(row):''}${match?`<div class="jobs-matchline${match.value<45?' medium':''}"><strong>${match.value}%</strong><span>${esc(match.reasons)}${match.missing.length?`<br>${esc(po('Chưa khai trong hồ sơ:','Not in your profile:'))} ${esc(match.missing.join(', '))}`:''}</span></div>`:''}${preview?'':`<div class="listing-actions jobs-actions">${actions}</div>`}</article>`;
     }
@@ -399,7 +404,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
         if(count)count.textContent=String(applications.length);return;
       }
       if (tab==='myPosts') {
-        toolbar.innerHTML=`<div class="jobs-filter-row" role="tablist" aria-label="${esc(t('jobs.board.myPosts.tabsLabel'))}">${['All','Recruiting',...(role()==='staff'?['Paused']:[]),'Draft','PendingReview','Closed'].map(value=>`<button type="button" role="tab" aria-selected="${postTab===value}" class="filter-chip${postTab===value?' active':''}" data-jobs-post-status="${value}">${esc(value==='Paused'?po('Tạm ẩn','Paused'):t('jobs.board.myPosts.tabs.'+value))}</button>`).join('')}</div>`;
+        toolbar.innerHTML=`<div class="jobs-filter-row" role="tablist" aria-label="${esc(t('jobs.board.myPosts.tabsLabel'))}">${['All','Recruiting',...(role()==='staff'?['Paused']:[]),'Draft','PendingReview','Closed'].map(value=>`<button type="button" role="tab" aria-selected="${postTab===value}" class="filter-chip${postTab===value?' active':''}" data-jobs-post-status="${value}">${esc(value==='Paused'?po('Tạm ẩn','Paused'):t(role()==='staff'&&value!=='Paused'?'jobs.board.myPosts.seeking.tabs.'+value:'jobs.board.myPosts.tabs.'+value))}</button>`).join('')}</div>`;
         toolbar.insertAdjacentHTML('beforeend',`<label class="jobs-field"><span class="jobs-sr-only">${esc(t('jobs.board.myPosts.searchLabel'))}</span><input type="search" class="field" id="jobsSearch" placeholder="${esc(t('jobs.board.myPosts.searchPlaceholder'))}" value="${esc(query)}"></label>`);
         rows=rows.filter(own).filter(row=>canPost(row.kind)).filter(row=>normalStatus(row)!=='deleted').filter(row=>postTab==='All'||(postTab==='Closed'&&normalStatus(row)==='hired')||normalStatus(row)===({Recruiting:'open',Paused:'paused',Draft:'draft',PendingReview:'pending',Closed:'closed'})[postTab]);
       } else {
@@ -462,9 +467,10 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if (own(row) && canPost(row.kind)) {footer=button('edit',id,t('jobs.board.myPosts.actions.edit'),true,['closed','hired','deleted'].includes(normalStatus(row)));if(!seeking(row))footer+=button('applicants',id,t('jobs.applications.applicantsCount',{count:applicants(id).length}));}
       else {
         footer=button('job-chat',id,t('jobs.board.detail.message'));
-        if(role()==='staff'&&!seeking(row))footer+=button('apply',id,t(application?.status==='Submitted'?'jobs.applications.applied':application?.status==='Cancelled'?'jobs.applications.reapply':'jobs.applications.applyNow'),true,!active(row));
+        if(!seeking(row))footer+=button('apply',id,t(application?.status==='Submitted'?'jobs.applications.applied':application?.status==='Cancelled'?'jobs.applications.reapply':'jobs.applications.applyNow'),true,!active(row));
         if(role()==='owner'&&seeking(row))footer+=button('candidate',id,po('Xem hồ sơ thợ','View tech profile'))+button('invite-seeking',id,po('Mời phỏng vấn','Invite to interview'),true);
       }
+      if(!seeking(row)&&!sourceLink)footer+=`<a class="btn" href="https://nailhub.ai/" target="_blank" rel="noopener noreferrer">${esc(t('jobs.board.detail.viewOnNailHub'))}</a>`;
       if(sourceLink)footer+=`<a class="btn" href="${esc(sourceLink)}" target="_blank" rel="noopener noreferrer">${esc(t('jobs.board.detail.viewOnNailHub'))}</a>`;showDialog(t('jobs.board.detail.title'),body,footer);return true;
     }
     function contactMarkup(row) {
@@ -701,6 +707,7 @@ const SEEKING_SENTENCES=['thợ bột 5 năm tìm việc full time ở Houston, 
       if(action==='save')return toggleSaved(id);
       if(action==='toggle-filters'){filtersOpen=!filtersOpen;render();document.getElementById('jobsToggleFilters')?.focus();return;}
       if(action==='apply')return requestApply(id);
+      if(action==='tech-profile'){adapter.closeDialog?.();pendingJob='';profileStep=0;tab='profile';render();notifyState();adapter.navigate?.('jobs',{jobsTab:'profile'});return true;}
       if(action==='edit')return openEditor(getJob(id)?.kind,getJob(id));
       if(action==='applicants')return openApplicants(id);
       if(action==='candidate')return openCandidate(id);
