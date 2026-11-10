@@ -699,7 +699,6 @@
           if(!Number.isFinite(starts(shift))||!Number.isFinite(ends(shift))||starts(shift)<=now()||starts(shift)>now()+4*24*HOUR||ends(shift)-starts(shift)>16*HOUR)fail('schedule_invalid');
           if(next.workersNeeded&&(!Number.isInteger(next.workersNeeded)||next.workersNeeded<1||next.workersNeeded>200))fail('workers_invalid');
           if(next.pay&&(!Number.isFinite(pay(shift))||pay(shift)<=0||pay(shift)>10000))fail('pay_invalid');
-          if(!hasZelle(zelle(state,member(),'owner'))){openSetup();return null;}
         }
         if(existing)next.id=existing.id;
         delete next.editingId;
@@ -739,7 +738,7 @@
       if(action==='setup'){openSetup();return;}
       if(action==='edit'){editShift(id);return;}
       if(action==='profile'){closeDialog();adapter.onState?.({action:'profile',shiftTab:view.tab});return;}
-      if(action==='post'){if(!hasZelle(zelle(read(),member(),'owner')))openSetup();else{const form=adapter.openTemplate?.('dayhire');if(form)enhance(form);}return;}
+      if(action==='post'){const form=adapter.openTemplate?.('dayhire');if(form)enhance(form);return;}
       if(action==='contact'){const shift=shiftById(id);if(shift)adapter.openChat?.({recipient:shift.owner,sourceId:shift.id,reference:shift.title||shift.role});return;}
       if(action==='workers'){workersDialog(id);return;}
       if(action==='location'){requestLocation();return;}
