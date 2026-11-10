@@ -206,7 +206,7 @@ dialog.lv-dialog{width:min(100% - 20px,560px);max-height:min(90dvh,820px);paddin
 .lv-purpose-controls .stage-button{font-size:10px;min-height:56px}
 .lv-draw-note{position:absolute;top:145px;left:12px;z-index:4;max-width:calc(100% - 24px);padding:5px 9px;border-radius:12px;background:#fff;color:#3c4356;font-size:11px}
 .lv-pip{display:grid;place-items:center;top:195px;left:auto;right:12px;z-index:3}
-.lv-dialog :is(.lv-btn,input[type=search],input[type=tel]){min-height:44px}
+.lv-dialog :is(.lv-btn,input[type=search],input[type=tel]){min-height:36px}
 .lv-dialog .lv-btn.tool{min-height:62px}
 .lv-dialog .lv-row:has(>.lv-actions){flex-wrap:wrap}
 .lv-dialog .lv-row>.lv-actions{flex-shrink:1}
