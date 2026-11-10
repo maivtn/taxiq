@@ -43,13 +43,16 @@
     const url = new URL(source, browser.location.href);
     const definition=browser.NEXORA_COMMUNITY_CODE?.[url.pathname];
     if(!definition)throw new Error('Missing copied Community code: '+url.pathname);
-    const styles=definition.styles.map(item=>css(item.text,new URL(item.url,url)));
+    // Dev mode (localhost or ?dev=1): read standalone CSS/JS straight from source so edits need no rebuild.
+    const dev=/^(127\.0\.0\.1|localhost)$/.test(browser.location.hostname)||/[?&]dev=1\b/.test(browser.location.search);
+    const fresh=async(item,field)=>{if(!dev||/\.html?(?:$|\?)/.test(item.url))return item[field];try{return await read(new URL(item.url,url).href);}catch{return item[field];}};
+    const styles=await Promise.all(definition.styles.map(async item=>css(await fresh(item,'text'),new URL(item.url,url))));
     // Apply the retained Community visual language after the PO's component styles.
     if (options.stylesheet) {
       const themeURL = new URL(options.stylesheet, url);
       styles.push(css(await read(themeURL.href), themeURL));
     }
-    const sources=definition.scripts.map(item=>({url:new URL(item.url,url).href,code:item.code}));
+    const sources=await Promise.all(definition.scripts.map(async item=>({url:new URL(item.url,url).href,code:await fresh(item,'code')})));
     const root=regionRoot(host);
     function dimensions(){host.style.setProperty('--community-pane-height',(host.clientHeight||browser.innerHeight)+'px');host.style.setProperty('--community-pane-width',(host.clientWidth||browser.innerWidth)+'px');}
     dimensions();const sizeObserver=new ResizeObserver(dimensions);sizeObserver.observe(host);
