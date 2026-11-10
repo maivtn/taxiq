@@ -35,7 +35,7 @@ body .dialog .dialog-body,
 body .dialog .dialog-footer { padding-inline: var(--community-dialog-gutter); }
 body .dialog .page-profile-head { margin-inline: 0; }
 @media (min-width: 801px) {
-  body.embedded .content { padding-top: 12px; }
+  body.embedded .content { padding-top: 4px; }
   body.embedded .content > section > .feature-intro { margin-top: 0; }
 }
 @media (min-width: 800px) {

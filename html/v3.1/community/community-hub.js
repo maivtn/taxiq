@@ -15,6 +15,7 @@
     style.textContent+=`
       @container community (max-width:800px) {
         :host .main > .workspace { order:1; }
+        :host .main .content { padding-top:4px; }
         :host .main > .top { margin-top:var(--community-header-scroll,0px); }
         :host .main > .mobile-nav:not([hidden]) { min-height:0; padding:5px 5px 7px; }
         :host .main > .mobile-nav .mobile-tab.tab {

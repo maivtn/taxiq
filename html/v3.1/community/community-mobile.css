@@ -212,7 +212,7 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
 }
 
 @media (max-width: 800px) {
-  body.embedded .content { padding: 14px 14px 28px; }
+  body.embedded .content { padding: 4px 14px 28px; }
   body.embedded :is(.grid, .feature-layout) { grid-template-columns: minmax(0, 1fr); gap: 18px; }
   body.embedded :is(.panel, .surface) { border-radius: var(--community-radius); border-color: var(--community-border); box-shadow: 0 2px 10px #0f172a06; }
   body.embedded .content-card { padding: 16px; }
