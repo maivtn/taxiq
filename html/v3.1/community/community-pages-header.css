@@ -5,7 +5,7 @@
 #pagesView>.community-pages-shortcuts button.active{background:#eeeaff;color:#6350de}
 #pagesView>.community-pages-shortcuts svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 body.embedded #pagesView>.community-pages-hero{display:flex;align-items:flex-start;flex-direction:column;gap:10px;margin:0 0 11px;padding:18px 14px 14px;border:1px solid #dfd9ff;border-radius:18px;background:linear-gradient(115deg,#f0edff 0%,#fff 72%)}
-body.embedded #pagesView>.community-pages-hero .community-po-eyebrow{font-size:10px;line-height:1.5;letter-spacing:.13em;color:#6852e5;font-weight:900}
+body.embedded #pagesView>.community-pages-hero .community-po-eyebrow{font-size:11px;line-height:1.5;letter-spacing:.13em;color:#6852e5;font-weight:900}
 body.embedded #pagesView>.community-pages-hero h2{margin:4px 0 3px;font-size:20px;line-height:1.2;letter-spacing:0;color:#25304b;font-weight:800}
 body.embedded #pagesView>.community-pages-hero p{margin:0;max-width:550px;font-size:11px;line-height:1.4;color:#79839c}
 body.embedded #pagesView>.community-pages-hero>.btn{display:inline-flex;align-items:center;gap:2px;min-height:35px;padding:8px 11px;border:0;border-radius:10px;background:#6551df;color:#fff;box-shadow:none;font-size:11px;font-weight:800;line-height:1.4}

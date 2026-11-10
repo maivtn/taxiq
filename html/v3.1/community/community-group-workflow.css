@@ -8,7 +8,7 @@
 .community-group-filters .select{width:100%;min-height:44px;padding-right:44px;background-position:right 16px center;background-size:16px}
 .community-group-card-heading{display:flex;gap:9px;align-items:start;justify-content:space-between}
 .community-group-card-heading>h3{min-width:0;overflow-wrap:anywhere;margin:0 0 9px}
-.community-group-free{flex:none;background:#e4f4ec;color:#348566;font-size:10px;padding:4px 8px;border-radius:20px;font-weight:800}
+.community-group-free{flex:none;background:#e4f4ec;color:#348566;font-size:11px;padding:4px 8px;border-radius:20px;font-weight:800}
 .community-group-inline-rules{font-size:12px!important;color:#7b8297!important;white-space:pre-wrap;overflow-wrap:anywhere}
 .community-group-card .listing-actions{flex-wrap:wrap}
 .community-group-card button:disabled{opacity:.55;cursor:default}
@@ -46,7 +46,7 @@
 .community-group-search{grid-column:1/-1;display:flex;align-items:center;gap:8px;min-width:0}.community-group-search input{min-width:0;flex:1;min-height:44px;font-size:14px}.community-group-search button{flex:none;min-height:44px}
 body #groupsView .community-group-search .community-group-filter-toggle{display:inline-flex;align-items:center;gap:6px}
 .community-group-search .community-group-filter-toggle:is([aria-expanded="true"],.has-filters){border-color:#b8aaf0;background:#eae5ff}
-.community-group-search [data-group-filter-count]:not([hidden]){display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;background:#6755ec;color:#fff;border-radius:20px;font-size:10px}
+.community-group-search [data-group-filter-count]:not([hidden]){display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;background:#6755ec;color:#fff;border-radius:20px;font-size:11px}
 @media(max-width:800px){.community-group-search input{font-size:16px}}
 
 .community-group-latest{grid-template-columns:minmax(0,1fr)}

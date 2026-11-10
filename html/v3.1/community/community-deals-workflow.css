@@ -47,7 +47,7 @@
 
 @media(max-width:800px){
  .community-deals-nav-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:4px;overflow:visible;padding-bottom:0}
- .community-deals-nav-tabs .community-deals-tab{flex-direction:column;min-width:0;min-height:60px;padding:6px 2px;gap:4px;white-space:normal;text-align:center;font-size:10px}
+ .community-deals-nav-tabs .community-deals-tab{flex-direction:column;min-width:0;min-height:60px;padding:6px 2px;gap:4px;white-space:normal;text-align:center;font-size:11px}
  .community-deals-nav-tabs .community-deals-tab img{width:22px;height:22px}
  .community-deals-actions{justify-content:flex-end}
 }
