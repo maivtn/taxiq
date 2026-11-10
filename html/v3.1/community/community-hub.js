@@ -11,7 +11,22 @@
     if(host.communityHub)return host.communityHub;
     const root=window.NEXORA_NATIVE.regionRoot(host);
     const style=document.createElement('style');
-    style.textContent=scopedCSS(window.NEXORA_COMMUNITY_SHELL_CSS,BASE_URL)+`\n:host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host .tour-card,:host .tour-card.menu-step{top:auto;}}`;
+    // Dev mode (localhost or ?dev=1): rebuild the shell CSS from source so edits need no rebuild.
+    let shellCSS=window.NEXORA_COMMUNITY_SHELL_CSS;
+    if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname)||/[?&]dev=1\b/.test(location.search)){
+      try{
+        const pageURL=new URL('nexora-community-complete.html',BASE_URL).href;
+        const doc=new DOMParser().parseFromString(await (await fetch(pageURL,{cache:'no-store'})).text(),'text/html');
+        const absolute=(css,base)=>css.replace(/url\((['"]?)([^)'"\s]+)\1\)/g,(all,q,v)=>/^(?:data:|https?:|#)/.test(v)?all:'url("'+new URL(v,base).pathname+'")');
+        const parts=await Promise.all([...doc.querySelectorAll('style,link[rel="stylesheet"]')].filter(n=>!(n.getAttribute('href')||'').startsWith('https://fonts.')).map(async n=>{
+          if(n.tagName==='STYLE')return absolute(n.textContent,pageURL);
+          const href=new URL(n.getAttribute('href'),pageURL).href;
+          return absolute(await (await fetch(href,{cache:'no-store'})).text(),href);
+        }));
+        shellCSS=parts.join('\n');
+      }catch(error){console.warn('Community dev CSS unavailable; using bundle.',error);}
+    }
+    style.textContent=scopedCSS(shellCSS,BASE_URL)+`\n:host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host .tour-card,:host .tour-card.menu-step{top:auto;}}`;
     style.textContent+=`
       @container community (max-width:800px) {
         :host .main > .workspace { order:1; }
