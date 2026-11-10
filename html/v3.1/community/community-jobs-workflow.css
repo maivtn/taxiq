@@ -235,3 +235,12 @@ body.embedded #jobsView .jobs-worker-card .jobs-worker-actions>.btn{display:inli
 
 /* Separate the Find workers search from the navigation above. */
 #jobsView #poWorkerSearch{margin-top:12px}
+
+/* Jobs header: minimum readable type — 14px desktop, 12px mobile */
+#jobsView .jobs-workflow-head .jobs-tab,#jobsView .jobs-workflow-head .jobs-tab span,#jobsView .jobs-workflow-head .jobs-pos-link,#jobsView .jobs-workflow-head .jobs-pos-link span,#jobsView .jobs-workflow-head .jobs-compose-slot .btn{font-size:14px!important;line-height:1.3!important}
+#jobsView .jobs-workflow-head .jobs-tab .jobs-icon{width:20px!important;height:20px!important}
+@media(max-width:767px){
+  #jobsView .jobs-workflow-head .jobs-tab,#jobsView .jobs-workflow-head .jobs-tab span,#jobsView .jobs-workflow-head .jobs-pos-link,#jobsView .jobs-workflow-head .jobs-pos-link span,#jobsView .jobs-workflow-head .jobs-compose-slot .btn{font-size:12px!important}
+  #jobsView .jobs-workflow-head .jobs-tab{height:auto!important;min-height:44px!important}
+  #jobsView .jobs-workflow-head .jobs-tab .jobs-icon{width:18px!important;height:18px!important}
+}

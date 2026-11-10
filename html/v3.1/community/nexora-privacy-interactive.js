@@ -798,10 +798,10 @@
   renderSummaries();
   renderConversationPreviews();
   function setupCompactConnectTools(){
-    const stage=$('#connectStage'),search=$('.global-search'),add=$('#newMessageBtn'),guide=$('#tourStartBtn'),actions=$('.page-head .head-actions'),tabs=$('.page-tabs');
+    const stage=$('#connectStage'),search=$('.global-search'),add=$('#newMessageBtn'),guide=$('#tourStartBtn.tour-launch'),actions=$('.page-head .head-actions'),tabs=$('.page-tabs');
     const wrapper=document.createElement('div');wrapper.className='connect-search-tools';search.before(wrapper);wrapper.append(search);
     const media=matchMedia('(max-width:800px)');
-    function sync(){if(media.matches){wrapper.append(add);tabs.append(guide);}else{actions.prepend(add);actions.append(guide);}}
+    function sync(){if(media.matches){wrapper.append(add);if(guide)tabs.append(guide);}else{actions.prepend(add);if(guide)actions.append(guide);}}
     media.addEventListener('change',sync);sync();
     const profile=$('#privacyPanel .profile-grid'),qr=$('#profileQr'),share=$('#privacyPanel .profile-grid > .actions');
     if(profile&&qr&&share){

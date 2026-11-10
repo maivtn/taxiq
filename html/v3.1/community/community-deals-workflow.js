@@ -37,7 +37,7 @@
     if(ROUTES[selected].business&&adapter.role!=='owner')selected='nearby';
     const messageOrigin=location.protocol==='file:'?'*':location.origin;
     const send=(record,data)=>{if(record.ready)record.frame.contentWindow.postMessage(data,messageOrigin);};
-    const mainRoute=name=>({industry:'nearby',demand:'match',openingBusiness:'opening',manage:'campaign'}[name]||name);
+    const mainRoute=name=>({demand:'match',openingBusiness:'opening',manage:'campaign'}[name]||name);
     function updateNavigation(){
       root.querySelectorAll('[data-deal-route]').forEach(button=>{const main=button.getAttribute('role')==='tab',chosen=button.dataset.dealRoute===(main?mainRoute(selected):selected);button.setAttribute(main?'aria-selected':'aria-pressed',String(chosen));});
       const business=root.querySelector('.community-deals-business');

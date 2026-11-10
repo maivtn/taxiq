@@ -242,7 +242,6 @@
           return true;
         }
         if(action==='availability') {
-          requireRole('staff');
           const current=availability(state),next={...current,...data};
           next.availableDays=(next.availableDays||[]).filter(day=>DAYS.includes(day));
           if(![5,10,25].includes(Number(next.maxDistanceMiles)))fail('distance_invalid');
@@ -423,7 +422,7 @@
     function filterButtons(items,key) {return `<div class="shifts-filters" role="group" aria-label="${esc(t('navigation.selectStatus'))}">${items.map(([value,label])=>button(key,value,label,`aria-pressed="${view[key==='paymentRole'?'paymentRole':'filter']===value}"`,view[key==='paymentRole'?'paymentRole':'filter']===value?'primary':'soft')).join('')}</div>`;}
     function browseMarkup(state) {
       const entry=availability(state),rows=getShifts().filter(shift=>shift.kind==='dayhire'&&!owned(shift)&&!closed(shift)&&starts(shift)>now()&&matchesLocation(entry,shift,entry.maxDistanceMiles)&&(!entry.availableDays.length||entry.availableDays.includes(DAYS[(new Date(starts(shift)).getDay()+6)%7])));
-      return availabilityMarkup(state)+invitationsMarkup(state)+`<section class="shifts-section"><div class="shifts-section-heading"><h3>${esc(t('nearby.title'))}</h3><span class="meta">${entry.isAvailable?rows.length:esc(t('nearby.off'))}</span></div>${!entry.isAvailable?empty(t('nearby.offHint')):rows.length?paged(rows,row=>card(row,state)):empty(t('nearby.empty'))}</section>`;
+      return availabilityMarkup(state)+invitationsMarkup(state)+`<section class="shifts-section"><div class="shifts-section-heading"><h3>${esc(t('nearby.title'))}</h3><span class="meta">${entry.isAvailable?rows.length:0}</span></div>${!entry.isAvailable?empty(t('nearby.offHint')):rows.length?paged(rows,row=>card(row,state)):empty(t('nearby.empty'))}</section>`;
     }
     function assignmentMarkup(assignment,state) {
       const shift=shiftById(assignment.shiftId);if(!shift)return '';
@@ -512,11 +511,11 @@
       [...container.children].forEach(child=>{if(child!==root&&!child.classList.contains('feature-intro')&&!child.classList.contains('jobs-section-nav')&&child.id!=='shiftTemplates')child.dataset.shiftsReplaced='true';});
       document.querySelectorAll('#shiftTemplates [data-template]').forEach(button=>{button.hidden=button.dataset.template!==(role()==='owner'?'dayhire':'daywork');});
       const state=read();if(sweep(state)){try{persist(state);}catch{errorMessage=t('errors.generic');}}
-      const tabs=role()==='owner'?['my-shifts','payments']:['browse','my-shifts','payments'];if(!tabs.includes(view.tab))view.tab=tabs[0];
+      const tabs=role()==='owner'?['browse','my-shifts','payments']:['browse','my-shifts','payments'];if(!tabs.includes(view.tab))view.tab=tabs[0];
       const pending=overdue(state),blocked=pending.length?`<div class="shifts-overdue" role="status"><p>${esc(t('overdue.message',{count:pending.length,amount:money(pending.reduce((sum,row)=>sum+row.amount,0))}))}</p>${button('payOverdue','',t('overdue.payNow'),'','soft')}</div>`:'';
       const restriction=role()==='staff'&&reliability(state),reliabilityNotice=restriction?.until?`<div class="shifts-overdue" role="status"><p>${esc(reliabilityMessage(restriction.until))}</p></div>`:'';
       document.getElementById('dayworkView')?.classList.toggle('shifts-owner-view',role()==='owner');
-      root.innerHTML=`${blocked}${reliabilityNotice}<div class="shifts-tabs" role="tablist" aria-label="${esc(t('navigation.label'))}">${tabs.map(tab=>`<button type="button" role="tab" id="shift-tab-${tab}" data-shifts-tab="${tab}" aria-controls="shift-panel-${tab}" aria-selected="${tab===view.tab}" tabindex="${tab===view.tab?0:-1}">${esc(t('navigation.'+tab))}</button>`).join('')}</div>${errorMessage?`<p class="shifts-error" role="alert">${esc(errorMessage)}</p>`:''}<div class="shifts-workspace"><div role="tabpanel" id="shift-panel-${view.tab}" aria-labelledby="shift-tab-${view.tab}" class="shifts-stack">${view.tab==='payments'?paymentMarkup(state):role()==='owner'?ownerMarkup(state):view.tab==='browse'?browseMarkup(state):myMarkup(state)}</div><aside class="shifts-stack">${sharingMarkup(state)}${reliabilityMarkup(state)}${policyMarkup()}${button('setup','',t('setup.'+(role()==='owner'?'businessZelle':'staffZelle')+'.cta'),'','soft')}</aside></div>`;
+      root.innerHTML=`${blocked}${reliabilityNotice}<div class="shifts-tabs" role="tablist" aria-label="${esc(t('navigation.label'))}">${tabs.map(tab=>`<button type="button" role="tab" id="shift-tab-${tab}" data-shifts-tab="${tab}" aria-controls="shift-panel-${tab}" aria-selected="${tab===view.tab}" tabindex="${tab===view.tab?0:-1}">${esc(t('navigation.'+tab))}</button>`).join('')}</div>${errorMessage?`<p class="shifts-error" role="alert">${esc(errorMessage)}</p>`:''}<div class="shifts-workspace"><div role="tabpanel" id="shift-panel-${view.tab}" aria-labelledby="shift-tab-${view.tab}" class="shifts-stack">${view.tab==='payments'?paymentMarkup(state):view.tab==='browse'?browseMarkup(state):role()==='owner'?ownerMarkup(state):myMarkup(state)}</div><aside class="shifts-stack">${sharingMarkup(state)}${reliabilityMarkup(state)}${policyMarkup()}${button('setup','',t('setup.'+(role()==='owner'?'businessZelle':'staffZelle')+'.cta'),'','soft')}</aside></div>`;
     }
     function modal(title,body,footer='') {
       adapter.openDialog?.(`<div class="overlay" data-shifts-overlay><section class="dialog shifts-dialog" role="dialog" aria-modal="true" aria-labelledby="shiftsDialogTitle"><div class="dialog-head"><h2 id="shiftsDialogTitle">${esc(title)}</h2>${button('close','',t('close'),'','soft')}</div><div class="dialog-body">${body}<p class="shifts-error" data-shifts-dialog-error role="alert"></p></div>${footer?`<div class="dialog-footer">${footer}</div>`:''}</section></div>`);
@@ -670,7 +669,7 @@
       if(form.querySelector('[data-shifts-options]'))return true;
       if(form.dataset.kind==='daywork')return true;
       const matches=String(prefill.hours||'').match(/\d{1,2}:\d{2}/g)||[];
-      const element=document.createElement('details');element.className='shifts-form-options';element.dataset.shiftsOptions='true';
+      const element=document.createElement('details');element.open=true;element.className='shifts-form-options';element.dataset.shiftsOptions='true';
       element.innerHTML=`<summary>${esc(t('post.acceptMode'))}</summary><div class="shifts-form-grid"><label>${esc(t('post.type'))}<select name="shiftType">${['Party','BusyDay','Urgent'].map(value=>`<option value="${value}" ${prefill.shiftType===value?'selected':''}>${esc(t('types.'+value))}</option>`).join('')}</select></label><label>${esc(t('post.workers'))}<input name="workersNeeded" type="number" min="1" max="200" step="1" value="${countNeeded(prefill)}"></label><label>${esc(t('post.start'))}<input name="startTime" type="time" value="${esc(prefill.startTime||matches[0]||'')}"></label><label>${esc(t('post.end'))}<input name="endTime" type="time" value="${esc(prefill.endTime||matches[1]||'')}"></label><label class="shifts-span">${esc(t('post.acceptMode'))}<select name="acceptMode">${['Approval','Instant'].map(value=>`<option value="${value}" ${mode(prefill)===value?'selected':''}>${esc(t('acceptModes.'+value))}</option>`).join('')}</select></label></div>`;
       (form.querySelector('.dialog-body')||form).append(element);return true;
     }
