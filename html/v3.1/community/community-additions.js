@@ -552,5 +552,10 @@
     api.ready=supports(initial)?navigate(initial,Object.fromEntries(params),true):Promise.resolve();
     return api;
   }
+  // Header bell is decorative on Community pages: out of the tab order and no click/keyboard activation.
+  const lockBell=()=>{const bell=document.querySelector('.shell-header-notification');if(bell){bell.tabIndex=-1;bell.setAttribute('aria-disabled','true');bell.removeAttribute('aria-haspopup');bell.removeAttribute('aria-expanded');bell.removeAttribute('aria-controls');}};
+  document.addEventListener('click',event=>{if(event.target.closest('.shell-header-notification')){event.preventDefault();event.stopImmediatePropagation();}},true);
+  document.addEventListener('keydown',event=>{if(event.target.closest?.('.shell-header-notification'))event.stopImmediatePropagation();},true);
+  lockBell();document.addEventListener('DOMContentLoaded',lockBell);setTimeout(lockBell,500);
   window.NEXORA_COMMUNITY_ADDITIONS={mount,supports};
 })();

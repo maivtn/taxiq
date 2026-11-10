@@ -106,3 +106,7 @@
 /* Checkbox + label stay on one row in the Create group dialog. */
 .form-group.po-check-row { display:flex; flex-direction:row; align-items:center; gap:8px; flex-wrap:nowrap; }
 .form-group.po-check-row > input[type="checkbox"] { flex:none; width:auto; min-width:0; height:auto; margin:0; }
+
+/* Community header bell: decorative only — no border, no red badge, not clickable */
+.shell-header-notification{border:0!important;box-shadow:none!important;background:transparent!important;pointer-events:none!important;cursor:default!important}
+.shell-header-notification .shell-header-badge{display:none!important}
