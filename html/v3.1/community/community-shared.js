@@ -8,8 +8,8 @@
   function change(operation){const data=read(),result=operation(data);if(result===false)return false;try{localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new CustomEvent('nexora-community-shared-changed'));return result===undefined?true:result;}catch{return false;}}
   const query=new URLSearchParams(location.search);
   const role=window.NEXORA_SHELL?.activePage==='staff'||['staff','tech'].includes(query.get('role'))||query.get('account')==='personal'?'staff':'owner';
-  const businessFeatures=new Set(['foodMerchant','transfer','workers','services','hiring','posRecruitment','shop','realestate']);
-  // Personal accounts do not get business tools (My storefront, Real Estate, hiring); they require Business.
+  const businessFeatures=new Set(['foodMerchant','transfer','workers','services','hiring','posRecruitment']);
+  // Every NEXORA ID can list products and services; merchant tools require Business.
   const canAccessFeature=feature=>!businessFeatures.has(feature)||role==='owner';
   const member=query.get('member')||window.NEXORA_SHELL?.profileName||(role==='staff'?document.querySelector('.staff-profile-name')?.textContent.trim():null)||(role==='staff'?'David Le':'BITCOIN NAIL BAR');
   const profileView=row=>({...copy(row),displayName:row.displayNickname?.trim()||row.name});
