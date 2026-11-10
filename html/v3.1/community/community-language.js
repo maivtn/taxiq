@@ -8,7 +8,9 @@
   let language=valid.has(read())?read():'en';
   const canonical=new Map(),englishKeys=new Map(),originalText=new WeakMap(),originalAttrs=new WeakMap();
   for(const dictionary of Object.values(data.translations))for(const [en,value]of Object.entries(dictionary)){
-    canonical.set(en,en);englishKeys.set(en.toLowerCase(),en);if(value&&!canonical.has(value))canonical.set(value,en);
+    canonical.set(en,en);englishKeys.set(en.toLowerCase(),en);
+    // Prefer the readable English copy over an internal lowercase key (e.g. "groups") for the same Vietnamese text.
+    if(value&&(!canonical.has(value)||(/^[a-z][A-Za-z]*$/.test(canonical.get(value))&&/^[A-Z]/.test(en))))canonical.set(value,en);
   }
   // Current controls that correspond to the same named PO navigation entries.
   const aliases={'Deal & Coupon':'Deals & Coupons','Deals & Coupon':'Deals & Coupons','Photo video':'Photo/video','Search...':'Search'};
