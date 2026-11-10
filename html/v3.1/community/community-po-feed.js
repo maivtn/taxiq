@@ -39,7 +39,7 @@
     try{
       const preview=await broker.preview();if(!preview||current!==revision||disposed)return;
       for(const key of ['stories','people','reels']){
-        const node=elements[key],markup=preview[key]||'';
+        const node=elements[key],markup=key==='reels'?'':preview[key]||'';// Reels live only on the dedicated Reels page.
         if(node.dataset.markup!==markup){const rail=node.querySelector('[role="region"]'),offset=rail?.scrollLeft||0;node.innerHTML=markup;node.dataset.markup=markup;const next=node.querySelector('[role="region"]');if(next)next.scrollLeft=offset;}
         node.hidden=!markup||!slots().visible;
         if(key==='reels')window.NEXORA_COMMUNITY_PO?.hydrateVideos(node);
