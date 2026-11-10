@@ -214,7 +214,9 @@
   document.documentElement.lang=localStorage.getItem('nexora-community-language')==='vi'?'vi':'en';document.body.classList.toggle('lang-en',document.documentElement.lang==='en');
   // Keep all module subviews reachable while the shared Community header stays in place.
   const localNav=document.querySelector('.top > .tabs,.top > .phases,.top > .roles');
-  if(localNav){localNav.classList.add('deal-module-subnav');document.querySelector('main')?.before(localNav);}
+  const personalAccount=window.NEXORA_COMMUNITY_SHARED?.role==='staff'||new URLSearchParams(window.parent?.location?.search||location.search).get('account')==='personal';
+  if(localNav&&personalAccount&&localNav.classList.contains('roles'))localNav.style.setProperty('display','none','important');
+  else if(localNav){localNav.classList.add('deal-module-subnav');document.querySelector('main')?.before(localNav);}
   if(module==='camp'&&new URLSearchParams(location.search).get('communityNav')==='merged')localNav?.querySelector('[data-ext="dcreate"]')?.remove();
   if(typeof spot==='function'){const originalSpot=spot;spot=element=>originalSpot(element?.classList.contains('deal-filter-source')?document.getElementById('deal-field-'+element.id)||element:element);}
   const modal=document.getElementById('modal');if(modal){modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','Coupon');}
