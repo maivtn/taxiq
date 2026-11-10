@@ -27,7 +27,8 @@ function fixture(t,count=6){
 const order=document=>[...document.getElementById('feedPosts').children].map(node=>node.dataset.feedPostId||node.id);
 const expected=count=>['post-0'].slice(0,count).concat('communityPOPeople','communityPOReels',Array.from({length:Math.max(0,count-1)},(_,index)=>'post-'+(index+1)));
 
-test('The retained Feed places People and Reels after one post without replacing post nodes',async t=>{
+// Skipped: the Reels strip was removed from the Feed (P1-1, Reels live only on the Reels page).
+test.skip('The retained Feed places People and Reels after one post without replacing post nodes',async t=>{
   const {document,previews}=fixture(t);
   const original=[...document.querySelectorAll('article')];
   await waitFor(()=>document.querySelector('#communityPOReels button'));
@@ -38,7 +39,7 @@ test('The retained Feed places People and Reels after one post without replacing
   assert.ok(previews()<=3,'Moving the components must not keep refreshing the Feed');
 });
 
-test('Filtering, loading more and rebuilding the Feed restore exactly one pair of components',async t=>{
+test.skip('Filtering, loading more and rebuilding the Feed restore exactly one pair of components',async t=>{
   const {document}=fixture(t);
   await waitFor(()=>document.querySelector('#communityPOReels button'));
   const posts=document.getElementById('feedPosts');
@@ -51,7 +52,7 @@ test('Filtering, loading more and rebuilding the Feed restore exactly one pair o
   }
 });
 
-test('Leaving Feed pauses Reels and returning restores the same ordering',async t=>{
+test.skip('Leaving Feed pauses Reels and returning restores the same ordering',async t=>{
   const {window,document}=fixture(t);
   await waitFor(()=>document.querySelector('#communityPOReels button'));
   const reel=document.createElement('video');let paused=false;reel.pause=()=>{paused=true;};
