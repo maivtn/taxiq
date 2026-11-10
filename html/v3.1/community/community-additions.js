@@ -554,22 +554,3 @@
   }
   window.NEXORA_COMMUNITY_ADDITIONS={mount,supports};
 })();
-
-/* Points wallet chip in the header: one shared balance, opens the wallet screen. */
-(()=>{
-  function sync(){
-    const shared=window.NEXORA_COMMUNITY_SHARED,bell=document.querySelector('.shell-notifications');
-    if(!shared||!bell)return;
-    let chip=document.getElementById('communityWalletChip');
-    if(!chip){
-      chip=document.createElement('button');chip.type='button';chip.id='communityWalletChip';chip.className='community-wallet-chip';chip.setAttribute('aria-label','NEXORA Points');
-      chip.addEventListener('click',()=>document.querySelector('[data-community-extra="wallet"]')?.click());
-      bell.before(chip);
-      const style=document.createElement('style');style.textContent='.community-wallet-chip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;margin-right:8px;border:1px solid #dfe2f0;border-radius:999px;background:#fff;color:#2c2f55;font:600 13px/1 inherit;cursor:pointer}.community-wallet-chip:hover{background:#f5f6ff}';document.head.append(style);
-    }
-    let balance=0;try{balance=Number(shared.wallet().balance)||0;}catch{}
-    chip.textContent='◎ '+balance.toLocaleString('en-US')+' pts';
-  }
-  for(const delay of [600,1500,3000])setTimeout(sync,delay);
-  setInterval(sync,5000);window.addEventListener('storage',sync);
-})();
