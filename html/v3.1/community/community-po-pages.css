@@ -24,7 +24,7 @@
 @media(min-width:900px){#communityPageScreen .po-page-supplement .page-profile-head{display:flex;align-items:flex-end}#communityPageScreen .po-page-supplement:not(.po-page-owner) .page-hero-actions{grid-template-columns:repeat(3,minmax(0,180px))}#communityPageScreen .po-page-supplement .page-profile-head .page-avatar{width:80px;height:80px}}
 
 /* Persistent scroll track: mobile operating systems can hide native scrollbars. */
-#communityPageScreen .po-page-tabs-nav{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:minmax(0,1fr);margin:10px 12px 0;padding:4px 6px;background:transparent;border-radius:16px;min-width:0}
+#communityPageScreen .po-page-tabs-nav{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:minmax(0,1fr);margin:0;padding:4px 6px;background:transparent;border-radius:16px;min-width:0}
 #communityPageScreen .po-page-supplement .po-page-tabs-nav .page-detail-tabs{position:static;min-width:0;margin:0;padding:2px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;touch-action:pan-x pan-y}
 #communityPageScreen .po-page-tabs-nav .page-detail-tabs::-webkit-scrollbar{display:none}
 #communityPageScreen .po-page-tab-scrollbar{appearance:none;-webkit-appearance:none;display:block;width:100%;height:18px;margin:0;padding:0;border:0;background:transparent;cursor:pointer;touch-action:pan-y}
