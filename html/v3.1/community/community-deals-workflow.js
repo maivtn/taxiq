@@ -137,6 +137,9 @@
     });
     function scopePage(pageId){pageScope=pageId||'';for(const record of frames.values())send(record,{type:'nexora-deals-page-scope',pageId:pageScope});}
     function claim(sourceId,pageId){scopePage(pageId);navigate('wallet');const record=ensureFrame('nearby');const run=()=>{sync(true);send(record,{type:'nexora-deals-page-claim',sourceId,pageId});};if(record.ready)run();else record.frame.addEventListener('load',run,{once:true});}
+    // Deep link (?tab=deals): the page may enter Deals before this module mounts, so catch up on mount and on later class changes.
+    const catchUp=()=>{if(feed.classList.contains('deal-mode')&&!active)activate('deals');};
+    catchUp();new MutationObserver(catchUp).observe(feed,{attributes:true,attributeFilter:['class']});
     return {activate,navigate,sync,closeDetail,claim,scopePage};
   }
   window.NEXORA_COMMUNITY_DEALS={mount};

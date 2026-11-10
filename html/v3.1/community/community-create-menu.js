@@ -3,7 +3,7 @@
   'use strict';
   const base=new URL('./',document.currentScript.src);
   const artwork=name=>'feed-icons/'+name;
-  const oneqr=name=>'../icon-oneqr/issue-2040-oneqr-'+name+'-3d.png';
+  const oneqr=name=>'/html/v3.1/icon-oneqr/issue-2040-oneqr-'+name+'-3d.png';
   // Keep publishing shortcuts first; labels and artwork match the Feed actions.
   const entries=[
     ['blog','Write blog',artwork('blog-1352524.png'),'blog',{composeKind:'blog'}],

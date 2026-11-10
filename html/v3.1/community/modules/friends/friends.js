@@ -51,7 +51,7 @@
       const count=button.querySelector('[data-count]');if(count){const n=groups[count.dataset.count].length;count.textContent=n;count.toggleAttribute('data-zero',!n);}
     }
     grid.innerHTML=rows.map(card).join('');empty.hidden=rows.length>0;
-    empty.innerHTML=rows.length?'':'<img src="../../../../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt=""><p>'+esc(query?'No matching people found.':emptyText[tab])+'</p>'+(!query&&tab==='all'?'<button type="button" class="friends-button" data-friends-tab="suggestions">'+icon('UserRoundPlus')+'<span>Find friends</span></button>':'');
+    empty.innerHTML=rows.length?'':'<img src="/html/assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt=""><p>'+esc(query?'No matching people found.':emptyText[tab])+'</p>'+(!query&&tab==='all'?'<button type="button" class="friends-button" data-friends-tab="suggestions">'+icon('UserRoundPlus')+'<span>Find friends</span></button>':'');
     for(const img of grid.querySelectorAll('.friends-avatar img'))img.addEventListener('error',()=>{img.replaceWith(document.createTextNode(img.closest('.friends-card').querySelector('h3').textContent.split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase()));},{once:true});
     document.querySelector('.friends-content').setAttribute('aria-busy','false');
   }

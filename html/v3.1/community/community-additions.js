@@ -465,7 +465,7 @@
       original.closeLocation();
       // Coupon shortcuts reuse the existing Feed form and its publishing controller.
       if(route==='deals'&&context.composeKind==='deal')route='feed';
-      if(route==='deals'&&(context.dealTab||context.claimOffer)){deactivate();original.navigate('deals',context);if(!fromHost){notify({type:'nexora-community-route',route:'deals'});notify({type:'nexora-community-context',context});}return;}
+      if(route==='deals'){deactivate();original.navigate('deals',context);if(!fromHost){notify({type:'nexora-community-route',route:'deals'});notify({type:'nexora-community-context',context});}return;}
       createMenu?.close();
       if(route==='explore'||!window.NEXORA_COMMUNITY_SHARED.canAccessFeature(route))route='feed';
       if(route==='people'&&context.personId){route='personal-profile';context={...context,memberId:context.personId};}
