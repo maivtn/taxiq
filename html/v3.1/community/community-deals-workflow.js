@@ -29,11 +29,11 @@
     root.id='communityDealsView';root.hidden=true;root.setAttribute('translate','no');root.setAttribute('data-community-authored','');
     const tabs=['nearby','industry','match','opening','wallet'];
     const tabButton = (key,main=false) => `<button type="button" class="community-deals-tab" data-deal-route="${key}" ${main?'role="tab" aria-selected="false" aria-controls="communityDealsStage"':'aria-pressed="false"'}>${icon(ROUTES[key].icon)}<span>${ROUTES[key].label}</span></button>`;
-    root.innerHTML=`<div class="community-deals-nav"><nav class="community-deals-nav-tabs" role="tablist" aria-label="Deals &amp; Coupons">${tabs.map(key=>tabButton(key,true)).join('')}</nav><div class="community-deals-actions">${adapter.role==='owner'?`<button type="button" class="btn primary community-deals-post" data-deal-route="create" aria-pressed="false">${icon('plus')}<span>${ROUTES.create.label}</span></button>`:'<button type="button" class="btn primary community-deals-post" data-template="deal">＋ Post an offer</button>'}</div></div><div class="community-deals-stage" id="communityDealsStage" role="tabpanel"><div class="community-deals-context-actions" hidden></div><div class="community-deals-frames"></div></div>`;
+    root.innerHTML=`<div class="community-deals-nav"><nav class="community-deals-nav-tabs" role="tablist" aria-label="Deals &amp; Coupons">${tabs.map(key=>tabButton(key,true)).join('')}</nav><div class="community-deals-actions">${adapter.role==='owner'?`<button type="button" class="btn primary community-deals-post" data-deal-route="create" aria-pressed="false">${icon('plus')}<span>${ROUTES.create.label}</span></button>`:'<button type="button" class="btn primary community-deals-post" data-template="deal">＋ Post an offer</button>'}</div></div><div class="community-deals-stage" id="communityDealsStage" role="tabpanel"><div class="community-deals-frames"></div></div>`;
     anchor.before(root);
     const frames=new Map(), frameHost=root.querySelector('.community-deals-frames');
     const initial=new URLSearchParams(location.search).get('dealTab');
-    let pageScope=new URLSearchParams(location.search).get('couponPageId')||'';let selected=ROUTES[initial]?initial:ALIASES[initial]||'nearby',active=false,lastOffers='';
+    let pageScope=new URLSearchParams(location.search).get('couponPageId')||'';const roleRoute=name=>adapter.role==='owner'&&name==='opening'?'openingBusiness':adapter.role!=='owner'&&name==='openingBusiness'?'opening':name;let selected=roleRoute(ROUTES[initial]?initial:ALIASES[initial]||'nearby'),active=false,lastOffers='';
     if(ROUTES[selected].business&&adapter.role!=='owner')selected='nearby';
     const messageOrigin=location.protocol==='file:'?'*':location.origin;
     const send=(record,data)=>{if(record.ready)record.frame.contentWindow.postMessage(data,messageOrigin);};
@@ -42,10 +42,6 @@
       root.querySelectorAll('[data-deal-route]').forEach(button=>{const main=button.getAttribute('role')==='tab',chosen=button.dataset.dealRoute===(main?mainRoute(selected):selected);button.setAttribute(main?'aria-selected':'aria-pressed',String(chosen));});
       const business=root.querySelector('.community-deals-business');
       if(business){business.dataset.active=String(['campaign','redeem'].includes(mainRoute(selected)));business.querySelector('[data-deal-route="campaign"]').setAttribute('aria-pressed',String(mainRoute(selected)==='campaign'));}
-      const context=root.querySelector('.community-deals-context-actions');
-      const destination=adapter.role==='owner'&&selected==='opening'?'openingBusiness':selected==='openingBusiness'?'opening':null;
-      context.hidden=!destination;
-      if(destination){const label=destination==='openingBusiness'?'Create opening campaign':destination==='opening'?'Opening soon near you':ROUTES[destination].label;context.innerHTML=`<button type="button" class="community-deals-tab" data-deal-route="${destination}">${icon(ROUTES[destination].icon)}<span>${label}</span></button>`;}
     }
     let controlsQueued=false;
     const controlsObserver=new MutationObserver(()=>{
@@ -93,7 +89,7 @@
       adapter.onModal?.(false);
     }
     function navigate(route,notify=true){
-      const next=ALIASES[route]||route;if(!ROUTES[next]||ROUTES[next].business&&adapter.role!=='owner')return;
+      const next=roleRoute(ALIASES[route]||route);if(!ROUTES[next]||ROUTES[next].business&&adapter.role!=='owner')return;
       selected=next;if(next!=='wallet')pageScope='';
       const business=root.querySelector('.community-deals-business');if(business)business.open=false;
       if(!active)adapter.navigate();
@@ -102,7 +98,7 @@
     }
     function activate(view){
       active=view==='deals';root.hidden=!active;
-      if(active)render();
+      if(active){render();const asked=new URLSearchParams(location.search).get('dealTab');if(asked&&asked!==selected)adapter.onState?.({dealTab:selected,couponPageId:pageScope});}
       else{anchor.after(feed);for(const record of frames.values())send(record,{cmd:'stopTour'});}
     }
     function closeDetail(){for(const record of frames.values())if(!record.frame.hidden)send(record,{type:'nexora-deals-close-modal'});}

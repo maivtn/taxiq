@@ -18,7 +18,6 @@
 .community-deals-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-left:auto;min-width:0;max-width:100%}
 .community-deals-post{min-height:40px;white-space:nowrap}
 .community-deals-post img{width:21px;height:21px;object-fit:contain}
-.community-deals-context-actions{display:flex;justify-content:flex-end;margin-bottom:10px}
 @media(max-width:700px){.community-deals-nav{align-items:flex-start;gap:12px}.community-deals-nav-tabs{flex:1 1 100%}}
 
 /* Owner tools share one menu; their existing screens and deep links stay available. */

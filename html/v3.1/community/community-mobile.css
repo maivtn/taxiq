@@ -333,7 +333,7 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded .shell { min-width: 0; padding: 12px 14px 24px; }
   body.embedded .page-head { gap: 8px; margin-bottom: 12px; }
   body.embedded .page-head .head-actions { flex-wrap: wrap; }
-  body.embedded .page-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-bottom: 14px; }
+  body.embedded .page-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-bottom: 14px; }
   body.embedded .page-tabs .tab { min-height: 54px; min-width: 0; padding: 6px 3px; font-size: 11px; white-space: normal; box-shadow: none; transform: none; }
   body.embedded .page-tabs .tab svg { width: 20px; height: 20px; }
   body.embedded .connect-stage { min-width: 0; }
@@ -527,7 +527,7 @@ body .community-toolbar-filter-toggle,body .community-group-filter-toggle,body .
   body.embedded #dayworkView .shifts-tabs button { min-height:30px; height:30px; flex:1 0 auto; white-space:nowrap; padding:5px 9px; font-size:11px; line-height:18px; font-weight:650; }
 
   body.embedded > .shell > .page-head { display:none; }
-  body.embedded .page-tabs { grid-template-columns:repeat(4,minmax(0,1fr)) 44px; gap:2px; margin:0 0 10px; padding:3px; }
+  body.embedded .page-tabs { grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; margin:0 0 10px; padding:3px; }
   body.embedded .page-tabs .tab { flex-direction:column; align-items:center; justify-content:center; min-height:54px; padding:6px 3px; gap:4px; font-size:11px; line-height:1.25; }
   body.embedded .page-tabs .tab .community-nav-art { width:24px; height:24px; }
   body.embedded .page-tabs #tourStartBtn { min-width:44px; min-height:44px; padding:0; border:0; background:transparent; }
