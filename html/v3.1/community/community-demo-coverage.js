@@ -44,7 +44,6 @@
     sample('demo-feed-blue-portfolio',{kind:'showcase',owner:'David Le',title:'Adding a clean blue set to my sample portfolio',location:'Houston, TX',service:'Nail Art',description:'A short blue set photographed in natural light. I include the service and approximate appointment time when sharing work samples.',photo:images.blue,destinations:{includeMainFeed:true,groupIds:['group-new']},likeCount:14})
   );
   demo.extra.pagePosts.push(
-    sample('demo-page-draft-weekend',{pageId:'p1',status:'published',body:'Sample update: weekend appointment times and available services.',image:images.blush}),
     sample('demo-page-draft-team',{pageId:'p1',status:'published',body:'Sample update: meet our afternoon team and view a few recent work photos.',image:images.reception}),
     sample('demo-page-scheduled-blue',{pageId:'p1',status:'scheduled',body:'Scheduled sample: a blue nail design from this week, with service notes for clients.',image:images.blue,publishAt:new Date(date(2)+'T10:00:00').toISOString()}),
     sample('demo-page-scheduled-hours',{pageId:'p1',status:'scheduled',body:'Scheduled sample: a reminder to check available appointment times before visiting.',image:images.salon,publishAt:new Date(date(4)+'T09:00:00').toISOString()})
