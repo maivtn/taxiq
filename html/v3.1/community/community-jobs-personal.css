@@ -10,7 +10,7 @@
 .jobs-personal-panel .community-po-jobs-hero{display:block;margin:0;padding:17px 21px;border:1px solid #e5dfff;border-radius:13px;background:linear-gradient(115deg,#f0edff,#f8f7ff 72%,#edf3ff)}
 .jobs-personal-panel .community-po-jobs-hero h2{margin:0 0 5px;font-size:28px;line-height:1.12;font-weight:850;letter-spacing:-.03em}
 .jobs-personal-panel .community-po-jobs-hero p{font-size:12px;line-height:1.4;margin:0;color:#616b85}
-.jobs-personal-panel .community-po-hero-actions{margin-top:12px;max-width:none;grid-template-columns:1fr 1fr;gap:7px}
+.jobs-personal-panel .community-po-hero-actions{display:flex;flex-wrap:wrap;margin-top:12px;max-width:none;gap:7px}
 #jobsView .jobs-personal-panel .community-po-hero-actions .btn{min-height:37px;padding:7px 6px;font-size:11px;line-height:1.2}
 .jobs-personal-start{margin:16px 0 9px}
 .jobs-personal-start h2{margin:0 0 3px;font-size:18px;line-height:1.2;color:#25304b}
