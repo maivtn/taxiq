@@ -1,6 +1,6 @@
 /* Pages header copied from the PO social rail, Pages hero, search and filters. */
-#pagesView>.community-pages-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 14px;padding:5px;background:#fff;border:1px solid #e2e6ee;border-radius:15px;box-shadow:0 5px 17px #17243a0a}
-#pagesView>.community-pages-shortcuts button{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;padding:9px;border:0;border-radius:11px;background:transparent;color:#68758c;cursor:pointer}
+#pagesView>.community-pages-shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:0 0 8px;padding:3px;background:#fff;border:1px solid #e2e6ee;border-radius:15px;box-shadow:0 5px 17px #17243a0a}
+#pagesView>.community-pages-shortcuts button{display:flex;align-items:center;justify-content:center;min-width:0;min-height:36px;padding:6px;border:0;border-radius:11px;background:transparent;color:#68758c;cursor:pointer}
 #pagesView>.community-pages-shortcuts button:hover{background:#f3f1ff;color:#6350de}
 #pagesView>.community-pages-shortcuts button.active{background:#eeeaff;color:#6350de}
 #pagesView>.community-pages-shortcuts svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
