@@ -216,6 +216,7 @@
   const localNav=document.querySelector('.top > .tabs,.top > .phases,.top > .roles');
   const personalAccount=window.NEXORA_COMMUNITY_SHARED?.role==='staff'||new URLSearchParams(window.parent?.location?.search||location.search).get('account')==='personal';
   if(localNav&&personalAccount&&localNav.classList.contains('roles'))localNav.style.setProperty('display','none','important');
+  else if(localNav&&localNav.classList.contains('roles')){const showSalon=()=>{localNav.querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v==='biz'));document.querySelectorAll('section[data-v]').forEach(sec=>sec.classList.toggle('on',sec.dataset.v==='biz'));};showSalon();setTimeout(showSalon,0);setTimeout(showSalon,600);localNav.style.setProperty('display','none','important');}
   else if(localNav){localNav.classList.add('deal-module-subnav');document.querySelector('main')?.before(localNav);}
   if(module==='camp'&&new URLSearchParams(location.search).get('communityNav')==='merged')localNav?.querySelector('[data-ext="dcreate"]')?.remove();
   if(typeof spot==='function'){const originalSpot=spot;spot=element=>originalSpot(element?.classList.contains('deal-filter-source')?document.getElementById('deal-field-'+element.id)||element:element);}
