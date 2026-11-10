@@ -95,3 +95,10 @@
   :is(#community-staging,#community-hub) #feedComposerCard .feed-media-shortcuts { display:flex; flex:none; gap:4px; padding:0; }
   :is(#community-staging,#community-hub) #feedComposerCard .feed-media-shortcuts button { min-height:36px; padding-block:4px; }
 }
+
+/* Menu items: titles and descriptions stay at 12px or larger. */
+.header-menu :is(button,a,strong,small,p),
+.community-create-menu :is(button,span,small),
+.chat-menu-row :is(strong,small),
+[role="menu"] :is(small,p) { font-size: max(12px, 1em); }
+.header-menu small, .chat-menu-row small, [role="menu"] small { font-size: 12px; }

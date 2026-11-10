@@ -349,7 +349,7 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded .chat-menu { left: 8px; width: calc(100% - 16px); max-height: min(400px, 58dvh); }
   body.embedded .chat-menu-row { min-height: 48px; }
   body.embedded .chat-menu-row strong { font-size: 13px; }
-  body.embedded .chat-menu-row small { font-size: 11px; line-height: 1.4; }
+  body.embedded .chat-menu-row small { font-size: 12px; line-height: 1.4; }
   body.embedded .chat-attachment-preview { flex-wrap: wrap; gap: 8px; font-size: 12px; }
   body.embedded .chat-attachment-preview audio { max-width: 100%; }
   body.embedded .chat-picker { max-height: 170px; overflow-y: auto; }
