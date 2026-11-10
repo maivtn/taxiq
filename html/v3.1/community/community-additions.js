@@ -249,14 +249,26 @@
     // Keep the NEXORA directory tiles visible while their destinations are paused.
     for(const button of toolItems.children){
       if(button.dataset.communityExtra?.startsWith('personal-')||['wallet','wheel','account','assistant','notifications'].includes(button.dataset.communityExtra))continue;
+      if(button.dataset.communityExtra==='meet'){
+        // Vendor media for Meet is not final: keep the entry as a clickable "Coming soon" item, never a dead button or a fake room.
+        button.dataset.communityMenuSoon='true';
+        button.querySelector('.ecosystem-item-label')?.insertAdjacentHTML('afterend','<span class="ecosystem-item-soon">Coming soon</span>');
+        continue;
+      }
       button.disabled=true;
       button.setAttribute('aria-disabled','true');
       button.dataset.communityMenuInactive='true';
     }
     menu.addEventListener('click',event=>{
+      if(event.target.closest('[data-community-menu-soon]')){
+        event.preventDefault();event.stopImmediatePropagation();
+        let note=document.getElementById('communityMeetSoon');
+        if(!note){note=document.createElement('div');note.id='communityMeetSoon';note.setAttribute('role','status');note.className='community-soon-note';note.textContent='NEXORA Meet is coming soon. Group meetings will open here once video is ready.';document.body.append(note);}
+        note.classList.add('show');clearTimeout(note._timer);note._timer=setTimeout(()=>note.classList.remove('show'),3500);return;
+      }
       if(event.target.closest('[data-community-menu-inactive]')){event.preventDefault();event.stopImmediatePropagation();}
     },true);
-    styles.textContent+='.ecosystem-menu .ecosystem-item[data-community-menu-inactive]{opacity:1;cursor:default}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]:is(:hover,:active){background:#fff;border-color:#dfe2f0;transform:none}';
+    styles.textContent+='.ecosystem-item-soon{margin-left:auto;padding:2px 8px;border-radius:999px;background:#eef0fb;color:#5b5fc7;font-size:11px;font-weight:700;white-space:nowrap}.community-soon-note{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);z-index:100000;max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:#20233a;color:#fff;font-size:14px;opacity:0;pointer-events:none;transition:.2s}.community-soon-note.show{opacity:1;transform:translateX(-50%)}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]{opacity:1;cursor:default}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]:is(:hover,:active){background:#fff;border-color:#dfe2f0;transform:none}';
     // Match the PO directory order while retaining every existing destination.
     for(const [items,routes] of [[communityItems,['connect','feed','market','pages','friends']],[businessItems,['shop','transfer','realestate','jobs','daywork']],[exploreItems,['food','deals','live','reels','news','blog','stories','explore']]]){
       for(const route of routes){const button=[...items.children].find(button=>(button.dataset.quickView||button.dataset.communityExtra)===route);if(button)items.append(button);}
