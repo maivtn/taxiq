@@ -229,7 +229,7 @@
       const items=document.createElement('div');items.className='community-menu-group-items';section.append(title,items);menu.append(section);return items;
     }
     // Blog duplicates News & Blog, so drop it from the menu.
-    menu.querySelectorAll('[data-quick-view="blog"],[data-community-extra="blog"],[data-quick-view="personal-modules"],[data-community-extra="personal-modules"]').forEach(button=>button.remove());
+    menu.querySelectorAll('[data-quick-view="blog"],[data-community-extra="blog"],[data-quick-view="personal-modules"],[data-community-extra="personal-modules"],[data-quick-view="personal-moderation"],[data-community-extra="personal-moderation"]').forEach(button=>button.remove());
     const existingMenuItems=[...menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')];
     const menuBody=document.createElement('div');menuBody.className='community-menu-body';menu.append(menuBody);
     const communityItems=menuGroup('community','Community'),businessItems=menuGroup('business','Business'),exploreItems=menuGroup('explore','Explore'),toolItems=menuGroup('tools','NEXORA');
