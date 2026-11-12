@@ -228,6 +228,8 @@
       const title=document.createElement('h3');title.className='community-menu-group-title';title.id=menu.id+'-'+name+'-title';title.textContent=label;section.setAttribute('aria-labelledby',title.id);
       const items=document.createElement('div');items.className='community-menu-group-items';section.append(title,items);menu.append(section);return items;
     }
+    // Blog duplicates News & Blog, so drop it from the menu.
+    menu.querySelectorAll('[data-quick-view="blog"],[data-community-extra="blog"],[data-quick-view="personal-modules"],[data-community-extra="personal-modules"]').forEach(button=>button.remove());
     const existingMenuItems=[...menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')];
     const menuBody=document.createElement('div');menuBody.className='community-menu-body';menu.append(menuBody);
     const communityItems=menuGroup('community','Community'),businessItems=menuGroup('business','Business'),exploreItems=menuGroup('explore','Explore'),toolItems=menuGroup('tools','NEXORA');
@@ -241,7 +243,7 @@
     createToggle.addEventListener('click',()=>{const open=createItems.hidden;createItems.hidden=!open;createToggle.setAttribute('aria-expanded',String(open));updateMenuLayout();});
     const toolRoutes=new Set(['personal-settings','personal-analytics','personal-modules','personal-invite','wallet','wheel','meet','account','assistant','notifications']);
     const businessRoutes=new Set(['shop','transfer','realestate','jobs','daywork']);
-    const exploreRoutes=new Set(['food','deals','live','reels','news','blog','stories','explore']);
+    const exploreRoutes=new Set(['food','deals','explore']);
     for(const button of existingMenuItems){
       const route=button.dataset.quickView||button.dataset.communityExtra;
       (route==='post'?createItems:toolRoutes.has(route)||button.id==='menuStartTour'?toolItems:businessRoutes.has(route)?businessItems:exploreRoutes.has(route)?exploreItems:communityItems).append(button);
@@ -270,7 +272,7 @@
     },true);
     styles.textContent+='.ecosystem-item-soon{margin-left:auto;padding:2px 8px;border-radius:999px;background:#eef0fb;color:#5b5fc7;font-size:11px;font-weight:700;white-space:nowrap}.community-soon-note{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);z-index:100000;max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:#20233a;color:#fff;font-size:14px;opacity:0;pointer-events:none;transition:.2s}.community-soon-note.show{opacity:1;transform:translateX(-50%)}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]{opacity:1;cursor:default}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]:is(:hover,:active){background:#fff;border-color:#dfe2f0;transform:none}';
     // Match the PO directory order while retaining every existing destination.
-    for(const [items,routes] of [[communityItems,['connect','feed','market','pages','friends']],[businessItems,['shop','transfer','realestate','jobs','daywork']],[exploreItems,['food','deals','live','reels','news','blog','stories','explore']]]){
+    for(const [items,routes] of [[communityItems,['connect','feed','market','pages','friends','live','reels','news','stories']],[businessItems,['shop','transfer','realestate','jobs','daywork']],[exploreItems,['food','deals','explore']]]){
       for(const route of routes){const button=[...items.children].find(button=>(button.dataset.quickView||button.dataset.communityExtra)===route);if(button)items.append(button);}
     }
     menuCount.textContent=(existingMenuItems.length-1)+' more sections';
