@@ -228,8 +228,10 @@
       const title=document.createElement('h3');title.className='community-menu-group-title';title.id=menu.id+'-'+name+'-title';title.textContent=label;section.setAttribute('aria-labelledby',title.id);
       const items=document.createElement('div');items.className='community-menu-group-items';section.append(title,items);menu.append(section);return items;
     }
-    // Blog duplicates News & Blog, so drop it from the menu.
-    menu.querySelectorAll('[data-quick-view="blog"],[data-community-extra="blog"],[data-quick-view="personal-modules"],[data-community-extra="personal-modules"],[data-quick-view="personal-moderation"],[data-community-extra="personal-moderation"]').forEach(button=>button.remove());
+    // Blog duplicates News & Blog, and Moderation / My modules are hidden by request.
+    // Feed, Groups & Market, Pages and Jobs already have top tabs, so keep them out of the menu.
+    const hiddenRoutes=['blog','personal-modules','personal-moderation','feed','market','pages','jobs'];
+    menu.querySelectorAll(hiddenRoutes.flatMap(route=>[`[data-quick-view="${route}"]`,`[data-community-extra="${route}"]`]).join(',')).forEach(button=>button.remove());
     const existingMenuItems=[...menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')];
     const menuBody=document.createElement('div');menuBody.className='community-menu-body';menu.append(menuBody);
     const communityItems=menuGroup('community','Community'),businessItems=menuGroup('business','Business'),exploreItems=menuGroup('explore','Explore'),toolItems=menuGroup('tools','NEXORA');
