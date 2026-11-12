@@ -230,7 +230,7 @@
     }
     // Blog duplicates News & Blog, and Moderation / My modules are hidden by request.
     // Feed, Groups & Market, Pages and Jobs already have top tabs, so keep them out of the menu.
-    const hiddenRoutes=['blog','personal-modules','personal-moderation','feed','market','pages','jobs'];
+    const hiddenRoutes=['blog','personal-modules','personal-moderation','feed','market','pages','jobs','daywork'];
     menu.querySelectorAll(hiddenRoutes.flatMap(route=>[`[data-quick-view="${route}"]`,`[data-community-extra="${route}"]`]).join(',')).forEach(button=>button.remove());
     const existingMenuItems=[...menu.querySelectorAll('[data-quick-view],[data-community-extra],#menuStartTour')];
     const menuBody=document.createElement('div');menuBody.className='community-menu-body';menu.append(menuBody);
@@ -256,7 +256,7 @@
       if(button.dataset.communityExtra==='meet'){
         // Vendor media for Meet is not final: keep the entry as a clickable "Coming soon" item, never a dead button or a fake room.
         button.dataset.communityMenuSoon='true';
-        button.querySelector('.ecosystem-item-label')?.insertAdjacentHTML('afterend','<span class="ecosystem-item-soon">Coming soon</span>');
+        const label=button.querySelector('.ecosystem-item-label');if(label){const text=document.createElement('span');text.className='ecosystem-item-text';label.replaceWith(text);text.append(label);text.insertAdjacentHTML('beforeend','<span class="ecosystem-item-soon">Coming soon</span>');}
         continue;
       }
       button.disabled=true;
@@ -272,14 +272,14 @@
       }
       if(event.target.closest('[data-community-menu-inactive]')){event.preventDefault();event.stopImmediatePropagation();}
     },true);
-    styles.textContent+='.ecosystem-item-soon{margin-left:auto;padding:2px 8px;border-radius:999px;background:#eef0fb;color:#5b5fc7;font-size:11px;font-weight:700;white-space:nowrap}.community-soon-note{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);z-index:100000;max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:#20233a;color:#fff;font-size:14px;opacity:0;pointer-events:none;transition:.2s}.community-soon-note.show{opacity:1;transform:translateX(-50%)}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]{opacity:1;cursor:default}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]:is(:hover,:active){background:#fff;border-color:#dfe2f0;transform:none}';
+    styles.textContent+='.ecosystem-item-text{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}.ecosystem-item-text .ecosystem-item-label{white-space:normal}.ecosystem-item-soon{margin-left:0;padding:2px 8px;border-radius:999px;background:#eef0fb;color:#5b5fc7;font-size:11px;font-weight:700;white-space:nowrap}.community-soon-note{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);z-index:100000;max-width:min(92vw,420px);padding:12px 16px;border-radius:12px;background:#20233a;color:#fff;font-size:14px;opacity:0;pointer-events:none;transition:.2s}.community-soon-note.show{opacity:1;transform:translateX(-50%)}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]{opacity:1;cursor:default}.ecosystem-menu .ecosystem-item[data-community-menu-inactive]:is(:hover,:active){background:#fff;border-color:#dfe2f0;transform:none}';
     // Match the PO directory order while retaining every existing destination.
     for(const [items,routes] of [[communityItems,['feed','market','pages','jobs','daywork','connect','personal-contacts','friends','live','reels','news','stories']],[businessItems,['shop','transfer']],[exploreItems,['food','deals','realestate','explore']]]){
       for(const route of routes){const button=[...items.children].find(button=>(button.dataset.quickView||button.dataset.communityExtra)===route);if(button)items.append(button);}
     }
     menuCount.textContent=(existingMenuItems.length-1)+' more sections';
     const artworkBase=new URL('../../assets/icon-oneqr/',baseURL);
-    const menuArtwork={connect:'message-circle',feed:'layout-list',market:'users-round',pages:'building-2',friends:'heart',people:'user-round',shop:'store',transfer:'hand-coins',realestate:'home',jobs:'briefcase',daywork:'calendar-clock',food:'utensils',deals:'ticket',live:'video',news:'receipt','personal-settings':'settings','personal-analytics':'percent','personal-modules':'layout-dashboard','personal-invite':'share-2','personal-moderation':'circle-check','personal-profile':'user-round','personal-contacts':'link',blog:'receipt',stories:'image',explore:'globe-2',wallet:'wallet',wheel:'gift',meet:'camera',account:'user-cog',assistant:'bot',notifications:'bell'};
+    const menuArtwork={connect:'message-circle',feed:'layout-list',market:'users-round',pages:'building-2',friends:'users-round',people:'user-round',shop:'store',transfer:'hand-coins',realestate:'home',jobs:'briefcase',daywork:'calendar-clock',food:'utensils',deals:'ticket',live:'video',news:'receipt','personal-settings':'settings','personal-analytics':'percent','personal-modules':'layout-dashboard','personal-invite':'share-2','personal-moderation':'circle-check','personal-profile':'user-round','personal-contacts':'link',blog:'receipt',stories:'image',explore:'globe-2',wallet:'wallet',wheel:'gift',meet:'video',account:'user-cog',assistant:'bot',notifications:'bell'};
     for(const button of existingMenuItems){
       const route=button.dataset.quickView||button.dataset.communityExtra;
       if(route==='reels')continue;
