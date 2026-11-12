@@ -275,7 +275,7 @@
     }
     menuCount.textContent=(existingMenuItems.length-1)+' more sections';
     const artworkBase=new URL('../../assets/icon-oneqr/',baseURL);
-    const menuArtwork={connect:'message-circle',feed:'layout-list',market:'users-round',pages:'building-2',friends:'users-round',people:'user-round',shop:'store',transfer:'hand-coins',realestate:'home',jobs:'briefcase',daywork:'calendar-clock',food:'utensils',deals:'ticket',live:'tv',news:'receipt','personal-settings':'settings','personal-analytics':'percent','personal-modules':'layout-dashboard','personal-invite':'share-2','personal-moderation':'circle-check','personal-profile':'user-round','personal-contacts':'users-round',blog:'receipt',stories:'image',explore:'globe-2',wallet:'wallet',wheel:'gift',meet:'video',account:'user-cog',assistant:'bot',notifications:'bell'};
+    const menuArtwork={connect:'message-circle',feed:'layout-list',market:'users-round',pages:'building-2',friends:'users-round',people:'user-round',shop:'store',transfer:'hand-coins',realestate:'home',jobs:'briefcase',daywork:'calendar-clock',food:'utensils',deals:'ticket',live:'video',news:'receipt','personal-settings':'settings','personal-analytics':'percent','personal-modules':'layout-dashboard','personal-invite':'share-2','personal-moderation':'circle-check','personal-profile':'user-round','personal-contacts':'users-round',blog:'receipt',stories:'image',explore:'globe-2',wallet:'wallet',wheel:'gift',meet:'video',account:'user-cog',assistant:'bot',notifications:'bell'};
     for(const button of existingMenuItems){
       const route=button.dataset.quickView||button.dataset.communityExtra;
       if(route==='reels')continue;
